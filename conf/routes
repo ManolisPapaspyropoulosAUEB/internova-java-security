@@ -1,0 +1,43 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# An example controller showing a sample home page
+GET         /                          controllers.HomeController.index
+
+# Map static resources from the /public folder to the /assets URL path
+GET         /assets/*file              controllers.Assets.versioned(path="/public", file: Asset)
+
+#OrganizationsController
+POST        /addOrganization           controllers.OrganizationsController.addOrganization(req: Request)
+POST        /updateOrganization        controllers.OrganizationsController.updateOrganization(req: Request)
+POST        /getOrganizations          controllers.OrganizationsController.getOrganizations(req: Request)
+POST        /deleteOrganization        controllers.OrganizationsController.deleteOrganization(req: Request)
+
+#RolesController
+POST        /addRole                   controllers.RolesController.addRole(req: Request)
+POST        /updateRole                controllers.RolesController.updateRole(req: Request)
+POST        /deleteRole                controllers.RolesController.deleteRole(req: Request)
+POST        /getRoles                  controllers.RolesController.getRoles(req: Request)
+
+#UsersControllers
+POST        /addUser                   controllers.UsersControllers.addUser(req: Request)
+POST        /updateUser                controllers.UsersControllers.updateUser(req: Request)
+POST        /deleteUser                controllers.UsersControllers.deleteUser(req: Request)
+POST        /getUsers                  controllers.UsersControllers.getUsers(req: Request)
+
+
+#AuditLogsController
+POST        /addAuditLog               controllers.AuditLogsController.addAuditLog(req: Request)
+POST        /updateAuditLog            controllers.AuditLogsController.updateAuditLog(req: Request)
+POST        /deleteLog                 controllers.AuditLogsController.deleteLog(req: Request)
+POST        /getAuditLogs              controllers.AuditLogsController.getAuditLogs(req: Request)
+
+
+
+
+#AuditLogsController
+POST        /addDepartment             controllers.DepartmentController.addDepartment(req: Request)
+POST        /updateDepartment          controllers.DepartmentController.updateDepartment(req: Request)
+POST        /getDepartments            controllers.DepartmentController.getDepartments(req: Request)
+POST        /deleteDepartment          controllers.DepartmentController.deleteDepartment(req: Request)
