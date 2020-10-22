@@ -24,6 +24,9 @@ public class UsersEntity {
     private Long classId;
     private Long depId;
     private String position;
+    private String mobilePhone;
+    private String gender;
+    private String comments;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -209,5 +212,35 @@ public class UsersEntity {
 
     public void setPosition(String position) {
         this.position = position;
+    }
+
+    @Basic
+    @Column(name = "mobile_phone")
+    public String getMobilePhone() {
+        return mobilePhone;
+    }
+
+    public void setMobilePhone(String mobilePhone) {
+        this.mobilePhone = mobilePhone;
+    }
+
+    @Basic
+    @Column(name = "gender")
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    @Basic
+    @Column(name = "comments")
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
     }
 }

@@ -69,6 +69,9 @@ public class UsersControllers {
                                     String position = json.findPath("position").asText();
                                     Integer status = json.findPath("status").asInt();
                                     String token = json.findPath("token").asText();
+                                    String mobilePhone = json.findPath("mobilePhone").asText();
+                                    String gender = json.findPath("gender").asText();
+                                    String comments = json.findPath("comments").asText();
                                     Long roleId = json.findPath("roleId").asLong();
                                     Long orgId = json.findPath("orgId").asLong();
                                     Long depId = json.findPath("depId").asLong();
@@ -106,6 +109,10 @@ public class UsersControllers {
                                         add_result.put("message", "Συστημικο προβλημα παρουσιαστηκε,παρακαλω επικοινωνηστε με τον administrator");
                                         return add_result;
                                     }
+                                    user.setComments(comments);
+                                    user.setGender(gender);
+                                    user.setMobilePhone(mobilePhone);
+                                    user.setPosition(position);
                                     user.setPhone(phone);
                                     user.setToken(token);
                                     user.setRoleId(roleId);
@@ -395,6 +402,9 @@ public class UsersControllers {
                                                 sHmpam.put("position", j.getPosition());
                                                 sHmpam.put("statusUser", j.getStatus());
                                                 sHmpam.put("userId", j.getUserId());
+                                                sHmpam.put("comments", j.getComments());
+                                                sHmpam.put("gender", j.getGender());
+                                                sHmpam.put("mobilePhone", j.getMobilePhone());
                                                 sHmpam.put("orgId", j.getOrgId());
                                                 sHmpam.put("roleId", j.getRoleId());
                                                 sHmpam.put("depId", j.getDepId());
