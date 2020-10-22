@@ -162,6 +162,7 @@ public class UsersControllers {
                 try {
                     ObjectNode result = Json.newObject();
 
+                    System.out.println(json);
                     CompletableFuture<JsonNode> updateFuture = CompletableFuture.supplyAsync(() -> {
                                 return jpaApi.withTransaction(entityManager -> {
                                     ObjectNode resultfuture = Json.newObject();
@@ -174,14 +175,19 @@ public class UsersControllers {
                                     String position = json.findPath("position").asText();
                                     Integer status = json.findPath("status").asInt();
                                     String token = json.findPath("token").asText();
-
+                                    String mobilePhone = json.findPath("mobilePhone").asText();
+                                    String gender = json.findPath("gender").asText();
+                                    String comments = json.findPath("comments").asText();
                                     Long id = json.findPath("userId").asLong();
 
 
-                                    Long roleId = json.findPath("selectedRole").findPath("id").asLong();
-                                    Long orgId = json.findPath("selectedOrganization").findPath("id").asLong();
-                                    Long depId = json.findPath("selectedDep").findPath("id").asLong();
+//                                    Long roleId = json.findPath("selectedRole").findPath("id").asLong();
+//                                    Long orgId = json.findPath("selectedOrganization").findPath("id").asLong();
+//                                    Long depId = json.findPath("selectedDep").findPath("id").asLong();
 
+                                    Long roleId = json.findPath("roleId").asLong();
+                                    Long orgId = json.findPath("orgId").asLong();
+                                    Long depId = json.findPath("depId").asLong();
 
                                     //check if username is unique
                                     String sqlUsername = "select * from users where username='" + username + "'" + "and user_id !=" + id;
@@ -216,6 +222,10 @@ public class UsersControllers {
                                         resultfuture.put("message", "Συστημικο προβλημα παρουσιαστηκε,παρακαλω επικοινωνηστε με τον administrator");
                                         return resultfuture;
                                     }
+                                    user.setComments(comments);
+                                    user.setGender(gender);
+                                    user.setMobilePhone(mobilePhone);
+                                    user.setPosition(position);
                                     user.setPhone(phone);
                                     user.setPosition(position);
                                     user.setToken(token);
@@ -304,6 +314,62 @@ public class UsersControllers {
             return ok(result);
         }
     }
+
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    @BodyParser.Of(BodyParser.Json.class)
+    public Result updatePassword(final Http.Request request) throws IOException {
+        try {
+            JsonNode json = request.body().asJson();
+            if (json == null) {
+                return badRequest("Expecting Json data");
+            } else {
+                try {
+                    //password: "12345678"
+                    //userId: "60"
+
+
+                    String password = json.findPath("password").asText();
+                    String userId = json.findPath("userId").asText();
+                    ObjectNode result = Json.newObject();
+                    CompletableFuture<JsonNode> updateFuture = CompletableFuture.supplyAsync(() -> {
+                                return jpaApi.withTransaction(entityManager -> {
+                                    ObjectNode result_future = Json.newObject();
+                                    Long id = json.findPath("userId").asLong();
+                                    UsersEntity user = entityManager.find(UsersEntity.class, id);
+                                    try {
+                                        user.setPassword(encrypt(password));
+                                    } catch (Exception e) {
+                                        result_future.put("status", "error");
+                                        result_future.put("message", "Προβλημα κατα την ενημερωση");
+                                        return result_future;
+                                    }
+                                    result_future.put("status", "ok");
+                                    result_future.put("message", "Η αλλαγή κωδικού πραγματοποιήθηκε με επιτυχία!");
+                                    return result_future;
+                                });
+                            },
+                            executionContext);
+                    result = (ObjectNode) updateFuture.get();
+                    return ok(result);
+
+                } catch (Exception e) {
+                    ObjectNode result = Json.newObject();
+                    e.printStackTrace();
+                    result.put("status", "error");
+                    result.put("message", "Προβλημα κατα την διαγραφή");
+                    return ok(result);
+                }
+            }
+        } catch (Exception e) {
+            ObjectNode result = Json.newObject();
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "Προβλημα κατα την διαγραφή");
+            return ok(result);
+        }
+    }
+
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})

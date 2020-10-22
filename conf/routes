@@ -1,6 +1,6 @@
 # Routes
 # This file defines all application routes (Higher priority routes first)
-# ~~~~
+# ~~~~ GET    /:id                 v1.post.PostController.show(request:Request,id)
 
 # An example controller showing a sample home page
 GET         /                          controllers.HomeController.index
@@ -20,11 +20,12 @@ POST        /updateRole                controllers.RolesController.updateRole(re
 POST        /deleteRole                controllers.RolesController.deleteRole(req: Request)
 POST        /getRoles                  controllers.RolesController.getRoles(req: Request)
 
-#UsersControllers
+#UsersControllers downloadDocument
 POST        /addUser                   controllers.UsersControllers.addUser(req: Request)
 POST        /updateUser                controllers.UsersControllers.updateUser(req: Request)
 POST        /deleteUser                controllers.UsersControllers.deleteUser(req: Request)
 POST        /getUsers                  controllers.UsersControllers.getUsers(req: Request)
+POST        /updatePassword            controllers.UsersControllers.updatePassword(req: Request)
 
 
 #AuditLogsController
@@ -41,3 +42,14 @@ POST        /addDepartment             controllers.DepartmentController.addDepar
 POST        /updateDepartment          controllers.DepartmentController.updateDepartment(req: Request)
 POST        /getDepartments            controllers.DepartmentController.getDepartments(req: Request)
 POST        /deleteDepartment          controllers.DepartmentController.deleteDepartment(req: Request)
+
+
+#DocumentsController getUploadsByUserId
+#POST        /uploadPhotoTest           controllers.DocumentsController.uploadPhotoTest(req: Request)
+#POST        /getPhotoByRoadId          controllers.DocumentsController.getPhotoByRoadId(req: Request)
+POST        /getUploadsByUserId        controllers.DocumentsController.getUploadsByUserId(req: Request)
+POST        /uploadFile                controllers.DocumentsController.uploadFile(req: Request)
+#POST        /deleteImage               controllers.DocumentsController.deleteImage(req: Request)
+#GET         /downloadFile              controllers.DocumentsController.downloadFile(req: Request)
+#GET         /downloadDocument          controllers.DocumentsController.downloadDocument(req: Request)
+GET        /downloadDocument          controllers.DocumentsController.downloadDocument(req: Request)

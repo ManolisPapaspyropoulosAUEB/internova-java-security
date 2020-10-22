@@ -1,0 +1,95 @@
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/C:/cyp_new_prod/lib/ch.qos.logback.logback-classic-1.1.3.jar!/org/slf4j/impl/StaticLogg
+erBinder.class]
+SLF4J: Found binding in [jar:file:/C:/cyp_new_prod/lib/org.slf4j.slf4j-log4j12-1.7.6.jar!/org/slf4j/impl/StaticLoggerBinde
+r.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [ch.qos.logback.classic.util.ContextSelectorStaticBinder]
+ SchedulerModule
+[info] application - ** Starting kafka producers connection **
+[info] application - Creating Pool for datasource 'default'
+[info] p.a.d.HikariCPConnectionPool - datasource [default] bound to JNDI as CYP_MIS_DS
+[info] p.a.d.DefaultDBApi - Database [default] connected at jdbc:oracle:thin:@10.46.31.10:1521/OPS
+[info] p.a.l.c.ActorSystemProvider - Starting application default Akka system: application
+log4j:WARN No appenders could be found for logger (org.jboss.logging).
+log4j:WARN Please initialize the log4j system properly.
+log4j:WARN See http://logging.apache.org/log4j/1.2/faq.html#noconfig for more info.
+[info] application - ** Running onStart **
+----FAIL LOGIN ATTEMPT--------
+java.lang.RuntimeException: JPA transaction failed
+        at play.db.jpa.DefaultJPAApi.withTransaction(DefaultJPAApi.java:107)
+        at Actors.DoSomethingActor.onReceive(DoSomethingActor.java:48)
+        at akka.actor.UntypedActor$$anonfun$receive$1.applyOrElse(UntypedActor.scala:167)
+        at akka.actor.Actor$class.aroundReceive(Actor.scala:467)
+        at akka.actor.UntypedActor.aroundReceive(UntypedActor.scala:97)
+        at akka.actor.ActorCell.receiveMessage(ActorCell.scala:516)
+        at akka.actor.ActorCell.invoke(ActorCell.scala:487)
+        at akka.dispatch.Mailbox.processMailbox(Mailbox.scala:238)
+        at akka.dispatch.Mailbox.run(Mailbox.scala:220)
+        at akka.dispatch.ForkJoinExecutorConfigurator$AkkaForkJoinTask.exec(AbstractDispatcher.scala:397)
+        at scala.concurrent.forkjoin.ForkJoinTask.doExec(ForkJoinTask.java:260)
+        at scala.concurrent.forkjoin.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1339)
+        at scala.concurrent.forkjoin.ForkJoinPool.runWorker(ForkJoinPool.java:1979)
+        at scala.concurrent.forkjoin.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:107)
+Caused by: javax.persistence.RollbackException: Error while committing the transaction
+        at org.hibernate.ejb.TransactionImpl.commit(TransactionImpl.java:92)
+        at Actors.DoSomethingActor.lambda$onReceive$0(DoSomethingActor.java:105)
+        at play.db.jpa.DefaultJPAApi.lambda$withTransaction$1(DefaultJPAApi.java:103)
+        at play.db.jpa.DefaultJPAApi.withTransaction(DefaultJPAApi.java:136)
+        at play.db.jpa.DefaultJPAApi.withTransaction(DefaultJPAApi.java:102)
+        ... 13 more
+Caused by: javax.persistence.PersistenceException: org.hibernate.exception.GenericJDBCException: could not execute stateme
+nt
+        at org.hibernate.ejb.AbstractEntityManagerImpl.convert(AbstractEntityManagerImpl.java:1387)
+        at org.hibernate.ejb.AbstractEntityManagerImpl.convert(AbstractEntityManagerImpl.java:1310)
+        at org.hibernate.ejb.TransactionImpl.commit(TransactionImpl.java:80)
+        ... 17 more
+Caused by: org.hibernate.exception.GenericJDBCException: could not execute statement
+        at org.hibernate.exception.internal.StandardSQLExceptionConverter.convert(StandardSQLExceptionConverter.java:54)
+        at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:125)
+        at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:110)
+        at org.hibernate.engine.jdbc.internal.ResultSetReturnImpl.executeUpdate(ResultSetReturnImpl.java:189)
+        at org.hibernate.engine.jdbc.batch.internal.NonBatchingBatch.addToBatch(NonBatchingBatch.java:58)
+        at org.hibernate.persister.entity.AbstractEntityPersister.insert(AbstractEntityPersister.java:3079)
+        at org.hibernate.persister.entity.AbstractEntityPersister.insert(AbstractEntityPersister.java:3521)
+        at org.hibernate.action.internal.EntityInsertAction.execute(EntityInsertAction.java:88)
+        at org.hibernate.engine.spi.ActionQueue.execute(ActionQueue.java:393)
+        at org.hibernate.engine.spi.ActionQueue.executeActions(ActionQueue.java:385)
+        at org.hibernate.engine.spi.ActionQueue.executeActions(ActionQueue.java:301)
+        at org.hibernate.event.internal.AbstractFlushingEventListener.performExecutions(AbstractFlushingEventListener.java
+:349)
+        at org.hibernate.event.internal.DefaultFlushEventListener.onFlush(DefaultFlushEventListener.java:56)
+        at org.hibernate.internal.SessionImpl.flush(SessionImpl.java:1159)
+        at org.hibernate.internal.SessionImpl.managedFlush(SessionImpl.java:404)
+        at org.hibernate.engine.transaction.internal.jdbc.JdbcTransaction.beforeTransactionCommit(JdbcTransaction.java:101
+)
+        at org.hibernate.engine.transaction.spi.AbstractTransactionImpl.commit(AbstractTransactionImpl.java:175)
+        at org.hibernate.ejb.TransactionImpl.commit(TransactionImpl.java:75)
+        ... 17 more
+Caused by: java.sql.SQLException: ORA-12899: value too large for column "CYP_MIS_PROD"."CYP_MIS_LOGS"."WHAT" (actual: 223,
+ maximum: 200)
+
+        at oracle.jdbc.driver.T4CTTIoer.processError(T4CTTIoer.java:457)
+        at oracle.jdbc.driver.T4CTTIoer.processError(T4CTTIoer.java:400)
+        at oracle.jdbc.driver.T4C8Oall.processError(T4C8Oall.java:926)
+        at oracle.jdbc.driver.T4CTTIfun.receive(T4CTTIfun.java:476)
+        at oracle.jdbc.driver.T4CTTIfun.doRPC(T4CTTIfun.java:200)
+        at oracle.jdbc.driver.T4C8Oall.doOALL(T4C8Oall.java:543)
+        at oracle.jdbc.driver.T4CPreparedStatement.doOall8(T4CPreparedStatement.java:238)
+        at oracle.jdbc.driver.T4CPreparedStatement.executeForRows(T4CPreparedStatement.java:1446)
+        at oracle.jdbc.driver.OracleStatement.doExecuteWithTimeout(OracleStatement.java:1757)
+        at oracle.jdbc.driver.OraclePreparedStatement.executeInternal(OraclePreparedStatement.java:4372)
+        at oracle.jdbc.driver.OraclePreparedStatement.executeUpdate(OraclePreparedStatement.java:4539)
+        at oracle.jdbc.driver.OraclePreparedStatementWrapper.executeUpdate(OraclePreparedStatementWrapper.java:5577)
+        at com.zaxxer.hikari.proxy.PreparedStatementProxy.executeUpdate(PreparedStatementProxy.java:61)
+        at com.zaxxer.hikari.proxy.PreparedStatementJavassistProxy.executeUpdate(PreparedStatementJavassistProxy.java)
+        at org.hibernate.engine.jdbc.internal.ResultSetReturnImpl.executeUpdate(ResultSetReturnImpl.java:186)
+        ... 31 more
+[info] application - ** Start Setting accessRights to securityCache **
+[info] application - ** End Setting accessRights to securityCache **
+[info] application -  >>> 249 accessRights rows added to Cache <<<
+[info] application - ------------------------------------------
+[info] application - ** Start Setting roles to securityCache **
+[info] application - ** End Setting roles to securityCache **
+[info] application -  >>> 249 roles rows added to Cache <<<
+[info] application - ------------------------------------------
