@@ -8,6 +8,7 @@ import controllers.execution_context.DatabaseExecutionContext;
 import models.DocumentsEntity;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
+import play.mvc.BodyParser;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.libs.Files.TemporaryFile;
@@ -59,7 +60,7 @@ public class DocumentsController {
                 String extension = fileNameArr[1];
                 String originalFileName = fileNameArr[0];
                 String fileName_random = fileNameArr[0] + "_" + rand.nextInt(1000);
-                String fullPath = userId + "/" + fileName;
+                String fullPath = userId + "/" + fileName_random;
                 File uploadsDir = new File(ConfigFactory.load().getString("uploads_dir") + "/" + userId);
                 if (!uploadsDir.exists()) {
                     uploadsDir.mkdirs();
@@ -69,13 +70,12 @@ public class DocumentsController {
                             return jpaApi.withTransaction(entityManager -> {
                                 ObjectNode result_future = Json.newObject();
                                 DocumentsEntity newDoc = new DocumentsEntity();
-                                newDoc.setName(fileName);
+                                newDoc.setName(fileName_random);
                                 newDoc.setOriginalFilename(originalFileName);
                                 newDoc.setExtension(extension);
                                 newDoc.setUploadDate(new Date());
-                                newDoc.setName(fileName);
                                 newDoc.setUserId(Long.valueOf(userId));
-                                newDoc.setFullPath(fullPath);
+                                newDoc.setFullPath(fullPath+"."+extension);
                                 entityManager.persist(newDoc);
                                 result_future.put("docId", newDoc.getId());
                                 result_future.put("status", "ok");
@@ -163,6 +163,47 @@ public class DocumentsController {
     }
 
 
+
+
+
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    public Result deleteAttatchment(final Http.Request request) throws IOException {  // san parametro pernei to org key
+        ObjectNode result = Json.newObject();
+        try {
+            JsonNode json = request.body().asJson();
+            ObjectMapper ow = new ObjectMapper();
+            CompletableFuture<JsonNode> getFuture = CompletableFuture.supplyAsync(() -> {
+                        return jpaApi.withTransaction(
+                                entityManager -> {
+                                    ObjectNode res = Json.newObject();
+                                    Integer id = json.findPath("id").asInt();
+                                    DocumentsEntity doc = entityManager.find(DocumentsEntity.class,id);
+                                    File dest = new File(uploadPath.concat(doc.getFullPath()));
+                                    dest.delete();
+                                    entityManager.remove(doc);
+                                    res.put("status", "ok");
+                                    res.put("message", "Το εγγραφο διαγράφτηκε με επιτυχία");
+                                    return res;
+                                });
+                    },
+                    executionContext);
+            result = (ObjectNode) getFuture.get();
+            return ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "Πρόβλημα κατά την διαγραφή");
+            return ok(result);
+        }
+    }
+
+
+
+
+
+
+
     @SuppressWarnings({"Duplicates", "unchecked"})
     public Result downloadDocument(final Http.Request request) throws IOException {  // san parametro pernei to org key
         ObjectNode result = Json.newObject();
@@ -170,20 +211,25 @@ public class DocumentsController {
             JsonNode json = request.body().asJson();
             ObjectMapper ow = new ObjectMapper();
             File returnFile;
-            CompletableFuture<File> getFuture = CompletableFuture.supplyAsync(() -> {
+            CompletableFuture<String> getFuture = CompletableFuture.supplyAsync(() -> {
                         return jpaApi.withTransaction(
                                 entityManager -> {
                                     String id = json.findPath("id").asText();
+                                    System.out.println(id);
+
+                                    String sql ="select * from documents d where d.id=" + id;
+                                    System.out.println(sql);
                                     List<DocumentsEntity> docsList
                                             = (List<DocumentsEntity>) entityManager.createNativeQuery(
-                                            "select * from documents d where d.id=" + id, DocumentsEntity.class).getResultList();
-                                    File previewFile = new File(uploadPath + docsList.get(0).getFullPath());
-                                    return previewFile;
+                                            sql, DocumentsEntity.class).getResultList();
+                                    String path = uploadPath + docsList.get(0).getFullPath();
+                                    return path;
                                 });
                     },
                     executionContext);
-            returnFile = getFuture.get();
-            return ok(returnFile);
+            String ret_path = getFuture.get();
+            File previewFile = new File(ret_path);
+            return ok(previewFile);
         } catch (Exception e) {
             e.printStackTrace();
             result.put("status", "error");
