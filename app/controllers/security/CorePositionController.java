@@ -33,6 +33,7 @@ public class CorePositionController {
         this.jpaApi = jpaApi;
         this.executionContext = executionContext;
     }
+
     @SuppressWarnings({"Duplicates", "unchecked"})
     @BodyParser.Of(BodyParser.Json.class)
     public Result addPosition(final Http.Request request) throws IOException {
