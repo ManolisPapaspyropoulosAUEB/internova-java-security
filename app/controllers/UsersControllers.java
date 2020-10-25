@@ -4,16 +4,21 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execution_context.DatabaseExecutionContext;
-import models.DepartmentsEntity;
-import models.OrganizationsEntity;
-import models.RolesEntity;
-import models.UsersEntity;
+import models.*;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import play.api.Configuration;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
 import play.mvc.BodyParser;
 import play.mvc.Http;
 import play.mvc.Result;
+
+import java.io.*;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -39,6 +44,7 @@ public class UsersControllers {
 
     private JPAApi jpaApi;
     private DatabaseExecutionContext executionContext;
+    final static String uploadPath = "D:/developm/internova(Pr)/internova_JAVA_security/uploads/";
 
     @Inject
     public UsersControllers(JPAApi jpaApi, DatabaseExecutionContext executionContext) {
@@ -56,6 +62,7 @@ public class UsersControllers {
                 return badRequest("Expecting Json data");
             } else {
                 try {
+
                     ObjectNode result = Json.newObject();
                     CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
                                 return jpaApi.withTransaction(entityManager -> {
@@ -120,7 +127,8 @@ public class UsersControllers {
                                     user.setStatus(status);
                                     user.setCreationDate(new Date());
                                     entityManager.persist(user);
-                                    add_result.put("status", "ok");
+                                    add_result.put("status", "success");
+                                    add_result.put("userId", user.getUserId());
                                     add_result.put("message", "Η καταχώρηση ολοκληρώθηκε με επιτυχία!");
                                     return add_result;
                                 });
@@ -237,7 +245,7 @@ public class UsersControllers {
                                     user.setDepId(depId);
                                     user.setCreationDate(new Date());
                                     entityManager.merge(user);
-                                    resultfuture.put("status", "ok");
+                                    resultfuture.put("status", "success");
                                     resultfuture.put("message", "Η ενημέρωση πραγματοποιήθηκε με επιτυχία!");
                                     return resultfuture;
                                 });
@@ -284,8 +292,18 @@ public class UsersControllers {
                                     UsersEntity o = entityManager.find(UsersEntity.class, id);
                                     if (o != null) {
                                         entityManager.remove(o);
-                                        result_future.put("status", "ok");
+                                        result_future.put("status", "success");
                                         result_future.put("message", "Η διαγραφή ολοκληρώθηκε με επιτυχία!");
+                                        String filesSql = "select * from documents d where d.user_id="+id;
+                                        List<DocumentsEntity> docsList = (List<DocumentsEntity>)  entityManager.createNativeQuery(filesSql,DocumentsEntity.class).getResultList();
+                                        for(DocumentsEntity doc : docsList){
+                                            entityManager.remove(doc);
+                                            File dest = new File(uploadPath.concat(doc.getFullPath()));//
+                                            dest.delete();
+                                            entityManager.remove(doc);
+                                        }
+                                        File dest = new File(uploadPath.concat("D:/developm/internova(Pr)/internova_JAVA_security/uploads/"+id));
+                                        dest.delete();
                                     } else {
                                         result_future.put("status", "error");
                                         result_future.put("message", "Δεν βρέθηκε σχετικός ρόλος");
@@ -344,7 +362,7 @@ public class UsersControllers {
                                         result_future.put("message", "Προβλημα κατα την ενημερωση");
                                         return result_future;
                                     }
-                                    result_future.put("status", "ok");
+                                    result_future.put("status", "success");
                                     result_future.put("message", "Η αλλαγή κωδικού πραγματοποιήθηκε με επιτυχία!");
                                     return result_future;
                                 });
@@ -506,7 +524,7 @@ public class UsersControllers {
                                             }
                                             returnList_future.put("data", ufinalList);
                                             returnList_future.put("total", usersListAll.size());
-                                            returnList_future.put("status", "ok");
+                                            returnList_future.put("status", "success");
                                             returnList_future.put("message", "success");
                                             return returnList_future;
                                         });

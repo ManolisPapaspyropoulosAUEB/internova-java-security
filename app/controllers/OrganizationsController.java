@@ -54,7 +54,7 @@ public class OrganizationsController {
                                     o.setName(name);
                                     o.setCreationDate(new Date());
                                     entityManager.persist(o);
-                                    result_add_organization.put("status", "ok");
+                                    result_add_organization.put("status", "success");
                                     result_add_organization.put("message", "Η καταχώρηση ολοκληρώθηκε με επιτυχία!");
                                     return result_add_organization;
                                 });
@@ -100,7 +100,7 @@ public class OrganizationsController {
                                     o.setName(name);
                                     o.setUpdateDate(new Date());
                                     entityManager.merge(o);
-                                    update_result.put("status", "ok");
+                                    update_result.put("status", "success");
                                     update_result.put("message", "Η ενημέρωση ολοκληρώθηκε με επιτυχία!");
                                     return update_result;
                                 });
@@ -152,7 +152,7 @@ public class OrganizationsController {
                                     OrganizationsEntity o = entityManager.find(OrganizationsEntity.class, id);
                                     if (o != null) {
                                         entityManager.remove(o);
-                                        delete_result.put("status", "ok");
+                                        delete_result.put("status", "success");
                                         delete_result.put("message", "Η διαγραφή ολοκληρώθηκε με επιτυχία!");
                                     } else {
                                         delete_result.put("status", "error");
@@ -238,7 +238,7 @@ public class OrganizationsController {
                                             }
                                             returnList_future.put("data", serversList);
                                             returnList_future.put("total", orgsListAll.size());
-                                            returnList_future.put("status", "ok");
+                                            returnList_future.put("status", "success");
                                             returnList_future.put("message", "success");
                                             return returnList_future;
                                         });

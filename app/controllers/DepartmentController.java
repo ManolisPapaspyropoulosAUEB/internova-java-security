@@ -49,7 +49,7 @@ public class DepartmentController {
                                     o.setStatus(status);
                                     o.setCreationDate(new Date());
                                     entityManager.persist(o);
-                                    result_add.put("status", "ok");
+                                    result_add.put("status", "success");
                                     result_add.put("message", "Η καταχώρηση ολοκληρώθηκε με επιτυχία!");
                                     return result_add;
                                 });
@@ -97,7 +97,7 @@ public class DepartmentController {
                                     o.setStatus(status);
                                     o.setUpdateDate(new Date());
                                     entityManager.persist(o);
-                                    result_update.put("status", "ok");
+                                    result_update.put("status", "success");
                                     result_update.put("message", "Η ενημέρωση ολοκληρώθηκε με επιτυχία!");
                                     return result_update;
                                 });
@@ -146,7 +146,7 @@ public class DepartmentController {
                                     DepartmentsEntity o = entityManager.find(DepartmentsEntity.class, id);
                                     if (o != null) {
                                         entityManager.remove(o);
-                                        delete_result.put("status", "ok");
+                                        delete_result.put("status", "success");
                                         delete_result.put("message", "Η διαγραφή ολοκληρώθηκε με επιτυχία!");
                                     } else {
                                         delete_result.put("status", "error");
@@ -233,7 +233,7 @@ public class DepartmentController {
                                             }
                                             returnList_future.put("data", serversList);
                                             returnList_future.put("total", posListAll.size());
-                                            returnList_future.put("status", "ok");
+                                            returnList_future.put("status", "success");
                                             returnList_future.put("message", "success");
                                             return returnList_future;
                                         });

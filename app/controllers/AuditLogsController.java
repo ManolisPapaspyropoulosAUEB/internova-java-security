@@ -52,7 +52,7 @@ public class AuditLogsController {
                                     log.setObjectId(objectId);
                                     log.setMessage(message);
                                     entityManager.persist(log);
-                                    add_result.put("status", "ok");
+                                    add_result.put("status", "success");
                                     add_result.put("message", "Επιτυχης καταχωρηση");
                                     return add_result;
                                 });
@@ -106,7 +106,7 @@ public class AuditLogsController {
                                     log.setObjectId(objectId);
                                     log.setMessage(message);
                                     entityManager.merge(log);
-                                    result_update.put("status", "ok");
+                                    result_update.put("status", "success");
                                     result_update.put("message", "Επιτυχης καταχωρηση");
                                     return result_update;
                                 });
@@ -153,7 +153,7 @@ public class AuditLogsController {
                                     AuditLogsEntity log = entityManager.find(AuditLogsEntity.class,id);
                                     if(log!=null){
                                         entityManager.remove(log);
-                                        result_delete.put("status", "ok");
+                                        result_delete.put("status", "success");
                                         result_delete.put("message", "Επιτυχης διαγραφή");
                                     }else{
                                         result_delete.put("status", "error");
@@ -218,7 +218,7 @@ public class AuditLogsController {
                                                 serversList.add(sHmpam);
                                             }
                                             returnList_future.put("data", serversList);
-                                            returnList_future.put("status", "ok");
+                                            returnList_future.put("status", "success");
                                             returnList_future.put("message", "success");
                                             return returnList_future;
                                         });

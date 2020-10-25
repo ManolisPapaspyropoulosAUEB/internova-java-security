@@ -12,6 +12,8 @@ lazy val root = (project in file("."))
       "mysql" % "mysql-connector-java" % "5.1.38",
       "org.hibernate" % "hibernate-core" % "5.4.9.Final",
       javaWs % "test",
+      "org.apache.poi" % "poi" % "3.17",
+      "org.apache.poi" % "poi-ooxml" % "3.17",
       "org.awaitility" % "awaitility" % "4.0.1" % "test",
       "org.assertj" % "assertj-core" % "3.14.0" % "test",
       "org.mockito" % "mockito-core" % "3.1.0" % "test",
@@ -22,3 +24,4 @@ lazy val root = (project in file("."))
     PlayKeys.externalizeResourcesExcludes += baseDirectory.value / "conf" / "META-INF" / "persistence.xml"
   )
 libraryDependencies += guice
+

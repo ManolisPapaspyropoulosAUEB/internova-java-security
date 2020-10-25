@@ -3,54 +3,59 @@
 # ~~~~ GET    /:id                 v1.post.PostController.show(request:Request,id)
 
 # An example controller showing a sample home page
-GET         /                          controllers.HomeController.index
+GET         /                                controllers.HomeController.index
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file              controllers.Assets.versioned(path="/public", file: Asset)
+GET         /assets/*file                    controllers.Assets.versioned(path="/public", file: Asset)
 
 #OrganizationsController
-POST        /addOrganization           controllers.OrganizationsController.addOrganization(req: Request)
-POST        /updateOrganization        controllers.OrganizationsController.updateOrganization(req: Request)
-POST        /getOrganizations          controllers.OrganizationsController.getOrganizations(req: Request)
-POST        /deleteOrganization        controllers.OrganizationsController.deleteOrganization(req: Request)
+POST        /addOrganization                 controllers.OrganizationsController.addOrganization(req: Request)
+POST        /updateOrganization              controllers.OrganizationsController.updateOrganization(req: Request)
+POST        /getOrganizations                controllers.OrganizationsController.getOrganizations(req: Request)
+POST        /deleteOrganization              controllers.OrganizationsController.deleteOrganization(req: Request)
 
 #RolesController
-POST        /addRole                   controllers.RolesController.addRole(req: Request)
-POST        /updateRole                controllers.RolesController.updateRole(req: Request)
-POST        /deleteRole                controllers.RolesController.deleteRole(req: Request)
-POST        /getRoles                  controllers.RolesController.getRoles(req: Request)
+POST        /addRole                         controllers.RolesController.addRole(req: Request)
+POST        /updateRole                      controllers.RolesController.updateRole(req: Request)
+POST        /deleteRole                      controllers.RolesController.deleteRole(req: Request)
+POST        /getRoles                        controllers.RolesController.getRoles(req: Request)
 
 #UsersControllers downloadDocument
-POST        /addUser                   controllers.UsersControllers.addUser(req: Request)
-POST        /updateUser                controllers.UsersControllers.updateUser(req: Request)
-POST        /deleteUser                controllers.UsersControllers.deleteUser(req: Request)
-POST        /getUsers                  controllers.UsersControllers.getUsers(req: Request)
-POST        /updatePassword            controllers.UsersControllers.updatePassword(req: Request)
+POST        /addUser                         controllers.UsersControllers.addUser(req: Request)
+POST        /updateUser                      controllers.UsersControllers.updateUser(req: Request)
+POST        /deleteUser                      controllers.UsersControllers.deleteUser(req: Request)
+POST        /getUsers                        controllers.UsersControllers.getUsers(req: Request)
+POST        /updatePassword                  controllers.UsersControllers.updatePassword(req: Request)
+
+#AuditLogsController
+POST        /addAuditLog                     controllers.AuditLogsController.addAuditLog(req: Request)
+POST        /updateAuditLog                  controllers.AuditLogsController.updateAuditLog(req: Request)
+POST        /deleteLog                       controllers.AuditLogsController.deleteLog(req: Request)
+POST        /getAuditLogs                    controllers.AuditLogsController.getAuditLogs(req: Request)
+
+
 
 
 #AuditLogsController
-POST        /addAuditLog               controllers.AuditLogsController.addAuditLog(req: Request)
-POST        /updateAuditLog            controllers.AuditLogsController.updateAuditLog(req: Request)
-POST        /deleteLog                 controllers.AuditLogsController.deleteLog(req: Request)
-POST        /getAuditLogs              controllers.AuditLogsController.getAuditLogs(req: Request)
+POST        /addDepartment                   controllers.DepartmentController.addDepartment(req: Request)
+POST        /updateDepartment                controllers.DepartmentController.updateDepartment(req: Request)
+POST        /getDepartments                  controllers.DepartmentController.getDepartments(req: Request)
+POST        /deleteDepartment                controllers.DepartmentController.deleteDepartment(req: Request)
+
+
+#DocumentsController
+POST        /getUploadsByUserId              controllers.DocumentsController.getUploadsByUserId(req: Request)
+POST        /uploadFile                      controllers.DocumentsController.uploadFile(req: Request)
+POST        /downloadDocument                controllers.DocumentsController.downloadDocument(req: Request)
+POST        /deleteAttatchment               controllers.DocumentsController.deleteAttatchment(req: Request)
 
 
 
+#PrintsController
 
-#AuditLogsController
-POST        /addDepartment             controllers.DepartmentController.addDepartment(req: Request)
-POST        /updateDepartment          controllers.DepartmentController.updateDepartment(req: Request)
-POST        /getDepartments            controllers.DepartmentController.getDepartments(req: Request)
-POST        /deleteDepartment          controllers.DepartmentController.deleteDepartment(req: Request)
+POST        /exportUsersAsXLS                controllers.SecurityPrintsController.exportUsersAsXLS(req: Request)
+POST        /exportRolesAsXLS                controllers.SecurityPrintsController.exportRolesAsXLS(req: Request)
+POST        /exportDepartmentsAsXLS          controllers.SecurityPrintsController.exportDepartmentsAsXLS(req: Request)
+POST        /exportOrganizationsAsXLS        controllers.SecurityPrintsController.exportOrganizationsAsXLS(req: Request)
+POST        /deleteXLSFromFolder             controllers.SecurityPrintsController.deleteXLSFromFolder(req: Request)
 
-
-#DocumentsController getUploadsByUserId
-#POST        /uploadPhotoTest           controllers.DocumentsController.uploadPhotoTest(req: Request)
-#POST        /getPhotoByRoadId          controllers.DocumentsController.getPhotoByRoadId(req: Request)
-POST        /getUploadsByUserId        controllers.DocumentsController.getUploadsByUserId(req: Request)
-POST        /uploadFile                controllers.DocumentsController.uploadFile(req: Request)
-#POST        /deleteImage               controllers.DocumentsController.deleteImage(req: Request)
-#GET         /downloadFile              controllers.DocumentsController.downloadFile(req: Request)
-#GET         /downloadDocument          controllers.DocumentsController.downloadDocument(req: Request)
-POST        /downloadDocument          controllers.DocumentsController.downloadDocument(req: Request)
-POST        /deleteAttatchment         controllers.DocumentsController.deleteAttatchment(req: Request)

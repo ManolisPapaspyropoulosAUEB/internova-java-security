@@ -33,12 +33,10 @@ public class DocumentsController {
         this.jpaApi = jpaApi;
         this.executionContext = executionContext;
     }
-
     /**
      * created by mpapaspyropoulos
      */
     final static String uploadPath = "D:/developm/internova(Pr)/internova_JAVA_security/uploads/";
-
     @SuppressWarnings("Duplicates")
     public Result uploadFile(final Http.Request request) {
         ObjectNode result = Json.newObject();
@@ -78,7 +76,7 @@ public class DocumentsController {
                                 newDoc.setFullPath(fullPath+"."+extension);
                                 entityManager.persist(newDoc);
                                 result_future.put("docId", newDoc.getId());
-                                result_future.put("status", "ok");
+                                result_future.put("status", "success");
                                 result_future.put("message", "Το έγγραφο ανέβηκε με επιτυχία!");
                                 return result_future;
                             });
@@ -96,7 +94,6 @@ public class DocumentsController {
             return ok(result);
         }
     }
-
 
     @SuppressWarnings({"Duplicates", "unchecked"})
     public Result getUploadsByUserId(final Http.Request request) throws IOException {  // san parametro pernei to org key
@@ -129,12 +126,13 @@ public class DocumentsController {
                                                 HashMap<String, Object> sHmpam = new HashMap<String, Object>();
                                                 sHmpam.put("id", j.getId());
                                                 sHmpam.put("name", j.getName());
+                                                sHmpam.put("originalFilename", j.getOriginalFilename()+"."+j.getExtension());
                                                 sHmpam.put("userId", j.getUserId());
                                                 sHmpam.put("uploadDate", j.getUploadDate());
                                                 serversList.add(sHmpam);
                                             }
                                             returnList_future.put("data", serversList);
-                                            returnList_future.put("status", "ok");
+                                            returnList_future.put("status", "success");
                                             returnList_future.put("message", "success");
                                             return returnList_future;
                                         });
@@ -162,11 +160,6 @@ public class DocumentsController {
         }
     }
 
-
-
-
-
-
     @SuppressWarnings({"Duplicates", "unchecked"})
     public Result deleteAttatchment(final Http.Request request) throws IOException {  // san parametro pernei to org key
         ObjectNode result = Json.newObject();
@@ -182,7 +175,7 @@ public class DocumentsController {
                                     File dest = new File(uploadPath.concat(doc.getFullPath()));
                                     dest.delete();
                                     entityManager.remove(doc);
-                                    res.put("status", "ok");
+                                    res.put("status", "success");
                                     res.put("message", "Το εγγραφο διαγράφτηκε με επιτυχία");
                                     return res;
                                 });
@@ -197,12 +190,6 @@ public class DocumentsController {
             return ok(result);
         }
     }
-
-
-
-
-
-
 
     @SuppressWarnings({"Duplicates", "unchecked"})
     public Result downloadDocument(final Http.Request request) throws IOException {  // san parametro pernei to org key

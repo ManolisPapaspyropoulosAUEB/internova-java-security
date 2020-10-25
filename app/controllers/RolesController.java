@@ -58,7 +58,7 @@ public class RolesController {
                                     role.setStatus(status);
                                     role.setCreationDate(new Date());
                                     entityManager.persist(role);
-                                    add_result.put("status", "ok");
+                                    add_result.put("status", "success");
                                     add_result.put("message", "Η ενημέρωση ολοκληρώθηκε με επιτυχία!");
                                     return add_result;
                                 });
@@ -108,7 +108,7 @@ public class RolesController {
                                     role.setStatus(status);
                                     role.setUpdateTime(new Date());
                                     entityManager.merge(role);
-                                    result_update.put("status", "ok");
+                                    result_update.put("status", "success");
                                     result_update.put("message", "Η ενημέρωση ολοκληρώθηκε με επιτυχία!");
                                     return result_update;
                                 });
@@ -159,7 +159,7 @@ public class RolesController {
                                     RolesEntity o = entityManager.find(RolesEntity.class, id);
                                     if (o != null) {
                                         entityManager.remove(o);
-                                        result_delete.put("status", "ok");
+                                        result_delete.put("status", "success");
                                         result_delete.put("message", "Η διαγραφή ολοκληρώθηκε με επιτυχία!");
                                     } else {
                                         result_delete.put("status", "error");
@@ -252,7 +252,7 @@ public class RolesController {
                                             }
                                             returnList_future.put("data", serversList);
                                             returnList_future.put("total", rolesListAll.size());
-                                            returnList_future.put("status", "ok");
+                                            returnList_future.put("status", "success");
                                             returnList_future.put("message", "success");
                                             return returnList_future;
                                         });

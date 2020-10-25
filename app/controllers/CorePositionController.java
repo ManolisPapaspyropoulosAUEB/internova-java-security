@@ -53,7 +53,7 @@ public class CorePositionController {
                                     o.setRoleId(roleId);
                                     o.setCreationDate(new Date());
                                     entityManager.persist(o);
-                                    result_add.put("status", "ok");
+                                    result_add.put("status", "success");
                                     result_add.put("message", "Η καταχώρηση ολοκληρώθηκε με επιτυχία!");
                                     return result_add;
                                 });
@@ -101,7 +101,7 @@ public class CorePositionController {
                                     o.setRoleId(roleId);
                                     o.setUpdateDate(new Date());
                                     entityManager.persist(o);
-                                    update_result.put("status", "ok");
+                                    update_result.put("status", "success");
                                     update_result.put("message", "Η ενημέρωση ολοκληρώθηκε με επιτυχία!");
                                     return update_result;
                                 });
@@ -150,7 +150,7 @@ public class CorePositionController {
                                     CorePositionEntity o = entityManager.find(CorePositionEntity.class, id);
                                     if (o != null) {
                                         entityManager.remove(o);
-                                        delete_result.put("status", "ok");
+                                        delete_result.put("status", "success");
                                         delete_result.put("message", "Η διαγραφή ολοκληρώθηκε με επιτυχία!");
                                     } else {
                                         delete_result.put("status", "error");
@@ -236,7 +236,7 @@ public class CorePositionController {
                                             }
                                             returnList_future.put("data", serversList);
                                             returnList_future.put("total", posListAll.size());
-                                            returnList_future.put("status", "ok");
+                                            returnList_future.put("status", "success");
                                             returnList_future.put("message", "success");
                                             return returnList_future;
                                         });
