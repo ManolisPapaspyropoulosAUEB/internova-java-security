@@ -1,14 +1,19 @@
-package controllers;
+package controllers.security;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execution_context.DatabaseExecutionContext;
-import models.*;
+import models.CorePositionEntity;
+import models.OrganizationsEntity;
+import models.RolesEntity;
+import models.UsersEntity;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
 import play.mvc.BodyParser;
 import play.mvc.Http;
 import play.mvc.Result;
+
 import javax.inject.Inject;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -20,18 +25,17 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
-public class DepartmentController {
+public class CorePositionController {
     private JPAApi jpaApi;
     private DatabaseExecutionContext executionContext;
     @Inject
-    public DepartmentController(JPAApi jpaApi, DatabaseExecutionContext executionContext)
-    {
+    public CorePositionController(JPAApi jpaApi, DatabaseExecutionContext executionContext) {
         this.jpaApi = jpaApi;
         this.executionContext = executionContext;
     }
     @SuppressWarnings({"Duplicates", "unchecked"})
     @BodyParser.Of(BodyParser.Json.class)
-    public Result addDepartment(final Http.Request request) throws IOException {
+    public Result addPosition(final Http.Request request) throws IOException {
         try {
             JsonNode json = request.body().asJson();
             if (json == null) {
@@ -42,11 +46,11 @@ public class DepartmentController {
                     CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
                                 return jpaApi.withTransaction(entityManager -> {
                                     ObjectNode result_add = Json.newObject();
-                                    String department = json.findPath("department").asText();
-                                    Integer status = json.findPath("status").asInt();
-                                    DepartmentsEntity o = new DepartmentsEntity();
-                                    o.setDepartment(department);
-                                    o.setStatus(status);
+                                    String position = json.findPath("position").asText();
+                                    Long roleId = json.findPath("roleId").asLong();
+                                    CorePositionEntity o = new CorePositionEntity();
+                                    o.setPosition(position);
+                                    o.setRoleId(roleId);
                                     o.setCreationDate(new Date());
                                     entityManager.persist(o);
                                     result_add.put("status", "success");
@@ -78,7 +82,7 @@ public class DepartmentController {
 
     @SuppressWarnings({"Duplicates", "unchecked"})
     @BodyParser.Of(BodyParser.Json.class)
-    public Result updateDepartment(final Http.Request request) throws IOException {
+    public Result updatePosition(final Http.Request request) throws IOException {
         try {
             JsonNode json = request.body().asJson();
             if (json == null) {
@@ -88,18 +92,18 @@ public class DepartmentController {
                     ObjectNode result = Json.newObject();
                     CompletableFuture<JsonNode> updateFuture = CompletableFuture.supplyAsync(() -> {
                                 return jpaApi.withTransaction(entityManager -> {
-                                    ObjectNode result_update = Json.newObject();
-                                    String department = json.findPath("department").asText();
+                                    ObjectNode update_result = Json.newObject();
+                                    String position = json.findPath("position").asText();
+                                    Long roleId = json.findPath("roleId").asLong();
                                     Long id = json.findPath("id").asLong();
-                                    Integer status = json.findPath("status").asInt();
-                                    DepartmentsEntity o =entityManager.find(DepartmentsEntity.class,id);
-                                    o.setDepartment(department);
-                                    o.setStatus(status);
+                                    CorePositionEntity o = entityManager.find(CorePositionEntity.class,id);
+                                    o.setPosition(position);
+                                    o.setRoleId(roleId);
                                     o.setUpdateDate(new Date());
                                     entityManager.persist(o);
-                                    result_update.put("status", "success");
-                                    result_update.put("message", "Η ενημέρωση ολοκληρώθηκε με επιτυχία!");
-                                    return result_update;
+                                    update_result.put("status", "success");
+                                    update_result.put("message", "Η ενημέρωση ολοκληρώθηκε με επιτυχία!");
+                                    return update_result;
                                 });
                             },
                             executionContext);
@@ -124,7 +128,7 @@ public class DepartmentController {
 
     @SuppressWarnings({"Duplicates", "unchecked"})
     @BodyParser.Of(BodyParser.Json.class)
-    public Result deleteDepartment(final Http.Request request) throws IOException {
+    public Result deletePosition(final Http.Request request) throws IOException {
         try {
             JsonNode json = request.body().asJson();
             if (json == null) {
@@ -136,14 +140,14 @@ public class DepartmentController {
                                 return jpaApi.withTransaction(entityManager -> {
                                     ObjectNode delete_result = Json.newObject();
                                     Long id = json.findPath("id").asLong();
-                                    String checkIfUsedSql = "select * from users r where r.dep_id=" + id;
-                                    List<UsersEntity> usersEntityList = (List<UsersEntity>) entityManager.createNativeQuery(checkIfUsedSql, UsersEntity.class).getResultList();
-                                    if (usersEntityList.size() > 0) {
+                                    String checkIfUsedSql = "select * from roles r where r.role_id=" + id;
+                                    List<RolesEntity> rolesEntityList = (List<RolesEntity>) entityManager.createNativeQuery(checkIfUsedSql, RolesEntity.class).getResultList();
+                                    if (rolesEntityList.size() > 0) {
                                         delete_result.put("status", "error");
                                         delete_result.put("message", "Βρέθηκαν συνδεδεμένες εγγραφές");
                                         return delete_result;
                                     }
-                                    DepartmentsEntity o = entityManager.find(DepartmentsEntity.class, id);
+                                    CorePositionEntity o = entityManager.find(CorePositionEntity.class, id);
                                     if (o != null) {
                                         entityManager.remove(o);
                                         delete_result.put("status", "success");
@@ -179,7 +183,7 @@ public class DepartmentController {
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
-    public Result getDepartments(final Http.Request request) throws IOException {
+    public Result getPositions(final Http.Request request) throws IOException {  // san parametro pernei to org key
         ObjectNode result = Json.newObject();
         try {
             JsonNode json = request.body().asJson();
@@ -197,20 +201,20 @@ public class DepartmentController {
                     CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
                                 return jpaApi.withTransaction(
                                         entityManager -> {
-                                            String department = json.findPath("department").asText();
+                                            String position = json.findPath("position").asText();
                                             String creationDate = json.findPath("creationDate").asText();
                                             String start = json.findPath("start").asText();
                                             String limit = json.findPath("limit").asText();
-                                            String sqlOrgs = "select * from departments depa where 1=1 ";
-                                            if(!department.equalsIgnoreCase("") && department!=null){
-                                                sqlOrgs+=" and depa.department like '%"+department+"%'";
+                                            String sqlOrgs = "select * from core_position pos where 1=1 ";
+                                            if(!position.equalsIgnoreCase("") && position!=null){
+                                                sqlOrgs+=" and pos.position like '%"+position+"%'";
                                             }
                                             if(!creationDate.equalsIgnoreCase("") && creationDate!=null){
                                                 sqlOrgs += " and SUBSTRING( orgs.creation_date, 1, 10)  = '" + creationDate + "'";
                                             }
-                                            List<DepartmentsEntity> posListAll
-                                                    = (List<DepartmentsEntity>) entityManager.createNativeQuery(
-                                                    sqlOrgs, DepartmentsEntity.class).getResultList();
+                                            List<CorePositionEntity> posListAll
+                                                    = (List<CorePositionEntity>) entityManager.createNativeQuery(
+                                                    sqlOrgs, CorePositionEntity.class).getResultList();
                                             sqlOrgs+="order by creation_date desc";
                                             if (!start.equalsIgnoreCase("") && start != null) {
                                                 sqlOrgs += " limit " + start + "," + limit;
@@ -218,14 +222,13 @@ public class DepartmentController {
                                             System.out.println(sqlOrgs);
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             List<HashMap<String, Object>> serversList = new ArrayList<HashMap<String, Object>>();
-                                            List<DepartmentsEntity> posList
-                                                    = (List<DepartmentsEntity>) entityManager.createNativeQuery(
-                                                    sqlOrgs, DepartmentsEntity.class).getResultList();
-                                            for (DepartmentsEntity j : posList) {
+                                            List<CorePositionEntity> posList
+                                                    = (List<CorePositionEntity>) entityManager.createNativeQuery(
+                                                    sqlOrgs, OrganizationsEntity.class).getResultList();
+                                            for (CorePositionEntity j : posList) {
                                                 HashMap<String, Object> sHmpam = new HashMap<String, Object>();
-                                                sHmpam.put("department", j.getDepartment());
-                                                sHmpam.put("name", j.getDepartment());
-                                                sHmpam.put("status", j.getStatus());
+                                                sHmpam.put("position", j.getPosition());
+                                                sHmpam.put("roleId", j.getRoleId());
                                                 sHmpam.put("creationDate", j.getCreationDate());
                                                 sHmpam.put("updateDate", j.getUpdateDate());
                                                 sHmpam.put("id", j.getId());
