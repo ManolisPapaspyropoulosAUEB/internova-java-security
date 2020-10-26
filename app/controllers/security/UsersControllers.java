@@ -246,6 +246,7 @@ public class UsersControllers {
                                     user.setCreationDate(new Date());
                                     entityManager.merge(user);
                                     resultfuture.put("status", "success");
+                                    resultfuture.put("userId", user.getUserId());
                                     resultfuture.put("message", "Η ενημέρωση πραγματοποιήθηκε με επιτυχία!");
                                     return resultfuture;
                                 });

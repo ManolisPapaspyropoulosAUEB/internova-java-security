@@ -33,9 +33,8 @@ public class DocumentsController {
         this.jpaApi = jpaApi;
         this.executionContext = executionContext;
     }
-    /**
-     * created by mpapaspyropoulos
-     */
+
+
     final static String uploadPath = "D:/developm/internova(Pr)/internova_JAVA_security/uploads/";
     @SuppressWarnings("Duplicates")
     public Result uploadFile(final Http.Request request) {
@@ -43,9 +42,15 @@ public class DocumentsController {
         try {
             Http.MultipartFormData<TemporaryFile> body = request.body().asMultipartFormData();
             Http.MultipartFormData.FilePart<TemporaryFile> tempFile = body.getFile("file");
-            String userId;
+
+            String id;
+            String system;
+
+
+
             try {
-                userId = body.asFormUrlEncoded().get("userId")[0].trim();
+                id = body.asFormUrlEncoded().get("id")[0].trim();
+                system = body.asFormUrlEncoded().get("system")[0].trim();
             } catch (NullPointerException e) {
                 result.put("status", "error");
                 return ok(result);
@@ -58,12 +63,12 @@ public class DocumentsController {
                 String extension = fileNameArr[1];
                 String originalFileName = fileNameArr[0];
                 String fileName_random = fileNameArr[0] + "_" + rand.nextInt(1000);
-                String fullPath = userId + "/" + fileName_random;
-                File uploadsDir = new File(ConfigFactory.load().getString("uploads_dir") + "/" + userId);
+                String fullPath = id + "/" + fileName_random;
+                File uploadsDir = new File(ConfigFactory.load().getString("uploads_dir") + "/"+system+"/"+ id);
                 if (!uploadsDir.exists()) {
                     uploadsDir.mkdirs();
                 }
-                file.copyTo(Paths.get(uploadPath + userId + "/" + fileName_random + "." + extension), true);
+                file.copyTo(Paths.get(uploadPath + system + "/"+id+"/" + fileName_random + "." + extension), true);
                 CompletableFuture<JsonNode> newDbEntryFile = CompletableFuture.supplyAsync(() -> {
                             return jpaApi.withTransaction(entityManager -> {
                                 ObjectNode result_future = Json.newObject();
@@ -72,8 +77,9 @@ public class DocumentsController {
                                 newDoc.setOriginalFilename(originalFileName);
                                 newDoc.setExtension(extension);
                                 newDoc.setUploadDate(new Date());
-                                newDoc.setUserId(Long.valueOf(userId));
-                                newDoc.setFullPath(fullPath+"."+extension);
+                                newDoc.setSubFolderId(Long.valueOf(id));
+                                newDoc.setSystem(system);
+                                newDoc.setFullPath(system+"/"+fullPath+"."+extension);
                                 entityManager.persist(newDoc);
                                 result_future.put("docId", newDoc.getId());
                                 result_future.put("status", "success");
@@ -95,8 +101,78 @@ public class DocumentsController {
         }
     }
 
+
+
+
+
+
+
+
+
+//    final static String uploadPath = "D:/developm/internova(Pr)/internova_JAVA_security/uploads/";
+//    @SuppressWarnings("Duplicates")
+//    public Result uploadFile(final Http.Request request) {
+//        ObjectNode result = Json.newObject();
+//        try {
+//            Http.MultipartFormData<TemporaryFile> body = request.body().asMultipartFormData();
+//            Http.MultipartFormData.FilePart<TemporaryFile> tempFile = body.getFile("file");
+//            String userId;
+//
+//
+//
+//            try {
+//                userId = body.asFormUrlEncoded().get("userId")[0].trim();
+//            } catch (NullPointerException e) {
+//                result.put("status", "error");
+//                return ok(result);
+//            }
+//            Random rand = new Random();
+//            if (tempFile != null) {
+//                String fileName = tempFile.getFilename();
+//                TemporaryFile file = tempFile.getRef();
+//                String[] fileNameArr = fileName.split("\\.");
+//                String extension = fileNameArr[1];
+//                String originalFileName = fileNameArr[0];
+//                String fileName_random = fileNameArr[0] + "_" + rand.nextInt(1000);
+//                String fullPath = userId + "/" + fileName_random;
+//                File uploadsDir = new File(ConfigFactory.load().getString("uploads_dir") + "/" + userId);
+//                if (!uploadsDir.exists()) {
+//                    uploadsDir.mkdirs();
+//                }
+//                file.copyTo(Paths.get(uploadPath + userId + "/" + fileName_random + "." + extension), true);
+//                CompletableFuture<JsonNode> newDbEntryFile = CompletableFuture.supplyAsync(() -> {
+//                            return jpaApi.withTransaction(entityManager -> {
+//                                ObjectNode result_future = Json.newObject();
+//                                DocumentsEntity newDoc = new DocumentsEntity();
+//                                newDoc.setName(fileName_random);
+//                                newDoc.setOriginalFilename(originalFileName);
+//                                newDoc.setExtension(extension);
+//                                newDoc.setUploadDate(new Date());
+//                                newDoc.setUserId(Long.valueOf(userId));
+//                                newDoc.setFullPath(fullPath+"."+extension);
+//                                entityManager.persist(newDoc);
+//                                result_future.put("docId", newDoc.getId());
+//                                result_future.put("status", "success");
+//                                result_future.put("message", "Το έγγραφο ανέβηκε με επιτυχία!");
+//                                return result_future;
+//                            });
+//                        },
+//                        executionContext);
+//                result = (ObjectNode) newDbEntryFile.get();
+//                return ok("File uploaded");
+//            } else {
+//                return badRequest().flashing("error", "Missing file");
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            result.put("status", "error");
+//            result.put("message", "Πρόβλημα κατά το ανέβασμα αρχείου διαγραφή .");
+//            return ok(result);
+//        }
+//    }
+
     @SuppressWarnings({"Duplicates", "unchecked"})
-    public Result getUploadsByUserId(final Http.Request request) throws IOException {  // san parametro pernei to org key
+    public Result getUploadsBySystemId(final Http.Request request) throws IOException {  // san parametro pernei to org key
         ObjectNode result = Json.newObject();
         try {
             JsonNode json = request.body().asJson();
@@ -104,7 +180,8 @@ public class DocumentsController {
                 return badRequest("Expecting Json data");
             } else {
                 System.out.println(json.findPath("userId"));
-                if (json.findPath("userId").asText() == null || json.findPath("userId").asText().equalsIgnoreCase("")) {
+                if ((json.findPath("system").asText() == null || json.findPath("system").asText().equalsIgnoreCase(""))
+                || (json.findPath("subFolderId").asText() == null || json.findPath("subFolderId").asText().equalsIgnoreCase(""))) {
                     result.put("status", "error");
                     result.put("message", "Δεν εχετε αποστειλει εγκυρα δεδομενα.");
                     return ok(result);
@@ -118,10 +195,11 @@ public class DocumentsController {
                                         entityManager -> {
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             List<HashMap<String, Object>> serversList = new ArrayList<HashMap<String, Object>>();
-                                            String userId = json.findPath("userId").asText();
+                                            String system = json.findPath("system").asText();
+                                            String subFolderId = json.findPath("subFolderId").asText();
                                             List<DocumentsEntity> orgsList
                                                     = (List<DocumentsEntity>) entityManager.createNativeQuery(
-                                                    "select * from documents d where d.user_id=" + userId, DocumentsEntity.class).getResultList();
+                                                    "select * from documents d where d.sub_folder_id=" + subFolderId +" and d.system="+"'"+system+"'", DocumentsEntity.class).getResultList();
                                             for (DocumentsEntity j : orgsList) {
                                                 HashMap<String, Object> sHmpam = new HashMap<String, Object>();
                                                 sHmpam.put("id", j.getId());

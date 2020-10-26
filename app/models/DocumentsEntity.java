@@ -15,6 +15,8 @@ public class DocumentsEntity {
     private String fullPath;
     private Long userId;
     private String originalFilename;
+    private Long subFolderId;
+    private String system;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -104,5 +106,25 @@ public class DocumentsEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, extension, uploadDate, fullPath, userId, originalFilename);
+    }
+
+    @Basic
+    @Column(name = "sub_folder_id")
+    public Long getSubFolderId() {
+        return subFolderId;
+    }
+
+    public void setSubFolderId(Long subFolderId) {
+        this.subFolderId = subFolderId;
+    }
+
+    @Basic
+    @Column(name = "system")
+    public String getSystem() {
+        return system;
+    }
+
+    public void setSystem(String system) {
+        this.system = system;
     }
 }

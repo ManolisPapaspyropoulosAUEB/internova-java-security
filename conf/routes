@@ -41,18 +41,26 @@ POST        /deleteDepartment                controllers.security.DepartmentCont
 
 
 #DocumentsController
-POST        /getUploadsByUserId              controllers.documents.DocumentsController.getUploadsByUserId(req: Request)
+POST        /getUploadsBySystemId            controllers.documents.DocumentsController.getUploadsBySystemId(req: Request)
 POST        /uploadFile                      controllers.documents.DocumentsController.uploadFile(req: Request)
 POST        /downloadDocument                controllers.documents.DocumentsController.downloadDocument(req: Request)
 POST        /deleteAttatchment               controllers.documents.DocumentsController.deleteAttatchment(req: Request)
 
 
 
-#PrintsController
-
+#SecurityPrintsController
 POST        /exportUsersAsXLS                controllers.security.SecurityPrintsController.exportUsersAsXLS(req: Request)
 POST        /exportRolesAsXLS                controllers.security.SecurityPrintsController.exportRolesAsXLS(req: Request)
 POST        /exportDepartmentsAsXLS          controllers.security.SecurityPrintsController.exportDepartmentsAsXLS(req: Request)
 POST        /exportOrganizationsAsXLS        controllers.security.SecurityPrintsController.exportOrganizationsAsXLS(req: Request)
 POST        /deleteXLSFromFolder             controllers.security.SecurityPrintsController.deleteXLSFromFolder(req: Request)
 
+#WarehousesController
+POST        /addWarehouse                    controllers.archives.WarehousesController.addWarehouse(req: Request)
+POST        /getWarehouses                   controllers.archives.WarehousesController.getWarehouses(req: Request)
+POST        /updateWarehouse                 controllers.archives.WarehousesController.updateWarehouse(req: Request)
+POST        /deleteWarehouse                 controllers.archives.WarehousesController.deleteWarehouse(req: Request)
+
+#WarehousesPrintController
+POST        /exportWarehousesAsXLS           controllers.archives.ArchivesPrintController.exportWarehousesAsXLS(req: Request)
+POST        /deleteXLSFromFolder             controllers.archives.ArchivesPrintController.deleteXLSFromFolder(req: Request)
