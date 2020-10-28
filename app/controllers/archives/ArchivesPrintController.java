@@ -126,6 +126,99 @@ public class ArchivesPrintController {
 
 
 
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    public Result exportFactoriesAsXLS(final Http.Request request) throws IOException {  // san parametro pernei to org key
+        ObjectNode result = Json.newObject();
+        try {
+            JsonNode json = request.body().asJson();
+            if (json == null) {
+                return badRequest("Expecting Json data");
+            } else {
+                if (json == null) {
+                    result.put("status", "error");
+                    result.put("message", "Δεν εχετε αποστειλει εγκυρα δεδομενα.");
+                    return ok(result);
+                } else {
+                    ObjectMapper ow = new ObjectMapper();
+                    String jsonResult = "";
+                    CompletableFuture<String> createXLSResult = CompletableFuture.supplyAsync(() -> {
+                                return jpaApi.withTransaction(
+                                        entityManager -> {
+                                            ObjectNode resultNode = Json.newObject();
+                                            String random_id = json.findPath("random_id").asText();
+                                            Random rand = new Random();
+                                            String filename = "D:/developm/internova(Pr)/internova_JAVA_security/app/reports/users" + random_id + ".xls";
+                                            HSSFWorkbook workbook = new HSSFWorkbook();
+                                            HSSFSheet sheet = workbook.createSheet("FirstSheet");
+                                            HSSFRow rowhead = sheet.createRow((short) 0);
+                                            rowhead.createCell((short) 0).setCellValue("FACTORY_ID");
+                                            rowhead.createCell((short) 1).setCellValue("ΕΠΩΝΥΜΙΑ");
+                                            rowhead.createCell((short) 2).setCellValue("ΥΠΕΥΘΥΝΟΣ");
+                                            rowhead.createCell((short) 3).setCellValue("ΔΙΕΥΘΥΝΣΗ");
+                                            rowhead.createCell((short) 4).setCellValue("ΤΗΛΕΦΩΝΟ");
+                                            rowhead.createCell((short) 5).setCellValue("ΕΜΑΙΛ");
+                                            rowhead.createCell((short) 6).setCellValue("Τ.Κ");
+                                            rowhead.createCell((short) 7).setCellValue("ΠΟΛΗ");
+                                            rowhead.createCell((short) 8).setCellValue("ΠΕΡΙΟΧΗ");
+                                            rowhead.createCell((short) 9).setCellValue("ΣΧΟΛΙΑ");
+                                            rowhead.createCell((short) 10).setCellValue("ΗΜΕΡΕΣ ΠΟΥ ΧΡΕΙΑΖΟΝΤΑΙ ΓΙΑ ΤΟ ΡΑΝΤΕΒΟΥ");
+                                            rowhead.createCell((short) 11).setCellValue("ΧΩΡΑ");
+                                            rowhead.createCell((short) 12).setCellValue("ΗΜΕΡΟΜΗΝΙΑ ΔΗΜΙΟΥΡΓΙΑΣ");
+                                            String sql = "select * from factories f ";
+                                            List<FactoriesEntity> factoriesEntityList = (List<FactoriesEntity>)
+                                                    entityManager.createNativeQuery(sql, FactoriesEntity.class).getResultList();
+                                            for (int i = 0; i < factoriesEntityList.size(); i++) {
+                                                HSSFRow row = sheet.createRow((short) i + 1);
+                                                row.createCell((short) 0).setCellValue(factoriesEntityList.get(i).getId());
+                                                row.createCell((short) 1).setCellValue(factoriesEntityList.get(i).getBrandName());
+                                                row.createCell((short) 2).setCellValue(factoriesEntityList.get(i).getEmail());
+                                                row.createCell((short) 3).setCellValue(factoriesEntityList.get(i).getManager());
+                                                row.createCell((short) 4).setCellValue(factoriesEntityList.get(i).getAddress());
+                                                row.createCell((short) 5).setCellValue(factoriesEntityList.get(i).getEmail());
+                                                row.createCell((short) 6).setCellValue(factoriesEntityList.get(i).getPostalCode());
+                                                row.createCell((short) 7).setCellValue(factoriesEntityList.get(i).getCity());
+                                                row.createCell((short) 8).setCellValue(factoriesEntityList.get(i).getRegion());
+                                                row.createCell((short) 9).setCellValue(factoriesEntityList.get(i).getComments());
+                                                row.createCell((short) 10).setCellValue(factoriesEntityList.get(i).getAppointmentDays());
+                                                row.createCell((short) 11).setCellValue(factoriesEntityList.get(i).getCountry());
+                                                DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                                                String creationDateString = myDateFormat.format(factoriesEntityList.get(i).getCreationDate());
+                                                row.createCell((short) 12).setCellValue(creationDateString);
+                                            }
+                                            for (int col = 0; col < 13; col++) {
+                                                sheet.autoSizeColumn(col);
+                                            }
+                                            FileOutputStream fileOut = null;
+                                            try {
+                                                fileOut = new FileOutputStream(filename);
+                                                workbook.write(fileOut);
+                                                fileOut.close();
+                                                return filename;
+                                            } catch (FileNotFoundException e) {
+                                                e.printStackTrace();
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
+                                            resultNode.put("message", "success");
+                                            return filename;
+                                        });
+                            },
+                            executionContext);
+                    String ret_path = createXLSResult.get();
+                    File previewFile = new File(ret_path);
+                    return ok(previewFile);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων");
+            return ok(result);
+        }
+    }
+
+
+
 
 
 

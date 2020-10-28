@@ -3,7 +3,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execution_context.DatabaseExecutionContext;
-import models.OrganizationsEntity;
 import models.WarehousesEntity;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
@@ -326,20 +325,4 @@ public class WarehousesController {
             return ok(result);
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

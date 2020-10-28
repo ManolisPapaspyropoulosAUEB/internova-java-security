@@ -1,0 +1,3 @@
+155.138.208.183
+
+sudo prosodyctl register manospap 155.138.208.183  123456

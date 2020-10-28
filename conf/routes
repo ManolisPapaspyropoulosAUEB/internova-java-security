@@ -64,3 +64,31 @@ POST        /deleteWarehouse                 controllers.archives.WarehousesCont
 #WarehousesPrintController
 POST        /exportWarehousesAsXLS           controllers.archives.ArchivesPrintController.exportWarehousesAsXLS(req: Request)
 POST        /deleteXLSFromFolder             controllers.archives.ArchivesPrintController.deleteXLSFromFolder(req: Request)
+POST        /exportFactoriesAsXLS            controllers.archives.ArchivesPrintController.exportFactoriesAsXLS(req: Request)
+
+
+
+#FactoriesController
+POST        /getFactories                    controllers.archives.FactoriesController.getFactories(req: Request)
+POST        /addFactory                      controllers.archives.FactoriesController.addFactory(req: Request)
+POST        /updateFactory                   controllers.archives.FactoriesController.updateFactory(req: Request)
+POST        /deleteFactory                   controllers.archives.FactoriesController.deleteFactory(req: Request)
+
+
+
+
+
+
+#FactoriesPrintController
+
+
+
+
+
+
+
+
+
+
+
+
