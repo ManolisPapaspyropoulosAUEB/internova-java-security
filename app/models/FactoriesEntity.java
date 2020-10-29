@@ -28,6 +28,7 @@ public class FactoriesEntity {
     private String country;
     private Double longtitude;
     private Double lattitude;
+    private Byte appointmentRequired;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -250,5 +251,15 @@ public class FactoriesEntity {
 
     public void setLattitude(Double lattitude) {
         this.lattitude = lattitude;
+    }
+
+    @Basic
+    @Column(name = "appointment_required")
+    public Byte getAppointmentRequired() {
+        return appointmentRequired;
+    }
+
+    public void setAppointmentRequired(Byte appointmentRequired) {
+        this.appointmentRequired = appointmentRequired;
     }
 }

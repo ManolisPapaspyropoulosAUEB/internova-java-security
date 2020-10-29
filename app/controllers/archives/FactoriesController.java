@@ -1,10 +1,8 @@
 package controllers.archives;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execution_context.DatabaseExecutionContext;
-import models.CorePositionEntity;
 import models.FactoriesEntity;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
@@ -48,7 +46,7 @@ public class FactoriesController {
                     String jsonResult = "";
                     CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
                                 return jpaApi.withTransaction(
-                                        entityManager -> {
+                                        entityManager -> {//appointmentRequired
                                             String id = json.findPath("id").asText();
                                             String factoryId = json.findPath("factoryId").asText();
                                             String address = json.findPath("address").asText();
@@ -118,6 +116,7 @@ public class FactoriesController {
                                                 sHmpam.put("brandName", j.getBrandName());
                                                 sHmpam.put("city", j.getCity());
                                                 sHmpam.put("creationDate", j.getCreationDate());
+                                                sHmpam.put("appointmentRequired", j.getAppointmentRequired());
                                                 sHmpam.put("email", j.getEmail());
                                                 sHmpam.put("comments", j.getComments());
                                                 sHmpam.put("id", j.getId());
@@ -127,15 +126,19 @@ public class FactoriesController {
                                                 sHmpam.put("region", j.getRegion());
                                                 sHmpam.put("telephone", j.getTelephone());
                                                 sHmpam.put("updateDate", j.getUpdateDate());
-                                                sHmpam.put("schedule", j.getSchedule());
-                                                sHmpam.put("longtitude", j.getLongtitude());
-                                                sHmpam.put("lattitude", j.getLattitude());
+                                                sHmpam.put("longitude", j.getLongtitude());
+                                                sHmpam.put("latitude", j.getLattitude());
                                                 sHmpam.put("schedule", j.getSchedule());
                                                 sHmpam.put("country", j.getCountry());
                                                 sHmpam.put("site", j.getSite());
                                                 sHmpam.put("coordinates", j.getCoordinates());
                                                 sHmpam.put("unloadingLoadingCode", j.getUnloadingLoadingCode());
                                                 sHmpam.put("appointmentDays", j.getAppointmentDays());
+                                                if(j.getAppointmentRequired()==1){
+                                                    sHmpam.put("appointmentRequired", j.getAppointmentRequired());
+                                                }else{
+                                                    sHmpam.put("appointmentRequired", j.getAppointmentRequired());
+                                                }
                                                 filalist.add(sHmpam);
                                             }
                                             returnList_future.put("data", filalist);
@@ -192,13 +195,12 @@ public class FactoriesController {
                                     String region = json.findPath("region").asText();
                                     String manager = json.findPath("manager").asText();
                                     String country = json.findPath("country").asText();
-                                    Double longtitude = json.findPath("longtitude").asDouble();
-                                    Double lattitude = json.findPath("lattitude").asDouble();
-
-
-
+                                    String comments = json.findPath("comments").asText();
+                                    Double longtitude = json.findPath("longitude").asDouble();
+                                    Double lattitude = json.findPath("latitude").asDouble();
                                     String schedule = json.findPath("schedule").asText();
-                                    String site = json.findPath("site").asText();
+                                    String site = json.findPath("site").asText();//appointmentRequired
+                                    boolean appointmentRequired = json.findPath("appointmentRequired").asBoolean();//appointmentRequired
                                     String coordinates = json.findPath("coordinates").asText();
                                     String unloadingLoadingCode = json.findPath("unloadingLoadingCode").asText();
                                     Integer appointmentDays = json.findPath("appointmentDays").asInt();
@@ -215,16 +217,20 @@ public class FactoriesController {
                                     factoriesEntity.setSchedule(schedule);
                                     factoriesEntity.setSite(site);
                                     factoriesEntity.setCountry(country);
+                                    factoriesEntity.setComments(comments);
                                     factoriesEntity.setCoordinates(coordinates);
                                     factoriesEntity.setUnloadingLoadingCode(unloadingLoadingCode);
                                     factoriesEntity.setAppointmentDays(appointmentDays);
-
                                     factoriesEntity.setLattitude(lattitude);
                                     factoriesEntity.setLongtitude(longtitude);
-
+                                    if(appointmentRequired){
+                                        factoriesEntity.setAppointmentRequired((byte) 1);
+                                    }else{
+                                        factoriesEntity.setAppointmentRequired((byte) 0);
+                                    }
                                     entityManager.persist(factoriesEntity);
                                     result_add.put("status", "success");
-                                    result_add.put("factoryId", "factoryId");
+                                    result_add.put("factoryId", factoriesEntity.getId());
                                     result_add.put("message", "Η καταχώρηση ολοκληρώθηκε με επιτυχία!");
                                     return result_add;
                                 });
@@ -250,9 +256,6 @@ public class FactoriesController {
         }
     }
 
-
-
-
     @SuppressWarnings({"Duplicates", "unchecked"})
     @BodyParser.Of(BodyParser.Json.class)
     public Result updateFactory(final Http.Request request) throws IOException {
@@ -268,6 +271,7 @@ public class FactoriesController {
                                 return jpaApi.withTransaction(entityManager -> {
                                     ObjectNode result_add = Json.newObject();
                                     String brandName = json.findPath("brandName").asText();
+                                    String comments = json.findPath("comments").asText();
                                     String address = json.findPath("address").asText();
                                     String telephone = json.findPath("telephone").asText();
                                     String email = json.findPath("email").asText();
@@ -282,8 +286,9 @@ public class FactoriesController {
                                     String coordinates = json.findPath("coordinates").asText();
                                     String unloadingLoadingCode = json.findPath("unloadingLoadingCode").asText();
                                     Integer appointmentDays = json.findPath("appointmentDays").asInt();
-                                    Double lattitude = json.findPath("lattitude").asDouble();
-                                    Double longtitude = json.findPath("longtitude").asDouble();
+                                    Double longtitude = json.findPath("longitude").asDouble();
+                                    Double lattitude = json.findPath("latitude").asDouble();
+                                    boolean appointmentRequired = json.findPath("appointmentRequired").asBoolean();//appointmentRequired
                                     FactoriesEntity factoriesEntity = entityManager.find(FactoriesEntity.class,id);
                                     factoriesEntity.setAddress(address);
                                     factoriesEntity.setBrandName(brandName);
@@ -301,10 +306,14 @@ public class FactoriesController {
                                     factoriesEntity.setCoordinates(coordinates);
                                     factoriesEntity.setUnloadingLoadingCode(unloadingLoadingCode);
                                     factoriesEntity.setAppointmentDays(appointmentDays);
-
+                                    factoriesEntity.setComments(comments);
                                     factoriesEntity.setLattitude(lattitude);
                                     factoriesEntity.setLongtitude(longtitude);
-
+                                    if(appointmentRequired){
+                                        factoriesEntity.setAppointmentRequired((byte) 1);
+                                    }else{
+                                        factoriesEntity.setAppointmentRequired((byte) 0);
+                                    }
                                     entityManager.merge(factoriesEntity);
                                     result_add.put("status", "success");
                                     result_add.put("message", "Η ενημερωση ολοκληρώθηκε με επιτυχία!");
@@ -332,13 +341,6 @@ public class FactoriesController {
         }
     }
 
-
-
-
-
-
-
-
     @SuppressWarnings({"Duplicates", "unchecked"})
     @BodyParser.Of(BodyParser.Json.class)
     public Result deleteFactory(final Http.Request request) throws IOException {
@@ -352,7 +354,7 @@ public class FactoriesController {
                     CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
                                 return jpaApi.withTransaction(entityManager -> {
                                     ObjectNode result_add = Json.newObject();
-                                    String id = json.findPath("id").asText();
+                                    Long id = json.findPath("id").asLong();
                                     FactoriesEntity factoriesEntity = entityManager.find(FactoriesEntity.class,id);
                                     entityManager.remove(factoriesEntity);
                                     result_add.put("status", "success");
@@ -380,20 +382,4 @@ public class FactoriesController {
             return ok(result);
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
