@@ -176,7 +176,6 @@ public class FactoriesController {
     @SuppressWarnings({"Duplicates", "unchecked"})
     @BodyParser.Of(BodyParser.Json.class)
     public Result addFactory(final Http.Request request) throws IOException {
-        try {
             JsonNode json = request.body().asJson();
             if (json == null) {
                 return badRequest("Expecting Json data");
@@ -247,13 +246,6 @@ public class FactoriesController {
                     return ok(result);
                 }
             }
-        } catch (Exception e) {
-            ObjectNode result = Json.newObject();
-            e.printStackTrace();
-            result.put("status", "error");
-            result.put("message", "Προβλημα κατα την καταχωρηση");
-            return ok(result);
-        }
     }
 
     @SuppressWarnings({"Duplicates", "unchecked"})

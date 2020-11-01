@@ -74,6 +74,13 @@ POST        /addFactory                      controllers.archives.FactoriesContr
 POST        /updateFactory                   controllers.archives.FactoriesController.updateFactory(req: Request)
 POST        /deleteFactory                   controllers.archives.FactoriesController.deleteFactory(req: Request)
 
+#FactoriesController
+POST        /addManager                      controllers.archives.ManagersController.addManager(req: Request)
+POST        /updateManager                   controllers.archives.ManagersController.updateManager(req: Request)
+POST        /deleteManager                   controllers.archives.ManagersController.deleteManager(req: Request)
+POST        /getManagers                     controllers.archives.ManagersController.getManagers(req: Request)
+
+
 
 
 
