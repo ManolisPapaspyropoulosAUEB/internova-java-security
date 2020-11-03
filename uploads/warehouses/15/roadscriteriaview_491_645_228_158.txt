@@ -1,0 +1,113 @@
+CREATE VIEW roads_criteria_details_view AS
+ 
+SELECT
+
+false  as checked ,
+false  as checked_filter ,
+ r.cbi_2 as cbi_routine,
+ r.cbi_1 as cbi_periodic,
+ r.*,
+cmd3.label as access_to_GCs_RMs_label,
+cmd4.label as farm_to_the_market_label,
+cmd5.label as agriculture_facilitation_label,
+cmd7.label  as road_accessibility_label,
+cmd8.label  as number_of_connections_label,
+cmd9.label  as road_condition_criterio_label,
+cmd10.label  as road_quality_and_needs_label,
+cmd11.label  as requirements_for_earth_works_label,
+cmd12.label  as traffic_volume_label,
+cmd13.label  as safety_label,
+cmd14.label  as security_label,
+cmd15.label  as environmental_impacts_label,
+
+(select count(*) from notes n where n.road_id=r.id ) as notes_size,
+(select count(*) from documents d where d.road_id=r.id ) as doc_size,
+
+(SELECT CONCAT(
+CONVERT(r.c1_score, CHAR),
+"(c1)+",
+CONVERT(r.c2_score, CHAR),
+"(c2)+",
+CONVERT(r.c3_score, CHAR),
+"(c3)+",
+CONVERT(r.c4_score, CHAR),
+"(c4)+",
+CONVERT(r.c5_score, CHAR),
+"(c5)+",
+CONVERT(r.c6_score, CHAR),
+"(c6)+",
+CONVERT(r.c7_score, CHAR),
+"(c7)+",
+CONVERT(r.c8_score, CHAR),
+"(c8)+",
+CONVERT(r.c9_score, CHAR),
+"(c9)+",
+CONVERT(r.c10_score, CHAR),
+"(c10)+",
+CONVERT(r.c11_score, CHAR),
+"(c11)+",
+CONVERT(r.c12_score, CHAR),
+"(c12)+",
+CONVERT(r.c13_score, CHAR),
+"(c13)+",
+CONVERT(r.c14_score, CHAR),
+"(c14)+",
+CONVERT(r.c15_score, CHAR),
+"(c15)")) AS mca_Typos,
+
+(SELECT CONCAT(
+"(",
+CONVERT((select op.estimated_routine_maintenance_cost from operetional_parameters op limit 1), CHAR),
+"*",
+"(",
+CONVERT((r.length_in_metres/1000), CHAR),
+"))",
+"/",
+CONVERT((r.population_served), CHAR)
+)) as CBI1_ROUTINE_TYPOS,
+
+(SELECT CONCAT(
+"(",
+CONVERT((select op.estimated_periodic_maintenance_cost from operetional_parameters op limit 1), CHAR),
+"*",
+"(",
+CONVERT((r.length_in_metres/1000), CHAR),
+"))",
+"/",
+CONVERT((r.population_served), CHAR)
+)) as CBI2_PERIODIC_TYPOS
+
+
+
+ FROM roads r 
+left join criteria_master_details cmd1 
+on (cmd1.id=r.c1_id )
+left join criteria_master_details cmd2 
+on (cmd2.id=r.c2_id )
+left join criteria_master_details cmd3 
+on (cmd3.id=r.c3_id )
+left join criteria_master_details cmd4 
+on (cmd4.id=r.c4_id )
+left join criteria_master_details cmd5 
+on (cmd5.id=r.c5_id )
+left join criteria_master_details cmd6 
+on (cmd6.id=r.c6_id )
+left join criteria_master_details cmd7 
+on (cmd7.id=r.c7_id )
+left join criteria_master_details cmd8 
+on (cmd8.id=r.c8_id )
+left join criteria_master_details cmd9 
+on (cmd9.id=r.c9_id )
+left join criteria_master_details cmd10 
+on (cmd10.id=r.c10_id )
+left join criteria_master_details cmd11 
+on (cmd11.id=r.c11_id )
+left join criteria_master_details cmd12 
+on (cmd12.id=r.c12_id )
+left join criteria_master_details cmd13 
+on (cmd13.id=r.c13_id )
+left join criteria_master_details cmd14 
+on (cmd14.id=r.c14_id )
+left join criteria_master_details cmd15 
+on (cmd15.id=r.c15_id )
+;

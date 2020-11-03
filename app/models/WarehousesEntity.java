@@ -20,6 +20,8 @@ public class WarehousesEntity {
     private Date creationDate;
     private Date updateDate;
     private String comments;
+    private Double longitude;
+    private Double latitude;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -163,5 +165,25 @@ public class WarehousesEntity {
 
     public void setComments(String comments) {
         this.comments = comments;
+    }
+
+    @Basic
+    @Column(name = "longitude")
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    @Basic
+    @Column(name = "latitude")
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
     }
 }

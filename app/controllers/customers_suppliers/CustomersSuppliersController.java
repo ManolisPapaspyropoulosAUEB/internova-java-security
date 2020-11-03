@@ -1,14 +1,17 @@
-package controllers.archives;
+package controllers.customers_suppliers;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execution_context.DatabaseExecutionContext;
+import models.CustomersSuppliersEntity;
 import models.WarehousesEntity;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
 import play.mvc.BodyParser;
 import play.mvc.Http;
 import play.mvc.Result;
+
 import javax.inject.Inject;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -18,21 +21,25 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
-public class WarehousesController {
+
+public class CustomersSuppliersController {
+
     private JPAApi jpaApi;
     private DatabaseExecutionContext executionContext;
     @Inject
-    public WarehousesController(JPAApi jpaApi, DatabaseExecutionContext executionContext) {
+    public CustomersSuppliersController(JPAApi jpaApi, DatabaseExecutionContext executionContext) {
         this.jpaApi = jpaApi;
         this.executionContext = executionContext;
     }
 
 
+
     @SuppressWarnings({"Duplicates", "unchecked"})
     @BodyParser.Of(BodyParser.Json.class)
-    public Result addWarehouse(final Http.Request request) throws IOException {
+    public Result addCustomerSupplier(final Http.Request request) throws IOException {
         try {
             JsonNode json = request.body().asJson();
             if (json == null) {
@@ -47,27 +54,37 @@ public class WarehousesController {
                                     String brandName = json.findPath("brandName").asText();
                                     String city = json.findPath("city").asText();
                                     String email = json.findPath("email").asText();
-                                    String manager = json.findPath("manager").asText();
                                     String postalCode = json.findPath("postalCode").asText();
                                     String region = json.findPath("region").asText();
                                     String telephone = json.findPath("telephone").asText();
-                                    Double latitude = json.findPath("latitude").asDouble();
-                                    Double longitude = json.findPath("longitude").asDouble();
                                     String comments = json.findPath("comments").asText();
-                                    WarehousesEntity warehousesEntity = new WarehousesEntity();
+                                    String website = json.findPath("website").asText();
+                                    String afm = json.findPath("afm").asText();
+                                    Long billingId = json.findPath("billingId").asLong();
+                                    String country = json.findPath("country").asText();
+                                    String doy = json.findPath("doy").asText();
+                                    String customerType = json.findPath("customerType").asText();
+                                    String job = json.findPath("job").asText();
+                                    Long internovaSellerId = json.findPath("internovaSellerId").asLong();
+
+                                    CustomersSuppliersEntity warehousesEntity = new CustomersSuppliersEntity();
                                     warehousesEntity.setAddress(address);
                                     warehousesEntity.setBrandName(brandName);
                                     warehousesEntity.setCity(city);
                                     warehousesEntity.setCreationDate(new Date());
                                     warehousesEntity.setEmail(email);
-                                    warehousesEntity.setManager(manager);
                                     warehousesEntity.setPostalCode(postalCode);
                                     warehousesEntity.setRegion(region);
                                     warehousesEntity.setTelephone(telephone);
                                     warehousesEntity.setComments(comments);
-                                    warehousesEntity.setLongitude(longitude);
-                                    warehousesEntity.setLatitude(latitude);
-                                    warehousesEntity.setComments(comments);
+                                    warehousesEntity.setWebsite(website);
+                                    warehousesEntity.setAfm(afm);
+                                    warehousesEntity.setBillingId(billingId);
+                                    warehousesEntity.setCountry(country);
+                                    warehousesEntity.setDoy(doy);
+                                    warehousesEntity.setCustomerType(customerType);
+                                    warehousesEntity.setInternovaSellerId(internovaSellerId);
+                                    warehousesEntity.setJob(job);
                                     entityManager.persist(warehousesEntity);
                                     add_result.put("status", "success");
                                     add_result.put("message", "Η καταχωρηση πραγματοποίηθηκε με επιτυχία");
@@ -95,9 +112,12 @@ public class WarehousesController {
     }
 
 
+
+
+
     @SuppressWarnings({"Duplicates", "unchecked"})
     @BodyParser.Of(BodyParser.Json.class)
-    public Result updateWarehouse(final Http.Request request) throws IOException {
+    public Result updateCustomerSupplier(final Http.Request request) throws IOException {
         try {
             JsonNode json = request.body().asJson();
             if (json == null) {
@@ -112,28 +132,39 @@ public class WarehousesController {
                                     String brandName = json.findPath("brandName").asText();
                                     String city = json.findPath("city").asText();
                                     String email = json.findPath("email").asText();
-                                    String manager = json.findPath("manager").asText();
                                     String postalCode = json.findPath("postalCode").asText();
                                     String region = json.findPath("region").asText();
                                     String telephone = json.findPath("telephone").asText();
-                                    Long id = json.findPath("warehouseId").asLong();
                                     String comments = json.findPath("comments").asText();
-                                    Double latitude = json.findPath("latitude").asDouble();
-                                    Double longitude = json.findPath("longitude").asDouble();
-                                    WarehousesEntity warehousesEntity = entityManager.find(WarehousesEntity.class, id);
+                                    String website = json.findPath("website").asText();
+                                    String afm = json.findPath("afm").asText();
+                                    Long billingId = json.findPath("billingId").asLong();
+                                    String country = json.findPath("country").asText();
+                                    String doy = json.findPath("doy").asText();
+                                    String customerType = json.findPath("customerType").asText();
+                                    String job = json.findPath("job").asText();
+                                    Long internovaSellerId = json.findPath("internovaSellerId").asLong();
+                                    Long id = json.findPath("id").asLong();
+
+                                    CustomersSuppliersEntity warehousesEntity = entityManager.find(CustomersSuppliersEntity.class,id);
                                     warehousesEntity.setAddress(address);
                                     warehousesEntity.setBrandName(brandName);
                                     warehousesEntity.setCity(city);
-                                    warehousesEntity.setCreationDate(new Date());
+                                    warehousesEntity.setUpdateDate(new Date());
                                     warehousesEntity.setEmail(email);
-                                    warehousesEntity.setManager(manager);
                                     warehousesEntity.setPostalCode(postalCode);
                                     warehousesEntity.setRegion(region);
                                     warehousesEntity.setTelephone(telephone);
                                     warehousesEntity.setComments(comments);
-                                    warehousesEntity.setLongitude(longitude);
-                                    warehousesEntity.setLatitude(latitude);
-                                    entityManager.merge(warehousesEntity);
+                                    warehousesEntity.setWebsite(website);
+                                    warehousesEntity.setAfm(afm);
+                                    warehousesEntity.setBillingId(billingId);
+                                    warehousesEntity.setCountry(country);
+                                    warehousesEntity.setDoy(doy);
+                                    warehousesEntity.setCustomerType(customerType);
+                                    warehousesEntity.setInternovaSellerId(internovaSellerId);
+                                    warehousesEntity.setJob(job);
+                                    entityManager.persist(warehousesEntity);
                                     add_result.put("status", "success");
                                     add_result.put("message", "Η ενημέρωση πραγματοποίηθηκε με επιτυχία");
                                     return add_result;
@@ -142,7 +173,6 @@ public class WarehousesController {
                             executionContext);
                     result = (ObjectNode) addFuture.get();
                     return ok(result);
-
                 } catch (Exception e) {
                     ObjectNode result = Json.newObject();
                     e.printStackTrace();
@@ -161,9 +191,17 @@ public class WarehousesController {
     }
 
 
+
+
+
+
+
+
+
+
     @SuppressWarnings({"Duplicates", "unchecked"})
     @BodyParser.Of(BodyParser.Json.class)
-    public Result deleteWarehouse(final Http.Request request) throws IOException {
+    public Result deleteCustomerSupplier(final Http.Request request) throws IOException {
         try {
             JsonNode json = request.body().asJson();
             if (json == null) {
@@ -175,8 +213,8 @@ public class WarehousesController {
                                 return jpaApi.withTransaction(entityManager -> {
                                     ObjectNode delete_result = Json.newObject();
                                     Long id = json.findPath("id").asLong();
-                                    WarehousesEntity warehousesEntity = entityManager.find(WarehousesEntity.class, id);
-                                    entityManager.remove(warehousesEntity);
+                                    CustomersSuppliersEntity customersSuppliersEntity = entityManager.find(CustomersSuppliersEntity.class, id);
+                                    entityManager.remove(customersSuppliersEntity);
                                     delete_result.put("status", "success");
                                     delete_result.put("message", "Η διαγραφή ολοκληρώθηκε με επιτυχία!");
                                     return delete_result;
@@ -209,9 +247,8 @@ public class WarehousesController {
 
 
 
-
     @SuppressWarnings({"Duplicates", "unchecked"})
-    public Result getWarehouses(final Http.Request request) throws IOException {  // san parametro pernei to org key
+    public Result getCustomersSuppliers(final Http.Request request) throws IOException {  // san parametro pernei to org key
         ObjectNode result = Json.newObject();
         try {
             JsonNode json = request.body().asJson();
@@ -235,76 +272,75 @@ public class WarehousesController {
                                             String brandName = json.findPath("brandName").asText();
                                             String city = json.findPath("city").asText();
                                             String email = json.findPath("email").asText();
-                                            String manager = json.findPath("manager").asText();
                                             String postalCode = json.findPath("postalCode").asText();
                                             String region = json.findPath("region").asText();
                                             String telephone = json.findPath("telephone").asText();
                                             String creationDate = json.findPath("creationDate").asText();
                                             String start = json.findPath("start").asText();
                                             String limit = json.findPath("limit").asText();
-                                            String sqlWarehouses= "select * from warehouses pos where 1=1 ";
+                                            String sqlCustSupl= "select * from customers_suppliers pos where 1=1 ";
                                             if(!id.equalsIgnoreCase("") && id!=null){
-                                                sqlWarehouses+=" and pos.id like '%"+id+"%'";
+                                                sqlCustSupl+=" and pos.id like '%"+id+"%'";
                                             }
                                             if(!address.equalsIgnoreCase("") && address!=null){
-                                                sqlWarehouses+=" and pos.address like '%"+address+"%'";
+                                                sqlCustSupl+=" and pos.address like '%"+address+"%'";
                                             }
                                             if(!brandName.equalsIgnoreCase("") && brandName!=null){
-                                                sqlWarehouses+=" and pos.brand_name like '%"+brandName+"%'";
+                                                sqlCustSupl+=" and pos.brand_name like '%"+brandName+"%'";
                                             }
 
                                             if(!brandName.equalsIgnoreCase("") && brandName!=null){
-                                                sqlWarehouses+=" and pos.brand_name like '%"+brandName+"%'";
+                                                sqlCustSupl+=" and pos.brand_name like '%"+brandName+"%'";
                                             }
                                             if(!city.equalsIgnoreCase("") && city!=null){
-                                                sqlWarehouses+=" and pos.city like '%"+city+"%'";
+                                                sqlCustSupl+=" and pos.city like '%"+city+"%'";
                                             }
 
                                             if(!email.equalsIgnoreCase("") && email!=null){
-                                                sqlWarehouses+=" and pos.email like '%"+email+"%'";
-                                            }
-                                            if(!manager.equalsIgnoreCase("") && manager!=null){
-                                                sqlWarehouses+=" and pos.manager like '%"+manager+"%'";
+                                                sqlCustSupl+=" and pos.email like '%"+email+"%'";
                                             }
                                             if(!postalCode.equalsIgnoreCase("") && postalCode!=null){
-                                                sqlWarehouses+=" and pos.postal_code like '%"+postalCode+"%'";
+                                                sqlCustSupl+=" and pos.postal_code like '%"+postalCode+"%'";
                                             }
                                             if(!region.equalsIgnoreCase("") && region!=null){
-                                                sqlWarehouses+=" and pos.region like '%"+region+"%'";
+                                                sqlCustSupl+=" and pos.region like '%"+region+"%'";
                                             }
                                             if(!telephone.equalsIgnoreCase("") && telephone!=null){
-                                                sqlWarehouses+=" and pos.telephone like '%"+telephone+"%'";
+                                                sqlCustSupl+=" and pos.telephone like '%"+telephone+"%'";
                                             }
                                             if(!creationDate.equalsIgnoreCase("") && creationDate!=null){
-                                                sqlWarehouses += " and SUBSTRING( role.creation_date, 1, 10)  = '" + creationDate + "'";
+                                                sqlCustSupl += " and SUBSTRING( role.creation_date, 1, 10)  = '" + creationDate + "'";
                                             }
-                                            List<WarehousesEntity> filalistAll
-                                                    = (List<WarehousesEntity>) entityManager.createNativeQuery(
-                                                    sqlWarehouses, WarehousesEntity.class).getResultList();
-                                            sqlWarehouses+=" order by creation_date desc";
+                                            List<CustomersSuppliersEntity> filalistAll
+                                                    = (List<CustomersSuppliersEntity>) entityManager.createNativeQuery(
+                                                    sqlCustSupl, CustomersSuppliersEntity.class).getResultList();
+                                            sqlCustSupl+=" order by creation_date desc";
                                             if (!start.equalsIgnoreCase("") && start != null) {
-                                                sqlWarehouses += " limit " + start + "," + limit;
+                                                sqlCustSupl += " limit " + start + "," + limit;
                                             }
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             List<HashMap<String, Object>> filalist = new ArrayList<HashMap<String, Object>>();
-                                            List<WarehousesEntity> warehousesEntityList
-                                                    = (List<WarehousesEntity>) entityManager.createNativeQuery(
-                                                    sqlWarehouses, WarehousesEntity.class).getResultList();
-                                            for (WarehousesEntity j : warehousesEntityList) {
+                                            List<CustomersSuppliersEntity> warehousesEntityList
+                                                    = (List<CustomersSuppliersEntity>) entityManager.createNativeQuery(
+                                                    sqlCustSupl, CustomersSuppliersEntity.class).getResultList();
+                                            for (CustomersSuppliersEntity j : warehousesEntityList) {
                                                 HashMap<String, Object> sHmpam = new HashMap<String, Object>();
                                                 sHmpam.put("address", j.getAddress());
                                                 sHmpam.put("brandName", j.getBrandName());
                                                 sHmpam.put("city", j.getCity());
-                                                sHmpam.put("creationDate", j.getCreationDate());
                                                 sHmpam.put("email", j.getEmail());
-                                                sHmpam.put("comments", j.getComments());
+                                                sHmpam.put("job", j.getJob());
                                                 sHmpam.put("id", j.getId());
                                                 sHmpam.put("warehouseId", j.getId());
-                                                sHmpam.put("latitude", j.getLatitude());
-                                                sHmpam.put("longitude", j.getLongitude());
-                                                sHmpam.put("manager", j.getManager());
                                                 sHmpam.put("postalCode", j.getPostalCode());
                                                 sHmpam.put("region", j.getRegion());
+                                                sHmpam.put("afm", j.getAfm());
+                                                sHmpam.put("billingId", j.getBillingId());
+                                                sHmpam.put("doy", j.getDoy());
+                                                sHmpam.put("internovaSellerId", j.getInternovaSellerId());
+                                                sHmpam.put("comments", j.getComments());
+                                                sHmpam.put("customerType", j.getCustomerType());
+                                                sHmpam.put("creationDate", j.getCreationDate());
                                                 sHmpam.put("telephone", j.getTelephone());
                                                 sHmpam.put("updateDate", j.getUpdateDate());
                                                 filalist.add(sHmpam);
@@ -338,4 +374,20 @@ public class WarehousesController {
             return ok(result);
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

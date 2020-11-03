@@ -66,8 +66,6 @@ POST        /exportWarehousesAsXLS           controllers.archives.ArchivesPrintC
 POST        /deleteXLSFromFolder             controllers.archives.ArchivesPrintController.deleteXLSFromFolder(req: Request)
 POST        /exportFactoriesAsXLS            controllers.archives.ArchivesPrintController.exportFactoriesAsXLS(req: Request)
 
-
-
 #FactoriesController
 POST        /getFactories                    controllers.archives.FactoriesController.getFactories(req: Request)
 POST        /addFactory                      controllers.archives.FactoriesController.addFactory(req: Request)
@@ -79,15 +77,28 @@ POST        /addManager                      controllers.archives.ManagersContro
 POST        /updateManager                   controllers.archives.ManagersController.updateManager(req: Request)
 POST        /deleteManager                   controllers.archives.ManagersController.deleteManager(req: Request)
 POST        /getManagers                     controllers.archives.ManagersController.getManagers(req: Request)
+POST        /getManagersExpect               controllers.archives.ManagersController.getManagersExpect(req: Request)
 
 
 
+#CustomersSuppliersController
+POST        /getManagersExpect               controllers.customers_suppliers.CustomersSuppliersController.addCustomerSupplier(req: Request)
+POST        /updateCustomerSupplier          controllers.customers_suppliers.CustomersSuppliersController.updateCustomerSupplier(req: Request)
+POST        /deleteCustomerSupplier          controllers.customers_suppliers.CustomersSuppliersController.deleteCustomerSupplier(req: Request)
+POST        /getCustomersSuppliers           controllers.customers_suppliers.CustomersSuppliersController.getCustomersSuppliers(req: Request)
+
+#BillingsController
+POST        /addBillingEntry                 controllers.customers_suppliers.BillingsController.addBillingEntry(req: Request)
+POST        /updateBillingEntry              controllers.customers_suppliers.BillingsController.updateBillingEntry(req: Request)
+POST        /deleteBilling                   controllers.customers_suppliers.BillingsController.deleteBilling(req: Request)
+POST        /getBillings                     controllers.customers_suppliers.BillingsController.getBillings(req: Request)
 
 
-
-
-#FactoriesPrintController
-
+#InternovaSellersController
+POST        /addBillingEntry                 controllers.customers_suppliers.InternovaSellersController.addInternovaSeller(req: Request)
+POST        /updateBillingEntry              controllers.customers_suppliers.InternovaSellersController.updateInternovaSeller(req: Request)
+POST        /deleteBilling                   controllers.customers_suppliers.InternovaSellersController.deleteInternovaSeller(req: Request)
+POST        /getBillings                     controllers.customers_suppliers.InternovaSellersController.getInternovaSellers(req: Request)
 
 
 
