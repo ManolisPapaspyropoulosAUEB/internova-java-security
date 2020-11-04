@@ -1,11 +1,10 @@
-package controllers.customers_suppliers;
+package controllers.archives.customers_suppliers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execution_context.DatabaseExecutionContext;
 import models.BillingsEntity;
-import models.CustomersSuppliersEntity;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
 import play.mvc.BodyParser;
@@ -174,6 +173,7 @@ public class BillingsController {
                                             for (BillingsEntity j : billingsEntityList) {
                                                 HashMap<String, Object> sHmpam = new HashMap<String, Object>();
                                                 sHmpam.put("name", j.getName());
+                                                sHmpam.put("id", j.getId());
                                                 sHmpam.put("description", j.getDescription());
                                                 sHmpam.put("creationDate", j.getCreationDate());
                                                 sHmpam.put("updateDate", j.getUpdateDate());

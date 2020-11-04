@@ -3,102 +3,104 @@
 # ~~~~ GET    /:id                 v1.post.PostController.show(request:Request,id)
 
 # An example controller showing a sample home page
-GET         /                                controllers.HomeController.index
+GET         /                                            controllers.HomeController.index
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file                    controllers.Assets.versioned(path="/public", file: Asset)
+GET         /assets/*file                                controllers.Assets.versioned(path="/public", file: Asset)
 
 #OrganizationsController
-POST        /addOrganization                 controllers.security.OrganizationsController.addOrganization(req: Request)
-POST        /updateOrganization              controllers.security.OrganizationsController.updateOrganization(req: Request)
-POST        /getOrganizations                controllers.security.OrganizationsController.getOrganizations(req: Request)
-POST        /deleteOrganization              controllers.security.OrganizationsController.deleteOrganization(req: Request)
+POST        /addOrganization                             controllers.security.OrganizationsController.addOrganization(req: Request)
+POST        /updateOrganization                          controllers.security.OrganizationsController.updateOrganization(req: Request)
+POST        /getOrganizations                            controllers.security.OrganizationsController.getOrganizations(req: Request)
+POST        /deleteOrganization                          controllers.security.OrganizationsController.deleteOrganization(req: Request)
 
 #RolesController
-POST        /addRole                         controllers.security.RolesController.addRole(req: Request)
-POST        /updateRole                      controllers.security.RolesController.updateRole(req: Request)
-POST        /deleteRole                      controllers.security.RolesController.deleteRole(req: Request)
-POST        /getRoles                        controllers.security.RolesController.getRoles(req: Request)
+POST        /addRole                                     controllers.security.RolesController.addRole(req: Request)
+POST        /updateRole                                  controllers.security.RolesController.updateRole(req: Request)
+POST        /deleteRole                                  controllers.security.RolesController.deleteRole(req: Request)
+POST        /getRoles                                    controllers.security.RolesController.getRoles(req: Request)
 
 #UsersControllers downloadDocument
-POST        /addUser                         controllers.security.UsersControllers.addUser(req: Request)
-POST        /updateUser                      controllers.security.UsersControllers.updateUser(req: Request)
-POST        /deleteUser                      controllers.security.UsersControllers.deleteUser(req: Request)
-POST        /getUsers                        controllers.security.UsersControllers.getUsers(req: Request)
-POST        /updatePassword                  controllers.security.UsersControllers.updatePassword(req: Request)
+POST        /addUser                                     controllers.security.UsersControllers.addUser(req: Request)
+POST        /updateUser                                  controllers.security.UsersControllers.updateUser(req: Request)
+POST        /deleteUser                                  controllers.security.UsersControllers.deleteUser(req: Request)
+POST        /getUsers                                    controllers.security.UsersControllers.getUsers(req: Request)
+POST        /updatePassword                              controllers.security.UsersControllers.updatePassword(req: Request)
 
 #AuditLogsController
-POST        /addAuditLog                     controllers.security.AuditLogsController.addAuditLog(req: Request)
-POST        /updateAuditLog                  controllers.security.AuditLogsController.updateAuditLog(req: Request)
-POST        /deleteLog                       controllers.security.AuditLogsController.deleteLog(req: Request)
-POST        /getAuditLogs                    controllers.security.AuditLogsController.getAuditLogs(req: Request)
+POST        /addAuditLog                                 controllers.security.AuditLogsController.addAuditLog(req: Request)
+POST        /updateAuditLog                              controllers.security.AuditLogsController.updateAuditLog(req: Request)
+POST        /deleteLog                                   controllers.security.AuditLogsController.deleteLog(req: Request)
+POST        /getAuditLogs                                controllers.security.AuditLogsController.getAuditLogs(req: Request)
 
 #AuditLogsController
-POST        /addDepartment                   controllers.security.DepartmentController.addDepartment(req: Request)
-POST        /updateDepartment                controllers.security.DepartmentController.updateDepartment(req: Request)
-POST        /getDepartments                  controllers.security.DepartmentController.getDepartments(req: Request)
-POST        /deleteDepartment                controllers.security.DepartmentController.deleteDepartment(req: Request)
+POST        /addDepartment                               controllers.security.DepartmentController.addDepartment(req: Request)
+POST        /updateDepartment                            controllers.security.DepartmentController.updateDepartment(req: Request)
+POST        /getDepartments                              controllers.security.DepartmentController.getDepartments(req: Request)
+POST        /deleteDepartment                            controllers.security.DepartmentController.deleteDepartment(req: Request)
 
 
 #DocumentsController
-POST        /getUploadsBySystemId            controllers.documents.DocumentsController.getUploadsBySystemId(req: Request)
-POST        /uploadFile                      controllers.documents.DocumentsController.uploadFile(req: Request)
-POST        /downloadDocument                controllers.documents.DocumentsController.downloadDocument(req: Request)
-POST        /deleteAttatchment               controllers.documents.DocumentsController.deleteAttatchment(req: Request)
+POST        /getUploadsBySystemId                        controllers.documents.DocumentsController.getUploadsBySystemId(req: Request)
+POST        /uploadFile                                  controllers.documents.DocumentsController.uploadFile(req: Request)
+POST        /downloadDocument                            controllers.documents.DocumentsController.downloadDocument(req: Request)
+POST        /deleteAttatchment                           controllers.documents.DocumentsController.deleteAttatchment(req: Request)
 
 
 
 #SecurityPrintsController
-POST        /exportUsersAsXLS                controllers.security.SecurityPrintsController.exportUsersAsXLS(req: Request)
-POST        /exportRolesAsXLS                controllers.security.SecurityPrintsController.exportRolesAsXLS(req: Request)
-POST        /exportDepartmentsAsXLS          controllers.security.SecurityPrintsController.exportDepartmentsAsXLS(req: Request)
-POST        /exportOrganizationsAsXLS        controllers.security.SecurityPrintsController.exportOrganizationsAsXLS(req: Request)
-POST        /deleteXLSFromFolder             controllers.security.SecurityPrintsController.deleteXLSFromFolder(req: Request)
+POST        /exportUsersAsXLS                            controllers.security.SecurityPrintsController.exportUsersAsXLS(req: Request)
+POST        /exportRolesAsXLS                            controllers.security.SecurityPrintsController.exportRolesAsXLS(req: Request)
+POST        /exportDepartmentsAsXLS                      controllers.security.SecurityPrintsController.exportDepartmentsAsXLS(req: Request)
+POST        /exportOrganizationsAsXLS                    controllers.security.SecurityPrintsController.exportOrganizationsAsXLS(req: Request)
+POST        /deleteXLSFromFolder                         controllers.security.SecurityPrintsController.deleteXLSFromFolder(req: Request)
 
 #WarehousesController
-POST        /addWarehouse                    controllers.archives.WarehousesController.addWarehouse(req: Request)
-POST        /getWarehouses                   controllers.archives.WarehousesController.getWarehouses(req: Request)
-POST        /updateWarehouse                 controllers.archives.WarehousesController.updateWarehouse(req: Request)
-POST        /deleteWarehouse                 controllers.archives.WarehousesController.deleteWarehouse(req: Request)
+POST        /addWarehouse                                controllers.archives.WarehousesController.addWarehouse(req: Request)
+POST        /getWarehouses                               controllers.archives.WarehousesController.getWarehouses(req: Request)
+POST        /updateWarehouse                             controllers.archives.WarehousesController.updateWarehouse(req: Request)
+POST        /deleteWarehouse                             controllers.archives.WarehousesController.deleteWarehouse(req: Request)
 
 #WarehousesPrintController
-POST        /exportWarehousesAsXLS           controllers.archives.ArchivesPrintController.exportWarehousesAsXLS(req: Request)
-POST        /deleteXLSFromFolder             controllers.archives.ArchivesPrintController.deleteXLSFromFolder(req: Request)
-POST        /exportFactoriesAsXLS            controllers.archives.ArchivesPrintController.exportFactoriesAsXLS(req: Request)
+POST        /exportWarehousesAsXLS                       controllers.archives.ArchivesPrintController.exportWarehousesAsXLS(req: Request)
+POST        /deleteXLSFromFolder                         controllers.archives.ArchivesPrintController.deleteXLSFromFolder(req: Request)
+POST        /exportFactoriesAsXLS                        controllers.archives.ArchivesPrintController.exportFactoriesAsXLS(req: Request)
 
 #FactoriesController
-POST        /getFactories                    controllers.archives.FactoriesController.getFactories(req: Request)
-POST        /addFactory                      controllers.archives.FactoriesController.addFactory(req: Request)
-POST        /updateFactory                   controllers.archives.FactoriesController.updateFactory(req: Request)
-POST        /deleteFactory                   controllers.archives.FactoriesController.deleteFactory(req: Request)
+POST        /getFactories                                controllers.archives.FactoriesController.getFactories(req: Request)
+POST        /addFactory                                  controllers.archives.FactoriesController.addFactory(req: Request)
+POST        /updateFactory                               controllers.archives.FactoriesController.updateFactory(req: Request)
+POST        /deleteFactory                               controllers.archives.FactoriesController.deleteFactory(req: Request)
 
 #FactoriesController
-POST        /addManager                      controllers.archives.ManagersController.addManager(req: Request)
-POST        /updateManager                   controllers.archives.ManagersController.updateManager(req: Request)
-POST        /deleteManager                   controllers.archives.ManagersController.deleteManager(req: Request)
-POST        /getManagers                     controllers.archives.ManagersController.getManagers(req: Request)
-POST        /getManagersExpect               controllers.archives.ManagersController.getManagersExpect(req: Request)
+POST        /addManager                                  controllers.archives.ManagersController.addManager(req: Request)
+POST        /updateManager                               controllers.archives.ManagersController.updateManager(req: Request)
+POST        /deleteManager                               controllers.archives.ManagersController.deleteManager(req: Request)
+POST        /getManagers                                 controllers.archives.ManagersController.getManagers(req: Request)
+POST        /getManagersExpect                           controllers.archives.ManagersController.getManagersExpect(req: Request)
 
 
 
 #CustomersSuppliersController
-POST        /getManagersExpect               controllers.customers_suppliers.CustomersSuppliersController.addCustomerSupplier(req: Request)
-POST        /updateCustomerSupplier          controllers.customers_suppliers.CustomersSuppliersController.updateCustomerSupplier(req: Request)
-POST        /deleteCustomerSupplier          controllers.customers_suppliers.CustomersSuppliersController.deleteCustomerSupplier(req: Request)
-POST        /getCustomersSuppliers           controllers.customers_suppliers.CustomersSuppliersController.getCustomersSuppliers(req: Request)
+POST        /addCustomerSupplier                         controllers.archives.customers_suppliers.CustomersSuppliersController.addCustomerSupplier(req: Request)
+POST        /updateCustomerSupplier                      controllers.archives.customers_suppliers.CustomersSuppliersController.updateCustomerSupplier(req: Request)
+POST        /deleteCustomerSupplier                      controllers.archives.customers_suppliers.CustomersSuppliersController.deleteCustomerSupplier(req: Request)
+POST        /getCustomersSuppliers                       controllers.archives.customers_suppliers.CustomersSuppliersController.getCustomersSuppliers(req: Request)
+POST        /getAllCustomersSuppliersNoPagination        controllers.archives.customers_suppliers.CustomersSuppliersController.getAllCustomersSuppliersNoPagination(req: Request)
+POST        /exportCustomersSuppliersAsXls               controllers.archives.customers_suppliers.CustomersSuppliersPrintController.exportCustomersSuppliersAsXls(req: Request)
 
 #BillingsController
-POST        /addBillingEntry                 controllers.customers_suppliers.BillingsController.addBillingEntry(req: Request)
-POST        /updateBillingEntry              controllers.customers_suppliers.BillingsController.updateBillingEntry(req: Request)
-POST        /deleteBilling                   controllers.customers_suppliers.BillingsController.deleteBilling(req: Request)
-POST        /getBillings                     controllers.customers_suppliers.BillingsController.getBillings(req: Request)
+POST        /addBillingEntry                             controllers.archives.customers_suppliers.BillingsController.addBillingEntry(req: Request)
+POST        /updateBillingEntry                          controllers.archives.customers_suppliers.BillingsController.updateBillingEntry(req: Request)
+POST        /deleteBilling                               controllers.archives.customers_suppliers.BillingsController.deleteBilling(req: Request)
+POST        /getBillings                                 controllers.archives.customers_suppliers.BillingsController.getBillings(req: Request)
 
 
-#InternovaSellersController
-POST        /addBillingEntry                 controllers.customers_suppliers.InternovaSellersController.addInternovaSeller(req: Request)
-POST        /updateBillingEntry              controllers.customers_suppliers.InternovaSellersController.updateInternovaSeller(req: Request)
-POST        /deleteBilling                   controllers.customers_suppliers.InternovaSellersController.deleteInternovaSeller(req: Request)
-POST        /getBillings                     controllers.customers_suppliers.InternovaSellersController.getInternovaSellers(req: Request)
+#InternovaSellersController getAllCustomersSuppliersNoPagination
+POST        /addInternovaSeller                          controllers.archives.customers_suppliers.InternovaSellersController.addInternovaSeller(req: Request)
+POST        /updateInternovaSeller                       controllers.archives.customers_suppliers.InternovaSellersController.updateInternovaSeller(req: Request)
+POST        /deleteInternovaSeller                       controllers.archives.customers_suppliers.InternovaSellersController.deleteInternovaSeller(req: Request)
+POST        /getInternovaSellers                         controllers.archives.customers_suppliers.InternovaSellersController.getInternovaSellers(req: Request)
 
 
 
