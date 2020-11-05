@@ -46,8 +46,9 @@ public class FactoriesController {
                     String jsonResult = "";
                     CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
                                 return jpaApi.withTransaction(
-                                        entityManager -> {//appointmentRequired
+                                        entityManager -> {//appointmentRequired warehouseId
                                             String id = json.findPath("id").asText();
+                                            String warehouseId = json.findPath("warehouseId").asText();
                                             String factoryId = json.findPath("factoryId").asText();
                                             String address = json.findPath("address").asText();
                                             String brandName = json.findPath("brandName").asText();
@@ -63,6 +64,9 @@ public class FactoriesController {
                                             String sqlWarehouses= "select * from factories pos where 1=1 ";
                                             if(!id.equalsIgnoreCase("") && id!=null){
                                                 sqlWarehouses+=" and pos.id like '%"+id+"%'";
+                                            }
+                                            if(!warehouseId.equalsIgnoreCase("") && warehouseId!=null){
+                                                sqlWarehouses+=" and pos.id like '%"+warehouseId+"%'";
                                             }
                                             if(!factoryId.equalsIgnoreCase("") && factoryId!=null){
                                                 sqlWarehouses+=" and pos.id like '%"+factoryId+"%'";

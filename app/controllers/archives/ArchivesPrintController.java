@@ -220,6 +220,209 @@ public class ArchivesPrintController {
 
 
 
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    public Result exportCustomersSuppliersAsXls(final Http.Request request) throws IOException {  // san parametro pernei to org key
+        ObjectNode result = Json.newObject();
+        try {
+            JsonNode json = request.body().asJson();
+            if (json == null) {
+                return badRequest("Expecting Json data");
+            } else {
+                if (json == null) {
+                    result.put("status", "error");
+                    result.put("message", "Δεν εχετε αποστειλει εγκυρα δεδομενα.");
+                    return ok(result);
+                } else {
+                    ObjectMapper ow = new ObjectMapper();
+                    String jsonResult = "";
+                    CompletableFuture<String> createXLSResult = CompletableFuture.supplyAsync(() -> {
+                                return jpaApi.withTransaction(
+                                        entityManager -> {
+                                            ObjectNode resultNode = Json.newObject();
+                                            String random_id = json.findPath("random_id").asText();
+                                            Random rand = new Random();
+                                            String filename = "D:/developm/internova(Pr)/internova_JAVA_security/app/reports/users" + random_id + ".xls";
+                                            HSSFWorkbook workbook = new HSSFWorkbook();
+                                            HSSFSheet sheet = workbook.createSheet("FirstSheet");
+                                            HSSFRow rowhead = sheet.createRow((short) 0);
+                                            rowhead.createCell((short) 0).setCellValue("ID");
+                                            rowhead.createCell((short) 1).setCellValue("ΕΠΩΝΥΜΙΑ");
+                                            rowhead.createCell((short) 2).setCellValue("ΤΥΠΟΣ");
+                                            rowhead.createCell((short) 3).setCellValue("ΑΦΜ");
+                                            rowhead.createCell((short) 4).setCellValue("ΔΟΥ");
+                                            rowhead.createCell((short) 5).setCellValue("ΕΠΑΓΓΕΛΜΑ");
+                                            rowhead.createCell((short) 6).setCellValue("ΔΙΕΥΘΥΝΣΗ");
+                                            rowhead.createCell((short) 7).setCellValue("ΠΕΡΙΟΧΗ");
+                                            rowhead.createCell((short) 8).setCellValue("ΧΩΡΑ");
+                                            rowhead.createCell((short) 9).setCellValue("ΠΟΛΗ");
+                                            rowhead.createCell((short) 10).setCellValue("ΤΚ");
+                                            rowhead.createCell((short) 11).setCellValue("ΤΗΛΕΦΩΝΟ");
+                                            rowhead.createCell((short) 12).setCellValue("EMAIL");
+                                            rowhead.createCell((short) 13).setCellValue("WEBSITE");
+                                            rowhead.createCell((short) 14).setCellValue("ΣΧΟΛΙΑ");
+                                            rowhead.createCell((short) 15).setCellValue("ΗΜΕΡΟΜΗΝΙΑ ΔΗΜΙΟΥΡΓΙΑΣ");
+                                            String sql = "select * from customers_suppliers ";
+                                            List<CustomersSuppliersEntity> suppliersEntityList = (List<CustomersSuppliersEntity>)
+                                                    entityManager.createNativeQuery(sql, CustomersSuppliersEntity.class).getResultList();
+                                            for (int i = 0; i < suppliersEntityList.size(); i++) {
+                                                HSSFRow row = sheet.createRow((short) i + 1);
+                                                row.createCell((short) 0).setCellValue(suppliersEntityList.get(i).getId());
+                                                row.createCell((short) 1).setCellValue(suppliersEntityList.get(i).getBrandName());
+                                                row.createCell((short) 2).setCellValue(suppliersEntityList.get(i).getCustomerType());
+                                                row.createCell((short) 3).setCellValue(suppliersEntityList.get(i).getAfm());
+                                                row.createCell((short) 4).setCellValue(suppliersEntityList.get(i).getDoy());
+                                                row.createCell((short) 5).setCellValue(suppliersEntityList.get(i).getJob());
+                                                row.createCell((short) 6).setCellValue(suppliersEntityList.get(i).getAddress());
+                                                row.createCell((short) 7).setCellValue(suppliersEntityList.get(i).getRegion());
+                                                row.createCell((short) 8).setCellValue(suppliersEntityList.get(i).getCountry());
+                                                row.createCell((short) 9).setCellValue(suppliersEntityList.get(i).getCity());
+                                                row.createCell((short) 10).setCellValue(suppliersEntityList.get(i).getPostalCode());
+                                                row.createCell((short) 11).setCellValue(suppliersEntityList.get(i).getTelephone());
+                                                row.createCell((short) 12).setCellValue(suppliersEntityList.get(i).getEmail());
+                                                row.createCell((short) 13).setCellValue(suppliersEntityList.get(i).getWebsite());
+                                                row.createCell((short) 14).setCellValue(suppliersEntityList.get(i).getComments());
+                                                DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                                                String creationDateString = myDateFormat.format(suppliersEntityList.get(i).getCreationDate());
+                                                row.createCell((short) 15).setCellValue(creationDateString);
+                                            }
+                                            for (int col = 0; col < 16; col++) {
+                                                sheet.autoSizeColumn(col);
+                                            }
+                                            FileOutputStream fileOut = null;
+                                            try {
+                                                fileOut = new FileOutputStream(filename);
+                                                workbook.write(fileOut);
+                                                fileOut.close();
+                                                return filename;
+                                            } catch (FileNotFoundException e) {
+                                                e.printStackTrace();
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
+                                            resultNode.put("message", "success");
+                                            return filename;
+                                        });
+                            },
+                            executionContext);
+                    String ret_path = createXLSResult.get();
+                    File previewFile = new File(ret_path);
+                    return ok(previewFile);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων");
+            return ok(result);
+        }
+    }
+
+
+
+
+
+    //exportManagersAsXLS
+
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    public Result exportManagersAsXLS(final Http.Request request) throws IOException {  // san parametro pernei to org key
+        ObjectNode result = Json.newObject();
+        try {
+            JsonNode json = request.body().asJson();
+            if (json == null) {
+                return badRequest("Expecting Json data");
+            } else {
+                if (json == null) {
+                    result.put("status", "error");
+                    result.put("message", "Δεν εχετε αποστειλει εγκυρα δεδομενα.");
+                    return ok(result);
+                } else {
+                    ObjectMapper ow = new ObjectMapper();
+                    String jsonResult = "";
+                    CompletableFuture<String> createXLSResult = CompletableFuture.supplyAsync(() -> {
+                                return jpaApi.withTransaction(
+                                        entityManager -> {
+                                            ObjectNode resultNode = Json.newObject();
+                                            String random_id = json.findPath("random_id").asText();
+                                            Random rand = new Random();
+                                            String filename = "D:/developm/internova(Pr)/internova_JAVA_security/app/reports/users" + random_id + ".xls";
+                                            HSSFWorkbook workbook = new HSSFWorkbook();
+                                            HSSFSheet sheet = workbook.createSheet("FirstSheet");
+                                            HSSFRow rowhead = sheet.createRow((short) 0);
+                                            rowhead.createCell((short) 0).setCellValue("ID");
+                                            rowhead.createCell((short) 1).setCellValue("ΕΠΩΝΥΜΟ");
+                                            rowhead.createCell((short) 2).setCellValue("ΟΝΟΜΑ");
+                                            rowhead.createCell((short) 3).setCellValue("ΘΕΣΗ");
+                                            rowhead.createCell((short) 4).setCellValue("ΤΗΛΕΦΩΝΟ");
+                                            rowhead.createCell((short) 5).setCellValue("EMAIL");
+                                            rowhead.createCell((short) 6).setCellValue("ΣΥΣΤΗΜΑ");
+                                            rowhead.createCell((short) 7).setCellValue("ΕΠΩΝΥΜΙΑ");
+                                            rowhead.createCell((short) 8).setCellValue("ΗΜΕΡΟΜΗΝΙΑ ΔΗΜΙΟΥΡΓΙΑΣ");
+                                            String sql = "select * from managers ";
+                                            List<ManagersEntity> managersEntityList = (List<ManagersEntity>)
+                                                    entityManager.createNativeQuery(sql, ManagersEntity.class).getResultList();
+                                            for (int i = 0; i < managersEntityList.size(); i++) {
+                                                HSSFRow row = sheet.createRow((short) i + 1);
+                                                row.createCell((short) 0).setCellValue(managersEntityList.get(i).getId());
+                                                row.createCell((short) 1).setCellValue(managersEntityList.get(i).getLastName());
+                                                row.createCell((short) 2).setCellValue(managersEntityList.get(i).getFirstName());
+                                                row.createCell((short) 3).setCellValue(managersEntityList.get(i).getPosition());
+                                                row.createCell((short) 4).setCellValue(managersEntityList.get(i).getTelephone());
+                                                row.createCell((short) 5).setCellValue(managersEntityList.get(i).getEmail());
+                                                if (managersEntityList.get(i).getSystemId() != null) {
+                                                    row.createCell((short) 6).setCellValue(managersEntityList.get(i).getSystem());
+                                                    switch (managersEntityList.get(i).getSystem()) {
+                                                        case "Εργοστάσιο":
+                                                            row.createCell((short) 7).setCellValue(entityManager.find(FactoriesEntity.class, managersEntityList.get(i).getSystemId()).getBrandName());
+                                                            break;
+                                                        case "Αποθήκη":
+                                                            row.createCell((short) 7).setCellValue(entityManager.find(WarehousesEntity.class, managersEntityList.get(i).getSystemId()).getBrandName());
+                                                            break;
+                                                        default:
+                                                    }
+                                                }else{
+                                                    row.createCell((short) 7).setCellValue("-");
+                                                    row.createCell((short) 6).setCellValue("-");
+                                                }
+                                                DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                                                String creationDateString = myDateFormat.format(managersEntityList.get(i).getCreationDate());
+                                                row.createCell((short) 8).setCellValue(creationDateString);
+                                            }
+                                            for (int col = 0; col < 16; col++) {
+                                                sheet.autoSizeColumn(col);
+                                            }
+                                            FileOutputStream fileOut = null;
+                                            try {
+                                                fileOut = new FileOutputStream(filename);
+                                                workbook.write(fileOut);
+                                                fileOut.close();
+                                                return filename;
+                                            } catch (FileNotFoundException e) {
+                                                e.printStackTrace();
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
+                                            resultNode.put("message", "success");
+                                            return filename;
+                                        });
+                            },
+                            executionContext);
+                    String ret_path = createXLSResult.get();
+                    File previewFile = new File(ret_path);
+                    return ok(previewFile);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων");
+            return ok(result);
+        }
+    }
+
+
+
+
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})

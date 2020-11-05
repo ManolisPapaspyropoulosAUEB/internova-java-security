@@ -1,0 +1,1674 @@
+
+http://144.91.80.190:9000/addGsApplicationWS
+{
+    "data": {
+        "user": "admin@synergic.gr",
+        "token": "470gcO7HTOhMKF9Bna07cusR0x3hv1Lx",
+        "data": {
+            "externalId": "5651333342",
+            "aa": "5651333342",
+            "opCode": "OP1",
+            "gspId": 1461,
+            "invitationId": 861,
+            "projectTitle": "ELEGXOS DAPANWN APO TDE",                
+            "beneficiary": "E.Papakostopoulos",
+            "eligPubBudget": 200000,
+            "status": "DRAFT",
+            "submissionDate": "23/04/2019"
+        }
+    }
+}
+
+
+
+http://144.91.80.190:9000/updateGsApplicationWS
+
+{
+    "data": {
+        "user": "admin@synergic.gr",
+        "token": "470gcO7HTOhMKF9Bna07cusR0x3hv1Lx",
+        "data": {
+            "id": 11950,
+            "aa": "5651333342",
+            "beneficiary": "E.Kostarelos",
+            "eligPubBudget": 200000,
+            "approvalInd": 1,
+            "evaluationDate": "24/03/2020",
+            "evaluationComments": "No comments yet",
+            "approvalDate": "24/03/2020",
+            "approvalComments": "No comments yet",
+            "rejectionDate": null,
+            "rejectionComments": null,
+            "objectionDate": null,
+            "objectionComments": null,
+            "reevaluationDate": null,
+            "reevaluationComments": null,
+            "rejection2Date": null,
+            "rejection2Comments": null,
+            "status": "VERIFIED",
+            "statusComment": "",
+            "revokeDate": null,
+            "revokeComments": "",
+            "revokeUserId": null,
+            "rejection2UserId": null,
+            "reevaluationUserId": null,
+            "objectionUserId": null,
+            "rejectionUserId": null,
+            "approvalUserId": 10436,
+            "evaluationUserId": 10436,
+            "submissionUserId": 10436,
+            "revokeVerifiedDate": null,
+            "rejection2VerifiedDate": null,
+            "submissionDate": "23/04/2019",
+            "reevaluationVerifiedDate": null,
+            "objectionVerifiedDate": null,
+            "rejectionVerifiedDate": null,
+            "approvalVerifiedDate": "24/03/2020",
+            "evaluationVerifiedDate": "24/03/2020",
+            "submissionVerifiedDate": "24/03/2020",
+            "objectionAcceptanceInd": null,
+            "objectionAcceptanceComments": null
+        }
+    }
+}
+
+
+
+http://144.91.80.190:9000/createGsApplicationTdeWS
+{
+  "user": "admin@synergic.gr",
+  "token": "470gcO7HTOhMKF9Bna07cusR0x3hv1Lx",
+  "data": {
+     "applicationId": 11950,
+     "tdeUserId": 10436,
+     "tdeDate": "25/03/20",
+     "title": "TEST ERGO GIA ELEGXO TROPOU KATABOLHS DAPANWN",
+     "titleEn": "TEST ERGO GIA ELEGXO TROPOU KATABOLHS DAPANWN"  
+   }
+}
+
+
+
+http://144.91.80.190:9000/insertTdeGsDataWS
+{
+    "user": "admin@synergic.gr",
+    "token": "470gcO7HTOhMKF9Bna07cusR0x3hv1Lx",
+    "data": {
+        "id": 16178,
+        "opCode": "OP1",
+        "paCode": "PA1.1",
+        "fundId": 1,
+        "grantSchemeId": 1461,
+        "title": "DOKIMASTIKO ERGO GIA ELEGXO DAPANWN KAI VALIDATIONS",
+        "titleEn": "DOKIMASTIKO ERGO GIA ELEGXO DAPANWN KAI VALIDATIONS",
+        "benIbName": "E.Papagianakopoulos",
+        "benIbAft": "PAPAGIANAKOPOULOS",
+        "benIbCategory": "-",
+        "benIsPrivateBusiness": 1,
+        "employerName": "Giannis Apostolakis",
+        "employerPosition": "ΒΟΗΘΟΣ ΤΟΥ ΜΗΤΣΟΥ",
+        "employerAddress": "Διέυθυνση Υπαλλήλου",
+        "employerPhone": "2102588888",
+        "employerFax": "",
+        "employerEmail": "",
+        "beneficiaryPMName": " legal representative",
+        "beneficiaryPMPosition": "General Electric",
+        "beneficiaryPMAddr": " lr διέυθυνση",
+        "beneficiaryPMPhone": "6989999999",
+        "beneficiaryPMFax": "",
+        "beneficiaryPMEmail": "",
+
+        "projectDescriptionA": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+        "projectStartDate": "20/01/2020",
+        "projectEndDate": "30/05/2022",
+        "projectAgreementDate": "21/02/2020",
+        "intervField": [{
+            "dimId": 54,
+            "percentage": 100
+        }],
+        "financeType": [{
+            "dimId": 16,
+            "percentage": 100
+        }],
+        "territoryArea": [{
+            "dimId": 29,
+            "percentage": 100
+        }],
+        "terrImplMechanism": [{
+            "dimId": 36,
+            "percentage": 100
+        }],
+        "economicActivity": [{
+            "econCode": "24",
+            "percentage": 100
+        }],
+        "location": [{
+            "locatCode": "0001",
+            "percentage": 100
+        }],
+        "gsEligAction": [{
+            "invGsEligActionId": 561,
+            "projectPhase": [{
+                    "gsEligExpId": 1145,
+                    "description": "-",
+                    "phaseStartDate": "20/12/2020",
+                    "phaseEndDate": "20/12/2020"
+                },
+                {
+                    "gsEligExpId": 1144,
+                    "description": "-",
+                    "phaseStartDate": "20/12/2020",
+                    "phaseEndDate": "20/12/2020"
+                }
+            ]
+        }],
+        "prjGsIndex": [{
+            "indexCode": "INDOUTINV25",
+            "indexVersion": 2,
+            "indexType": "O",
+            "targetValue": 1000,
+            "targetValueMen": 0,
+            "targetValueWomen": 0,
+            "isFramework": "false"
+        }],
+        "partnerAction": [{
+            "actionId": 662,
+            "typeInd": null,
+            "aft": "PAPAGIANAKOPOULOS"
+        }],
+        "expenses1a": [{
+            "typeInd": "1a",
+            "expensesId": 0,
+            "expenseAmount": 20000,
+            "totEligExpBudget": 20000,
+            "rateAid": 100,
+            "actionId": 662,
+            "aft": "PAPAGIANAKOPOULOS",
+            "eligExpId": 1141,
+            "expensesDesc": "1a Βάση Παραστατικών I"
+        },
+        {
+            "typeInd": "1a",
+            "expensesId": 0,
+            "expenseAmount": 20000,
+            "totEligExpBudget": 20000,
+            "rateAid": 100,
+            "actionId": 662,
+            "aft": "PAPAGIANAKOPOULOS",
+            "eligExpId": 1142,
+            "expensesDesc": "1a Βάση Παραστατικών II"
+        },
+        {
+            "typeInd": "1a",
+            "expensesId": 0,
+            "expenseAmount": 20000,
+            "totEligExpBudget": 20000,
+            "rateAid": 100,
+            "actionId": 662,
+            "aft": "PAPAGIANAKOPOULOS",
+            "eligExpId": 1143,
+            "expensesDesc": "1a Βάση Παραστατικών III"
+        },
+        {
+            "typeInd": "1a",
+            "expensesId": 0,
+            "expenseAmount": 20000,
+            "totEligExpBudget": 20000,
+            "rateAid": 100,
+            "actionId": 662,
+            "aft": "PAPAGIANAKOPOULOS",
+            "eligExpId": 1144,
+            "expensesDesc": "1a Βάση Παραστατικών IV"
+        }
+
+        ],
+        
+        
+        "expenses1b": [{
+            "eligExpId": 1142,
+            "physicalObjDesc": "expenses1b",
+            "unitDesc": "expenses1b",
+            "unitNum": 5,
+            "socialSecurityNumber": "45",
+            "unitCost": 10000,
+            "rateAid": 100,
+			"aft": "PAPAGIANAKOPOULOS",
+            "actionId": 662,
+            "typeInd": "1b"
+        }],
+        "expenses1c": [{
+            "eligExpId": 1143,
+            "physicalObjDesc": "expenses1c",
+            "fixedAmount": 45000,
+            "rateAid": 100,
+            "actionId": 662,
+			"aft": "PAPAGIANAKOPOULOS",
+            "typeInd": "1c"
+        }],
+        "expenses2a": [
+        {
+            "typeInd": "2a",
+            "expensesId": 0,
+            "expenseAmount": 25000,
+            "totEligExpBudget": 25000,
+            "rateAid": 100,
+            "actionId": 662,
+			"aft": "PAPAGIANAKOPOULOS",
+            "eligExpId": 1147,
+            "expensesDesc": "expenses2a"
+        }
+        
+        
+        
+        ],
+        "annualBudget": [
+
+            {
+                "year": 2022,
+                "semester": "A",
+                "totEligPubBudget": 45000
+            },
+            {
+                "year": 2021,
+                "semester": "A",
+                "totEligPubBudget": 50000
+            },
+            {
+                "year": 2020,
+                "semester": "B",
+                "totEligPubBudget": 125000
+            }
+        ]
+    }
+
+}
+
+http://144.91.80.190:9000/submitProjectSXWS
+
+
+{
+  "user": "admin@synergic.gr",
+  "token": "470gcO7HTOhMKF9Bna07cusR0x3hv1Lx",
+  "data": {
+   
+	"tdeId":16178
+  }
+}
+
+
+
+http://144.91.80.190:9000/verifyProjectSXWS
+
+
+{
+  "user": "admin@synergic.gr",
+  "token": "470gcO7HTOhMKF9Bna07cusR0x3hv1Lx",
+  "data": {
+   
+	"tdeId":16178
+  }
+}
+
+
+
+http://144.91.80.190:9000/verifyAgreementApplicationStageWS
+
+{
+  "user": "admin@synergic.gr",
+  "token": "470gcO7HTOhMKF9Bna07cusR0x3hv1Lx",
+  "data": {
+       "applicationId": 11949,
+       "agreementVerifiedDate": "23/04/2020",
+       "stageDate": "20/04/2021",
+       "agreementUserId": "10436"
+ }
+}
+
+
+
+
+
+
+********************************************* Καταχωρημένες δαπάνες ΤΔΕ για τον δικαιουχου με αφτ PAPAGIANAKOPOULOS ************************************************
+
+http://144.91.80.190:9000/getPrjTDEGsDirectEligExpListWS?partnerAft=PAPAGIANAKOPOULOS&tdeId=16178&user=admin@synergic.gr&token=470gcO7HTOhMKF9Bna07cusR0x3hv1Lx
+
+{
+  "data": [
+    {
+	 "id": 10559,
+      "tdeId": 16178,
+	  "actionId": 662,
+      "partnerId": 217018,
+      "actionExpDesc": "Νέες Στρατηγικές Μονάδες Υποδομής, Δίκτυα Αριστείας, Νέοι Ερευνητές",
+      "expenses1a": [
+        {
+          "rateAid": 100,
+          "expenseAmount": 20000,
+          "eligPublicExp": 20000,
+          "typeInd": "1a",
+          "eligExpDesc": "Αμοιβές Προσωπικού",
+          "eligExpId": 1141,
+          "eligPrivateExp": 0,
+          "expensesId": 0,
+          "id": 36344,
+          "isPersonal": 0,
+          "expensesDesc": "1a Βάση Παραστατικών I",
+          "totEligExpBudget": 20000
+        },
+        {
+          "rateAid": 100,
+          "expenseAmount": 20000,
+          "eligPublicExp": 20000,
+          "typeInd": "1a",
+          "eligExpDesc": "Δαπάνες για Όργανα και Εξοπλισμό",
+          "eligExpId": 1142,
+          "eligPrivateExp": 0,
+          "expensesId": 0,
+          "id": 36346,
+          "isPersonal": 0,
+          "expensesDesc": "1a Βάση Παραστατικών II",
+          "totEligExpBudget": 20000
+        },
+        {
+          "rateAid": 100,
+          "expenseAmount": 20000,
+          "eligPublicExp": 20000,
+          "typeInd": "1a",
+          "eligExpDesc": "Δαπάνες για Αγορά Υπηρεσιών",
+          "eligExpId": 1143,
+          "eligPrivateExp": 0,
+          "expensesId": 0,
+          "id": 36345,
+          "isPersonal": 0,
+          "expensesDesc": "1a Βάση Παραστατικών III",
+          "totEligExpBudget": 20000
+        },
+        {
+          "rateAid": 100,
+          "expenseAmount": 20000,
+          "eligPublicExp": 20000,
+          "typeInd": "1a",
+          "eligExpDesc": "Μετακινήσεις στο Εξωτερικό",
+          "eligExpId": 1144,
+          "eligPrivateExp": 0,
+          "expensesId": 0,
+          "id": 36340,
+          "isPersonal": 0,
+          "expensesDesc": "1a Βάση Παραστατικών IV",
+          "totEligExpBudget": 20000
+        }
+      ],
+	  
+      "expenses1c": [
+        {
+          "rateAid": 100,
+          "eligPublicExp": 45000,
+          "typeInd": "1c",
+          "physicalObjDesc": "expenses1c",
+          "eligExpDesc": "Δαπάνες για Αγορά Υπηρεσιών",
+          "eligExpId": 1143,
+          "eligPrivateExp": 0,
+          "id": 36367,
+          "isPersonal": 0,
+          "fixedAmount": 45000
+        }
+      ],
+      "expenses1b": [
+        {
+          "rateAid": 100,
+          "eligPublicExp": 50000,
+          "typeInd": "1b",
+          "physicalObjDesc": "expenses1b",
+          "socialSecurityNumber": "45",
+          "eligExpId": 1142,
+          "unitNum": 5,
+          "isPersonal": 0,
+          "unitDesc": "expenses1b",
+          "eligExpDesc": "Δαπάνες για Όργανα και Εξοπλισμό",
+          "totUnitCost": 50000,
+          "unitCost": 10000,
+          "eligPrivateExp": 0,
+          "id": 36361
+        }
+      ],
+	  "expenses1d": [],
+      "expenses2a": [
+        {
+          "rateAid": 100,
+          "expenseAmount": 25000,
+          "eligPublicExp": 25000,
+          "typeInd": "2a",
+          "eligExpDesc": "Υπερκεφαλικά",
+          "eligExpId": 1147,
+          "eligPrivateExp": 0,
+          "expensesId": 0,
+          "id": 36342,
+          "isPersonal": 0,
+          "expensesDesc": "expenses2a",
+          "totEligExpBudget": 25000
+        }
+      ],
+	  "expenses2b": [],
+	  "expenses2c": []
+      
+    }
+  ]
+}
+
+/**************************  Συσχετισμός δαπανών *************************************/
+
+
+********************************************* 1o AKX ERGOU (33817 - 1) ************************************************
+******************************************* Καταχώρηση και επικύρωση Δαπανών 1α και 2α ***************** 
+
+Περιγραφή - ανάλυση
+
+Στο ΤΔΕ έχουμε τις παρακάτω δαπάνες τύπου 1a και 2a με τα αντιστοιχά ποσά  και στο κάθε ΑΚΧ θα δείχνουμε τι ποσό μένει ανοιχτό για να το συσχετίσουμε
+
+	Αρχική εικόνα δαπανών
+
+	expenses1a:
+		ΑΠ: Αμοιβες Προσωπικου 1a Βάση Παραστατικών I 20000
+		ΔΟΕ: Δαπάνες για Όργανα και Εξοπλισμό 1a Βάση Παραστατικών II 20000
+		ΔΑΥ: Δαπάνες για Αγορά Υπηρεσιών 1a Βάση Παραστατικών III 20000
+		ΜΕξ: Μετακινήσεις στο Εξωτερικό 1a Βάση Παραστατικών IV 20000
+		
+	expenses1b:	
+		ΔΟΕ: Δαπάνες για Όργανα και Εξοπλισμό 50000
+		
+	expenses1c:	
+		ΔΑΥ: Δαπάνες για Αγορά Υπηρεσιών 45000
+		
+	expenses2a:
+		Υπερ: Υπερκεφαλικά 25000
+
+		
+	
+	Θα δημιουργήσουμε 4 συσχετισμούς σε αυτό το ΑΚΧ, περιγράφονται αναλυτικά μετά την εισαγωγή του παρακάτω body πως θα επηρεαστούν οι παραπάνω δαπάνες. 
+
+	Αρχικά Παραστατικά αναδόχου
+	
+	PAR_ANAD_I_1 20000
+	PAR_ANAD_I_2 10000
+	PAR_ANAD_II_1 20000
+
+	Αρχικά Παραστατικά Δικαιούχου
+	
+	PAP_1 30000
+	PAP_2 20000
+
+	
+
+http://144.91.80.190:9000/createAndVerifiedDedaGsWS
+
+Body
+
+{
+  "user": "admin@synergic.gr",
+  "token": "470gcO7HTOhMKF9Bna07cusR0x3hv1Lx",
+  "data": {
+    "tdeId": 16178,
+    "dedaDescription": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    "percentageTde": 0,
+    "fileNumber": "NumberTest12367",
+    "creationDate": "14/04/2020",
+    "submissionDate": "15/04/2020",
+    "verificationDate": "15/04/2020",
+    "contrVouchers": [
+      {
+        "voucherDate": "25/01/2020",
+        "contrAFT": "ANADOXOS_I",
+        "nameContr": "ANADOXOS_I",
+        "voucherId": 41,
+        "voucherNumber": "PAR_ANAD_I_1",
+        "totAmount": 20000,
+        "extraTotAmount": 20000
+      },
+      {
+        "voucherDate": "25/01/2020",
+        "contrAFT": "ANADOXOS_I",
+        "nameContr": "ANADOXOS_I",
+        "voucherId": 41,
+        "voucherNumber": "PAR_ANAD_I_2",
+        "totAmount": 10000,
+        "extraTotAmount": 10000
+      },
+      {
+        "voucherDate": "25/01/2020",
+        "contrAFT": "ANADOXOS_II",
+        "nameContr": "ANADOXOS_II",
+        "voucherId": 41,
+        "voucherNumber": "PAR_ANAD_II_1",
+        "totAmount": 20000,
+        "extraTotAmount": 20000
+      }
+    ],
+    "benefVouchers": [
+      {
+        "benIbAft": "PAPAGIANAKOPOULOS",
+        "voucherDate": "26/01/2020",
+        "voucherId": 123,
+        "voucherNumber": "PAP_1",
+        "totAmount": 30000,
+        "extraTotAmount": 30000
+      },
+      {
+        "benIbAft": "PAPAGIANAKOPOULOS",
+        "voucherDate": "11/02/2020",
+        "voucherId": 123,
+        "voucherNumber": "PAP_2",
+        "totAmount": 20000,
+        "extraTotAmount": 20000
+      }
+    ],
+    "correlations": [	
+      {
+        "prjTdeGsEligExpId": 36344,
+        "eligExpAmnt": 10000, 
+        "contrVoucherNumber": "PAR_ANAD_I_2",
+        "contrAFT": "ANADOXOS_I",
+        "benefVoucherNumber": "PAP_2",
+        "benIbAft": "PAPAGIANAKOPOULOS",
+        "verStatus": "1"
+      },
+      {
+        "prjTdeGsEligExpId": 36344,
+        "eligExpAmnt": 5000,
+        "contrVoucherNumber": "PAR_ANAD_I_1",
+        "contrAFT": "ANADOXOS_I",
+        "benefVoucherNumber": "PAP_2",
+        "benIbAft": "PAPAGIANAKOPOULOS",
+        "verStatus": "1"
+      },
+                  {
+        "prjTdeGsEligExpId": 36343,
+        "eligExpAmnt": 15000,
+        "contrVoucherNumber": "PAR_ANAD_II_1",
+        "contrAFT": "ANADOXOS_II",
+        "benefVoucherNumber": "PAP_1",
+        "benIbAft": "PAPAGIANAKOPOULOS",
+        "verStatus": "1"
+      },
+            {
+        "prjTdeGsEligExpId": 36341,
+        "eligExpAmnt": 5000,
+        "contrVoucherNumber": "PAR_ANAD_II_1",
+        "contrAFT": "ANADOXOS_II",
+        "benefVoucherNumber": "PAP_2",
+        "benIbAft": "PAPAGIANAKOPOULOS",
+        "verStatus": "1"
+      }
+      
+    ],
+    "ibPaymentVoucher": [
+      {
+        "voucherNumber": "V-EF_1",
+        "voucherId": 21,
+        "voucherDate": "15/03/2020",
+        "eligPubExp": 50000
+      }
+    ]
+  }
+}
+
+
+Response
+
+{
+    "status": "success",
+    "message": "Το παραστατικού δικαιούχου καταχωρήθηκε με επιτυχία.\n Τα παραστατικού αναδόχου καταχωρήθηκε με επιτυχία.\n Oι Συσχετισμοί ενημερώθηκαν με επιτυχία.\n Η υποβολή του ΤΔΕ πραγματοποιήθηκε με επιτυχία.\n Το παραστατικό δικαιούχου υποβλήθηκε με επιτυχία.\n Τα παραστατικά του ΕΦ καταχωρήθηκαν με επιτυχία.\n Το Δελτίο επικυρώθηκε με επιτυχία.\n Όλα τα πεδία του ΑΚΧ ενημερώθηκαν με επιτυχία."
+}
+
+
+
+
+
+
+*************************************************************
+Δαπάνη ΑΠ 
+Συσχετισμός Δαπάνης με ποσό 10000 (από τις 20000) ΑΠ: Αμοιβές Προσωπικου 1a Βάση Παραστατικών I 
+{
+	"prjTdeGsEligExpId": 36344,
+	"eligExpAmnt": 10000, 
+	"contrVoucherNumber": "PAR_ANAD_I_2",
+	"contrAFT": "ANADOXOS_I",
+	"benefVoucherNumber": "PAP_2",
+	"benIbAft": "PAPAGIANAKOPOULOS",
+	"verStatus": "1"
+}
+
+Επομένως θα μείνει υπόλοιπο στην δαπάνη(ΑΠ: Αμοιβές Προσωπικου 1a Βάση Παραστατικών I ) το ποσό 10000 
+
+Επίσης, η νέα εικόνα των παραστατικών είναι η παρακάτω:
+
+Παραστατικά αναδόχου
+PAR_ANAD_I_1 20000
+PAR_ANAD_I_2 0
+PAR_ANAD_II_1 20000
+
+Παραστατικά Δικαιούχου
+PAP_1 30000
+PAP_2 10000
+
+
+	
+Εικόνα δαπανών μετά την εισαγωγή του παραπάνω συσχετισμού
+
+	expenses1a:
+		ΑΠ: Αμοιβές Προσωπικου 1a Βάση Παραστατικών I 10000
+		ΔΟΕ: Δαπάνες για Όργανα και Εξοπλισμό 1a Βάση Παραστατικών II 20000
+		ΔΑΥ: Δαπάνες για Αγορά Υπηρεσιών 1a Βάση Παραστατικών III 20000
+		ΜΕξ: Μετακινήσεις στο Εξωτερικό 1a Βάση Παραστατικών IV 20000
+		
+	expenses1b:	
+		ΔΟΕ: Δαπάνες για Όργανα και Εξοπλισμό 50000
+		
+	expenses1c:	
+		ΔΑΥ: Δαπάνες για Αγορά Υπηρεσιών 45000
+		
+	expenses2a:
+		Υπερ: Υπερκεφαλικά 25000
+
+
+
+*************************************************************
+*************************************************************
+Δαπάνη ΑΠ 
+Συσχετισμός Δαπάνης με ποσό 5000 (από τις 10000 που έχουν μείνει) ΑΠ: Αμοιβές Προσωπικου 1a Βάση Παραστατικών I 
+  {
+	"prjTdeGsEligExpId": 36344,
+	"eligExpAmnt": 5000, 
+	"contrVoucherNumber": "PAR_ANAD_I_1",
+	"contrAFT": "ANADOXOS_I",
+	"benefVoucherNumber": "PAP_2",
+	"benIbAft": "PAPAGIANAKOPOULOS",
+	"verStatus": "1"
+  }
+
+Επομένως θα μείνει υπόλοιπο στην δαπάνη(ΑΠ: Αμοιβές Προσωπικου 1a Βάση Παραστατικών I ) το ποσό 5000 
+
+Επίσης, η νέα εικόνα των παραστατικών είναι η παρακάτω:
+
+Παραστατικά αναδόχου
+PAR_ANAD_I_1 15000
+PAR_ANAD_I_2 0
+PAR_ANAD_II_1 20000
+
+Παραστατικά Δικαιούχου
+PAP_1 30000
+PAP_2 5000
+
+Εικόνα δαπανών μετά την εισαγωγή του παραπάνω συσχετισμού
+
+expenses1a:
+	ΑΠ:Αμοιβες Προσωπικου 1a Βάση Παραστατικών I 5000
+	ΔΟΕ:Δαπάνες για Όργανα και Εξοπλισμό 1a Βάση Παραστατικών II 20000
+	ΔΑΥ:Δαπάνες για Αγορά Υπηρεσιών 1a Βάση Παραστατικών III 20000
+	ΜΕξ:Μετακινήσεις στο Εξωτερικό 1a Βάση Παραστατικών IV 20000
+	
+expenses1b:	
+	ΔΟΕ: Δαπάνες για Όργανα και Εξοπλισμό 50000
+		
+expenses1c:	
+	ΔΑΥ: Δαπάνες για Αγορά Υπηρεσιών 45000
+	
+expenses2a:
+	Υπερ: Υπερκεφαλικά 25000
+
+
+*************************************************************
+*************************************************************
+Δαπάνη ΔΟΕ 
+Συσχετισμός Δαπάνης με ποσό 15000 (από τις 20000 που έχουν μείνει) ΔΟΕ:Δαπάνες για Όργανα και Εξοπλισμό 1a Βάση Παραστατικών II 
+  {
+	"prjTdeGsEligExpId": 36343,
+	"eligExpAmnt": 15000,
+	"contrVoucherNumber": "PAR_ANAD_II_1",
+	"contrAFT": "ANADOXOS_II",
+	"benefVoucherNumber": "PAP_1",
+	"benIbAft": "PAPAGIANAKOPOULOS",
+	"verStatus": "1"
+  }
+
+Επομένως θα μείνει υπόλοιπο στην δαπάνη (ΔΟΕ:Δαπάνες για Όργανα και Εξοπλισμό 1a Βάση Παραστατικών II) το ποσό 5000 
+
+Επίσης, η νέα εικόνα των παραστατικών είναι η παρακάτω:  
+  
+Παραστατικά αναδόχου
+PAR_ANAD_I_1 15000
+PAR_ANAD_I_2 0
+PAR_ANAD_II_1 5000
+
+Παραστατικά Δικαιούχου
+PAP_1 30000
+PAP_2 5000
+
+Εικόνα δαπανών μετά την εισαγωγή του παραπάνω συσχετισμού
+
+expenses1a
+	ΑΠ:Αμοιβες Προσωπικου 1a Βάση Παραστατικών I 5000
+	ΔΟΕ:Δαπάνες για Όργανα και Εξοπλισμό 1a Βάση Παραστατικών II 5000
+	ΔΑΥ:Δαπάνες για Αγορά Υπηρεσιών 1a Βάση Παραστατικών III 20000
+	ΜΕξ:Μετακινήσεις στο Εξωτερικό 1a Βάση Παραστατικών IV 20000
+	
+expenses1b:	
+	ΔΟΕ: Δαπάνες για Όργανα και Εξοπλισμό 50000
+		
+expenses1c:	
+	ΔΑΥ: Δαπάνες για Αγορά Υπηρεσιών 45000
+	
+expenses2a:
+	Υπερ: Υπερκεφαλικά 25000
+
+
+
+*************************************************************
+Δαπάνη ΔΑΥ 
+Συσχετισμός Δαπάνης με ποσό 5000 (από τις 20000 που έχουν μείνει) ΔΑΥ:Δαπάνες για Αγορά Υπηρεσιών 1a Βάση Παραστατικών III
+
+{
+	"prjTdeGsEligExpId": 36341,
+	"eligExpAmnt": 5000,
+	"contrVoucherNumber": "PAR_ANAD_II_1",
+	"contrAFT": "ANADOXOS_II",
+	"benefVoucherNumber": "PAP_2",
+	"benIbAft": "PAPAGIANAKOPOULOS",
+	"verStatus": "1"
+}
+
+Επομένως θα μείνει υπόλοιπο στην δαπάνη (ΔΑΥ:Δαπάνες για Αγορά Υπηρεσιών 1a Βάση Παραστατικών III) το ποσό 15000 
+
+Επίσης, η νέα εικόνα των παραστατικών είναι η παρακάτω:  
+  
+Παραστατικά αναδόχου
+PAR_ANAD_I_1 15000
+PAR_ANAD_I_2 0
+PAR_ANAD_II_1 0
+
+Παραστατικά Δικαιούχου
+PAP_1 15000
+PAP_2 0
+
+Εικόνα δαπανών μετά την εισαγωγή του παραπάνω συσχετισμού
+
+expenses1a
+	ΑΠ:Αμοιβες Προσωπικου 1a Βάση Παραστατικών I 5000
+	ΔΟΕ:Δαπάνες για Όργανα και Εξοπλισμό 1a Βάση Παραστατικών II 5000
+	ΔΑΥ:Δαπάνες για Αγορά Υπηρεσιών 1a Βάση Παραστατικών III 15000
+	ΜΕξ:Μετακινήσεις στο Εξωτερικό 1a Βάση Παραστατικών IV 20000
+	
+
+
+
+************************************************ 2o AKX ERGOU  (33817 - 2) ************************************************
+
+Η εικόνα των παραστατικών με ανοιχτό υπόλοιπο του προηγούμενου ΑΚΧ είναι 
+
+Παραστατικά αναδοχου
+PAR_ANAD_I_1 15000
+
+Παραστατικά Δικαιούχου
+PAP_1 15000
+
+
+Η εικόνα των Δαπανών μετά την επικύρωση του προηγούμενου ΑΚΧ είναι:
+
+expenses1a:
+	ΑΠ:Αμοιβες Προσωπικου 1a Βάση Παραστατικών I 5000
+	ΔΟΕ:Δαπάνες για Όργανα και Εξοπλισμό 1a Βάση Παραστατικών II 5000
+	ΔΑΥ:Δαπάνες για Αγορά Υπηρεσιών 1a Βάση Παραστατικών III 15000
+	ΜΕξ:Μετακινήσεις στο Εξωτερικό 1a Βάση Παραστατικών IV 20000
+	
+expenses1b:	
+	ΔΟΕ: Δαπάνες για Όργανα και Εξοπλισμό 50000
+		
+expenses1c:	
+	ΔΑΥ: Δαπάνες για Αγορά Υπηρεσιών 45000
+	
+expenses2a:
+	Υπερ: Υπερκεφαλικά 25000
+
+	
+Σε αυτό το σενάριο θα χρησιμοποιήσουμε δύο παραστατικά ένα και ένα από το προηγούμενο ΑΚΧ και θα δημιουργήσουμε και τα παρακάτω
+
+Σε αυτό το ΑΚΧ θα εισάγουμε 3 νέα παραστατικά Αναδόχου(2) και Δικαιούχου (1)
+
+Παραστατικά αναδόχου 
+PAR_ANAD_III_1 20000
+PAR_ANAD_III_2 20000
+
+Παραστατικά Δικαιούχου
+PAP_3 40000	
+	
+	
+http://144.91.80.190:9000/createAndVerifiedDedaGsWS
+
+{
+  "user": "admin@synergic.gr",
+  "token": "470gcO7HTOhMKF9Bna07cusR0x3hv1Lx",
+  "data": {
+    "tdeId": 16178,
+    "dedaDescription": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    "percentageTde": 0,
+    "fileNumber": "NumberTest12367",
+    "creationDate": "14/04/2020",
+    "submissionDate": "15/04/2020",
+    "verificationDate": "15/04/2020",
+    "contrVouchers": [
+      {
+        "voucherDate": "25/01/2020",
+        "contrAFT": "ANADOXOS_III",
+        "nameContr": "ANADOXOS_III",
+        "voucherId": 41,
+        "voucherNumber": "PAR_ANAD_III_1",
+        "totAmount": 20000,
+        "extraTotAmount": 20000
+      },
+      {
+        "voucherDate": "25/01/2020",
+        "contrAFT": "ANADOXOS_III",
+        "nameContr": "ANADOXOS_III",
+        "voucherId": 41,
+        "voucherNumber": "PAR_ANAD_III_2",
+        "totAmount": 20000,
+        "extraTotAmount": 20000
+      }
+    ],
+    "benefVouchers": [
+      {
+        "benIbAft": "PAPAGIANAKOPOULOS",
+        "voucherDate": "26/01/2020",
+        "voucherId": 123,
+        "voucherNumber": "PAP_3",
+        "totAmount": 40000,
+        "extraTotAmount": 40000
+      }
+    ],
+    "correlations": [
+    	
+      {
+        "prjTdeGsEligExpId": 36346,
+        "eligExpAmnt": 5000, 
+        "contrVoucherNumber": "PAR_ANAD_I_1",
+        "contrAFT": "ANADOXOS_I",
+        "benefVoucherNumber": "PAP_1",
+        "benIbAft": "PAPAGIANAKOPOULOS",
+        "verStatus": "1"
+      },
+      {
+        "prjTdeGsEligExpId": 36345,
+        "eligExpAmnt": 10000, 
+        "contrVoucherNumber": "PAR_ANAD_I_1",
+        "contrAFT": "ANADOXOS_I",
+        "benefVoucherNumber": "PAP_1",
+        "benIbAft": "PAPAGIANAKOPOULOS",
+        "verStatus": "1"
+      },
+      {
+        "prjTdeGsEligExpId": 36340,
+        "eligExpAmnt": 20000, 
+        "contrVoucherNumber": "PAR_ANAD_III_1",
+        "contrAFT": "ANADOXOS_III",
+        "benefVoucherNumber": "PAP_3",
+        "benIbAft": "PAPAGIANAKOPOULOS",
+        "verStatus": "1"
+      },
+	  {
+        "prjTdeGsEligExpId": 36345,
+        "eligExpAmnt": 5000, 
+        "contrVoucherNumber": "PAR_ANAD_III_2",
+        "contrAFT": "ANADOXOS_III",
+        "benefVoucherNumber": "PAP_3",
+        "benIbAft": "PAPAGIANAKOPOULOS",
+        "verStatus": "1"
+      }
+      
+    ],
+    "ibPaymentVoucher": [
+      {
+        "voucherNumber": "V-EF_1",
+        "voucherId": 21,
+        "voucherDate": "15/03/2020",
+        "eligPubExp": 25000
+      }
+    ]
+  }
+}
+
+
+Response
+{
+    "status": "success",
+    "message": "Το παραστατικού δικαιούχου καταχωρήθηκε με επιτυχία.\n Τα παραστατικού αναδόχου καταχωρήθηκε με επιτυχία.\n Oι Συσχετισμοί ενημερώθηκαν με επιτυχία.\n Η υποβολή του ΤΔΕ πραγματοποιήθηκε με επιτυχία.\n Το παραστατικό δικαιούχου υποβλήθηκε με επιτυχία.\n Τα παραστατικά του ΕΦ καταχωρήθηκαν με επιτυχία.\n Το Δελτίο επικυρώθηκε με επιτυχία.\n Όλα τα πεδία του ΑΚΧ ενημερώθηκαν με επιτυχία."
+}
+
+*************************************************************
+Δαπάνη ΔΟΕ 
+
+Συσχετισμός Δαπάνης με ποσό 5000 (από τις 5000 που έχουν μείνει) ΔΟΕ: Δαπάνες για Όργανα και Εξοπλισμό 1a Βάση Παραστατικών II
+Σημείωση την συσχετίζουμε με παραστατικά του προηγούμενου ΑΚΧ
+
+{
+	"prjTdeGsEligExpId": 36346,
+	"eligExpAmnt": 5000, 
+	"contrVoucherNumber": "PAR_ANAD_I_1",
+	"contrAFT": "ANADOXOS_I",
+	"benefVoucherNumber": "PAP_1 ",
+	"benIbAft": "PAPAGIANAKOPOULOS",
+	"verStatus": "1"
+}
+
+Επομένως θα μείνει υπόλοιπο στην δαπάνη (ΔΟΕ: Δαπάνες για Όργανα και Εξοπλισμό 1a Βάση Παραστατικών II) το ποσό 0 
+
+Επίσης, η νέα εικόνα των παραστατικών είναι η παρακάτω:
+
+Παραστατικά αναδοχου
+PAR_ANAD_I_1 10000
+
+Παραστατικά Δικαιούχου
+PAP_1 10000
+
+	
+Εικόνα δαπανών μετά την εισαγωγή του παραπάνω συσχετισμού
+
+expenses1a:
+	ΑΠ:Αμοιβες Προσωπικου 1a Βάση Παραστατικών I 5000
+	ΔΟΕ:Δαπάνες για Όργανα και Εξοπλισμό 1a Βάση Παραστατικών II 0
+	ΔΑΥ:Δαπάνες για Αγορά Υπηρεσιών 1a Βάση Παραστατικών III 15000
+	ΜΕξ:Μετακινήσεις στο Εξωτερικό 1a Βάση Παραστατικών IV 20000
+	
+expenses1b:	
+	ΔΟΕ: Δαπάνες για Όργανα και Εξοπλισμό 50000
+		
+expenses1c:	
+	ΔΑΥ: Δαπάνες για Αγορά Υπηρεσιών 45000
+	
+expenses2a:
+	Υπερ: Υπερκεφαλικά 25000
+	
+
+*************************************************************
+
+*************************************************************
+Δαπάνη ΔΑΥ 
+
+Συσχετισμός Δαπάνης με ποσό 10000 (από τις 15000 που έχουν μείνει) ΔΑΥ: Δαπάνες για Αγορά Υπηρεσιών 1a Βάση Παραστατικών III
+Σημείωση την συσχετίζουμε με παραστατικά του προηγούμενου ΑΚΧ
+{
+	"prjTdeGsEligExpId": 36345,
+	"eligExpAmnt": 10000, 
+	"contrVoucherNumber": "PAR_ANAD_I_1",
+	"contrAFT": "ANADOXOS_I",
+	"benefVoucherNumber": "PAP_1 ",
+	"benIbAft": "PAPAGIANAKOPOULOS",
+	"verStatus": "1"
+}
+
+Επομένως θα μείνει υπόλοιπο στην δαπάνη (ΔΑΥ: Δαπάνες για Αγορά Υπηρεσιών 1a Βάση Παραστατικών III) το ποσό 5000 
+
+Επίσης, η νέα εικόνα των παραστατικών είναι η παρακάτω:
+
+Παραστατικά αναδόχου
+PAR_ANAD_I_1 0
+
+Παραστατικά Δικαιούχου
+PAP_1 0
+
+Έτσι θα κλείσουν τα παραστατικά του προηγούμενου ΑΚΧ
+
+Εικόνα δαπανών μετά την εισαγωγή του παραπάνω συσχετισμού
+
+expenses1a:
+	ΑΠ:Αμοιβες Προσωπικου 1a Βάση Παραστατικών I 5000
+	ΔΟΕ:Δαπάνες για Όργανα και Εξοπλισμό 1a Βάση Παραστατικών II 0
+	ΔΑΥ:Δαπάνες για Αγορά Υπηρεσιών 1a Βάση Παραστατικών III 5000
+	ΜΕξ:Μετακινήσεις στο Εξωτερικό 1a Βάση Παραστατικών IV 20000
+	
+expenses1b:	
+	ΔΟΕ: Δαπάνες για Όργανα και Εξοπλισμό 50000
+		
+expenses1c:	
+	ΔΑΥ: Δαπάνες για Αγορά Υπηρεσιών 45000
+	
+expenses2a:
+	Υπερ: Υπερκεφαλικά 25000
+
+
+
+*************************************************************
+
+
+Σε αυτό το σημείο θα ξεκινήσουμε να συσχετίσουμε τα νέα παραστατικά Αναδοχου(2) και Δικαιούχου (1)
+
+Αρχική εικόνα παραστατικών
+
+Παραστατικά αναδόχου
+PAR_ANAD_III_1 20000
+PAR_ANAD_III_2 20000
+
+Παραστατικα Δικαιούχου
+PAP_3 40000
+
+
+*************************************************************
+Δαπάνη ΜΕξ 
+
+Συσχετισμός Δαπάνης με ποσό 20000 (από τις 20000 που έχουν μείνει) ΜΕξ: Μετακινήσεις στο Εξωτερικό 1a Βάση Παραστατικών IV
+
+Δαπανη 20000 1a Βάση Παραστατικών IV
+{
+	"prjTdeGsEligExpId": 36340,
+	"eligExpAmnt": 20000, 
+	"contrVoucherNumber": "PAR_ANAD_III_1",
+	"contrAFT": "ANADOXOS_III",
+	"benefVoucherNumber": "PAP_3",
+	"benIbAft": "PAPAGIANAKOPOULOS",
+	"verStatus": "1"
+}
+
+
+Επομένως θα μείνει υπόλοιπο στην δαπάνη (ΜΕξ: Μετακινήσεις στο Εξωτερικό 1a Βάση Παραστατικών IV) το ποσό 0 
+
+Επίσης, η νέα εικόνα των παραστατικών είναι η παρακάτω:
+
+Παραστατικά αναδόχου
+PAR_ANAD_III_1 0
+PAR_ANAD_III_2 20000
+
+Παραστατικα Δικαιούχου
+PAP_3 20000
+
+Εικόνα δαπανών μετά την εισαγωγή του παραπάνω συσχετισμού
+
+expenses1a:
+	ΑΠ:Αμοιβες Προσωπικου 1a Βάση Παραστατικών I 5000
+	ΔΟΕ:Δαπάνες για Όργανα και Εξοπλισμό 1a Βάση Παραστατικών II 0
+	ΔΑΥ:Δαπάνες για Αγορά Υπηρεσιών 1a Βάση Παραστατικών III 5000
+	ΜΕξ:Μετακινήσεις στο Εξωτερικό 1a Βάση Παραστατικών IV 0
+	
+expenses1b:	
+	ΔΟΕ: Δαπάνες για Όργανα και Εξοπλισμό 50000
+		
+expenses1c:	
+	ΔΑΥ: Δαπάνες για Αγορά Υπηρεσιών 45000
+	
+expenses2a:
+	Υπερ: Υπερκεφαλικά 25000
+
+
+
+
+*************************************************************
+*************************************************************
+Δαπάνη ΔΑΥ 
+
+Συσχετισμός Δαπάνης με ποσό 5000 (από τις 5000 που έχουν μείνει) ΔΑΥ: Δαπάνες για Αγορά Υπηρεσιών 1a Βάση Παραστατικών III
+
+{
+        "prjTdeGsEligExpId": 36345,
+        "eligExpAmnt": 5000, 
+        "contrVoucherNumber": "PAR_ANAD_III_2",
+        "contrAFT": "ANADOXOS_III",
+        "benefVoucherNumber": "PAP_3 ",
+        "benIbAft": "PAPAGIANAKOPOULOS",
+        "verStatus": "1"
+}
+
+Επομένως θα μείνει υπόλοιπο στην δαπάνη (ΔΑΥ: Δαπάνες για Αγορά Υπηρεσιών 1a Βάση Παραστατικών III) το ποσό 0 
+
+Επίσης, η νέα εικόνα των παραστατικών είναι η παρακάτω:
+
+Παραστατικά αναδόχου
+PAR_ANAD_III_1 0
+PAR_ANAD_III_2 15000
+
+Παραστατικά Δικαιούχου
+PAP_3 15000
+
+
+Εικόνα δαπανών μετά την εισαγωγή του παραπάνω συσχετισμού
+
+expenses1a:
+	ΑΠ:Αμοιβες Προσωπικου 1a Βάση Παραστατικών I 5000
+	ΔΟΕ:Δαπάνες για Όργανα και Εξοπλισμό 1a Βάση Παραστατικών II 0
+	ΔΑΥ:Δαπάνες για Αγορά Υπηρεσιών 1a Βάση Παραστατικών III 0
+	ΜΕξ:Μετακινήσεις στο Εξωτερικό 1a Βάση Παραστατικών IV 0
+	
+expenses1b:	
+	ΔΟΕ: Δαπάνες για Όργανα και Εξοπλισμό 50000
+		
+expenses1c:	
+	ΔΑΥ: Δαπάνες για Αγορά Υπηρεσιών 45000
+	
+expenses2a:
+	Υπερ: Υπερκεφαλικά 25000
+
+
+**************************************************************************************************************************
+************************************************ 3o AKX ERGOU (33817 - 3) *************************************************************
+
+Η εικόνα των παραστατικών με ανοιχτό υπόλοιπο του προηγούμενου ΑΚΧ είναι 
+
+Παραστατικά αναδοχου
+PAR_ANAD_III_2 15000
+
+Παραστατικά Δικαιούχου
+PAP_3 15000
+
+
+Η εικόνα των Δαπανών μετά την επικύρωση του προηγούμενου ΑΚΧ είναι:
+
+	expenses1a:
+		ΑΠ:Αμοιβες Προσωπικου 1a Βάση Παραστατικών I 5000
+		ΔΟΕ:Δαπάνες για Όργανα και Εξοπλισμό 1a Βάση Παραστατικών II 0
+		ΔΑΥ:Δαπάνες για Αγορά Υπηρεσιών 1a Βάση Παραστατικών III 0
+		ΜΕξ:Μετακινήσεις στο Εξωτερικό 1a Βάση Παραστατικών IV 0
+		
+	expenses1b:	
+		ΔΟΕ: Δαπάνες για Όργανα και Εξοπλισμό 50000
+			
+	expenses1c:	
+		ΔΑΥ: Δαπάνες για Αγορά Υπηρεσιών 45000
+		
+	expenses2a:
+		Υπερ: Υπερκεφαλικά 25000
+
+	
+Σε αυτό το σενάριο θα χρησιμοποιήσουμε δύο παραστατικά ένα και ένα από το προηγούμενο ΑΚΧ και θα δημιουργήσουμε και τα παρακάτω
+
+Παραστατικά αναδόχου
+PAR_ANAD_IV_1 10000
+
+Παραστατικά Δικαιούχου
+PAP_4 10000
+
+Σε αυτό το ΑΚΧ θα εισάγουμε 2 νέα παραστατικά Αναδόχου(1) και Δικαιούχου (1)
+
+
+http://144.91.80.190:9000/createAndVerifiedDedaGsWS
+
+{
+  "user": "admin@synergic.gr",
+  "token": "470gcO7HTOhMKF9Bna07cusR0x3hv1Lx",
+  "data": {
+    "tdeId": 16178,
+    "dedaDescription": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    "percentageTde": 0,
+    "fileNumber": "NumberTest12367",
+    "creationDate": "14/04/2020",
+    "submissionDate": "15/04/2020",
+    "verificationDate": "15/04/2020",
+    "contrVouchers": [
+      {
+        "voucherDate": "25/01/2020",
+        "contrAFT": "ANADOXOS_IV",
+        "nameContr": "ANADOXOS_IV",
+        "voucherId": 41,
+        "voucherNumber": "PAR_ANAD_IV_1",
+        "totAmount": 10000,
+        "extraTotAmount": 10000
+      }
+    ],
+    "benefVouchers": [
+      {
+        "benIbAft": "PAPAGIANAKOPOULOS",
+        "voucherDate": "26/01/2020",
+        "voucherId": 123,
+        "voucherNumber": "PAP_4",
+        "totAmount": 10000,
+        "extraTotAmount": 10000
+      }
+    ],
+    "correlations": [
+    	
+      {
+        "prjTdeGsEligExpId": 36342,
+        "eligExpAmnt": 15000, 
+        "contrVoucherNumber": "PAR_ANAD_III_2",
+        "contrAFT": "ANADOXOS_III",
+        "benefVoucherNumber": "PAP_3",
+        "benIbAft": "PAPAGIANAKOPOULOS",
+        "verStatus": "1"
+      },
+       {
+        "prjTdeGsEligExpId": 36342,
+        "eligExpAmnt": 10000, 
+        "contrVoucherNumber": "PAR_ANAD_IV_1",
+        "contrAFT": "ANADOXOS_IV",
+        "benefVoucherNumber": "PAP_4",
+        "benIbAft": "PAPAGIANAKOPOULOS",
+        "verStatus": "1"
+      }
+      
+    ],
+    "ibPaymentVoucher": [
+      {
+        "voucherNumber": "V-EF_1",
+        "voucherId": 21,
+        "voucherDate": "15/03/2020",
+        "eligPubExp": 15000
+      }
+    ]
+  }
+}
+
+{
+    "status": "success",
+    "message": "Το παραστατικού δικαιούχου καταχωρήθηκε με επιτυχία.\n Τα παραστατικού αναδόχου καταχωρήθηκε με επιτυχία.\n Oι Συσχετισμοί ενημερώθηκαν με επιτυχία.\n Η υποβολή του ΤΔΕ πραγματοποιήθηκε με επιτυχία.\n Το παραστατικό δικαιούχου υποβλήθηκε με επιτυχία.\n Τα παραστατικά του ΕΦ καταχωρήθηκαν με επιτυχία.\n Το Δελτίο επικυρώθηκε με επιτυχία.\n Όλα τα πεδία του ΑΚΧ ενημερώθηκαν με επιτυχία."
+}
+
+
+*************************************************************
+
+Δαπάνη Υπερ 
+
+Συσχετισμός Δαπάνης με ποσό 15000 (από τις 25000 που έχουν μείνει) Υπερ: Υπερκεφαλικά expenses2a
+Σημείωση την συσχετίζουμε με παραστατικά του προηγούμενου ΑΚΧ
+
+{
+	"prjTdeGsEligExpId": 36342,
+	"eligExpAmnt": 15000, 
+	"contrVoucherNumber": "PAR_ANAD_III_2",
+	"contrAFT": "ANADOXOS_III",
+	"benefVoucherNumber": "PAP_3",
+	"benIbAft": "PAPAGIANAKOPOULOS",
+	"verStatus": "1"
+}
+
+
+Θα αφησει υπολοιπο στην δαπανη (expenses2a) ποσο 10000
+Επισης η νεα εικονα των παραστατικων ειναι 
+
+
+Επομένως θα μείνει υπόλοιπο στην δαπάνη (Υπερ: Υπερκεφαλικά expenses2a) το ποσό 10000 
+
+Επίσης, η νέα εικόνα των παραστατικών είναι η παρακάτω:
+
+Παραστατικά αναδόχου
+PAR_ANAD_III_2 0
+
+Παραστατικα Δικαιούχου
+PAP_3 0
+
+
+Εικόνα δαπανών μετά την εισαγωγή του παραπάνω συσχετισμού
+
+expenses1a:
+	ΑΠ:Αμοιβες Προσωπικου 1a Βάση Παραστατικών I 5000
+	ΔΟΕ:Δαπάνες για Όργανα και Εξοπλισμό 1a Βάση Παραστατικών II 0
+	ΔΑΥ:Δαπάνες για Αγορά Υπηρεσιών 1a Βάση Παραστατικών III 0
+	ΜΕξ:Μετακινήσεις στο Εξωτερικό 1a Βάση Παραστατικών IV 0
+	
+expenses1b:	
+	ΔΟΕ: Δαπάνες για Όργανα και Εξοπλισμό 50000
+		
+expenses1c:	
+	ΔΑΥ: Δαπάνες για Αγορά Υπηρεσιών 45000
+	
+expenses2a:
+	Υπερ: Υπερκεφαλικά 10000
+
+
+
+**************************************************************************************************************************
+
+
+Σε αυτό το σημείο θα εισάγουμε και θα συσχετίσουμε 2 νέα παραστατικά Αναδόχου(1) και Δικαιούχου (1)
+
+Παραστατικά αναδόχου
+PAR_ANAD_IV_1 10000
+
+Παραστατικά Δικαιούχου
+PAP_4 10000
+
+
+**************************************************************************************************************************
+
+Δαπάνη Υπερ  
+
+Συσχετισμός Δαπάνης με ποσό 10000 (από τις 10000 που έχουν μείνει) Υπερ: Υπερκεφαλικά 10000
+
+{
+	"prjTdeGsEligExpId": 36342,
+	"eligExpAmnt": 10000, 
+	"contrVoucherNumber": "PAR_ANAD_IV_1",
+	"contrAFT": "ANADOXOS_IV",
+	"benefVoucherNumber": "PAP_4",
+	"benIbAft": "PAPAGIANAKOPOULOS",
+	"verStatus": "1"
+}
+
+
+Επομένως θα μείνει υπόλοιπο στην δαπάνη (Υπερ: Υπερκεφαλικά expenses2a) το ποσό 0 
+
+Επίσης, η νέα εικόνα των παραστατικών είναι η παρακάτω:
+
+Παραστατικά αναδόχου
+PAR_ANAD_IV_1 0
+
+Παραστατικά Δικαιούχου
+PAP_4 0
+
+
+
+Εικόνα δαπανών μετά την εισαγωγή του παραπάνω συσχετισμού
+
+expenses1a:
+	ΑΠ:Αμοιβες Προσωπικου 1a Βάση Παραστατικών I 5000
+	ΔΟΕ:Δαπάνες για Όργανα και Εξοπλισμό 1a Βάση Παραστατικών II 0
+	ΔΑΥ:Δαπάνες για Αγορά Υπηρεσιών 1a Βάση Παραστατικών III 0
+	ΜΕξ:Μετακινήσεις στο Εξωτερικό 1a Βάση Παραστατικών IV 0
+	
+expenses1b:	
+	ΔΟΕ: Δαπάνες για Όργανα και Εξοπλισμό 50000
+		
+expenses1c:	
+	ΔΑΥ: Δαπάνες για Αγορά Υπηρεσιών 45000
+	
+expenses2a:
+	Υπερ: Υπερκεφαλικά 0
+
+
+
+
+************************************************ 4o Τελικό AKX ERGOU (33817 - 4) *************************************************************
+
+
+Από προηγούμενου ΑΚΧ δεν έχουμε παραστατικά με ανοιχτά υπόλοιπα
+
+Η εικόνα των Δαπανών μετά την επικύρωση του προηγούμενου ΑΚΧ είναι:
+	expenses1a:
+		ΑΠ:Αμοιβες Προσωπικου 1a Βάση Παραστατικών I 5000
+		ΔΟΕ:Δαπάνες για Όργανα και Εξοπλισμό 1a Βάση Παραστατικών II 0
+		ΔΑΥ:Δαπάνες για Αγορά Υπηρεσιών 1a Βάση Παραστατικών III 0
+		ΜΕξ:Μετακινήσεις στο Εξωτερικό 1a Βάση Παραστατικών IV 0
+		
+	expenses1b:	
+		ΔΟΕ: Δαπάνες για Όργανα και Εξοπλισμό 50000
+			
+	expenses1c:	
+		ΔΑΥ: Δαπάνες για Αγορά Υπηρεσιών 45000
+		
+	expenses2a:
+		Υπερ: Υπερκεφαλικά 0
+	
+--------------------------------------------------------------------------------------------------------------------------------
+Γι αυτό το σενάριο θα χρειαστεί να δημιουργήσουμε παραστατικά αναδόχου και δικαιούχου  για την δαπάνη ΑΠ:Αμοιβες Προσωπικου 1a Βάση Παραστατικών I (Υπόλοιπο: 5000)
+
+Παραστατικ;a αναδόχου
+PAR_ANAD_V_1 5000
+
+Παραστατικά Δικαιούχου
+PAP_5 5000
+
+http://144.91.80.190:9000/createAndVerifiedDedaGsWS
+
+{
+  "user": "admin@synergic.gr",
+  "token": "470gcO7HTOhMKF9Bna07cusR0x3hv1Lx",
+  "data": {
+    "tdeId": 16178,
+    "dedaDescription": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    "percentageTde": 0,
+    "fileNumber": "NumberTest12367",
+    "finalInProject": 1,
+    "creationDate": "14/04/2020",
+    "submissionDate": "15/04/2020",
+    "verificationDate": "15/04/2020",
+    "contrVouchers": [
+      {
+        "voucherDate": "25/01/2020",
+        "contrAFT": "ANADOXOS_V",
+        "nameContr": "ANADOXOS_V",
+        "voucherId": 41,
+        "voucherNumber": "PAR_ANAD_V_1",
+        "totAmount": 5000,
+        "extraTotAmount": 5000
+      }
+    ],
+    "benefVouchers": [
+      {
+        "benIbAft": "PAPAGIANAKOPOULOS",
+        "voucherDate": "26/01/2020",
+        "voucherId": 123,
+        "voucherNumber": "PAP_5",
+        "totAmount": 5000,
+        "extraTotAmount": 5000
+      }
+    ],
+    "correlations": [
+    	
+      {
+        "prjTdeGsEligExpId": 36344,
+        "eligExpAmnt": 5000, 
+        "contrVoucherNumber": "PAR_ANAD_V_1",
+        "contrAFT": "ANADOXOS_V",
+        "benefVoucherNumber": "PAP_5",
+        "benIbAft": "PAPAGIANAKOPOULOS",
+        "verStatus": "1"
+      },
+      {
+        "eligExpAmnt": 0,
+        "prjTdeGsEligExpId": 36361,  
+        "contrVoucherNumber": "",
+        "benefVoucherNumber": "",
+        "verStatus": "1",
+        "benIbAft": "",
+        "contrAFT": "",
+        "completedUnitNum":1, 
+		"implementationComments": "1b comments"
+		
+      },
+      {
+        "eligExpAmnt": 0,
+        "prjTdeGsEligExpId": 36367,  
+        "contrVoucherNumber": "",
+        "benefVoucherNumber": "",
+        "verStatus": "1",
+        "benIbAft": "",
+        "contrAFT": "",
+        "completedWorkInd":1, 
+		"implementationComments": "1c comments"
+		
+      }
+      
+    ],
+    "ibPaymentVoucher": [
+      {
+        "voucherNumber": "V-EF_1",
+        "voucherId": 21,
+        "voucherDate": "15/03/2020",
+        "eligPubExp": 50000
+      },
+            {
+        "voucherNumber": "V-EF_2",
+        "voucherId": 21,
+        "voucherDate": "15/03/2020",
+        "eligPubExp": 10000
+      },
+            {
+        "voucherNumber": "V-EF_3",
+        "voucherId": 21,
+        "voucherDate": "15/03/2020",
+        "eligPubExp": 10000
+      }
+    ]
+  }
+}
+
+
+
+*************************************************************
+Δαπάνη ΑΠ  
+
+Συσχετισμός Δαπάνης με ποσό 5000 (από τις 5000 που έχουν μείνει) ΑΠ: Αμοιβες Προσωπικου 1a Βάση Παραστατικών I
+{
+	"prjTdeGsEligExpId": 36344,
+	"eligExpAmnt": 5000, 
+	"contrVoucherNumber": "PAR_ANAD_V_1",
+	"contrAFT": "ANADOXOS_V",
+	"benefVoucherNumber": "PAP_5",
+	"benIbAft": "PAPAGIANAKOPOULOS",
+	"verStatus": "1"
+}
+
+Επομένως θα μείνει υπόλοιπο στην δαπάνη ( ΑΠ: Αμοιβες Προσωπικου 1a Βάση Παραστατικών I) το ποσό 0 
+
+Επίσης, η νέα εικόνα των παραστατικών είναι η παρακάτω:
+
+Παραστατικ;a αναδόχου
+PAR_ANAD_V_1 0
+
+Παραστατικά Δικαιούχου
+PAP_5 0
+
+
+Εικόνα δαπανών μετά την εισαγωγή του παραπάνω συσχετισμού
+
+expenses1a:
+	ΑΠ:Αμοιβες Προσωπικου 1a Βάση Παραστατικών I 0
+	ΔΟΕ:Δαπάνες για Όργανα και Εξοπλισμό 1a Βάση Παραστατικών II 0
+	ΔΑΥ:Δαπάνες για Αγορά Υπηρεσιών 1a Βάση Παραστατικών III 0
+	ΜΕξ:Μετακινήσεις στο Εξωτερικό 1a Βάση Παραστατικών IV 0
+	
+expenses1b:	
+	ΔΟΕ: Δαπάνες για Όργανα και Εξοπλισμό 50000
+		
+expenses1c:	
+	ΔΑΥ: Δαπάνες για Αγορά Υπηρεσιών 45000
+	
+expenses2a:
+	Υπερ: Υπερκεφαλικά 0
+
+
+
+**************************************************************************************************************************
+Σε αυτό το σημείο θα συσχετίσουμε δαπάνες 1b,1c, η εισαγωγή συσχετισμων γίνετε με παραστατικά αναδόχου και δικαιούχου που δημιουργεί το σύστημα
+
+Συγκεκριμενά
+ 
+1b : ΔΑΠΑΝΕΣ ΒΑΣΕΙ ΤΥΠΟΠΟΙΗΜΕΝΗΣ ΚΛΙΜΑΚΑΣ ΚΟΣΤΟΥΣ ΑΝΑ ΜΟΝΑΔΑ 
+	Θα συμπληρωσουμε στον συσχετισμο του json το id της δαπάνης που παίρνουμε (όπως και στις άλλες περιπτώσεις) από την getPrjTDEGsDirectEligExpListWS?partnerAft=PAPAGIANAKOPOULOS&tdeId=16178&user=admin@synergic.gr&token=470gcO7HTOhMKF9Bna07cusR0x3hv1Lx
+	
+	Στην συγκεκριμένη περίπτωση αυτό είναι 36367
+	
+	Επίσης θα συμπληρώσουμε την τιμή του πεδίου  completedUnitNum: 1 (παραδειγμα αντί για 1 βάζετε τις κανονικές) (οι οποίες πρέπει ναι είναι ίδιες ή λιγότερες από αυτές που δηλώσαμε στο ΤΔΕ γι αυτήν την δαπάνη στην συγκεκριμενη
+	περιπτωση στο ΤΔΕ το συνολο των μοναδων ειναι 5 και το ποσό δαπάνης 5*10000 = 50000)
+	
+	Όπως και implementationComments σχόλια αν υπάρχουν.
+
+**************************************************************************************************************************
+*************************************************************
+ 
+Δαπάνη ΔΟΕ:Δαπάνες για Όργανα και Εξοπλισμό (expenses1b) 
+
+Συσχετισμός Δαπάνης ΔΟΕ:Δαπάνες για Όργανα και Εξοπλισμό (expenses1b)  με ποσό 10000 (από τις 50000 που έχουν μείνει γιατί στείλαμε completedUnitNum=1)
+  {
+	"eligExpAmnt": 0,
+	"prjTdeGsEligExpId": 36361,  
+	"contrVoucherNumber": "",
+	"benefVoucherNumber": "",
+	"verStatus": "1",
+	"benIbAft": "",
+	"contrAFT": "",
+	"completedUnitNum":1,  
+	"implementationComments": "1b comments"
+	
+  }
+	  
+Εικόνα δαπανών μετά την εισαγωγή του παραπάνω συσχετισμού
+
+expenses1a:
+	ΑΠ:Αμοιβες Προσωπικου 1a Βάση Παραστατικών I 0
+	ΔΟΕ:Δαπάνες για Όργανα και Εξοπλισμό 1a Βάση Παραστατικών II 0
+	ΔΑΥ:Δαπάνες για Αγορά Υπηρεσιών 1a Βάση Παραστατικών III 0
+	ΜΕξ:Μετακινήσεις στο Εξωτερικό 1a Βάση Παραστατικών IV 0
+	
+expenses1b:	
+	ΔΟΕ: Δαπάνες για Όργανα και Εξοπλισμό 40000
+		
+expenses1c:	
+	ΔΑΥ: Δαπάνες για Αγορά Υπηρεσιών 45000
+	
+expenses2a:
+	Υπερ: Υπερκεφαλικά 0
+
+	
+	
+	
+**************************************************************************************************************************
+Για τις δαπάνες 1c θα συμπληρώσουμε την τιμή στο πεδίο completedWorkInd με 1 εφόσον επιθυμούμε να δημιουργηθεί συσχετισμός γι αυτήν την δαπάνη. 
+Το σύστημα δημιουργεί αυτόματα παραστατικά αναδόχου και δικαιούχου γι αυτόν τον τύπο δαπάνης.
+
+Συγκεκριμένα 
+1c : ΔΑΠΑΝΕΣ ΜΕ ΤΗ ΜΟΡΦΗ ΚΑΤ' ΑΠΟΚΟΠΗ ΠΟΣΟΥ
+
+	Θα συμπληρώσουμε στον συσχετισμό του json το id της δαπάνης που παίρνουμε (όπως και στις άλλες περιπτώσεις) από την getPrjTDEGsDirectEligExpListWS?partnerAft=PAPAGIANAKOPOULOS&tdeId=16178&user=admin@synergic.gr&token=470gcO7HTOhMKF9Bna07cusR0x3hv1Lx
+	
+	Στην συγκεκριμένη περίπτωση αυτό είναι 36361
+	Οπως και implementationComments σχόλια αν υπάρχουν.
+
+**************************************************************************************************************************
+*************************************************************
+
+Δαπάνη ΔΑΥ: Δαπάνες για Αγορά Υπηρεσιών (expenses1c) 
+
+Συσχετισμός Δαπάνης ΔΑΥ: Δαπάνες για Αγορά Υπηρεσιών (expenses1c)  με ποσό 45000 (από τις 45000 που έχουν μείνει γιατί στείλαμε completedWorkInd=1)
+ 
+
+  {
+	"eligExpAmnt": 0,
+	"prjTdeGsEligExpId": 36367,  
+	"contrVoucherNumber": "",
+	"benefVoucherNumber": "",
+	"verStatus": "1",
+	"benIbAft": "",
+	"contrAFT": "",
+	"completedWorkInd":1, 
+	"implementationComments": "1c comments"
+	
+  }
+	  
+	  
+Εικόνα δαπανών μετά την εισαγωγή του παραπάνω συσχετισμού
+
+expenses1a:
+	ΑΠ:Αμοιβες Προσωπικου 1a Βάση Παραστατικών I 0
+	ΔΟΕ:Δαπάνες για Όργανα και Εξοπλισμό 1a Βάση Παραστατικών II 0
+	ΔΑΥ:Δαπάνες για Αγορά Υπηρεσιών 1a Βάση Παραστατικών III 0
+	ΜΕξ:Μετακινήσεις στο Εξωτερικό 1a Βάση Παραστατικών IV 0
+	
+expenses1b:	
+	ΔΟΕ: Δαπάνες για Όργανα και Εξοπλισμό 40000
+		
+expenses1c:	
+	ΔΑΥ: Δαπάνες για Αγορά Υπηρεσιών 0
+	
+expenses2a:
+	Υπερ: Υπερκεφαλικά 0
+
+	
+
+	
+	
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+*******************************************************************VALIDATIONS*****************************************************************************
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+•Σε περίπτωση όπου η Δαπάνη ειναι μεγαλύτερη από το υπόλοιπο του παραστατικού δικαιούχου ή αναδόχου τότε η μέθοδος γυρνάει μήνυμα λάθους και διαγράφει το Δεδα.
+{
+    "status": "error",
+    "message": "Προέκυψε κάποιο πρόβλημα κατα την διαδικασία εισαγωγής του ΑΚΧ και γιαυτό διαγράφθηκε,παρακαλώ προσπαθήστε ξανα.Το ποσό της κατηγορίας επιλέξιμης δαπάνης υπερβαίνει το υπόλοιπο για το παραστατικό του αναδόχου με αριθμό PAR_ANAD_I_1 και ΑΦΤ ANADOXOS_I. To AKX Διαγράφθηκε με επιτυχία"
+}
+
+
+
+
+
+
+
+
+
+

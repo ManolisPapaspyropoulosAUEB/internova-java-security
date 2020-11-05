@@ -61,10 +61,6 @@ POST        /getWarehouses                               controllers.archives.Wa
 POST        /updateWarehouse                             controllers.archives.WarehousesController.updateWarehouse(req: Request)
 POST        /deleteWarehouse                             controllers.archives.WarehousesController.deleteWarehouse(req: Request)
 
-#WarehousesPrintController
-POST        /exportWarehousesAsXLS                       controllers.archives.ArchivesPrintController.exportWarehousesAsXLS(req: Request)
-POST        /deleteXLSFromFolder                         controllers.archives.ArchivesPrintController.deleteXLSFromFolder(req: Request)
-POST        /exportFactoriesAsXLS                        controllers.archives.ArchivesPrintController.exportFactoriesAsXLS(req: Request)
 
 #FactoriesController
 POST        /getFactories                                controllers.archives.FactoriesController.getFactories(req: Request)
@@ -72,7 +68,7 @@ POST        /addFactory                                  controllers.archives.Fa
 POST        /updateFactory                               controllers.archives.FactoriesController.updateFactory(req: Request)
 POST        /deleteFactory                               controllers.archives.FactoriesController.deleteFactory(req: Request)
 
-#FactoriesController
+#ManagersController
 POST        /addManager                                  controllers.archives.ManagersController.addManager(req: Request)
 POST        /updateManager                               controllers.archives.ManagersController.updateManager(req: Request)
 POST        /deleteManager                               controllers.archives.ManagersController.deleteManager(req: Request)
@@ -87,7 +83,16 @@ POST        /updateCustomerSupplier                      controllers.archives.cu
 POST        /deleteCustomerSupplier                      controllers.archives.customers_suppliers.CustomersSuppliersController.deleteCustomerSupplier(req: Request)
 POST        /getCustomersSuppliers                       controllers.archives.customers_suppliers.CustomersSuppliersController.getCustomersSuppliers(req: Request)
 POST        /getAllCustomersSuppliersNoPagination        controllers.archives.customers_suppliers.CustomersSuppliersController.getAllCustomersSuppliersNoPagination(req: Request)
-POST        /exportCustomersSuppliersAsXls               controllers.archives.customers_suppliers.CustomersSuppliersPrintController.exportCustomersSuppliersAsXls(req: Request)
+
+
+
+#ArchivesPrintController
+POST        /exportWarehousesAsXLS                       controllers.archives.ArchivesPrintController.exportWarehousesAsXLS(req: Request)
+POST        /deleteXLSFromFolder                         controllers.archives.ArchivesPrintController.deleteXLSFromFolder(req: Request)
+POST        /exportFactoriesAsXLS                        controllers.archives.ArchivesPrintController.exportFactoriesAsXLS(req: Request)
+POST        /exportCustomersSuppliersAsXls               controllers.archives.ArchivesPrintController.exportCustomersSuppliersAsXls(req: Request)
+POST        /exportManagersAsXLS                         controllers.archives.ArchivesPrintController.exportManagersAsXLS(req: Request)
+
 
 #BillingsController
 POST        /addBillingEntry                             controllers.archives.customers_suppliers.BillingsController.addBillingEntry(req: Request)
