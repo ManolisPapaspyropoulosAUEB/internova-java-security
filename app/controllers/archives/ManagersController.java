@@ -364,10 +364,6 @@ public class ManagersController {
                                             if (!systemBrandName.equalsIgnoreCase("") && systemBrandName != null) {
                                                 sqlManagers += " and manager.system_id in (select id from factories f where f.brand_name like '%" + systemBrandName + "%') ";
                                             }
-
-                                            //systemBrandName
-                                            System.out.println(sqlManagers);
-
                                             List<ManagersEntity> posListAll
                                                     = (List<ManagersEntity>) entityManager.createNativeQuery(
                                                     sqlManagers, ManagersEntity.class).getResultList();
@@ -410,7 +406,6 @@ public class ManagersController {
                                                     sHmpam.put("systemBrandName", "-");
                                                     sHmpam.put("system", "-");
                                                 }
-
                                                 serversList.add(sHmpam);
                                             }
                                             returnList_future.put("data", serversList);
