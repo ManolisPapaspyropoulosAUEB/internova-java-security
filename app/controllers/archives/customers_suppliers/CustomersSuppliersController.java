@@ -198,6 +198,8 @@ public class CustomersSuppliersController {
     public Result deleteCustomerSupplier(final Http.Request request) throws IOException {
         try {
             JsonNode json = request.body().asJson();
+            ((ObjectNode) json).remove("internovaSeller");
+            ((ObjectNode) json).remove("billing");
             if (json == null) {
                 return badRequest("Expecting Json data");
             } else {
@@ -207,6 +209,8 @@ public class CustomersSuppliersController {
                                 return jpaApi.withTransaction(entityManager -> {
                                     ObjectNode delete_result = Json.newObject();
                                     Long id = json.findPath("id").asLong();
+                                    System.out.println(id);
+                                    System.out.println(json);
                                     CustomersSuppliersEntity customersSuppliersEntity = entityManager.find(CustomersSuppliersEntity.class, id);
                                     entityManager.remove(customersSuppliersEntity);
                                     delete_result.put("status", "success");

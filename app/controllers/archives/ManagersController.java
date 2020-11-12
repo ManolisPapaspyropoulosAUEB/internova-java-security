@@ -362,12 +362,21 @@ public class ManagersController {
                                                 sqlManagers += " and manager.id=" + id;
                                             }
                                             if (!systemBrandName.equalsIgnoreCase("") && systemBrandName != null) {
-                                                sqlManagers += " and manager.system_id in (select id from factories f where f.brand_name like '%" + systemBrandName + "%') ";
+                                                sqlManagers += " and " +
+                                                        "(manager.system_id in " +
+                                                        "(select id " +
+                                                        "from factories f" +
+                                                        "where f.brand_name like '%"+systemBrandName + "%'" +
+                                                        "union" +
+                                                        "select id" +
+                                                        "from warehouses w" +
+                                                        "where w.brand_name like '%"+systemBrandName+"%'))";
                                             }
                                             List<ManagersEntity> posListAll
                                                     = (List<ManagersEntity>) entityManager.createNativeQuery(
                                                     sqlManagers, ManagersEntity.class).getResultList();
                                             sqlManagers += "order by creation_date desc";
+                                            System.out.println(sqlManagers);
                                             if (!start.equalsIgnoreCase("") && start != null) {
                                                 sqlManagers += " limit " + start + "," + limit;
                                             }
@@ -394,13 +403,11 @@ public class ManagersController {
                                                     switch (j.getSystem()) {
                                                         case "Εργοστάσιο":
                                                             sHmpam.put("systemBrandName", entityManager.find(FactoriesEntity.class, j.getSystemId()).getBrandName());
-
                                                             break;
                                                         case "Αποθήκη":
                                                             sHmpam.put("systemBrandName", entityManager.find(WarehousesEntity.class, j.getSystemId()).getBrandName());
                                                             break;
                                                         default:
-                                                            // code block
                                                     }
                                                 }else{
                                                     sHmpam.put("systemBrandName", "-");
