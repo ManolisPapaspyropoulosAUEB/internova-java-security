@@ -92,9 +92,22 @@ public class SecurityPrintsController {
                                                 row.createCell((short) 6).setCellValue(usersEntityList.get(i).getMobilePhone());
                                                 row.createCell((short) 7).setCellValue(usersEntityList.get(i).getStatus());
                                                 row.createCell((short) 8).setCellValue(usersEntityList.get(i).getToken());
-                                                row.createCell((short) 9).setCellValue(entityManager.find(RolesEntity.class, usersEntityList.get(i).getRoleId()).getName());
-                                                row.createCell((short) 10).setCellValue(entityManager.find(OrganizationsEntity.class, usersEntityList.get(i).getOrgId()).getName());
-                                                row.createCell((short) 11).setCellValue(entityManager.find(DepartmentsEntity.class, usersEntityList.get(i).getDepId()).getDepartment());
+                                                if(usersEntityList.get(i).getRoleId()!=0){
+                                                    row.createCell((short) 9).setCellValue(entityManager.find(RolesEntity.class, usersEntityList.get(i).getRoleId()).getName());
+                                                }else{
+                                                    row.createCell((short) 9).setCellValue("-");
+                                                }
+                                                if( usersEntityList.get(i).getOrgId()!=0){
+                                                    row.createCell((short) 10).setCellValue(entityManager.find(OrganizationsEntity.class, usersEntityList.get(i).getOrgId()).getName());
+                                                }else{
+                                                    row.createCell((short) 10).setCellValue("-");
+                                                }
+                                                if(usersEntityList.get(i).getDepId()!=0){
+                                                    row.createCell((short) 11).setCellValue(entityManager.find(DepartmentsEntity.class, usersEntityList.get(i).getDepId()).getDepartment());
+                                                }else{
+                                                    row.createCell((short) 11).setCellValue("-");
+
+                                                }
                                                 DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd");
                                                 String creationDateString = myDateFormat.format(usersEntityList.get(i).getCreationDate());
                                                 row.createCell((short) 12).setCellValue(creationDateString);
