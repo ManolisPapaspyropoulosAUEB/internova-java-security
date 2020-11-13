@@ -56,7 +56,6 @@ public class ManagersController {
                                 String system = json.findPath("system").asText();
                                 Long system_id = json.findPath("system_id").asLong();
                                 Long selectedManagerId = json.findPath("selectedManagerId").asLong();
-
                                 if(selectedManagerId!=0){
                                     ManagersEntity manager = entityManager.find(ManagersEntity.class,selectedManagerId);
                                     manager.setSystem(system);
@@ -78,9 +77,6 @@ public class ManagersController {
                                     }
                                     entityManager.persist(manager);
                                 }
-
-                                //
-
                                 result_add.put("status", "success");
                                 result_add.put("message", "Η καταχώρηση ολοκληρώθηκε με επιτυχία!");
                                 return result_add;
@@ -372,6 +368,7 @@ public class ManagersController {
                                                         "from warehouses w" +
                                                         "where w.brand_name like '%"+systemBrandName+"%'))";
                                             }
+
                                             List<ManagersEntity> posListAll
                                                     = (List<ManagersEntity>) entityManager.createNativeQuery(
                                                     sqlManagers, ManagersEntity.class).getResultList();

@@ -20,12 +20,13 @@ POST        /updateRole                                  controllers.security.Ro
 POST        /deleteRole                                  controllers.security.RolesController.deleteRole(req: Request)
 POST        /getRoles                                    controllers.security.RolesController.getRoles(req: Request)
 
-#UsersControllers downloadDocument
+#UsersControllers
 POST        /addUser                                     controllers.security.UsersControllers.addUser(req: Request)
 POST        /updateUser                                  controllers.security.UsersControllers.updateUser(req: Request)
 POST        /deleteUser                                  controllers.security.UsersControllers.deleteUser(req: Request)
 POST        /getUsers                                    controllers.security.UsersControllers.getUsers(req: Request)
 POST        /updatePassword                              controllers.security.UsersControllers.updatePassword(req: Request)
+POST        /login                                       controllers.security.UsersControllers.login(req: Request)
 
 #AuditLogsController
 POST        /addAuditLog                                 controllers.security.AuditLogsController.addAuditLog(req: Request)
@@ -67,6 +68,7 @@ POST        /getFactories                                controllers.archives.Fa
 POST        /addFactory                                  controllers.archives.FactoriesController.addFactory(req: Request)
 POST        /updateFactory                               controllers.archives.FactoriesController.updateFactory(req: Request)
 POST        /deleteFactory                               controllers.archives.FactoriesController.deleteFactory(req: Request)
+POST        /getAllFactoriesNoPagination                 controllers.archives.FactoriesController.getAllFactoriesNoPagination(req: Request)
 
 #ManagersController
 POST        /addManager                                  controllers.archives.ManagersController.addManager(req: Request)

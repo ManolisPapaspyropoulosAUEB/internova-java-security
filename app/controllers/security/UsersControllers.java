@@ -275,6 +275,77 @@ public class UsersControllers {
     }
 
 
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    @BodyParser.Of(BodyParser.Json.class)
+    public Result login(final Http.Request request) throws IOException {
+            JsonNode json = request.body().asJson();
+            if (json == null) {
+                return badRequest("Expecting Json data");
+            } else {
+                try {
+                    System.out.println(json);
+                    ObjectNode result = Json.newObject();
+                    CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
+                                return jpaApi.withTransaction(entityManager -> {
+                                    ObjectNode result_future = Json.newObject();
+                                    String email = json.findPath("email").asText();
+                                    String password = json.findPath("password").asText();
+                                    String loginSQL = "";
+                                    try {
+                                        loginSQL = "select * from users u where u.email="+"'"+email+"'" +" and u.password="+"'"+encrypt(password)+"'";
+                                        System.out.println(loginSQL);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                    List<UsersEntity> usersEntityList = (List<UsersEntity>)  entityManager.createNativeQuery(loginSQL,UsersEntity.class).getResultList();
+                                    if(usersEntityList.size()>0){
+                                        result_future.put("status", "ok");
+                                        result_future.put("id", usersEntityList.get(0).getUserId() );
+                                        result_future.put("username", usersEntityList.get(0).getUsername() );
+                                        result_future.put("firstName", usersEntityList.get(0).getFirstname() );
+                                        result_future.put("lastName", usersEntityList.get(0).getLastname() );
+                                        result_future.put("email", usersEntityList.get(0).getEmail() );
+                                        try {
+                                            result_future.put("token", encrypt(getSaltString()) );
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                            result_future.put("status", "error");
+                                            result_future.put("message", "Προβλημα κατα την ανάκτηση");
+                                        }
+                                    }else{
+                                        String emailSql = "select * from users u where u.email="+"'"+email+"'";
+                                        List<UsersEntity> usersEntityListEmailMatch = (List<UsersEntity>)  entityManager.createNativeQuery(emailSql,UsersEntity.class).getResultList();
+                                        if(usersEntityListEmailMatch.size()>0){
+                                            result_future.put("status", "error");
+                                            result_future.put("message", "Λάνθασμένος κωδικός πρόσβασης");
+                                        }else {
+                                            result_future.put("status", "error");
+                                            result_future.put("message", "Δεν βρέθηκε χρήστης με αυτό το email");
+                                        }
+                                    }
+
+                                    return result_future;
+                                });
+                            },
+                            executionContext);
+                    result = (ObjectNode) addFuture.get();
+                    return ok(result);
+                } catch (Exception e) {
+                    ObjectNode result = Json.newObject();
+                    e.printStackTrace();
+                    result.put("status", "error");
+                    result.put("message", "Προβλημα κατα την ανάκτηση");
+                    return ok(result);
+                }
+            }
+
+    }
+
+
+
+
+
     @SuppressWarnings({"Duplicates", "unchecked"})
     @BodyParser.Of(BodyParser.Json.class)
     public Result deleteUser(final Http.Request request) throws IOException {
@@ -493,7 +564,7 @@ public class UsersControllers {
                                                 sHmpam.put("orgId", j.getOrgId());
                                                 sHmpam.put("roleId", j.getRoleId());
                                                 sHmpam.put("depId", j.getDepId());
-                                                if (j.getOrgId() != null) {
+                                                if (j.getOrgId() != null && j.getOrgId()!=0) {
                                                     HashMap<String, Object> orgMap = new HashMap<>();
                                                     OrganizationsEntity organizationsEntity = entityManager.find(OrganizationsEntity.class, j.getOrgId());
                                                     orgMap.put("name", organizationsEntity.getName());
@@ -501,7 +572,7 @@ public class UsersControllers {
                                                     sHmpam.put("organization", orgMap);
                                                     sHmpam.put("orgName", organizationsEntity.getName());
                                                 }
-                                                if (j.getRoleId() != null) {
+                                                if (j.getRoleId() != null && j.getRoleId()!=0) {
                                                     HashMap<String, Object> roleMap = new HashMap<>();
                                                     RolesEntity rolesEntity = entityManager.find(RolesEntity.class, j.getRoleId());
                                                     roleMap.put("name", rolesEntity.getName());
@@ -509,7 +580,7 @@ public class UsersControllers {
                                                     sHmpam.put("role", roleMap);
                                                     sHmpam.put("roleName", rolesEntity.getName());
                                                 }
-                                                if (j.getDepId() != null) {
+                                                if (j.getDepId() != null && j.getDepId()!=0) {
                                                     HashMap<String, Object> depMap = new HashMap<>();
                                                     DepartmentsEntity departmentsEntity = entityManager.find(DepartmentsEntity.class, j.getDepId());
                                                     depMap.put("name", departmentsEntity.getDepartment());

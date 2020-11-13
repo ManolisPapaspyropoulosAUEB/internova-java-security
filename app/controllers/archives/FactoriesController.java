@@ -11,6 +11,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import javax.inject.Inject;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,6 +29,99 @@ public class FactoriesController {
         this.jpaApi = jpaApi;
         this.executionContext = executionContext;
     }
+
+    //getAllFactoriesNoPagination
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    public Result getAllFactoriesNoPagination(final Http.Request request) throws IOException {  // san parametro pernei to org key
+        ObjectNode result = Json.newObject();
+        System.out.println("getAllFactoriesNoPagination>>");
+        try {
+            JsonNode json = request.body().asJson();
+            if (json == null) {
+                return badRequest("Expecting Json data");
+            } else {
+                if (json == null) {
+                    result.put("status", "error");
+                    result.put("message", "Δεν εχετε αποστειλει εγκυρα δεδομενα.");
+                    return ok(result);
+                } else {
+                    ObjectMapper ow = new ObjectMapper();
+                    HashMap<String, Object> returnList = new HashMap<String, Object>();
+                    String jsonResult = "";
+                    CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
+                                return jpaApi.withTransaction(
+                                        entityManager -> {//appointmentRequired warehouseId
+
+                                            String sqlWarehouses= "select * from factories pos where 1=1 ";
+                                            HashMap<String, Object> returnList_future = new HashMap<String, Object>();
+                                            List<HashMap<String, Object>> filalist = new ArrayList<HashMap<String, Object>>();
+                                            List<FactoriesEntity> warehousesEntityList
+                                                    = (List<FactoriesEntity>) entityManager.createNativeQuery(
+                                                    sqlWarehouses, FactoriesEntity.class).getResultList();
+                                            for (FactoriesEntity j : warehousesEntityList) {
+                                                HashMap<String, Object> sHmpam = new HashMap<String, Object>();
+                                                sHmpam.put("address", j.getAddress());
+                                                sHmpam.put("brandName", j.getBrandName());
+                                                sHmpam.put("city", j.getCity());
+                                                sHmpam.put("creationDate", j.getCreationDate());
+                                                sHmpam.put("appointmentRequired", j.getAppointmentRequired());
+                                                sHmpam.put("email", j.getEmail());
+                                                sHmpam.put("comments", j.getComments());
+                                                sHmpam.put("id", j.getId());
+                                                sHmpam.put("factoryId", j.getId());
+                                                sHmpam.put("manager", j.getManager());
+                                                sHmpam.put("postalCode", j.getPostalCode());
+                                                sHmpam.put("region", j.getRegion());
+                                                sHmpam.put("telephone", j.getTelephone());
+                                                sHmpam.put("updateDate", j.getUpdateDate());
+                                                sHmpam.put("longitude", j.getLongtitude());
+                                                sHmpam.put("latitude", j.getLattitude());
+                                                sHmpam.put("schedule", j.getSchedule());
+                                                sHmpam.put("country", j.getCountry());
+                                                sHmpam.put("site", j.getSite());
+                                                sHmpam.put("coordinates", j.getCoordinates());
+                                                sHmpam.put("unloadingLoadingCode", j.getUnloadingLoadingCode());
+                                                sHmpam.put("appointmentDays", j.getAppointmentDays());
+                                                if(j.getAppointmentRequired()==1){
+                                                    sHmpam.put("appointmentRequired", j.getAppointmentRequired());
+                                                }else{
+                                                    sHmpam.put("appointmentRequired", j.getAppointmentRequired());
+                                                }
+                                                filalist.add(sHmpam);
+                                            }
+                                            returnList_future.put("data", filalist);
+                                            returnList_future.put("total", filalist.size());
+                                            returnList_future.put("status", "success");
+                                            returnList_future.put("message", "success");
+                                            return returnList_future;
+                                        });
+                            },
+                            executionContext);
+                    returnList = getFuture.get();
+                    DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                    ow.setDateFormat(myDateFormat);
+                    try {
+                        jsonResult = ow.writeValueAsString(returnList);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        result.put("status", "error");
+                        result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων ");
+                        return ok(result);
+                    }
+                    return ok(jsonResult);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων");
+            return ok(result);
+        }
+    }
+
+
+
+
     @SuppressWarnings({"Duplicates", "unchecked"})
     public Result getFactories(final Http.Request request) throws IOException {  // san parametro pernei to org key
         ObjectNode result = Json.newObject();
@@ -114,6 +208,12 @@ public class FactoriesController {
                                             List<FactoriesEntity> warehousesEntityList
                                                     = (List<FactoriesEntity>) entityManager.createNativeQuery(
                                                     sqlWarehouses, FactoriesEntity.class).getResultList();
+
+
+                                            String sqlMin = "select min(id) from factories cs ";
+                                            String sqlMax = "select max(id) from factories cs ";
+                                            BigInteger minId = (BigInteger) entityManager.createNativeQuery(sqlMin).getSingleResult();
+                                            BigInteger maxId = (BigInteger) entityManager.createNativeQuery(sqlMax).getSingleResult();
                                             for (FactoriesEntity j : warehousesEntityList) {
                                                 HashMap<String, Object> sHmpam = new HashMap<String, Object>();
                                                 sHmpam.put("address", j.getAddress());
@@ -138,6 +238,21 @@ public class FactoriesController {
                                                 sHmpam.put("coordinates", j.getCoordinates());
                                                 sHmpam.put("unloadingLoadingCode", j.getUnloadingLoadingCode());
                                                 sHmpam.put("appointmentDays", j.getAppointmentDays());
+                                                String sqlNextId = "select min(id) from factories cs where cs.creation_date >"+ "'"+ j.getCreationDate()+"'";
+                                                String sqlPreviousId = "select max(id) from factories cs where cs.creation_date < "+"'"  + j.getCreationDate()+"'";
+                                                BigInteger nextId = (BigInteger) entityManager.createNativeQuery(sqlNextId).getSingleResult();
+                                                BigInteger previousId = (BigInteger) entityManager.createNativeQuery(sqlPreviousId).getSingleResult();
+                                                if(nextId!=null){
+                                                    sHmpam.put("previousId",nextId);
+                                                }else{
+                                                    sHmpam.put("previousId",maxId);
+                                                }
+                                                if(previousId!=null){
+                                                    sHmpam.put("nextId", previousId);
+                                                }else{
+                                                    sHmpam.put("nextId", minId);
+                                                }
+
                                                 if(j.getAppointmentRequired()==1){
                                                     sHmpam.put("appointmentRequired", j.getAppointmentRequired());
                                                 }else{
@@ -354,7 +469,7 @@ public class FactoriesController {
                                     FactoriesEntity factoriesEntity = entityManager.find(FactoriesEntity.class,id);
                                     entityManager.remove(factoriesEntity);
                                     result_add.put("status", "success");
-                                    result_add.put("message", "Η καταχώρηση ολοκληρώθηκε με επιτυχία!");
+                                    result_add.put("message", "Η διαγραφή ολοκληρώθηκε με επιτυχία!");
                                     return result_add;
                                 });
                             },
