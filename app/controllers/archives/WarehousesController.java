@@ -211,7 +211,7 @@ public class WarehousesController {
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
-    public Result getWarehouses(final Http.Request request) throws IOException {  // san parametro pernei to org key
+    public Result getWarehouses(final Http.Request request) throws IOException {  //
         ObjectNode result = Json.newObject();
         try {
             JsonNode json = request.body().asJson();
@@ -240,11 +240,15 @@ public class WarehousesController {
                                             String region = json.findPath("region").asText();
                                             String telephone = json.findPath("telephone").asText();
                                             String creationDate = json.findPath("creationDate").asText();
+                                            String warehouseId = json.findPath("warehouseId").asText();
                                             String start = json.findPath("start").asText();
                                             String limit = json.findPath("limit").asText();
                                             String sqlWarehouses= "select * from warehouses pos where 1=1 ";
                                             if(!id.equalsIgnoreCase("") && id!=null){
                                                 sqlWarehouses+=" and pos.id like '%"+id+"%'";
+                                            }
+                                            if(!warehouseId.equalsIgnoreCase("") && warehouseId!=null){
+                                                sqlWarehouses+=" and pos.id like '%"+warehouseId+"%'";
                                             }
                                             if(!address.equalsIgnoreCase("") && address!=null){
                                                 sqlWarehouses+=" and pos.address like '%"+address+"%'";
@@ -252,14 +256,12 @@ public class WarehousesController {
                                             if(!brandName.equalsIgnoreCase("") && brandName!=null){
                                                 sqlWarehouses+=" and pos.brand_name like '%"+brandName+"%'";
                                             }
-
                                             if(!brandName.equalsIgnoreCase("") && brandName!=null){
                                                 sqlWarehouses+=" and pos.brand_name like '%"+brandName+"%'";
                                             }
                                             if(!city.equalsIgnoreCase("") && city!=null){
                                                 sqlWarehouses+=" and pos.city like '%"+city+"%'";
                                             }
-
                                             if(!email.equalsIgnoreCase("") && email!=null){
                                                 sqlWarehouses+=" and pos.email like '%"+email+"%'";
                                             }
