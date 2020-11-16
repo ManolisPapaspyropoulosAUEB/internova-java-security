@@ -80,11 +80,11 @@ POST        /getManagersExpect                           controllers.archives.Ma
 
 
 #CustomersSuppliersController
-POST        /addCustomerSupplier                         controllers.archives.customers_suppliers.CustomersSuppliersController.addCustomerSupplier(req: Request)
-POST        /updateCustomerSupplier                      controllers.archives.customers_suppliers.CustomersSuppliersController.updateCustomerSupplier(req: Request)
-POST        /deleteCustomerSupplier                      controllers.archives.customers_suppliers.CustomersSuppliersController.deleteCustomerSupplier(req: Request)
-POST        /getCustomersSuppliers                       controllers.archives.customers_suppliers.CustomersSuppliersController.getCustomersSuppliers(req: Request)
-POST        /getAllCustomersSuppliersNoPagination        controllers.archives.customers_suppliers.CustomersSuppliersController.getAllCustomersSuppliersNoPagination(req: Request)
+POST        /addCustomerSupplier                         controllers.archives.CustomersSuppliersController.addCustomerSupplier(req: Request)
+POST        /updateCustomerSupplier                      controllers.archives.CustomersSuppliersController.updateCustomerSupplier(req: Request)
+POST        /deleteCustomerSupplier                      controllers.archives.CustomersSuppliersController.deleteCustomerSupplier(req: Request)
+POST        /getCustomersSuppliers                       controllers.archives.CustomersSuppliersController.getCustomersSuppliers(req: Request)
+POST        /getAllCustomersSuppliersNoPagination        controllers.archives.CustomersSuppliersController.getAllCustomersSuppliersNoPagination(req: Request)
 
 
 
@@ -93,21 +93,23 @@ POST        /exportWarehousesAsXLS                       controllers.archives.Ar
 POST        /deleteXLSFromFolder                         controllers.archives.ArchivesPrintController.deleteXLSFromFolder(req: Request)
 POST        /exportFactoriesAsXLS                        controllers.archives.ArchivesPrintController.exportFactoriesAsXLS(req: Request)
 POST        /exportCustomersSuppliersAsXls               controllers.archives.ArchivesPrintController.exportCustomersSuppliersAsXls(req: Request)
-POST        /exportManagersAsXLS                         controllers.archives.ArchivesPrintController.exportManagersAsXLS(req: Request)
+POST        /exportManagersAsXLS                         controllers.security.CoreData.CoreDataPrintsController.exportManagersAsXLS(req: Request)
+POST        /exportBillingsAsXls                         controllers.security.CoreData.CoreDataPrintsController.exportBillingsAsXls(req: Request)
+POST        /exportInternovaAsXls                        controllers.security.CoreData.CoreDataPrintsController.exportInternovaAsXls(req: Request)
 
 
 #BillingsController
-POST        /addBillingEntry                             controllers.archives.customers_suppliers.BillingsController.addBillingEntry(req: Request)
-POST        /updateBillingEntry                          controllers.archives.customers_suppliers.BillingsController.updateBillingEntry(req: Request)
-POST        /deleteBilling                               controllers.archives.customers_suppliers.BillingsController.deleteBilling(req: Request)
-POST        /getBillings                                 controllers.archives.customers_suppliers.BillingsController.getBillings(req: Request)
+POST        /addBillingEntry                             controllers.security.CoreData.BillingsController.addBillingEntry(req: Request)
+POST        /updateBillingEntry                          controllers.security.CoreData.BillingsController.updateBillingEntry(req: Request)
+POST        /deleteBilling                               controllers.security.CoreData.BillingsController.deleteBilling(req: Request)
+POST        /getBillings                                 controllers.security.CoreData.BillingsController.getBillings(req: Request)
 
 
-#InternovaSellersController getAllCustomersSuppliersNoPagination
-POST        /addInternovaSeller                          controllers.archives.customers_suppliers.InternovaSellersController.addInternovaSeller(req: Request)
-POST        /updateInternovaSeller                       controllers.archives.customers_suppliers.InternovaSellersController.updateInternovaSeller(req: Request)
-POST        /deleteInternovaSeller                       controllers.archives.customers_suppliers.InternovaSellersController.deleteInternovaSeller(req: Request)
-POST        /getInternovaSellers                         controllers.archives.customers_suppliers.InternovaSellersController.getInternovaSellers(req: Request)
+#InternovaSellersController
+POST        /addInternovaSeller                          controllers.security.CoreData.InternovaSellersController.addInternovaSeller(req: Request)
+POST        /updateInternovaSeller                       controllers.security.CoreData.InternovaSellersController.updateInternovaSeller(req: Request)
+POST        /deleteInternovaSeller                       controllers.security.CoreData.InternovaSellersController.deleteInternovaSeller(req: Request)
+POST        /getInternovaSellers                         controllers.security.CoreData.InternovaSellersController.getInternovaSellers(req: Request)
 
 
 

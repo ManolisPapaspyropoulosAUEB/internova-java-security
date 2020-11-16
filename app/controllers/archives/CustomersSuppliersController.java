@@ -1,4 +1,4 @@
-package controllers.archives.customers_suppliers;
+package controllers.archives;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -359,14 +359,14 @@ public class ManagersController {
                                             }
                                             if (!systemBrandName.equalsIgnoreCase("") && systemBrandName != null) {
                                                 sqlManagers += " and " +
-                                                        "(manager.system_id in " +
-                                                        "(select id " +
-                                                        "from factories f" +
-                                                        "where f.brand_name like '%"+systemBrandName + "%'" +
-                                                        "union" +
-                                                        "select id" +
-                                                        "from warehouses w" +
-                                                        "where w.brand_name like '%"+systemBrandName+"%'))";
+                                                        " (manager.system_id in " +
+                                                        " (select id " +
+                                                        " from factories f" +
+                                                        " where f.brand_name like '%"+systemBrandName + "%'" +
+                                                        " union" +
+                                                        " select id" +
+                                                        " from warehouses w" +
+                                                        " where w.brand_name like '%"+systemBrandName+"%'))";
                                             }
 
                                             List<ManagersEntity> posListAll
