@@ -195,7 +195,7 @@ public class OffersController {
                                                 toAddress.put("lattitude", j.getToLattitude());
                                                 toAddress.put("longtitude", j.getToLongtitude());
                                                 toAddress.put("postalCode", j.getToPostalCode());
-                                                toAddress.put("Region", j.getToRegion());
+                                                toAddress.put("region", j.getToRegion());
                                                 sHmpam.put("to", toAddress);
                                                 sHmpam.put("status", j.getStatus());
                                                 String sqlNextId = "select min(id) from offers cs where cs.creation_date >" + "'" + j.getCreationDate() + "'";
@@ -338,6 +338,7 @@ public class OffersController {
                                     billingsEntity.setToLongtitude(to.findPath("longtitude").asDouble());
                                     entityManager.persist(billingsEntity);
                                     add_result.put("status", "success");
+                                    add_result.put("offerId", billingsEntity.getId());
                                     add_result.put("message", "Η καταχωρηση πραγματοποίηθηκε με επιτυχία");
                                     return add_result;
                                 } catch (ParseException e) {
@@ -361,6 +362,87 @@ public class OffersController {
             }
         }
     }
+
+
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    @BodyParser.Of(BodyParser.Json.class)
+    public Result updateOffer(final Http.Request request) throws IOException, Exception {
+        JsonNode json = request.body().asJson();
+        if (json == null) {
+            return badRequest("Expecting Json data");
+        } else {
+            try {
+                ObjectNode result = Json.newObject();
+                CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
+                            return jpaApi.withTransaction(entityManager -> {
+                                try {
+                                    DateFormat myDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                                    JsonNode internovaSeller = json.findPath("internovaSeller");
+                                    JsonNode billing = json.findPath("billing");
+                                    JsonNode custommer = json.findPath("custommer2");
+                                    JsonNode from = json.findPath("from");
+                                    JsonNode to = json.findPath("to");
+                                    Long offerId = json.findPath("offerId").asLong();
+                                    ((ObjectNode) json).remove("internovaSeller");
+                                    ((ObjectNode) json).remove("billing");
+                                    ((ObjectNode) json).remove("custommer2");
+                                    ((ObjectNode) json).remove("from");
+                                    ((ObjectNode) json).remove("to");
+                                    ((ObjectNode) custommer).remove("billing");
+                                    ((ObjectNode) custommer).remove("internovaSeller");
+                                    ObjectNode add_result = Json.newObject();
+                                    OffersEntity billingsEntity =entityManager.find(OffersEntity.class,offerId);
+                                    billingsEntity.setAa((long) generateRandomDigits(3));
+                                    Date offerDateString = new SimpleDateFormat("yyyy-MM-dd").parse(json.findPath("offerDate").asText());
+                                    billingsEntity.setOfferDate(offerDateString);
+                                    billingsEntity.setSellerId(internovaSeller.findPath("sellerId").asLong());
+                                    billingsEntity.setBillingId(billing.findPath("billingId").asLong());
+                                    billingsEntity.setComments(json.findPath("offers_comments").asText());
+                                    billingsEntity.setStatus(json.findPath("status").asText());
+                                    billingsEntity.setCreationDate(new Date());
+                                    billingsEntity.setCustomerId(custommer.findPath("id").asLong());
+                                    billingsEntity.setFromAddress(from.findPath("address").asText());
+                                    billingsEntity.setFromCity(from.findPath("city").asText());
+                                    billingsEntity.setFromCountry(from.findPath("country").asText());
+                                    billingsEntity.setFromPostalCode(from.findPath("postalCode").asText());
+                                    billingsEntity.setFromRegion(from.findPath("region").asText());
+                                    billingsEntity.setFromLattitude(from.findPath("lattitude").asDouble());
+                                    billingsEntity.setFromLongtitude(from.findPath("longtitude").asDouble());
+                                    billingsEntity.setToAddress(to.findPath("address").asText());
+                                    billingsEntity.setToCity(from.findPath("city").asText());
+                                    billingsEntity.setToCountry(to.findPath("country").asText());
+                                    billingsEntity.setToPostalCode(to.findPath("postalCode").asText());
+                                    billingsEntity.setToRegion(to.findPath("region").asText());
+                                    billingsEntity.setToLattitude(to.findPath("lattitude").asDouble());
+                                    billingsEntity.setToLongtitude(to.findPath("longtitude").asDouble());
+                                    entityManager.merge(billingsEntity);
+                                    add_result.put("status", "success");
+                                    add_result.put("message", "Η καταχωρηση πραγματοποίηθηκε με επιτυχία");
+                                    return add_result;
+                                } catch (ParseException e) {
+                                    ObjectNode add_result = Json.newObject();
+                                    e.printStackTrace();
+                                    add_result.put("status", "error");
+                                    add_result.put("message", "Προβλημα κατα την καταχωρηση");
+                                    return add_result;
+                                }
+                            });
+                        },
+                        executionContext);
+                result = (ObjectNode) addFuture.get();
+                return ok(result);
+            } catch (Exception e) {
+                ObjectNode result = Json.newObject();
+                e.printStackTrace();
+                result.put("status", "error");
+                result.put("message", "Προβλημα κατα την καταχωρηση");
+                return ok(result);
+            }
+        }
+    }
+
+
 
 
 }
