@@ -223,6 +223,8 @@ public class BillingsController {
                                                     sqlroles, BillingsEntity.class).getResultList();
                                             for (BillingsEntity j : orgsList) {
                                                 HashMap<String, Object> sHmpam = new HashMap<String, Object>();
+                                                sHmpam.put("billingId", j.getId());
+                                                sHmpam.put("billingName", j.getName());
                                                 sHmpam.put("name", j.getName());
                                                 sHmpam.put("description", j.getDescription());
                                                 sHmpam.put("creationDate", j.getCreationDate());

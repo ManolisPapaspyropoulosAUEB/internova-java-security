@@ -141,7 +141,7 @@ public class InternovaSellersController {
                 CompletableFuture<JsonNode> deleteFuture = CompletableFuture.supplyAsync(() -> {
                             return jpaApi.withTransaction(entityManager -> {
                                 ObjectNode add_result = Json.newObject();
-                                Long id = json.findPath("description").asLong();
+                                Long id = json.findPath("id").asLong();
                                 InternovaSellersEntity internovaSellersEntity = entityManager.find(InternovaSellersEntity.class,id);
                                 internovaSellersEntity.setCreationDate(new Date());
                                 entityManager.remove(internovaSellersEntity);
@@ -215,6 +215,8 @@ public class InternovaSellersController {
                                             for (InternovaSellersEntity j : orgsList) {
                                                 HashMap<String, Object> sHmpam = new HashMap<String, Object>();
                                                 sHmpam.put("name", j.getName());
+                                                sHmpam.put("sellerName", j.getName());
+                                                sHmpam.put("sellerId", j.getId());
                                                 sHmpam.put("description", j.getDescription());
                                                 sHmpam.put("creationDate", j.getCreationDate());
                                                 sHmpam.put("updateDate", j.getUpdateDate());

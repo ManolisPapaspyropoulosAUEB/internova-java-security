@@ -112,8 +112,15 @@ POST        /deleteInternovaSeller                       controllers.security.Co
 POST        /getInternovaSellers                         controllers.security.CoreData.InternovaSellersController.getInternovaSellers(req: Request)
 
 
+#OffersController addOffer
+POST        /getOffers                                   controllers.procedures.OffersController.getOffers(req: Request)
+POST        /deleteOffer                                 controllers.procedures.OffersController.deleteOffer(req: Request)
+POST        /addOffer                                    controllers.procedures.OffersController.addOffer(req: Request)
 
 
+#ProceduresPrintController exportOffersAsXls
+POST        /exportOffersAsXls                           controllers.procedures.ProceduresPrintController.exportOffersAsXls(req: Request)
+POST        /deleteOffer                                 controllers.procedures.OffersController.deleteOffer(req: Request)
 
 
 
