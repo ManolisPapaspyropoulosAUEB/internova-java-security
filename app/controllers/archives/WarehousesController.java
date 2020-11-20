@@ -231,6 +231,8 @@ public class WarehousesController {
                                         entityManager -> {
                                             //roleDescSearchInput
                                             String id = json.findPath("id").asText();
+                                            String orderCol = json.findPath("orderCol").asText();
+                                            String descAsc = json.findPath("descAsc").asText();
                                             String address = json.findPath("address").asText();
                                             String brandName = json.findPath("brandName").asText();
                                             String city = json.findPath("city").asText();
@@ -283,7 +285,11 @@ public class WarehousesController {
                                             List<WarehousesEntity> filalistAll
                                                     = (List<WarehousesEntity>) entityManager.createNativeQuery(
                                                     sqlWarehouses, WarehousesEntity.class).getResultList();
-                                            sqlWarehouses+=" order by creation_date desc";
+                                            if (!orderCol.equalsIgnoreCase("") && orderCol != null) {
+                                                sqlWarehouses += " order by " + orderCol + " " + descAsc;
+                                            } else {
+                                                sqlWarehouses += " order by creation_date desc";
+                                            }
                                             if (!start.equalsIgnoreCase("") && start != null) {
                                                 sqlWarehouses += " limit " + start + "," + limit;
                                             }

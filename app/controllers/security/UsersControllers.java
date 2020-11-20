@@ -464,6 +464,8 @@ public class UsersControllers {
                     CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
                                 return jpaApi.withTransaction(
                                         entityManager -> {
+                                            String orderCol = json.findPath("orderCol").asText();
+                                            String descAsc = json.findPath("descAsc").asText();
                                             String name = json.findPath("name").asText();
                                             String lastname = json.findPath("lastname").asText();
                                             String organization = json.findPath("organization").findPath("name").asText();
@@ -501,7 +503,7 @@ public class UsersControllers {
                                                 }
                                             }
                                             if (!organization.equalsIgnoreCase("") && organization != null && !organization.equalsIgnoreCase("null")) {
-                                                sqlusers += " and u.org_id in (select organization_id from organizations alias where alias.name like '%" + organization + "%'   )";
+                                                sqlusers += " and u.org_id in (select organization_id from organizations alias where alias.name like '%" + organization + "%')";
                                             }
                                             if (!role.equalsIgnoreCase("") && role != null && !role.equalsIgnoreCase("null")) {
                                                 sqlusers += " and u.role_id in (select role_id from roles alias where alias.name like '%" + role + "%'   )";
@@ -515,7 +517,18 @@ public class UsersControllers {
                                             List<UsersEntity> usersListAll
                                                     = (List<UsersEntity>) entityManager.createNativeQuery(
                                                     sqlusers, UsersEntity.class).getResultList();
-                                            sqlusers += " order by creation_date desc";
+                                            if (!orderCol.equalsIgnoreCase("") && orderCol != null) {
+                                                if(orderCol.equalsIgnoreCase("role")){
+                                                    sqlusers +=  " order by (select name from roles r where r.role_id=u.role_id)"+ descAsc;
+                                                }else if (orderCol.equalsIgnoreCase("organization")){
+                                                    sqlusers +=  " order by (select name from organizations r where r.organization_id=u.org_id)"+ descAsc;
+                                                }else{
+                                                    sqlusers += " order by " + orderCol + " " + descAsc;
+                                                }
+
+                                            } else {
+                                                sqlusers += " order by creation_date desc";
+                                            }
                                             if (!start.equalsIgnoreCase("") && start != null) {
                                                 sqlusers += " limit " + start + "," + limit;
                                             }

@@ -216,6 +216,11 @@ public class RolesController {
                                             String roleName = json.findPath("roleName").asText();
                                             String roleDescription = json.findPath("roleDescription").asText();
                                             String creationDate = json.findPath("creationDate").asText();
+
+                                            String orderCol = json.findPath("orderCol").asText();
+                                            String descAsc = json.findPath("descAsc").asText();
+
+
                                             String start = json.findPath("start").asText();
                                             String limit = json.findPath("limit").asText();
                                             String sqlroles = "select * from roles role where 1=1 ";
@@ -228,10 +233,19 @@ public class RolesController {
                                             if(!creationDate.equalsIgnoreCase("") && creationDate!=null){
                                                 sqlroles += " and SUBSTRING( role.creation_date, 1, 10)  = '" + creationDate + "'";
                                             }
+
                                             List<RolesEntity> rolesListAll
                                                     = (List<RolesEntity>) entityManager.createNativeQuery(
                                                     sqlroles, RolesEntity.class).getResultList();
-                                            sqlroles+=" order by creation_date desc";
+
+
+                                            if(!orderCol.equalsIgnoreCase("") && orderCol!=null){
+                                                sqlroles+=" order by "+orderCol+" "+descAsc;
+                                            }else{
+                                                sqlroles+=" order by creation_date desc";
+                                            }
+
+
                                             if (!start.equalsIgnoreCase("") && start != null) {
                                                 sqlroles += " limit " + start + "," + limit;
                                             }

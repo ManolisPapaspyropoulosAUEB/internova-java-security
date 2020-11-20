@@ -193,6 +193,8 @@ public class BillingsController {
                                         entityManager -> {
 
                                             //roleDescSearchInput
+                                            String orderCol = json.findPath("orderCol").asText();
+                                            String descAsc = json.findPath("descAsc").asText();
                                             String billingName = json.findPath("billingName").asText();
                                             String billingDescription = json.findPath("billingDescription").asText();
                                             String creationDate = json.findPath("creationDate").asText();
@@ -211,7 +213,14 @@ public class BillingsController {
                                             List<BillingsEntity> rolesListAll
                                                     = (List<BillingsEntity>) entityManager.createNativeQuery(
                                                     sqlroles, BillingsEntity.class).getResultList();
-                                            sqlroles+=" order by creation_date desc";
+
+                                            if (!orderCol.equalsIgnoreCase("") && orderCol != null) {
+                                                sqlroles += " order by " + orderCol + " " + descAsc;
+                                            } else {
+                                                sqlroles += " order by creation_date desc";
+                                            }
+
+
                                             if (!start.equalsIgnoreCase("") && start != null) {
                                                 sqlroles += " limit " + start + "," + limit;
                                             }

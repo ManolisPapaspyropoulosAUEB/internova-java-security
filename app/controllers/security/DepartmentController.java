@@ -1,4 +1,5 @@
 package controllers.security;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -9,6 +10,7 @@ import play.libs.Json;
 import play.mvc.BodyParser;
 import play.mvc.Http;
 import play.mvc.Result;
+
 import javax.inject.Inject;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -18,17 +20,20 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
+
 public class DepartmentController {
     private JPAApi jpaApi;
     private DatabaseExecutionContext executionContext;
+
     @Inject
-    public DepartmentController(JPAApi jpaApi, DatabaseExecutionContext executionContext)
-    {
+    public DepartmentController(JPAApi jpaApi, DatabaseExecutionContext executionContext) {
         this.jpaApi = jpaApi;
         this.executionContext = executionContext;
     }
+
     @SuppressWarnings({"Duplicates", "unchecked"})
     @BodyParser.Of(BodyParser.Json.class)
     public Result addDepartment(final Http.Request request) throws IOException {
@@ -92,7 +97,7 @@ public class DepartmentController {
                                     String department = json.findPath("department").asText();
                                     Long id = json.findPath("id").asLong();
                                     Integer status = json.findPath("status").asInt();
-                                    DepartmentsEntity o =entityManager.find(DepartmentsEntity.class,id);
+                                    DepartmentsEntity o = entityManager.find(DepartmentsEntity.class, id);
                                     o.setDepartment(department);
                                     o.setStatus(status);
                                     o.setUpdateDate(new Date());
@@ -197,21 +202,27 @@ public class DepartmentController {
                     CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
                                 return jpaApi.withTransaction(
                                         entityManager -> {
+                                            String orderCol = json.findPath("orderCol").asText();
+                                            String descAsc = json.findPath("descAsc").asText();
                                             String department = json.findPath("department").asText();
                                             String creationDate = json.findPath("creationDate").asText();
                                             String start = json.findPath("start").asText();
                                             String limit = json.findPath("limit").asText();
                                             String sqlOrgs = "select * from departments depa where 1=1 ";
-                                            if(!department.equalsIgnoreCase("") && department!=null){
-                                                sqlOrgs+=" and depa.department like '%"+department+"%'";
+                                            if (!department.equalsIgnoreCase("") && department != null) {
+                                                sqlOrgs += " and depa.department like '%" + department + "%'";
                                             }
-                                            if(!creationDate.equalsIgnoreCase("") && creationDate!=null){
+                                            if (!creationDate.equalsIgnoreCase("") && creationDate != null) {
                                                 sqlOrgs += " and SUBSTRING( orgs.creation_date, 1, 10)  = '" + creationDate + "'";
                                             }
                                             List<DepartmentsEntity> posListAll
                                                     = (List<DepartmentsEntity>) entityManager.createNativeQuery(
                                                     sqlOrgs, DepartmentsEntity.class).getResultList();
-                                            sqlOrgs+="order by creation_date desc";
+                                            if (!orderCol.equalsIgnoreCase("") && orderCol != null) {
+                                                sqlOrgs += " order by " + orderCol + " " + descAsc;
+                                            } else {
+                                                sqlOrgs += " order by creation_date desc";
+                                            }
                                             if (!start.equalsIgnoreCase("") && start != null) {
                                                 sqlOrgs += " limit " + start + "," + limit;
                                             }

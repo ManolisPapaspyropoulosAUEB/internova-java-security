@@ -56,12 +56,12 @@ public class ManagersController {
                                 String system = json.findPath("system").asText();
                                 Long system_id = json.findPath("system_id").asLong();
                                 Long selectedManagerId = json.findPath("selectedManagerId").asLong();
-                                if(selectedManagerId!=0){
-                                    ManagersEntity manager = entityManager.find(ManagersEntity.class,selectedManagerId);
+                                if (selectedManagerId != 0) {
+                                    ManagersEntity manager = entityManager.find(ManagersEntity.class, selectedManagerId);
                                     manager.setSystem(system);
                                     manager.setSystemId(system_id);
                                     entityManager.merge(manager);
-                                }else{
+                                } else {
                                     ManagersEntity manager = new ManagersEntity();
                                     manager.setCreationDate(new Date());
                                     manager.setFirstName(firstname);
@@ -215,10 +215,10 @@ public class ManagersController {
                                             String system = json.findPath("system").asText();
                                             String system_id = json.findPath("system_id").asText();
                                             String sqlManagers = "select * from managers manager" + " where 1=1 and" +
-                                                    " (manager.system != "+"'"+system+"'" +" or manager.system is null ) " +
-                                                    "and  (manager.system_id!="+system_id+" or manager.system_id is null)";
+                                                    " (manager.system != " + "'" + system + "'" + " or manager.system is null ) " +
+                                                    "and  (manager.system_id!=" + system_id + " or manager.system_id is null)";
                                             //systemBrandName
-                                            if(system.equalsIgnoreCase("-")){
+                                            if (system.equalsIgnoreCase("-")) {
 
                                             }
                                             System.out.println(sqlManagers);
@@ -255,7 +255,7 @@ public class ManagersController {
                                                         default:
                                                             // code block
                                                     }
-                                                }else{
+                                                } else {
                                                     sHmpam.put("systemBrandName", "-");
                                                     sHmpam.put("system", "-");
                                                 }
@@ -292,9 +292,6 @@ public class ManagersController {
     }
 
 
-
-
-
     @SuppressWarnings({"Duplicates", "unchecked"})
     public Result getManagers(final Http.Request request) throws IOException {  // san parametro pernei to org key
         ObjectNode result = Json.newObject();
@@ -314,6 +311,8 @@ public class ManagersController {
                     CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
                                 return jpaApi.withTransaction(
                                         entityManager -> {
+                                            String orderCol = json.findPath("orderCol").asText();
+                                            String descAsc = json.findPath("descAsc").asText();
                                             String system = json.findPath("system").asText();
                                             String systemSearch = json.findPath("systemSearch").asText();
                                             String system_id = json.findPath("system_id").asText();
@@ -362,21 +361,48 @@ public class ManagersController {
                                                         " (manager.system_id in " +
                                                         " (select id " +
                                                         " from factories f" +
-                                                        " where f.brand_name like '%"+systemBrandName + "%'" +
+                                                        " where f.brand_name like '%" + systemBrandName + "%'" +
                                                         " union" +
                                                         " select id" +
                                                         " from warehouses w" +
-                                                        " where w.brand_name like '%"+systemBrandName+"%'))";
+                                                        " where w.brand_name like '%" + systemBrandName + "%'))";
                                             }
 
                                             List<ManagersEntity> posListAll
                                                     = (List<ManagersEntity>) entityManager.createNativeQuery(
                                                     sqlManagers, ManagersEntity.class).getResultList();
-                                            sqlManagers += "order by creation_date desc";
-                                            System.out.println(sqlManagers);
+                                            if (!orderCol.equalsIgnoreCase("") && orderCol != null) {
+
+                                                if (orderCol.equalsIgnoreCase("systemBrandName")) {
+                                                    sqlManagers += " order by " +
+                                                            "\n"+" CASE manager.system " +
+                                                            "\n"+"when 'Αποθήκη' then " +
+                                                            "\n"+"     (select brand_name from warehouses w where w.id=manager.system_id) " +
+                                                            "\n"+"when 'Εργοστάσιο' then " +
+                                                            "\n"+"     (select brand_name from factories f where f.id=manager.system_id) " +
+                                                            "\n"+"when 'Πελάτες-Προμηθευτές' then " +
+                                                            "\n"+"     (select brand_name from customers_suppliers cs where cs.id=manager.system_id)  " +
+                                                            "\n"+"when 'Προσφορά' then " +
+                                                            "\n"+"      (" +
+                                                            "\n"+"        select cs.brand_name " +
+                                                            "\n"+"        from offers offer " +
+                                                            "\n"+"        join customers_suppliers cs on " +
+                                                            "\n"+"        (cs.id=offer.customer_id) " +
+                                                            "\n"+"        where (offer.id=manager.system_id)" +
+                                                            "\n"+"      )" +
+                                                            "\n"+"else '-' " +
+                                                            "\n"+"  END  " + descAsc;
+                                                } else {
+                                                    sqlManagers += " order by " + orderCol + " " + descAsc;
+                                                }
+                                            } else {
+                                                sqlManagers += " order by creation_date desc";
+                                            }
+
                                             if (!start.equalsIgnoreCase("") && start != null) {
                                                 sqlManagers += " limit " + start + "," + limit;
                                             }
+                                            System.out.println(sqlManagers);
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             List<HashMap<String, Object>> serversList = new ArrayList<HashMap<String, Object>>();
                                             List<ManagersEntity> posList
@@ -396,17 +422,17 @@ public class ManagersController {
                                                 sHmpam.put("creationDate", j.getCreationDate());
                                                 sHmpam.put("updateDate", j.getUpdateDate());
                                                 sHmpam.put("system", j.getSystem());
-                                                if (j.getSystemId() != null) {
-                                                    switch (j.getSystem()) {
-                                                        case "Εργοστάσιο":
-                                                            sHmpam.put("systemBrandName", entityManager.find(FactoriesEntity.class, j.getSystemId()).getBrandName());
-                                                            break;
-                                                        case "Αποθήκη":
-                                                            sHmpam.put("systemBrandName", entityManager.find(WarehousesEntity.class, j.getSystemId()).getBrandName());
-                                                            break;
-                                                        default:
+                                                if (j.getSystemId() != null && j.getSystemId() != 0) {
+                                                    if (j.getSystem().equalsIgnoreCase("Εργοστάσιο")) {
+                                                        sHmpam.put("systemBrandName", entityManager.find(FactoriesEntity.class, j.getSystemId()).getBrandName());
+                                                    } else if (j.getSystem().equalsIgnoreCase("Αποθήκη")) {
+                                                        sHmpam.put("systemBrandName", entityManager.find(WarehousesEntity.class, j.getSystemId()).getBrandName());
+                                                    } else if (j.getSystem().equalsIgnoreCase("Προσφορά")) {
+                                                        sHmpam.put("systemBrandName", entityManager.find(CustomersSuppliersEntity.class, entityManager.find(OffersEntity.class, j.getSystemId()).getCustomerId()).getBrandName());
+                                                    } else if (j.getSystem().equalsIgnoreCase("Πελάτες-Προμηθευτές")) {
+                                                        sHmpam.put("systemBrandName", entityManager.find(CustomersSuppliersEntity.class, j.getSystemId()).getBrandName());
                                                     }
-                                                }else{
+                                                } else {
                                                     sHmpam.put("systemBrandName", "-");
                                                     sHmpam.put("system", "-");
                                                 }

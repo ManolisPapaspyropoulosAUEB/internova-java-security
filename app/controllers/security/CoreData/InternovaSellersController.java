@@ -184,6 +184,8 @@ public class InternovaSellersController {
                     CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
                                 return jpaApi.withTransaction(
                                         entityManager -> {
+                                            String orderCol = json.findPath("orderCol").asText();
+                                            String descAsc = json.findPath("descAsc").asText();
                                             String sellerName = json.findPath("sellerName").asText();
                                             String sellerDescription = json.findPath("sellerDescription").asText();
                                             String creationDate = json.findPath("creationDate").asText();
@@ -197,15 +199,22 @@ public class InternovaSellersController {
                                                 sqlroles+=" and intsellers.description like '%"+sellerDescription+"%'";
                                             }
                                             if(!creationDate.equalsIgnoreCase("") && creationDate!=null){
-                                                sqlroles += " and SUBSTRING( b.creation_date, 1, 10)  = '" + creationDate + "'";
+                                                sqlroles += " and SUBSTRING( intsellers.creation_date, 1, 10)  = '" + creationDate + "'";
                                             }
                                             List<InternovaSellersEntity> rolesListAll
                                                     = (List<InternovaSellersEntity>) entityManager.createNativeQuery(
                                                     sqlroles, InternovaSellersEntity.class).getResultList();
-                                            sqlroles+=" order by creation_date desc";
+                                            if (!orderCol.equalsIgnoreCase("") && orderCol != null) {
+                                                sqlroles += " order by " + orderCol + " " + descAsc;
+                                            } else {
+                                                sqlroles += " order by creation_date desc";
+                                            }
+
                                             if (!start.equalsIgnoreCase("") && start != null) {
                                                 sqlroles += " limit " + start + "," + limit;
                                             }
+
+
                                             System.out.println(sqlroles);
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             List<HashMap<String, Object>> serversList = new ArrayList<HashMap<String, Object>>();

@@ -1,0 +1,44 @@
+POST        /addTask                                    
+POST        /updateTask                                 
+POST        /changeStatus                               
+POST        /deleteTask                                 
+POST        /getAllTasks                                
+POST        /getUsersTgetTaskByIdasks                   
+POST        /getMyTasksGroupedByStatus                  
+POST        /getTestingTasks                            
+POST        /updatePositionUserTasks                    
+POST        /updatePositionByBroject                    
+POST        /updateEstimatedHours                       
+POST        /getMyAllTasks                              
+POST        /getTaskById                                
+POST        /assignedTo                                 
+POST        /getAllTasksByProjectOrCustomer             
+POST        /getAllTasksByOrganization                  
+POST        /getTasksByUserId                           
+POST        /updateDeadLine      
+
+
+-------------------------------------------------------------------------------
+/addTask                                    
+params :
+orgId:number (id organismou)
+status:string
+assignedTo:number (to id tou user)
+estimatedHours:double
+deadline:string  yyyy-MM-dd
+startDate: string  yyyy-MM-dd
+estimatedHours : number
+estH:number
+estMins:number
+
+
+
+/getAllTasks
+orgId: id organismou
+status : string (assigned,inprogress,paused,new,closed,done,all)
+developer:string (gia filters)
+keyword:string (gia filters)
+start:number ( gia pagination)
+limit:number ( gia pagination)
+
+

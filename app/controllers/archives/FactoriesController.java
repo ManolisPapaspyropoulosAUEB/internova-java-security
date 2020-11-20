@@ -142,6 +142,8 @@ public class FactoriesController {
                                 return jpaApi.withTransaction(
                                         entityManager -> {//appointmentRequired warehouseId
                                             String id = json.findPath("id").asText();
+                                            String orderCol = json.findPath("orderCol").asText();
+                                            String descAsc = json.findPath("descAsc").asText();
                                             String warehouseId = json.findPath("warehouseId").asText();
                                             String factoryId = json.findPath("factoryId").asText();
                                             String address = json.findPath("address").asText();
@@ -199,7 +201,11 @@ public class FactoriesController {
                                             List<FactoriesEntity> filalistAll
                                                     = (List<FactoriesEntity>) entityManager.createNativeQuery(
                                                     sqlWarehouses, FactoriesEntity.class).getResultList();
-                                            sqlWarehouses+=" order by creation_date desc";
+                                            if (!orderCol.equalsIgnoreCase("") && orderCol != null) {
+                                                sqlWarehouses += " order by " + orderCol + " " + descAsc;
+                                            } else {
+                                                sqlWarehouses += " order by creation_date desc";
+                                            }
                                             if (!start.equalsIgnoreCase("") && start != null) {
                                                 sqlWarehouses += " limit " + start + "," + limit;
                                             }

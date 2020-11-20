@@ -260,6 +260,8 @@ public class CustomersSuppliersController {
                                 return jpaApi.withTransaction(
                                         entityManager -> {
                                             //roleDescSearchInput afmSearch customersSupliersTypesSearch
+                                            String orderCol = json.findPath("orderCol").asText();
+                                            String descAsc = json.findPath("descAsc").asText();
                                             String id = json.findPath("id").asText();
                                             String customerSupplierId = json.findPath("customerSupplierId").asText();
                                             String address = json.findPath("address").asText();
@@ -332,7 +334,12 @@ public class CustomersSuppliersController {
                                             List<CustomersSuppliersEntity> filalistAll
                                                     = (List<CustomersSuppliersEntity>) entityManager.createNativeQuery(
                                                     sqlCustSupl, CustomersSuppliersEntity.class).getResultList();
-                                            sqlCustSupl += " order by creation_date desc";
+                                            if (!orderCol.equalsIgnoreCase("") && orderCol != null) {
+                                                sqlCustSupl += " order by " + orderCol + " " + descAsc;
+                                            } else {
+                                                sqlCustSupl += " order by creation_date desc";
+                                            }
+
                                             if (!start.equalsIgnoreCase("") && start != null) {
                                                 sqlCustSupl += " limit " + start + "," + limit;
                                             }

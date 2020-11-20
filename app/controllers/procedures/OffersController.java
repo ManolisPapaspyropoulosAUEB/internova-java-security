@@ -56,6 +56,8 @@ public class OffersController {
                     CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> { //
                                 return jpaApi.withTransaction(
                                         entityManager -> {
+                                            String orderCol = json.findPath("orderCol").asText();
+                                            String descAsc = json.findPath("descAsc").asText();
                                             String id = json.findPath("id").asText();
                                             String offerId = json.findPath("offerId").asText();
                                             String offerDate = json.findPath("offerDate").asText();
@@ -129,7 +131,21 @@ public class OffersController {
                                             List<OffersEntity> filalistAll
                                                     = (List<OffersEntity>) entityManager.createNativeQuery(
                                                     sqlCustSupl, OffersEntity.class).getResultList();
-                                            sqlCustSupl += " order by creation_date desc";
+                                            if (!orderCol.equalsIgnoreCase("") && orderCol != null) {
+                                                if(orderCol.equalsIgnoreCase("billingName")){
+                                                    sqlCustSupl +=  " order by (select name from billings b where b.id=offer.billing_id)"+ descAsc;
+                                                }else if (orderCol.equalsIgnoreCase("sellerName")){
+                                                    sqlCustSupl +=  " order by (select name from internova_sellers iseller where iseller.id=offer.seller_id)"+ descAsc;
+                                                }else if(orderCol.equalsIgnoreCase("brandName")){
+                                                    sqlCustSupl +=  " order by (select brand_name from customers_suppliers cs where cs.id=offer.customer_id)"+ descAsc;
+                                                }else{
+                                                    sqlCustSupl += " order by " + orderCol + " " + descAsc;
+                                                }
+                                            } else {
+                                                sqlCustSupl += " order by creation_date desc";
+                                            }
+
+
                                             if (!start.equalsIgnoreCase("") && start != null) {
                                                 sqlCustSupl += " limit " + start + "," + limit;
                                             }
@@ -299,14 +315,15 @@ public class OffersController {
                             return jpaApi.withTransaction(entityManager -> {
                                 try {
                                     DateFormat myDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                                    JsonNode custommer = json.findPath("custommer2");
+                                    ((ObjectNode) json).remove("custommer2");
+
                                     JsonNode internovaSeller = json.findPath("internovaSeller");
                                     JsonNode billing = json.findPath("billing");
-                                    JsonNode custommer = json.findPath("custommer2");
                                     JsonNode from = json.findPath("from");
                                     JsonNode to = json.findPath("to");
                                     ((ObjectNode) json).remove("internovaSeller");
                                     ((ObjectNode) json).remove("billing");
-                                    ((ObjectNode) json).remove("custommer2");
                                     ((ObjectNode) json).remove("from");
                                     ((ObjectNode) json).remove("to");
                                     ((ObjectNode) custommer).remove("billing");
@@ -401,7 +418,7 @@ public class OffersController {
                                     billingsEntity.setComments(json.findPath("offers_comments").asText());
                                     billingsEntity.setStatus(json.findPath("status").asText());
                                     billingsEntity.setCreationDate(new Date());
-                                    billingsEntity.setCustomerId(custommer.findPath("id").asLong());
+                                    billingsEntity.setCustomerId(custommer.findPath("customerId").asLong());
                                     billingsEntity.setFromAddress(from.findPath("address").asText());
                                     billingsEntity.setFromCity(from.findPath("city").asText());
                                     billingsEntity.setFromCountry(from.findPath("country").asText());
@@ -418,7 +435,7 @@ public class OffersController {
                                     billingsEntity.setToLongtitude(to.findPath("longtitude").asDouble());
                                     entityManager.merge(billingsEntity);
                                     add_result.put("status", "success");
-                                    add_result.put("message", "Η καταχωρηση πραγματοποίηθηκε με επιτυχία");
+                                    add_result.put("message", "Η ενημέρωση πραγματοποίηθηκε με επιτυχία");
                                     return add_result;
                                 } catch (ParseException e) {
                                     ObjectNode add_result = Json.newObject();

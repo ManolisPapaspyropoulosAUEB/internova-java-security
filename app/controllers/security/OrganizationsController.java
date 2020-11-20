@@ -203,7 +203,8 @@ public class OrganizationsController {
                     CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
                                 return jpaApi.withTransaction(
                                         entityManager -> {
-
+                                            String orderCol = json.findPath("orderCol").asText();
+                                            String descAsc = json.findPath("descAsc").asText();
                                             String organizationName = json.findPath("organizationName").asText();
                                             String creationDate = json.findPath("creationDate").asText();
                                             String start = json.findPath("start").asText();
@@ -218,7 +219,11 @@ public class OrganizationsController {
                                             List<OrganizationsEntity> orgsListAll
                                                     = (List<OrganizationsEntity>) entityManager.createNativeQuery(
                                                     sqlOrgs, OrganizationsEntity.class).getResultList();
-                                            sqlOrgs+="order by creation_date desc";
+                                            if(!orderCol.equalsIgnoreCase("") && orderCol!=null){
+                                                sqlOrgs+=" order by "+orderCol+" "+descAsc;
+                                            }else{
+                                                sqlOrgs+=" order by creation_date desc";
+                                            }
                                             if (!start.equalsIgnoreCase("") && start != null) {
                                                 sqlOrgs += " limit " + start + "," + limit;
                                             }
