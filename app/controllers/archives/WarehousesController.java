@@ -3,6 +3,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execution_context.DatabaseExecutionContext;
+import models.FactoriesEntity;
 import models.WarehousesEntity;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
@@ -11,6 +12,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import javax.inject.Inject;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -70,6 +72,7 @@ public class WarehousesController {
                                     warehousesEntity.setComments(comments);
                                     entityManager.persist(warehousesEntity);
                                     add_result.put("status", "success");
+                                    add_result.put("warehouseId", warehousesEntity.getId());
                                     add_result.put("message", "Η καταχωρηση πραγματοποίηθηκε με επιτυχία");
                                     return add_result;
                                 });
@@ -205,6 +208,85 @@ public class WarehousesController {
 
 
 
+    //getAllWarehousesNoPagination
+
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    public Result getAllWarehousesNoPagination(final Http.Request request) throws IOException {
+        ObjectNode result = Json.newObject();
+        System.out.println("getAllWarehousesNoPagination>>");
+        try {
+            JsonNode json = request.body().asJson();
+            if (json == null) {
+                return badRequest("Expecting Json data");
+            } else {
+                if (json == null) {
+                    result.put("status", "error");
+                    result.put("message", "Δεν εχετε αποστειλει εγκυρα δεδομενα.");
+                    return ok(result);
+                } else {
+                    ObjectMapper ow = new ObjectMapper();
+                    HashMap<String, Object> returnList = new HashMap<String, Object>();
+                    String jsonResult = "";
+                    CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
+                                return jpaApi.withTransaction(
+                                        entityManager -> {
+
+                                            String sqlWarehouses= "select * from warehouses pos where 1=1 ";
+                                            HashMap<String, Object> returnList_future = new HashMap<String, Object>();
+                                            List<HashMap<String, Object>> filalist = new ArrayList<HashMap<String, Object>>();
+                                            List<WarehousesEntity> warehousesEntityList
+                                                    = (List<WarehousesEntity>) entityManager.createNativeQuery(
+                                                    sqlWarehouses, WarehousesEntity.class).getResultList();
+                                            for (WarehousesEntity j : warehousesEntityList) {
+                                                HashMap<String, Object> sHmpam = new HashMap<String, Object>();
+                                                sHmpam.put("address", j.getAddress());
+                                                sHmpam.put("brandName", j.getBrandName());
+                                                sHmpam.put("city", j.getCity());
+                                                sHmpam.put("creationDate", j.getCreationDate());
+                                                sHmpam.put("email", j.getEmail());
+                                                sHmpam.put("comments", j.getComments());
+                                                sHmpam.put("id", j.getId());
+                                                sHmpam.put("warehouseId", j.getId());
+                                                sHmpam.put("latitude", j.getLatitude());
+                                                sHmpam.put("longitude", j.getLongitude());
+                                                sHmpam.put("manager", j.getManager());
+                                                sHmpam.put("postalCode", j.getPostalCode());
+                                                sHmpam.put("region", j.getRegion());
+                                                sHmpam.put("telephone", j.getTelephone());
+                                                sHmpam.put("updateDate", j.getUpdateDate());
+                                                filalist.add(sHmpam);
+                                            }
+                                            returnList_future.put("data", filalist);
+                                            returnList_future.put("total", filalist.size());
+                                            returnList_future.put("status", "success");
+                                            returnList_future.put("message", "success");
+                                            return returnList_future;
+                                        });
+                            },
+                            executionContext);
+                    returnList = getFuture.get();
+                    DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                    ow.setDateFormat(myDateFormat);
+                    try {
+                        jsonResult = ow.writeValueAsString(returnList);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        result.put("status", "error");
+                        result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων ");
+                        return ok(result);
+                    }
+                    return ok(jsonResult);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων");
+            return ok(result);
+        }
+    }
+
 
 
 
@@ -229,7 +311,7 @@ public class WarehousesController {
                     CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
                                 return jpaApi.withTransaction(
                                         entityManager -> {
-                                            //roleDescSearchInput
+                                            //roleDescSearchInput warehouseId
                                             String id = json.findPath("id").asText();
                                             String orderCol = json.findPath("orderCol").asText();
                                             String descAsc = json.findPath("descAsc").asText();
@@ -250,7 +332,7 @@ public class WarehousesController {
                                                 sqlWarehouses+=" and pos.id like '%"+id+"%'";
                                             }
                                             if(!warehouseId.equalsIgnoreCase("") && warehouseId!=null){
-                                                sqlWarehouses+=" and pos.id like '%"+warehouseId+"%'";
+                                                sqlWarehouses+=" and pos.id = "+warehouseId+"";
                                             }
                                             if(!address.equalsIgnoreCase("") && address!=null){
                                                 sqlWarehouses+=" and pos.address like '%"+address+"%'";
@@ -293,6 +375,13 @@ public class WarehousesController {
                                             if (!start.equalsIgnoreCase("") && start != null) {
                                                 sqlWarehouses += " limit " + start + "," + limit;
                                             }
+
+                                            String sqlMin = "select min(id) from warehouses w ";
+                                            String sqlMax = "select max(id) from warehouses w ";
+                                            BigInteger minId = (BigInteger) entityManager.createNativeQuery(sqlMin).getSingleResult();
+                                            BigInteger maxId = (BigInteger) entityManager.createNativeQuery(sqlMax).getSingleResult();
+
+
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             List<HashMap<String, Object>> filalist = new ArrayList<HashMap<String, Object>>();
                                             List<WarehousesEntity> warehousesEntityList
@@ -315,6 +404,20 @@ public class WarehousesController {
                                                 sHmpam.put("region", j.getRegion());
                                                 sHmpam.put("telephone", j.getTelephone());
                                                 sHmpam.put("updateDate", j.getUpdateDate());
+                                                String sqlNextId = "select min(id) from warehouses w where w.creation_date >"+ "'"+ j.getCreationDate()+"'";
+                                                String sqlPreviousId = "select max(id) from warehouses w where w.creation_date < "+"'"  + j.getCreationDate()+"'";
+                                                BigInteger nextId = (BigInteger) entityManager.createNativeQuery(sqlNextId).getSingleResult();
+                                                BigInteger previousId = (BigInteger) entityManager.createNativeQuery(sqlPreviousId).getSingleResult();
+                                                if(nextId!=null){
+                                                    sHmpam.put("previousId",nextId);
+                                                }else{
+                                                    sHmpam.put("previousId",maxId);
+                                                }
+                                                if(previousId!=null){
+                                                    sHmpam.put("nextId", previousId);
+                                                }else{
+                                                    sHmpam.put("nextId", minId);
+                                                }
                                                 filalist.add(sHmpam);
                                             }
                                             returnList_future.put("data", filalist);

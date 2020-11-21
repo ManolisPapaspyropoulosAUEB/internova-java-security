@@ -14,7 +14,6 @@ db {
 //    allowedHttpHeaders = ["Accept","Accept-Language","Content-Type","Content-Language","*/*"]
 
 uploads_dir="D:/developm/internova(Pr)/internova_JAVA_security/uploads/"
-uploads_reports="D:/developm/internova(Pr)/internova_JAVA_security/app/reports/"
 
 play.filters.enabled += "play.filters.cors.CORSFilter"
 play.filters {

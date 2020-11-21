@@ -42,7 +42,7 @@ public class SecurityPrintsController {
     }
 
     @SuppressWarnings({"Duplicates", "unchecked"})
-    public Result exportUsersAsXLS(final Http.Request request) throws IOException {  // san parametro pernei to org key
+    public Result exportUsersAsXLS(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();
         try {
             JsonNode json = request.body().asJson();
@@ -151,7 +151,7 @@ public class SecurityPrintsController {
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
-    public Result exportDepartmentsAsXLS(final Http.Request request) throws IOException {  // san parametro pernei to org key
+    public Result exportDepartmentsAsXLS(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();
         try {
             JsonNode json = request.body().asJson();
@@ -228,7 +228,7 @@ public class SecurityPrintsController {
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
-    public Result exportRolesAsXLS(final Http.Request request) throws IOException {  // san parametro pernei to org key
+    public Result exportRolesAsXLS(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();
         try {
             JsonNode json = request.body().asJson();
@@ -307,7 +307,7 @@ public class SecurityPrintsController {
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
-    public Result exportOrganizationsAsXLS(final Http.Request request) throws IOException {  // san parametro pernei to org key
+    public Result exportOrganizationsAsXLS(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();
         try {
             JsonNode json = request.body().asJson();
@@ -388,7 +388,7 @@ public class SecurityPrintsController {
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
-    public Result deleteXLSFromFolder(final Http.Request request) throws IOException {  // san parametro pernei to org key
+    public Result deleteXLSFromFolder(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();
         try {
             JsonNode json = request.body().asJson();

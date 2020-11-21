@@ -446,7 +446,7 @@ public class UsersControllers {
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
-    public Result getUsers(final Http.Request request) throws IOException {  // san parametro pernei to org key
+    public Result getUsers(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();
         try {
             JsonNode json = request.body().asJson();
@@ -475,7 +475,8 @@ public class UsersControllers {
                                             String statusSearch = json.findPath("statusSearch").findPath("name").asText();
                                             String email = json.findPath("email").asText();
                                             String username = json.findPath("username").asText();
-                                            String id = json.findPath("userId").asText();
+                                            String id = json.findPath("id").asText();
+                                            String userId = json.findPath("userId").asText();
                                             String start = json.findPath("start").asText();
                                             String limit = json.findPath("limit").asText();
                                             String sqlusers = "select * from users u where 1=1 ";
@@ -511,8 +512,11 @@ public class UsersControllers {
                                             if (!department.equalsIgnoreCase("") && department != null && !department.equalsIgnoreCase("null")) {
                                                 sqlusers += " and u.dep_id in (select id from departments alias where alias.department like '%" + department + "%'   )";
                                             }
+                                            if (!userId.equalsIgnoreCase("") && userId != null) {
+                                                sqlusers += " and u.user_id like '%" + userId + "%'";
+                                            }
                                             if (!id.equalsIgnoreCase("") && id != null) {
-                                                sqlusers += " and u.user_id like '%" + id + "%'";
+                                                sqlusers += " and u.user_id =" + id;
                                             }
                                             List<UsersEntity> usersListAll
                                                     = (List<UsersEntity>) entityManager.createNativeQuery(

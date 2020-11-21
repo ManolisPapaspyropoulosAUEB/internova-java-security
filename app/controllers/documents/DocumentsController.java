@@ -93,7 +93,7 @@ public class DocumentsController {
     }
 
     @SuppressWarnings({"Duplicates", "unchecked"})
-    public Result getUploadsBySystemId(final Http.Request request) throws IOException {  // san parametro pernei to org key
+    public Result getUploadsBySystemId(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();
         try {
             JsonNode json = request.body().asJson();
@@ -159,7 +159,7 @@ public class DocumentsController {
     }
 
     @SuppressWarnings({"Duplicates", "unchecked"})
-    public Result deleteAttatchment(final Http.Request request) throws IOException {  // san parametro pernei to org key
+    public Result deleteAttatchment(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();
         try {
             JsonNode json = request.body().asJson();
@@ -190,7 +190,7 @@ public class DocumentsController {
     }
 
     @SuppressWarnings({"Duplicates", "unchecked"})
-    public Result downloadDocument(final Http.Request request) throws IOException {  // san parametro pernei to org key
+    public Result downloadDocument(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();
         try {
             JsonNode json = request.body().asJson();

@@ -1,22 +1,32 @@
+http.port=9040
+play.http.secret.key="QCY?tAnfk?aZ?iwrNwnxIlR6CTf:G3gf:90Latabg@5241AB`R5W:1uDFN];Ik@n"
 
-db {
-    default.driver=com.mysql.jdbc.Driver
-    default.url="jdbc:mysql://localhost:3306/internova_db?characterEncoding=UTF-8"
-    default.user=root
-    default.logStatements=true
-    default.jndiName=DefaultDS
-    default.maximumPoolSize=30
-    default.connectionTestQuery="SELECT 1 FROM DUAL"
-    default.idleConnectionTestPeriod=2 minutes
 
-}
+jpa.default=defaultPersistenceUnit
+
+db.default.driver=com.mysql.jdbc.Driver
+db.default.url="jdbc:mysql://localhost/internova_db?characterEncoding=UTF-8"
+db.default.user=root
+db.default.password=root
+db.default.logStatements=true
+db.default.jndiName=DefaultDS
+
+
 
 //    allowedHttpHeaders = ["Accept","Accept-Language","Content-Type","Content-Language","*/*"]
+uploads_dir="C:/uploads/"
+uploads_reports="C:/reports/"
 
-uploads_dir="D:/developm/internova(Pr)/internova_JAVA_security/uploads/"
-uploads_reports="D:/developm/internova(Pr)/internova_JAVA_security/app/reports/"
+#play.filters.enabled += "play.filters.cors.CORSFilter"
 
-play.filters.enabled += "play.filters.cors.CORSFilter"
+
+play.filters {
+
+
+  # Disabled filters remove elements from the enabled list.
+  disabled += play.filters.csrf.CSRFFilter
+}
+
 play.filters {
 
   cors {
@@ -27,7 +37,7 @@ play.filters {
     allowedHttpMethods = ["GET", "POST", "PUT", "CONNECT", "OPTIONS","DELETE"]
     allowedHttpHeaders = null
     preflightMaxAge = 3 days
-    hosts=["http://localhost:9000/getUsers"]
+   allowed = ["."]
   }
 
   csrf {
@@ -42,12 +52,13 @@ play.filters {
 
   }
 }
-https.port: 9007
-play.server.https.keyStore {
-  path: "/path/to/keystore.jks"
-  type: "JKS"
-  password: "password_of_keystore"
+
+play.filters.hosts {
+  allowed = ["."]
 }
+
+
+
 
 
 # Point JPA at our database configuration

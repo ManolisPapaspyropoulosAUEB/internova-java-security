@@ -173,7 +173,7 @@ public class BillingsController {
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
-    public Result getBillings(final Http.Request request) throws IOException {  // san parametro pernei to org key
+    public Result getBillings(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();
         try {
             JsonNode json = request.body().asJson();

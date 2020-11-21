@@ -241,7 +241,7 @@ public class CustomersSuppliersController {
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
-    public Result getCustomersSuppliers(final Http.Request request) throws IOException {  // san parametro pernei to org key customerSupplierId countryCitySearch
+    public Result getCustomersSuppliers(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();
         try {
             JsonNode json = request.body().asJson();
@@ -281,13 +281,13 @@ public class CustomersSuppliersController {
                                             String limit = json.findPath("limit").asText();
                                             String sqlCustSupl = "select * from customers_suppliers pos where 1=1 ";
                                             if (!id.equalsIgnoreCase("") && id != null) {
-                                                sqlCustSupl += " and pos.id like '%" + id + "%'";
+                                                sqlCustSupl += " and pos.id like " + id ;
                                             }
                                             if (!countryCitySearch.equalsIgnoreCase("") && countryCitySearch != null) {
                                                 sqlCustSupl += " and ( pos.city like '%" + countryCitySearch + "%' or  pos.country like   '%"+ countryCitySearch+"%'  )" ;
                                             }
                                             if (!customerSupplierId.equalsIgnoreCase("") && customerSupplierId != null) {
-                                                sqlCustSupl += " and pos.id = " + customerSupplierId;
+                                                sqlCustSupl += " and pos.id like '%" + customerSupplierId+"%'";
                                             }
                                             if (!address.equalsIgnoreCase("") && address != null) {
                                                 sqlCustSupl += " and pos.address like '%" + address + "%'";
@@ -434,7 +434,7 @@ public class CustomersSuppliersController {
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
-    public Result getAllCustomersSuppliersNoPagination(final Http.Request request) throws IOException {  // san parametro pernei to org key customerSupplierId
+    public Result getAllCustomersSuppliersNoPagination(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();
         try {
             JsonNode json = request.body().asJson();

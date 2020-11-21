@@ -58,7 +58,7 @@ public class OffersController {
                                         entityManager -> {
                                             String orderCol = json.findPath("orderCol").asText();
                                             String descAsc = json.findPath("descAsc").asText();
-                                            String id = json.findPath("id").asText();
+                                            String id = json.findPath("offerId").asText();
                                             String offerId = json.findPath("offerId").asText();
                                             String offerDate = json.findPath("offerDate").asText();
                                             String aa = json.findPath("aa").asText();

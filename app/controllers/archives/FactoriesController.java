@@ -32,7 +32,7 @@ public class FactoriesController {
 
     //getAllFactoriesNoPagination
     @SuppressWarnings({"Duplicates", "unchecked"})
-    public Result getAllFactoriesNoPagination(final Http.Request request) throws IOException {  // san parametro pernei to org key
+    public Result getAllFactoriesNoPagination(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();
         System.out.println("getAllFactoriesNoPagination>>");
         try {
@@ -123,7 +123,7 @@ public class FactoriesController {
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
-    public Result getFactories(final Http.Request request) throws IOException {  // san parametro pernei to org key
+    public Result getFactories(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();
         try {
             JsonNode json = request.body().asJson();
@@ -144,7 +144,6 @@ public class FactoriesController {
                                             String id = json.findPath("id").asText();
                                             String orderCol = json.findPath("orderCol").asText();
                                             String descAsc = json.findPath("descAsc").asText();
-                                            String warehouseId = json.findPath("warehouseId").asText();
                                             String factoryId = json.findPath("factoryId").asText();
                                             String address = json.findPath("address").asText();
                                             String brandName = json.findPath("brandName").asText();
@@ -159,10 +158,10 @@ public class FactoriesController {
                                             String limit = json.findPath("limit").asText();
                                             String sqlWarehouses= "select * from factories pos where 1=1 ";
                                             if(!id.equalsIgnoreCase("") && id!=null){
-                                                sqlWarehouses+=" and pos.id like '%"+id+"%'";
+                                                sqlWarehouses+=" and pos.id = "+id;
                                             }
-                                            if(!warehouseId.equalsIgnoreCase("") && warehouseId!=null){
-                                                sqlWarehouses+=" and pos.id like '%"+warehouseId+"%'";
+                                            if(!factoryId.equalsIgnoreCase("") && factoryId!=null){
+                                                sqlWarehouses+=" and pos.id like '%"+factoryId+"%'";
                                             }
                                             if(!factoryId.equalsIgnoreCase("") && factoryId!=null){
                                                 sqlWarehouses+=" and pos.id like '%"+factoryId+"%'";
@@ -244,6 +243,7 @@ public class FactoriesController {
                                                 sHmpam.put("coordinates", j.getCoordinates());
                                                 sHmpam.put("unloadingLoadingCode", j.getUnloadingLoadingCode());
                                                 sHmpam.put("appointmentDays", j.getAppointmentDays());
+
                                                 String sqlNextId = "select min(id) from factories cs where cs.creation_date >"+ "'"+ j.getCreationDate()+"'";
                                                 String sqlPreviousId = "select max(id) from factories cs where cs.creation_date < "+"'"  + j.getCreationDate()+"'";
                                                 BigInteger nextId = (BigInteger) entityManager.createNativeQuery(sqlNextId).getSingleResult();

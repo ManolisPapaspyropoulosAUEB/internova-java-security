@@ -7,7 +7,7 @@ GET         /                                            controllers.HomeControl
 
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file                                controllers.Assets.versioned(path="/public", file: Asset)
-GET         /app/*file                                       controllers.WebAppAssets.at(path="webapp/", file: String)
+GET         /app/*file                                   controllers.WebAppAssets.at(path="webapp/", file: String)
 
 #OrganizationsController
 POST        /addOrganization                             controllers.security.OrganizationsController.addOrganization(req: Request)
@@ -62,6 +62,7 @@ POST        /addWarehouse                                controllers.archives.Wa
 POST        /getWarehouses                               controllers.archives.WarehousesController.getWarehouses(req: Request)
 POST        /updateWarehouse                             controllers.archives.WarehousesController.updateWarehouse(req: Request)
 POST        /deleteWarehouse                             controllers.archives.WarehousesController.deleteWarehouse(req: Request)
+POST        /getAllWarehousesNoPagination                controllers.archives.WarehousesController.getAllWarehousesNoPagination(req: Request)
 
 
 #FactoriesController

@@ -128,7 +128,7 @@ public class ArchivesPrintController {
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
-    public Result exportFactoriesAsXLS(final Http.Request request) throws IOException {  // san parametro pernei to org key
+    public Result exportFactoriesAsXLS(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();
         try {
             JsonNode json = request.body().asJson();
@@ -222,7 +222,7 @@ public class ArchivesPrintController {
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
-    public Result exportCustomersSuppliersAsXls(final Http.Request request) throws IOException  {  // san parametro pernei to org key
+    public Result exportCustomersSuppliersAsXls(final Http.Request request) throws IOException  {
         ObjectNode result = Json.newObject();
         try {
             JsonNode json = request.body().asJson();
@@ -328,7 +328,7 @@ public class ArchivesPrintController {
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
-    public Result deleteXLSFromFolder(final Http.Request request) throws IOException {  // san parametro pernei to org key
+    public Result deleteXLSFromFolder(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();
         try {
             JsonNode json = request.body().asJson();

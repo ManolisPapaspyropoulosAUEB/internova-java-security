@@ -184,7 +184,7 @@ public class CorePositionController {
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
-    public Result getPositions(final Http.Request request) throws IOException {  // san parametro pernei to org key
+    public Result getPositions(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();
         try {
             JsonNode json = request.body().asJson();
