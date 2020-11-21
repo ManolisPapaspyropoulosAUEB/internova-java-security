@@ -3,6 +3,7 @@ package controllers.security.CoreData;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.typesafe.config.ConfigFactory;
 import controllers.execution_context.DatabaseExecutionContext;
 import models.*;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -65,7 +66,7 @@ public class CoreDataPrintsController {
                                             ObjectNode resultNode = Json.newObject();
                                             String random_id = json.findPath("random_id").asText();
                                             Random rand = new Random();
-                                            String filename = "D:/developm/internova(Pr)/internova_JAVA_security/app/reports/managers" + random_id + ".xls";
+                                            String filename =  ConfigFactory.load().getString("uploads_reports")+"managers" + random_id + ".xls";
                                             HSSFWorkbook workbook = new HSSFWorkbook();
                                             HSSFSheet sheet = workbook.createSheet("FirstSheet");
                                             HSSFRow rowhead = sheet.createRow((short) 0);
@@ -170,7 +171,7 @@ public class CoreDataPrintsController {
                                             ObjectNode resultNode = Json.newObject();
                                             String random_id = json.findPath("random_id").asText();
                                             Random rand = new Random();
-                                            String filename = "D:/developm/internova(Pr)/internova_JAVA_security/app/reports/internova_sellers" + random_id + ".xls";
+                                            String filename =  ConfigFactory.load().getString("uploads_reports")+"internova_sellers" + random_id + ".xls";
                                             HSSFWorkbook workbook = new HSSFWorkbook();
                                             HSSFSheet sheet = workbook.createSheet("FirstSheet");
                                             HSSFRow rowhead = sheet.createRow((short) 0);
@@ -263,7 +264,7 @@ public class CoreDataPrintsController {
                                             ObjectNode resultNode = Json.newObject();
                                             String random_id = json.findPath("random_id").asText();
                                             Random rand = new Random();
-                                            String filename = "D:/developm/internova(Pr)/internova_JAVA_security/app/reports/billings" + random_id + ".xls";
+                                            String filename =  ConfigFactory.load().getString("uploads_reports")+"billings" + random_id + ".xls";
                                             HSSFWorkbook workbook = new HSSFWorkbook();
                                             HSSFSheet sheet = workbook.createSheet("FirstSheet");
                                             HSSFRow rowhead = sheet.createRow((short) 0);

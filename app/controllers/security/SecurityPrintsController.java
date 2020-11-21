@@ -3,6 +3,7 @@ package controllers.security;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.typesafe.config.ConfigFactory;
 import controllers.execution_context.DatabaseExecutionContext;
 import models.DepartmentsEntity;
 import models.OrganizationsEntity;
@@ -61,7 +62,7 @@ public class SecurityPrintsController {
                                             ObjectNode resultNode = Json.newObject();
                                             String random_id = json.findPath("random_id").asText();
                                             Random rand = new Random();
-                                            String filename = "D:/developm/internova(Pr)/internova_JAVA_security/app/reports/users" + random_id + ".xls";
+                                            String filename =  ConfigFactory.load().getString("uploads_reports")+"users" + random_id + ".xls";
                                             HSSFWorkbook workbook = new HSSFWorkbook();
                                             HSSFSheet sheet = workbook.createSheet("FirstSheet");
                                             HSSFRow rowhead = sheet.createRow((short) 0);
@@ -170,7 +171,7 @@ public class SecurityPrintsController {
                                             ObjectNode resultNode = Json.newObject();
                                             String random_id = json.findPath("random_id").asText();
                                             Random rand = new Random();
-                                            String filename = "D:/developm/internova(Pr)/internova_JAVA_security/app/reports/departments" + random_id + ".xls";
+                                            String filename =  ConfigFactory.load().getString("uploads_reports")+"departments" + random_id + ".xls";
                                             HSSFWorkbook workbook = new HSSFWorkbook();
                                             HSSFSheet sheet = workbook.createSheet("FirstSheet");
                                             HSSFRow rowhead = sheet.createRow((short) 0);
@@ -247,7 +248,7 @@ public class SecurityPrintsController {
                                             ObjectNode resultNode = Json.newObject();
                                             String random_id = json.findPath("random_id").asText();
                                             Random rand = new Random();
-                                            String filename = "D:/developm/internova(Pr)/internova_JAVA_security/app/reports/roles" + random_id + ".xls";
+                                            String filename =  ConfigFactory.load().getString("uploads_reports")+"roles" + random_id + ".xls";
                                             HSSFWorkbook workbook = new HSSFWorkbook();
                                             HSSFSheet sheet = workbook.createSheet("FirstSheet");
                                             HSSFRow rowhead = sheet.createRow((short) 0);
@@ -326,7 +327,7 @@ public class SecurityPrintsController {
                                             ObjectNode resultNode = Json.newObject();
                                             String random_id = json.findPath("random_id").asText();
                                             Random rand = new Random();
-                                            String filename = "D:/developm/internova(Pr)/internova_JAVA_security/app/reports/organizations" + random_id + ".xls";
+                                            String filename =  ConfigFactory.load().getString("uploads_reports")+"organizations" + random_id + ".xls";
                                             HSSFWorkbook workbook = new HSSFWorkbook();
                                             HSSFSheet sheet = workbook.createSheet("FirstSheet");
                                             HSSFRow rowhead = sheet.createRow((short) 0);
@@ -397,7 +398,7 @@ public class SecurityPrintsController {
                                 entityManager -> {
                                     String system_random_id = json.findPath("system_random_id").asText();
                                     ObjectNode res = Json.newObject();
-                                    File dest = new File("D:/developm/internova(Pr)/internova_JAVA_security/app/reports/" + system_random_id + ".xls");
+                                    File dest = new File( ConfigFactory.load().getString("uploads_reports") + system_random_id + ".xls");
                                     dest.delete();
                                     res.put("status", "success");
                                     res.put("message", "Το εγγραφο διαγράφτηκε με επιτυχία");

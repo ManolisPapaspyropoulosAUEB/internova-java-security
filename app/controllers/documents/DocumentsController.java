@@ -30,7 +30,7 @@ public class DocumentsController {
     }
 
 
-    final static String uploadPath = "D:/developm/internova(Pr)/internova_JAVA_security/uploads/";
+    final static String uploadPath = ConfigFactory.load().getString("uploads_dir");
     @SuppressWarnings("Duplicates")
     public Result uploadFile(final Http.Request request) {
         ObjectNode result = Json.newObject();

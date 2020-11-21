@@ -3,6 +3,7 @@ package controllers.archives;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.typesafe.config.ConfigFactory;
 import controllers.execution_context.DatabaseExecutionContext;
 import models.*;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -58,7 +59,7 @@ public class ArchivesPrintController {
                                             ObjectNode resultNode = Json.newObject();
                                             String random_id = json.findPath("random_id").asText();
                                             Random rand = new Random();
-                                            String filename = "D:/developm/internova(Pr)/internova_JAVA_security/app/reports/users" + random_id + ".xls";
+                                            String filename =  ConfigFactory.load().getString("uploads_reports")+"users" + random_id + ".xls";
                                             HSSFWorkbook workbook = new HSSFWorkbook();
                                             HSSFSheet sheet = workbook.createSheet("FirstSheet");
                                             HSSFRow rowhead = sheet.createRow((short) 0);
@@ -147,7 +148,7 @@ public class ArchivesPrintController {
                                             ObjectNode resultNode = Json.newObject();
                                             String random_id = json.findPath("random_id").asText();
                                             Random rand = new Random();
-                                            String filename = "D:/developm/internova(Pr)/internova_JAVA_security/app/reports/users" + random_id + ".xls";
+                                            String filename =  ConfigFactory.load().getString("uploads_reports")+"users" + random_id + ".xls";
                                             HSSFWorkbook workbook = new HSSFWorkbook();
                                             HSSFSheet sheet = workbook.createSheet("FirstSheet");
                                             HSSFRow rowhead = sheet.createRow((short) 0);
@@ -221,7 +222,7 @@ public class ArchivesPrintController {
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
-    public Result exportCustomersSuppliersAsXls(final Http.Request request) throws IOException {  // san parametro pernei to org key
+    public Result exportCustomersSuppliersAsXls(final Http.Request request) throws IOException  {  // san parametro pernei to org key
         ObjectNode result = Json.newObject();
         try {
             JsonNode json = request.body().asJson();
@@ -241,7 +242,7 @@ public class ArchivesPrintController {
                                             ObjectNode resultNode = Json.newObject();
                                             String random_id = json.findPath("random_id").asText();
                                             Random rand = new Random();
-                                            String filename = "D:/developm/internova(Pr)/internova_JAVA_security/app/reports/users" + random_id + ".xls";
+                                            String filename =  ConfigFactory.load().getString("uploads_reports")+"users" + random_id + ".xls";
                                             HSSFWorkbook workbook = new HSSFWorkbook();
                                             HSSFSheet sheet = workbook.createSheet("FirstSheet");
                                             HSSFRow rowhead = sheet.createRow((short) 0);
@@ -337,7 +338,7 @@ public class ArchivesPrintController {
                                 entityManager -> {
                                     String system_random_id = json.findPath("system_random_id").asText();
                                     ObjectNode res = Json.newObject();
-                                    File dest = new File("D:/developm/internova(Pr)/internova_JAVA_security/app/reports/" + system_random_id + ".xls");
+                                    File dest = new File( ConfigFactory.load().getString("uploads_reports")+ system_random_id + ".xls");
                                     dest.delete();
                                     res.put("status", "success");
                                     res.put("message", "Το εγγραφο διαγράφτηκε με επιτυχία");
