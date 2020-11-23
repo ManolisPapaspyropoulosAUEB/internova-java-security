@@ -26,6 +26,7 @@ POST        /addUser                                     controllers.security.Us
 POST        /updateUser                                  controllers.security.UsersControllers.updateUser(req: Request)
 POST        /deleteUser                                  controllers.security.UsersControllers.deleteUser(req: Request)
 POST        /getUsers                                    controllers.security.UsersControllers.getUsers(req: Request)
+POST        /getAllUsersNoPagination                     controllers.security.UsersControllers.getAllUsersNoPagination(req: Request)
 POST        /updatePassword                              controllers.security.UsersControllers.updatePassword(req: Request)
 POST        /login                                       controllers.security.UsersControllers.login(req: Request)
 
@@ -114,8 +115,9 @@ POST        /deleteInternovaSeller                       controllers.security.Co
 POST        /getInternovaSellers                         controllers.security.CoreData.InternovaSellersController.getInternovaSellers(req: Request)
 
 
-#OffersController addOffer
+#OffersController addOffer getAllOffersNoPagination
 POST        /getOffers                                   controllers.procedures.OffersController.getOffers(req: Request)
+POST        /getAllOffersNoPagination                    controllers.procedures.OffersController.getAllOffersNoPagination(req: Request)
 POST        /deleteOffer                                 controllers.procedures.OffersController.deleteOffer(req: Request)
 POST        /addOffer                                    controllers.procedures.OffersController.addOffer(req: Request)
 POST        /updateOffer                                 controllers.procedures.OffersController.updateOffer(req: Request)

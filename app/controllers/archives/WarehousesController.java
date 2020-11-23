@@ -232,7 +232,7 @@ public class WarehousesController {
                                 return jpaApi.withTransaction(
                                         entityManager -> {
 
-                                            String sqlWarehouses= "select * from warehouses pos where 1=1 ";
+                                            String sqlWarehouses= "select * from warehouses pos where 1=1 order by creation_date desc";
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             List<HashMap<String, Object>> filalist = new ArrayList<HashMap<String, Object>>();
                                             List<WarehousesEntity> warehousesEntityList
@@ -404,20 +404,6 @@ public class WarehousesController {
                                                 sHmpam.put("region", j.getRegion());
                                                 sHmpam.put("telephone", j.getTelephone());
                                                 sHmpam.put("updateDate", j.getUpdateDate());
-                                                String sqlNextId = "select min(id) from warehouses w where w.creation_date >"+ "'"+ j.getCreationDate()+"'";
-                                                String sqlPreviousId = "select max(id) from warehouses w where w.creation_date < "+"'"  + j.getCreationDate()+"'";
-                                                BigInteger nextId = (BigInteger) entityManager.createNativeQuery(sqlNextId).getSingleResult();
-                                                BigInteger previousId = (BigInteger) entityManager.createNativeQuery(sqlPreviousId).getSingleResult();
-                                                if(nextId!=null){
-                                                    sHmpam.put("previousId",nextId);
-                                                }else{
-                                                    sHmpam.put("previousId",maxId);
-                                                }
-                                                if(previousId!=null){
-                                                    sHmpam.put("nextId", previousId);
-                                                }else{
-                                                    sHmpam.put("nextId", minId);
-                                                }
                                                 filalist.add(sHmpam);
                                             }
                                             returnList_future.put("data", filalist);

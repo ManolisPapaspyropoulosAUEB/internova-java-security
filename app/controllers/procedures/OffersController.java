@@ -37,6 +37,122 @@ public class OffersController {
         this.executionContext = executionContext;
     }
 
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    public Result getAllOffersNoPagination(final Http.Request request) throws IOException {
+        ObjectNode result = Json.newObject();
+        try {
+            JsonNode json = request.body().asJson();
+            if (json == null) {
+                return badRequest("Expecting Json data");
+            } else {
+                if (json == null) {
+                    result.put("status", "error");
+                    result.put("message", "Δεν εχετε αποστειλει εγκυρα δεδομενα.");
+                    return ok(result);
+                } else {
+                    ObjectMapper ow = new ObjectMapper();
+                    HashMap<String, Object> returnList = new HashMap<String, Object>();
+                    String jsonResult = "";
+                    CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> { //
+                                return jpaApi.withTransaction(
+                                        entityManager -> {
+                                            String sqlCustSupl = "select * from offers offer where 1=1 order by creation_date desc";
+                                            HashMap<String, Object> returnList_future = new HashMap<String, Object>();
+                                            List<HashMap<String, Object>> filalist = new ArrayList<HashMap<String, Object>>();
+                                            List<OffersEntity> offersEntityList
+                                                    = (List<OffersEntity>) entityManager.createNativeQuery(
+                                                    sqlCustSupl, OffersEntity.class).getResultList();
+                                            for (OffersEntity j : offersEntityList) {
+                                                HashMap<String, Object> sHmpam = new HashMap<String, Object>();
+                                                sHmpam.put("id", j.getId());
+                                                sHmpam.put("customerId", j.getCustomerId());
+                                                sHmpam.put("aa", j.getAa());
+                                                if (j.getCustomerId() != null) {
+                                                    HashMap<String, Object> customerMap = new HashMap<String, Object>();
+                                                    HashMap<String, Object> billingsMap = new HashMap<String, Object>();
+                                                    HashMap<String, Object> sellerMap = new HashMap<String, Object>();
+                                                    CustomersSuppliersEntity customersSuppliersEntity = entityManager.find(CustomersSuppliersEntity.class, j.getCustomerId());
+                                                    customerMap.put("customerId", customersSuppliersEntity.getId());
+                                                    customerMap.put("email", customersSuppliersEntity.getEmail());
+                                                    customerMap.put("telephone", customersSuppliersEntity.getTelephone());
+                                                    customerMap.put("brandName", customersSuppliersEntity.getBrandName());
+                                                    if (j.getBillingId() != null) {
+                                                        billingsMap.put("billingId", j.getBillingId());
+                                                        billingsMap.put("billingName", entityManager.find(BillingsEntity.class, j.getBillingId()).getName());
+                                                    } else {
+                                                        billingsMap.put("billingId", customersSuppliersEntity.getBillingId());
+                                                        billingsMap.put("billingName", entityManager.find(BillingsEntity.class, customersSuppliersEntity.getBillingId()).getName());
+                                                    }
+                                                    sHmpam.put("billings", billingsMap);
+                                                    if (j.getSellerId() != null) {
+                                                        sellerMap.put("sellerId", j.getSellerId());
+                                                        sellerMap.put("sellerName", entityManager.find(InternovaSellersEntity.class, j.getSellerId()).getName());
+                                                    } else {
+                                                        sellerMap.put("sellerId", customersSuppliersEntity.getInternovaSellerId());
+                                                        sellerMap.put("sellerName", entityManager.find(InternovaSellersEntity.class, customersSuppliersEntity.getInternovaSellerId()).getName());
+                                                    }
+                                                    sHmpam.put("seller", sellerMap);
+                                                    sHmpam.put("custommer", customerMap);
+                                                }
+                                                //
+                                                sHmpam.put("comments", j.getComments());
+                                                sHmpam.put("offerId", j.getId());
+                                                sHmpam.put("offerDate", j.getOfferDate());
+                                                sHmpam.put("creationDate", j.getCreationDate());
+                                                sHmpam.put("updateDate", j.getUpdateDate());
+                                                HashMap<String, Object> fromAddress = new HashMap<String, Object>();
+                                                fromAddress.put("city", j.getFromCity());
+                                                fromAddress.put("address", j.getFromAddress());
+                                                fromAddress.put("country", j.getFromCountry());
+                                                fromAddress.put("lattitude", j.getFromLattitude());
+                                                fromAddress.put("longtitude", j.getFromLongtitude());
+                                                fromAddress.put("postalCode", j.getFromPostalCode());
+                                                fromAddress.put("region", j.getFromRegion());
+                                                sHmpam.put("from", fromAddress);
+                                                HashMap<String, Object> toAddress = new HashMap<String, Object>();
+                                                toAddress.put("city", j.getFromCity());
+                                                toAddress.put("address", j.getToAddress());
+                                                toAddress.put("country", j.getToCountry());
+                                                toAddress.put("lattitude", j.getToLattitude());
+                                                toAddress.put("longtitude", j.getToLongtitude());
+                                                toAddress.put("postalCode", j.getToPostalCode());
+                                                toAddress.put("region", j.getToRegion());
+                                                sHmpam.put("to", toAddress);
+                                                sHmpam.put("status", j.getStatus());
+
+                                                filalist.add(sHmpam);
+                                            }
+                                            returnList_future.put("data", filalist);
+                                            returnList_future.put("status", "success");
+                                            returnList_future.put("message", "success");
+                                            return returnList_future;
+                                        });
+                            },
+                            executionContext);
+                    returnList = getFuture.get();
+                    DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                    ow.setDateFormat(myDateFormat);
+                    try {
+                        jsonResult = ow.writeValueAsString(returnList);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        result.put("status", "error");
+                        result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων ");
+                        return ok(result);
+                    }
+                    return ok(jsonResult);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων");
+            return ok(result);
+        }
+    }
+
+
     @SuppressWarnings({"Duplicates", "unchecked"})
     public Result getOffers(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();
@@ -58,7 +174,7 @@ public class OffersController {
                                         entityManager -> {
                                             String orderCol = json.findPath("orderCol").asText();
                                             String descAsc = json.findPath("descAsc").asText();
-                                            String id = json.findPath("offerId").asText();
+                                            String id = json.findPath("id").asText();
                                             String offerId = json.findPath("offerId").asText();
                                             String offerDate = json.findPath("offerDate").asText();
                                             String aa = json.findPath("aa").asText();
@@ -72,10 +188,10 @@ public class OffersController {
                                             String limit = json.findPath("limit").asText();
                                             String sqlCustSupl = "select * from offers offer where 1=1 ";
                                             if (!id.equalsIgnoreCase("") && id != null) {
-                                                sqlCustSupl += " and offer.id like '%" + id + "%'";
+                                                sqlCustSupl += " and offer.id =" + id + "";
                                             }
                                             if (!offerId.equalsIgnoreCase("") && offerId != null) {
-                                                sqlCustSupl += " and offer.id = " + offerId;
+                                                sqlCustSupl += " and offer.id like '%" + offerId + "%'";
                                             }
                                             if (!aa.equalsIgnoreCase("") && aa != null) {
                                                 sqlCustSupl += " and offer.aa like '%" + aa + "%'";
@@ -132,13 +248,13 @@ public class OffersController {
                                                     = (List<OffersEntity>) entityManager.createNativeQuery(
                                                     sqlCustSupl, OffersEntity.class).getResultList();
                                             if (!orderCol.equalsIgnoreCase("") && orderCol != null) {
-                                                if(orderCol.equalsIgnoreCase("billingName")){
-                                                    sqlCustSupl +=  " order by (select name from billings b where b.id=offer.billing_id)"+ descAsc;
-                                                }else if (orderCol.equalsIgnoreCase("sellerName")){
-                                                    sqlCustSupl +=  " order by (select name from internova_sellers iseller where iseller.id=offer.seller_id)"+ descAsc;
-                                                }else if(orderCol.equalsIgnoreCase("brandName")){
-                                                    sqlCustSupl +=  " order by (select brand_name from customers_suppliers cs where cs.id=offer.customer_id)"+ descAsc;
-                                                }else{
+                                                if (orderCol.equalsIgnoreCase("billingName")) {
+                                                    sqlCustSupl += " order by (select name from billings b where b.id=offer.billing_id)" + descAsc;
+                                                } else if (orderCol.equalsIgnoreCase("sellerName")) {
+                                                    sqlCustSupl += " order by (select name from internova_sellers iseller where iseller.id=offer.seller_id)" + descAsc;
+                                                } else if (orderCol.equalsIgnoreCase("brandName")) {
+                                                    sqlCustSupl += " order by (select brand_name from customers_suppliers cs where cs.id=offer.customer_id)" + descAsc;
+                                                } else {
                                                     sqlCustSupl += " order by " + orderCol + " " + descAsc;
                                                 }
                                             } else {
@@ -155,10 +271,7 @@ public class OffersController {
                                             List<OffersEntity> offersEntityList
                                                     = (List<OffersEntity>) entityManager.createNativeQuery(
                                                     sqlCustSupl, OffersEntity.class).getResultList();
-                                            String sqlMin = "select min(id) from offers cs ";
-                                            String sqlMax = "select max(id) from offers cs ";
-                                            BigInteger minId = (BigInteger) entityManager.createNativeQuery(sqlMin).getSingleResult();
-                                            BigInteger maxId = (BigInteger) entityManager.createNativeQuery(sqlMax).getSingleResult();
+
                                             for (OffersEntity j : offersEntityList) {
                                                 HashMap<String, Object> sHmpam = new HashMap<String, Object>();
                                                 sHmpam.put("id", j.getId());
@@ -214,20 +327,7 @@ public class OffersController {
                                                 toAddress.put("region", j.getToRegion());
                                                 sHmpam.put("to", toAddress);
                                                 sHmpam.put("status", j.getStatus());
-                                                String sqlNextId = "select min(id) from offers cs where cs.creation_date >" + "'" + j.getCreationDate() + "'";
-                                                String sqlPreviousId = "select max(id) from offers cs where cs.creation_date < " + "'" + j.getCreationDate() + "'";
-                                                BigInteger nextId = (BigInteger) entityManager.createNativeQuery(sqlNextId).getSingleResult();
-                                                BigInteger previousId = (BigInteger) entityManager.createNativeQuery(sqlPreviousId).getSingleResult();
-                                                if (nextId != null) {
-                                                    sHmpam.put("previousId", nextId);
-                                                } else {
-                                                    sHmpam.put("previousId", maxId);
-                                                }
-                                                if (previousId != null) {
-                                                    sHmpam.put("nextId", previousId);
-                                                } else {
-                                                    sHmpam.put("nextId", minId);
-                                                }
+
                                                 filalist.add(sHmpam);
                                             }
                                             returnList_future.put("data", filalist);
@@ -381,8 +481,6 @@ public class OffersController {
     }
 
 
-
-
     @SuppressWarnings({"Duplicates", "unchecked"})
     @BodyParser.Of(BodyParser.Json.class)
     public Result updateOffer(final Http.Request request) throws IOException, Exception {
@@ -410,7 +508,7 @@ public class OffersController {
                                     ((ObjectNode) custommer).remove("billing");
                                     ((ObjectNode) custommer).remove("internovaSeller");
                                     ObjectNode add_result = Json.newObject();
-                                    OffersEntity billingsEntity =entityManager.find(OffersEntity.class,offerId);
+                                    OffersEntity billingsEntity = entityManager.find(OffersEntity.class, offerId);
                                     billingsEntity.setAa((long) generateRandomDigits(3));
                                     Date offerDateString = new SimpleDateFormat("yyyy-MM-dd").parse(json.findPath("offerDate").asText());
                                     billingsEntity.setOfferDate(offerDateString);
@@ -459,8 +557,6 @@ public class OffersController {
             }
         }
     }
-
-
 
 
 }

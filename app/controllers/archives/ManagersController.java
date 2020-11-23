@@ -424,13 +424,21 @@ public class ManagersController {
                                                 sHmpam.put("system", j.getSystem());
                                                 if (j.getSystemId() != null && j.getSystemId() != 0) {
                                                     if (j.getSystem().equalsIgnoreCase("Εργοστάσιο")) {
-                                                        sHmpam.put("systemBrandName", entityManager.find(FactoriesEntity.class, j.getSystemId()).getBrandName());
+                                                        sHmpam.put("systemBrandName",
+                                                                entityManager.find(FactoriesEntity.class,
+                                                                        j.getSystemId()).getBrandName());
                                                     } else if (j.getSystem().equalsIgnoreCase("Αποθήκη")) {
-                                                        sHmpam.put("systemBrandName", entityManager.find(WarehousesEntity.class, j.getSystemId()).getBrandName());
+                                                        sHmpam.put("systemBrandName",
+                                                                entityManager.find(WarehousesEntity.class,
+                                                                        j.getSystemId()).getBrandName());
                                                     } else if (j.getSystem().equalsIgnoreCase("Προσφορά")) {
-                                                        sHmpam.put("systemBrandName", entityManager.find(CustomersSuppliersEntity.class, entityManager.find(OffersEntity.class, j.getSystemId()).getCustomerId()).getBrandName());
+                                                        sHmpam.put("systemBrandName",
+                                                                entityManager.find(CustomersSuppliersEntity.class, entityManager.find(OffersEntity.class,
+                                                                        j.getSystemId()).getCustomerId()).getBrandName());
                                                     } else if (j.getSystem().equalsIgnoreCase("Πελάτες-Προμηθευτές")) {
-                                                        sHmpam.put("systemBrandName", entityManager.find(CustomersSuppliersEntity.class, j.getSystemId()).getBrandName());
+                                                        sHmpam.put("systemBrandName",
+                                                                entityManager.find(CustomersSuppliersEntity.class,
+                                                                        j.getSystemId()).getBrandName());
                                                     }
                                                 } else {
                                                     sHmpam.put("systemBrandName", "-");

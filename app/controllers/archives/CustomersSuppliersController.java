@@ -350,10 +350,6 @@ public class CustomersSuppliersController {
                                                     = (List<CustomersSuppliersEntity>) entityManager.createNativeQuery(
                                                     sqlCustSupl, CustomersSuppliersEntity.class).getResultList();
                                             Integer index = 0;
-                                            String sqlMin = "select min(id) from customers_suppliers cs ";
-                                            String sqlMax = "select max(id) from customers_suppliers cs ";
-                                            BigInteger minId = (BigInteger) entityManager.createNativeQuery(sqlMin).getSingleResult();
-                                            BigInteger maxId = (BigInteger) entityManager.createNativeQuery(sqlMax).getSingleResult();
                                             for (CustomersSuppliersEntity j : warehousesEntityList) {
                                                 HashMap<String, Object> sHmpam = new HashMap<String, Object>();
                                                 sHmpam.put("address", j.getAddress());
@@ -385,20 +381,6 @@ public class CustomersSuppliersController {
                                                 sHmpam.put("creationDate", j.getCreationDate());
                                                 sHmpam.put("telephone", j.getTelephone());
                                                 sHmpam.put("updateDate", j.getUpdateDate());
-                                                String sqlNextId = "select min(id) from customers_suppliers cs where cs.creation_date >"+ "'"+ j.getCreationDate()+"'";
-                                                String sqlPreviousId = "select max(id) from customers_suppliers cs where cs.creation_date < "+"'"  + j.getCreationDate()+"'";
-                                                BigInteger nextId = (BigInteger) entityManager.createNativeQuery(sqlNextId).getSingleResult();
-                                                BigInteger previousId = (BigInteger) entityManager.createNativeQuery(sqlPreviousId).getSingleResult();
-                                                if(nextId!=null){
-                                                    sHmpam.put("previousId",nextId);
-                                                }else{
-                                                    sHmpam.put("previousId",maxId);
-                                                }
-                                                if(previousId!=null){
-                                                    sHmpam.put("nextId", previousId);
-                                                }else{
-                                                    sHmpam.put("nextId", minId);
-                                                }
                                                 filalist.add(sHmpam);
                                                 index++;
                                             }
@@ -454,8 +436,7 @@ public class CustomersSuppliersController {
                                         entityManager -> {
                                             //roleDescSearchInput afmSearch customersSupliersTypesSearch
 
-                                            String sqlCustSupl = "select * from customers_suppliers pos where 1=1 ";
-                                            sqlCustSupl += " order by creation_date desc";
+                                            String sqlCustSupl = "select * from customers_suppliers pos where 1=1 order by creation_date desc ";
 
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             List<HashMap<String, Object>> filalist = new ArrayList<HashMap<String, Object>>();

@@ -15,6 +15,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.security.Key;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -552,6 +553,7 @@ public class UsersControllers {
                                                     returnList_future.put("message", "Πρόβλημα κατά την ανάκτηση δεδομένων,παρακαλώ επικοινωνήστε με τον διαχειριστή του συστήματος");
                                                     return returnList_future;
                                                 }
+
                                                 sHmpam.put("email", j.getEmail());
                                                 sHmpam.put("creationDate", j.getCreationDate());
                                                 sHmpam.put("telephone", j.getPhone());
@@ -596,6 +598,116 @@ public class UsersControllers {
                                             }
                                             returnList_future.put("data", ufinalList);
                                             returnList_future.put("total", usersListAll.size());
+                                            returnList_future.put("status", "success");
+                                            returnList_future.put("message", "success");
+                                            return returnList_future;
+                                        });
+                            },
+                            executionContext);
+                    returnList = getFuture.get();
+                    DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                    ow.setDateFormat(myDateFormat);
+                    try {
+                        jsonResult = ow.writeValueAsString(returnList);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        result.put("status", "error");
+                        result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων ");
+                        return ok(result);
+                    }
+                    return ok(jsonResult);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων");
+            return ok(result);
+        }
+    }
+
+
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    public Result getAllUsersNoPagination(final Http.Request request) throws IOException {
+        ObjectNode result = Json.newObject();
+        try {
+            JsonNode json = request.body().asJson();
+            if (json == null) {
+                return badRequest("Expecting Json data");
+            } else {
+                if (json == null) {
+                    result.put("status", "error");
+                    result.put("message", "Δεν εχετε αποστειλει εγκυρα δεδομενα.");
+                    return ok(result);
+                } else {
+                    ObjectMapper ow = new ObjectMapper();
+                    HashMap<String, Object> returnList = new HashMap<String, Object>();
+                    String jsonResult = "";
+                    CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
+                                return jpaApi.withTransaction(
+                                        entityManager -> {
+                                            String sqlusers = "select * from users u where 1=1 order by creation_date desc ";
+                                            System.out.println(sqlusers);
+                                            HashMap<String, Object> returnList_future = new HashMap<String, Object>();
+                                            List<HashMap<String, Object>> ufinalList = new ArrayList<HashMap<String, Object>>();
+                                            List<UsersEntity> uList
+                                                    = (List<UsersEntity>) entityManager.createNativeQuery(
+                                                    sqlusers, UsersEntity.class).getResultList();
+                                            for (UsersEntity j : uList) {
+                                                HashMap<String, Object> sHmpam = new HashMap<String, Object>();
+                                                sHmpam.put("firstname", j.getFirstname());
+                                                sHmpam.put("lastname", j.getLastname());
+                                                try {
+                                                    sHmpam.put("password", decrypt(j.getPassword()));
+                                                } catch (Exception e) {
+                                                    returnList_future.put("status", "error");
+                                                    returnList_future.put("message", "Πρόβλημα κατά την ανάκτηση δεδομένων,παρακαλώ επικοινωνήστε με τον διαχειριστή του συστήματος");
+                                                    return returnList_future;
+                                                }
+                                                sHmpam.put("email", j.getEmail());
+                                                sHmpam.put("creationDate", j.getCreationDate());
+                                                sHmpam.put("telephone", j.getPhone());
+                                                sHmpam.put("position", j.getPosition());
+                                                sHmpam.put("statusUser", j.getStatus());
+                                                sHmpam.put("userId", j.getUserId());
+                                                sHmpam.put("comments", j.getComments());
+                                                sHmpam.put("gender", j.getGender());
+                                                sHmpam.put("mobilePhone", j.getMobilePhone());
+                                                sHmpam.put("orgId", j.getOrgId());
+                                                sHmpam.put("roleId", j.getRoleId());
+                                                sHmpam.put("depId", j.getDepId());
+                                                if (j.getOrgId() != null && j.getOrgId()!=0) {
+                                                    HashMap<String, Object> orgMap = new HashMap<>();
+                                                    OrganizationsEntity organizationsEntity = entityManager.find(OrganizationsEntity.class, j.getOrgId());
+                                                    orgMap.put("name", organizationsEntity.getName());
+                                                    orgMap.put("id", organizationsEntity.getOrganizationId());
+                                                    sHmpam.put("organization", orgMap);
+                                                    sHmpam.put("orgName", organizationsEntity.getName());
+                                                }
+                                                if (j.getRoleId() != null && j.getRoleId()!=0) {
+                                                    HashMap<String, Object> roleMap = new HashMap<>();
+                                                    RolesEntity rolesEntity = entityManager.find(RolesEntity.class, j.getRoleId());
+                                                    roleMap.put("name", rolesEntity.getName());
+                                                    roleMap.put("id", rolesEntity.getRoleId());
+                                                    sHmpam.put("role", roleMap);
+                                                    sHmpam.put("roleName", rolesEntity.getName());
+                                                }
+                                                if (j.getDepId() != null && j.getDepId()!=0) {
+                                                    HashMap<String, Object> depMap = new HashMap<>();
+                                                    DepartmentsEntity departmentsEntity = entityManager.find(DepartmentsEntity.class, j.getDepId());
+                                                    depMap.put("name", departmentsEntity.getDepartment());
+                                                    depMap.put("id", departmentsEntity.getId());
+                                                    sHmpam.put("department", depMap);
+                                                    sHmpam.put("depName", departmentsEntity.getDepartment());
+                                                }
+                                                sHmpam.put("token", j.getToken());
+                                                sHmpam.put("username", j.getUsername());
+                                                sHmpam.put("creationDate", j.getCreationDate());
+                                                sHmpam.put("updateDate", j.getUpdateDate());
+                                                ufinalList.add(sHmpam);
+                                            }
+                                            returnList_future.put("data", ufinalList);
                                             returnList_future.put("status", "success");
                                             returnList_future.put("message", "success");
                                             return returnList_future;

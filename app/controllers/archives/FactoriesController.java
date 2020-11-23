@@ -51,8 +51,7 @@ public class FactoriesController {
                     CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
                                 return jpaApi.withTransaction(
                                         entityManager -> {//appointmentRequired warehouseId
-
-                                            String sqlWarehouses= "select * from factories pos where 1=1 ";
+                                            String sqlWarehouses= "select * from factories pos where 1=1  order by creation_date desc";
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             List<HashMap<String, Object>> filalist = new ArrayList<HashMap<String, Object>>();
                                             List<FactoriesEntity> warehousesEntityList
@@ -213,12 +212,6 @@ public class FactoriesController {
                                             List<FactoriesEntity> warehousesEntityList
                                                     = (List<FactoriesEntity>) entityManager.createNativeQuery(
                                                     sqlWarehouses, FactoriesEntity.class).getResultList();
-
-
-                                            String sqlMin = "select min(id) from factories cs ";
-                                            String sqlMax = "select max(id) from factories cs ";
-                                            BigInteger minId = (BigInteger) entityManager.createNativeQuery(sqlMin).getSingleResult();
-                                            BigInteger maxId = (BigInteger) entityManager.createNativeQuery(sqlMax).getSingleResult();
                                             for (FactoriesEntity j : warehousesEntityList) {
                                                 HashMap<String, Object> sHmpam = new HashMap<String, Object>();
                                                 sHmpam.put("address", j.getAddress());
@@ -243,22 +236,6 @@ public class FactoriesController {
                                                 sHmpam.put("coordinates", j.getCoordinates());
                                                 sHmpam.put("unloadingLoadingCode", j.getUnloadingLoadingCode());
                                                 sHmpam.put("appointmentDays", j.getAppointmentDays());
-
-                                                String sqlNextId = "select min(id) from factories cs where cs.creation_date >"+ "'"+ j.getCreationDate()+"'";
-                                                String sqlPreviousId = "select max(id) from factories cs where cs.creation_date < "+"'"  + j.getCreationDate()+"'";
-                                                BigInteger nextId = (BigInteger) entityManager.createNativeQuery(sqlNextId).getSingleResult();
-                                                BigInteger previousId = (BigInteger) entityManager.createNativeQuery(sqlPreviousId).getSingleResult();
-                                                if(nextId!=null){
-                                                    sHmpam.put("previousId",nextId);
-                                                }else{
-                                                    sHmpam.put("previousId",maxId);
-                                                }
-                                                if(previousId!=null){
-                                                    sHmpam.put("nextId", previousId);
-                                                }else{
-                                                    sHmpam.put("nextId", minId);
-                                                }
-
                                                 if(j.getAppointmentRequired()==1){
                                                     sHmpam.put("appointmentRequired", j.getAppointmentRequired());
                                                 }else{
