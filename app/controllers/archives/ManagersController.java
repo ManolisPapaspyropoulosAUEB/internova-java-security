@@ -56,11 +56,11 @@ public class ManagersController {
                                 String system = json.findPath("system").asText();
                                 Long system_id = json.findPath("system_id").asLong();
                                 Long selectedManagerId = json.findPath("selectedManagerId").asLong();
-                                if (selectedManagerId != 0) {
+                                if (1 == 0) {
                                     ManagersEntity manager = entityManager.find(ManagersEntity.class, selectedManagerId);
                                     manager.setSystem(system);
                                     manager.setSystemId(system_id);
-                                    entityManager.merge(manager);
+                                    entityManager.persist(manager);
                                 } else {
                                     ManagersEntity manager = new ManagersEntity();
                                     manager.setCreationDate(new Date());
@@ -162,9 +162,14 @@ public class ManagersController {
                                     ObjectNode result_add = Json.newObject();
                                     Long id = json.findPath("id").asLong();
                                     ManagersEntity manager = entityManager.find(ManagersEntity.class, id);
-                                    entityManager.remove(manager);
-                                    result_add.put("status", "success");
-                                    result_add.put("message", "Η Διαγραφή ολοκληρώθηκε με επιτυχία!");
+                                    if(manager.getSystemId()!=null && manager.getSystemId()!=0){
+                                        result_add.put("status", "error");
+                                        result_add.put("message", "Ο συγκεκριμένος υπεύθυνος είναι συνδεδεμένος με κάποια Ετερεία/σύστημα");
+                                    }else{
+                                        entityManager.remove(manager);
+                                        result_add.put("status", "success");
+                                        result_add.put("message", "Η Διαγραφή ολοκληρώθηκε με επιτυχία!");
+                                    }
                                     return result_add;
                                 });
                             },

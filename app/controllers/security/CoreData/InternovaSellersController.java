@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execution_context.DatabaseExecutionContext;
+import models.CustomersSuppliersEntity;
 import models.InternovaSellersEntity;
+import models.OffersEntity;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
 import play.mvc.BodyParser;
@@ -142,11 +144,22 @@ public class InternovaSellersController {
                             return jpaApi.withTransaction(entityManager -> {
                                 ObjectNode add_result = Json.newObject();
                                 Long id = json.findPath("id").asLong();
-                                InternovaSellersEntity internovaSellersEntity = entityManager.find(InternovaSellersEntity.class,id);
-                                internovaSellersEntity.setCreationDate(new Date());
-                                entityManager.remove(internovaSellersEntity);
-                                add_result.put("status", "success");
-                                add_result.put("message", "Η διαγραφή πραγματοποίηθηκε με επιτυχία");
+                                String sqlExistCs = "select * from customers_suppliers cs where cs.internova_seller_id=" + id;
+                                List<CustomersSuppliersEntity> suppliersEntityList = (List<CustomersSuppliersEntity>) entityManager.createNativeQuery(sqlExistCs, CustomersSuppliersEntity.class).getResultList();
+                                String sqlExistOffers = "select * from offers o where o.seller_id=" + id;
+                                List<OffersEntity> offersEntityList = (List<OffersEntity>) entityManager.createNativeQuery(sqlExistOffers, OffersEntity.class).getResultList();
+                                if(suppliersEntityList.size()>0){
+                                    add_result.put("status", "error");
+                                    add_result.put("message", "Αποτυχία Διαγραφής.Ο συγκεκριμένος Πωλητής είναι συνδεδεμένος με πελάτη/προμηθευτή");
+                                }else if(offersEntityList.size()>0){
+                                    add_result.put("status", "error");
+                                    add_result.put("message", "Αποτυχία Διαγραφής.Ο συγκεκριμένος Πωλητής είναι συνδεδεμένος με Προσφορά");
+                                }else{
+                                    InternovaSellersEntity internovaSellersEntity = entityManager.find(InternovaSellersEntity.class,id);
+                                    entityManager.remove(internovaSellersEntity);
+                                    add_result.put("status", "success");
+                                    add_result.put("message", "Η Διαγραφή πραγματοποίηθηκε με επιτυχία");
+                                }
                                 return add_result;
                             });
                         },
