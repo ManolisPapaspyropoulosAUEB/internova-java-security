@@ -1,4 +1,4 @@
-package controllers.security.CoreData;
+package controllers.coreData;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -74,19 +74,7 @@ public class BillingsController {
                         executionContext);
                 result = (ObjectNode) addFuture.get();
                 return ok(result);
-
-            } catch (RollbackException e) {
-
-
-                System.out.println("RollbackException");
-                ObjectNode result = Json.newObject();
-                e.printStackTrace();
-                result.put("status", "error");
-                result.put("message", "Προβλημα κατα την καταχωρηση");
-                return ok(result);
             } catch (Exception e) {
-                System.out.println("Exception");
-
                 ObjectNode result = Json.newObject();
                 e.printStackTrace();
                 result.put("status", "error");

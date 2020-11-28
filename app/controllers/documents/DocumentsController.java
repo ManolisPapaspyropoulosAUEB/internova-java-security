@@ -22,13 +22,11 @@ import static play.mvc.Results.ok;
 public class DocumentsController {
     private JPAApi jpaApi;
     private DatabaseExecutionContext executionContext;
-
     @Inject
     public DocumentsController(JPAApi jpaApi, DatabaseExecutionContext executionContext) {
         this.jpaApi = jpaApi;
         this.executionContext = executionContext;
     }
-
 
     final static String uploadPath = ConfigFactory.load().getString("uploads_dir");
     @SuppressWarnings("Duplicates")

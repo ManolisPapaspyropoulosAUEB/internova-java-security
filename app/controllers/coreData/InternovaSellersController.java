@@ -1,4 +1,4 @@
-package controllers.security.CoreData;
+package controllers.coreData;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

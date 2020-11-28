@@ -1,4 +1,4 @@
-package controllers.security.CoreData;
+package controllers.coreData;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -318,6 +318,92 @@ public class CoreDataPrintsController {
     }
 
 
+
+
+
+
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    public Result exportMeasuresUnitsAsXLS(final Http.Request request) throws IOException {
+        ObjectNode result = Json.newObject();
+        try {
+            JsonNode json = request.body().asJson();
+            if (json == null) {
+                return badRequest("Expecting Json data");
+            } else {
+                if (json == null) {
+                    result.put("status", "error");
+                    result.put("message", "Δεν εχετε αποστειλει εγκυρα δεδομενα.");
+                    return ok(result);
+                } else {
+                    ObjectMapper ow = new ObjectMapper();
+                    String jsonResult = "";
+                    CompletableFuture<String> createXLSResult = CompletableFuture.supplyAsync(() -> {
+                                return jpaApi.withTransaction(
+                                        entityManager -> {
+                                            ObjectNode resultNode = Json.newObject();
+                                            String random_id = json.findPath("random_id").asText();
+                                            Random rand = new Random();
+                                            String filename =  ConfigFactory.load().getString("uploads_reports")+"measures" + random_id + ".xls";
+                                            HSSFWorkbook workbook = new HSSFWorkbook();
+                                            HSSFSheet sheet = workbook.createSheet("FirstSheet");
+                                            HSSFRow rowhead = sheet.createRow((short) 0);
+                                            rowhead.createCell((short) 0).setCellValue("ID");
+                                            rowhead.createCell((short) 1).setCellValue("ΤΙΤΛΟΣ");
+                                            rowhead.createCell((short) 2).setCellValue("ΣΧΟΛΙΑ");
+                                            rowhead.createCell((short) 3).setCellValue("ΜΗΚΟΣ(m)");
+                                            rowhead.createCell((short) 4).setCellValue("ΠΛΑΤΟΣ(m)");
+                                            rowhead.createCell((short) 5).setCellValue("ΥΨΟΣ(m)");
+                                            rowhead.createCell((short) 6).setCellValue("ΟΓΚΟΣ(m^3)");
+                                            rowhead.createCell((short) 7).setCellValue("ΗΜΕΡΟΜΗΝΙΑ ΚΑΤΑΧΩΡΗΣΗΣ");
+                                            String sql = "select * from measurement_unit ms ";
+                                            List<MeasurementUnitEntity> measurementUnitEntityList = (List<MeasurementUnitEntity>)
+                                                    entityManager.createNativeQuery(sql, MeasurementUnitEntity.class).getResultList();
+                                            for (int i = 0; i < measurementUnitEntityList.size(); i++) {
+                                                HSSFRow row = sheet.createRow((short) i + 1);
+                                                row.createCell((short) 0).setCellValue(measurementUnitEntityList.get(i).getId());
+                                                row.createCell((short) 1).setCellValue(measurementUnitEntityList.get(i).getTitle());
+                                                row.createCell((short) 2).setCellValue(measurementUnitEntityList.get(i).getComments());
+                                                row.createCell((short) 3).setCellValue(measurementUnitEntityList.get(i).getxIndex());
+                                                row.createCell((short) 4).setCellValue(measurementUnitEntityList.get(i).getzIndex());
+                                                row.createCell((short) 5).setCellValue(measurementUnitEntityList.get(i).getyIndex());
+                                                row.createCell((short) 6).setCellValue(measurementUnitEntityList.get(i).getVolume());
+                                                DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                                                String creationDateString = myDateFormat.format(measurementUnitEntityList.get(i).getCreationDate());
+                                                row.createCell((short) 7).setCellValue(creationDateString);
+                                            }
+                                            for (int col = 0; col < 13; col++) {
+                                                sheet.autoSizeColumn(col);
+                                            }
+                                            FileOutputStream fileOut = null;
+                                            try {
+                                                fileOut = new FileOutputStream(filename);
+                                                workbook.write(fileOut);
+                                                fileOut.close();
+                                                return filename;
+                                            } catch (FileNotFoundException e) {
+                                                e.printStackTrace();
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
+                                            resultNode.put("message", "success");
+                                            return filename;
+                                        });
+                            },
+                            executionContext);
+                    String ret_path = createXLSResult.get();
+                    File previewFile = new File(ret_path);
+                    return ok(previewFile);
+
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων");
+            return ok(result);
+        }
+    }
 
 
 
