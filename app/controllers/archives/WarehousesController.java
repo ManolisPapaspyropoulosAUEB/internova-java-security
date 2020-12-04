@@ -47,6 +47,7 @@ public class WarehousesController {
                                     ObjectNode add_result = Json.newObject();
                                     String address = json.findPath("address").asText();
                                     String brandName = json.findPath("brandName").asText();
+                                    String country = json.findPath("country").asText();
                                     String city = json.findPath("city").asText();
                                     String email = json.findPath("email").asText();
                                     String manager = json.findPath("manager").asText();
@@ -59,6 +60,7 @@ public class WarehousesController {
                                     WarehousesEntity warehousesEntity = new WarehousesEntity();
                                     warehousesEntity.setAddress(address);
                                     warehousesEntity.setBrandName(brandName);
+                                    warehousesEntity.setCountry(country);
                                     warehousesEntity.setCity(city);
                                     warehousesEntity.setCreationDate(new Date());
                                     warehousesEntity.setEmail(email);
@@ -117,6 +119,8 @@ public class WarehousesController {
                                     String email = json.findPath("email").asText();
                                     String manager = json.findPath("manager").asText();
                                     String postalCode = json.findPath("postalCode").asText();
+                                    String country = json.findPath("country").asText();
+
                                     String region = json.findPath("region").asText();
                                     String telephone = json.findPath("telephone").asText();
                                     Long id = json.findPath("warehouseId").asLong();
@@ -125,6 +129,7 @@ public class WarehousesController {
                                     Double longitude = json.findPath("longitude").asDouble();
                                     WarehousesEntity warehousesEntity = entityManager.find(WarehousesEntity.class, id);
                                     warehousesEntity.setAddress(address);
+                                    warehousesEntity.setCountry(country);
                                     warehousesEntity.setBrandName(brandName);
                                     warehousesEntity.setCity(city);
                                     warehousesEntity.setCreationDate(new Date());
@@ -232,7 +237,29 @@ public class WarehousesController {
                                 return jpaApi.withTransaction(
                                         entityManager -> {
 
-                                            String sqlWarehouses= "select * from warehouses pos where 1=1 order by creation_date desc";
+                                            String sqlWarehouses= "select * from warehouses pos where 1=1";
+                                            String address = json.findPath("address").asText();
+                                            String telephone = json.findPath("telephone").asText();
+                                            String brandName = json.findPath("brandName").asText();
+                                            String city = json.findPath("city").asText();
+                                            String country = json.findPath("country").asText();
+
+                                            if (!address.equalsIgnoreCase("") && address != null) {
+                                                sqlWarehouses += " and pos.address like '%"+address+"%'" ;
+                                            }
+                                            if (!telephone.equalsIgnoreCase("") && telephone != null) {
+                                                sqlWarehouses += " and pos.telephone like '%"+telephone+"%'" ;
+                                            }
+                                            if (!brandName.equalsIgnoreCase("") && brandName != null) {
+                                                sqlWarehouses += " and pos.brand_name like '%"+brandName+"%'" ;
+                                            }
+                                            if (!city.equalsIgnoreCase("") && city != null) {
+                                                sqlWarehouses += " and pos.city like '%"+city+"%'" ;
+                                            }
+                                            if (!country.equalsIgnoreCase("") && country != null) {
+                                                sqlWarehouses += " and pos.country like '%"+country+"%'" ;
+                                            }
+                                            sqlWarehouses+=" order by pos.creation_date desc ";
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             List<HashMap<String, Object>> filalist = new ArrayList<HashMap<String, Object>>();
                                             List<WarehousesEntity> warehousesEntityList
@@ -249,6 +276,7 @@ public class WarehousesController {
                                                 sHmpam.put("id", j.getId());
                                                 sHmpam.put("warehouseId", j.getId());
                                                 sHmpam.put("latitude", j.getLatitude());
+                                                sHmpam.put("country", j.getCountry());
                                                 sHmpam.put("longitude", j.getLongitude());
                                                 sHmpam.put("manager", j.getManager());
                                                 sHmpam.put("postalCode", j.getPostalCode());
@@ -396,6 +424,7 @@ public class WarehousesController {
                                                 sHmpam.put("email", j.getEmail());
                                                 sHmpam.put("comments", j.getComments());
                                                 sHmpam.put("id", j.getId());
+                                                sHmpam.put("country", j.getCountry());
                                                 sHmpam.put("warehouseId", j.getId());
                                                 sHmpam.put("latitude", j.getLatitude());
                                                 sHmpam.put("longitude", j.getLongitude());

@@ -30,6 +30,9 @@ public class OffersEntity {
     private String fromAddress;
     private String toAddress;
     private Long aa;
+    private Long factoryId;
+    private Long warehouseId;
+    private String declineReasons;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -303,5 +306,35 @@ public class OffersEntity {
 
     public void setAa(Long aa) {
         this.aa = aa;
+    }
+
+    @Basic
+    @Column(name = "factory_id")
+    public Long getFactoryId() {
+        return factoryId;
+    }
+
+    public void setFactoryId(Long factoryId) {
+        this.factoryId = factoryId;
+    }
+
+    @Basic
+    @Column(name = "warehouse_id")
+    public Long getWarehouseId() {
+        return warehouseId;
+    }
+
+    public void setWarehouseId(Long warehouseId) {
+        this.warehouseId = warehouseId;
+    }
+
+    @Basic
+    @Column(name = "decline_reasons")
+    public String getDeclineReasons() {
+        return declineReasons;
+    }
+
+    public void setDeclineReasons(String declineReasons) {
+        this.declineReasons = declineReasons;
     }
 }

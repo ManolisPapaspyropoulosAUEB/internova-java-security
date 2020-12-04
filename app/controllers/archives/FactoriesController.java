@@ -51,7 +51,33 @@ public class FactoriesController {
                     CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
                                 return jpaApi.withTransaction(
                                         entityManager -> {//appointmentRequired warehouseId
-                                            String sqlWarehouses= "select * from factories pos where 1=1  order by creation_date desc";
+                                            String sqlWarehouses= "select * from factories pos where 1=1";
+
+
+                                            String address = json.findPath("address").asText();
+                                            String telephone = json.findPath("telephone").asText();
+                                            String brandName = json.findPath("brandName").asText();
+                                            String city = json.findPath("city").asText();
+                                            String country = json.findPath("country").asText();
+
+
+                                            if (!address.equalsIgnoreCase("") && address != null) {
+                                                sqlWarehouses += " and pos.address like '%"+address+"%'" ;
+                                            }
+                                            if (!telephone.equalsIgnoreCase("") && telephone != null) {
+                                                sqlWarehouses += " and pos.telephone like '%"+telephone+"%'" ;
+                                            }
+                                            if (!brandName.equalsIgnoreCase("") && brandName != null) {
+                                                sqlWarehouses += " and pos.brand_name like '%"+brandName+"%'" ;
+                                            }
+                                            if (!city.equalsIgnoreCase("") && city != null) {
+                                                sqlWarehouses += " and pos.city like '%"+city+"%'" ;
+                                            }
+                                            if (!country.equalsIgnoreCase("") && country != null) {
+                                                sqlWarehouses += " and pos.country like '%"+country+"%'" ;
+                                            }
+                                            sqlWarehouses+=" order by pos.creation_date desc ";
+
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             List<HashMap<String, Object>> filalist = new ArrayList<HashMap<String, Object>>();
                                             List<FactoriesEntity> warehousesEntityList

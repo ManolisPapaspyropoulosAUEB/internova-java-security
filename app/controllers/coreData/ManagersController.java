@@ -340,7 +340,6 @@ public class ManagersController {
                                             if (!telephone.equalsIgnoreCase("") && telephone != null) {
                                                 sqlManagers += " and manager.telephone like '%" + telephone + "%'";
                                             }
-
                                             if (!systemSearch.equalsIgnoreCase("") && systemSearch != null) {
                                                 sqlManagers += " and manager.system like '%" + systemSearch + "%'";
                                             }
@@ -386,9 +385,7 @@ public class ManagersController {
                                                 sHmpam.put("creationDate", j.getCreationDate());
                                                 sHmpam.put("updateDate", j.getUpdateDate());
                                                 String sqlmanagersSystems =
-                                                        " select * from" +
-                                                                " managers_system ms" +
-                                                                " where ms.manager_id="+j.getId();
+                                                        " select * from managers_system ms where ms.manager_id="+j.getId();
                                                 List<ManagersSystemEntity> managersSystemEntityList =
                                                         entityManager.createNativeQuery(sqlmanagersSystems,ManagersSystemEntity.class).getResultList();
                                                 List<HashMap<String, Object>> systemList = new ArrayList<HashMap<String, Object>>();
@@ -402,15 +399,19 @@ public class ManagersController {
                                                     systemMap.put("brandName", ms.getCreationDate());
                                                     systemMap.put("updateDate", ms.getUpdateDate());
                                                     if(ms.getSystem().equalsIgnoreCase("Αποθήκη")){
-                                                        systemMap.put("brandName",entityManager.find(WarehousesEntity.class,ms.getSystemId()).getBrandName());
+                                                        systemMap.put("brandName",entityManager.find(WarehousesEntity.class,
+                                                                ms.getSystemId()).getBrandName());
                                                     }else if(ms.getSystem().equalsIgnoreCase("Εργοστάσιο")){
-                                                        systemMap.put("brandName",entityManager.find(FactoriesEntity.class,ms.getSystemId()).getBrandName());
+                                                        systemMap.put("brandName",entityManager.find(FactoriesEntity.class,
+                                                                ms.getSystemId()).getBrandName());
                                                     }else if (ms.getSystem().equalsIgnoreCase("Πελάτες-Προμηθευτές")){
-                                                        systemMap.put("brandName",entityManager.find(CustomersSuppliersEntity.class,ms.getSystemId()).getBrandName());
+                                                        systemMap.put("brandName",entityManager.find(CustomersSuppliersEntity.class,
+                                                                ms.getSystemId()).getBrandName());
                                                     }else if (ms.getSystem().equalsIgnoreCase("Προσφορά")){
                                                         CustomersSuppliersEntity customersSuppliersEntity =
                                                                 entityManager.find(CustomersSuppliersEntity.class,
-                                                                        entityManager.find(OffersEntity.class,ms.getSystemId()).getCustomerId());
+                                                                        entityManager.find(OffersEntity.class,
+                                                                                ms.getSystemId()).getCustomerId());
                                                         systemMap.put("brandName",customersSuppliersEntity.getBrandName());
                                                     }
                                                     systemList.add(systemMap);
@@ -426,8 +427,7 @@ public class ManagersController {
                                             returnList_future.put("message", "success");
                                             return returnList_future;
                                         });
-                            },
-                            executionContext);
+                            }, executionContext);
                     returnList = getFuture.get();
                     DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd");
                     ow.setDateFormat(myDateFormat);

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execution_context.DatabaseExecutionContext;
 import models.MeasurementUnitEntity;
+import models.SchedulePackageOfferEntity;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
 import play.mvc.BodyParser;
@@ -150,10 +151,8 @@ public class ΜeasuremenUnitController {
                                 Long id = json.findPath("id").asLong();
                                 //todo: tsekare an uparxei stis prosfores
                                 // String existSql = "select * from ";
-                                MeasurementUnitEntity measurementUnitEntity = entityManager.find(MeasurementUnitEntity.class, id);
-                                entityManager.remove(measurementUnitEntity);
-                                add_result.put("status", "success");
-                                add_result.put("message", "Η Διαγραφή πραγματοποίηθηκε με επιτυχία");
+                                add_result.put("status", "error");
+                                add_result.put("message", "Βρεθηκαν συνδεδεμενες εγγραφες");
                                 return add_result;
                             });
                         },
@@ -193,6 +192,7 @@ public class ΜeasuremenUnitController {
                                             String descAsc = json.findPath("descAsc").asText();
                                             String title = json.findPath("title").asText();
                                             String zIndex = json.findPath("zIndex").asText();
+                                            String exceptFullTrackedLoad = json.findPath("exceptFullTrackedLoad").asText();
                                             String yIndex = json.findPath("yIndex").asText();
                                             String xIndex = json.findPath("xIndex").asText();
                                             String volume = json.findPath("volume").asText();
@@ -219,6 +219,12 @@ public class ΜeasuremenUnitController {
                                             if (!comments.equalsIgnoreCase("") && comments != null) {
                                                 sqlMeasures += " and m.comments like '%" + comments + "%'";
                                             }
+                                            if (!exceptFullTrackedLoad.equalsIgnoreCase("") && exceptFullTrackedLoad != null) {
+                                                sqlMeasures += " and m.title!='FULL TRACK LOAD (FTL)'";
+                                            }
+
+
+
                                             if (!creationDate.equalsIgnoreCase("") && creationDate != null) {
                                                 sqlMeasures += " and SUBSTRING( b.creation_date, 1, 10)  = '" + creationDate + "'";
                                             }

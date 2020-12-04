@@ -22,6 +22,7 @@ public class WarehousesEntity {
     private String comments;
     private Double longitude;
     private Double latitude;
+    private String country;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -185,5 +186,15 @@ public class WarehousesEntity {
 
     public void setLatitude(Double latitude) {
         this.latitude = latitude;
+    }
+
+    @Basic
+    @Column(name = "country")
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 }

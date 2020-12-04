@@ -91,9 +91,17 @@ public class ScheduleController {
                                 scheduleEntity.setToLattitude(toLattitude);
                                 scheduleEntity.setToLongtitude(toLongtitude);
                                 scheduleEntity.setCreationDate(new Date());
+                                if((fromCountry.equalsIgnoreCase("Ελλάδα") || fromCountry.equalsIgnoreCase("Greece") ) && !(fromCountry.equalsIgnoreCase("Ελλάδα") || fromCountry.equalsIgnoreCase("Greece"))){
+                                    scheduleEntity.setType("Εξαγωγή");
+                                }else if (!fromCountry.equalsIgnoreCase("Ελλάδα") && toCountry.equalsIgnoreCase("Ελλάδα")){
+                                    scheduleEntity.setType("Εισαγωγή");
+                                }else{
+                                    scheduleEntity.setType("Εσωτερικού");
+                                }
                                 entityManager.persist(scheduleEntity);
                                 add_result.put("status", "success");
                                 add_result.put("id", scheduleEntity.getId());
+                                add_result.put("type", scheduleEntity.getType());
                                 add_result.put("message", "Η καταχωρηση πραγματοποίηθηκε με επιτυχία");
                                 return add_result;
                             });
@@ -166,6 +174,13 @@ public class ScheduleController {
                                 scheduleEntity.setToLattitude(toLattitude);
                                 scheduleEntity.setToLongtitude(toLongtitude);
                                 scheduleEntity.setUpdateDate(new Date());
+                                if(fromCountry.equalsIgnoreCase("Ελλάδα") && !toCountry.equalsIgnoreCase("Ελλάδα")){
+                                    scheduleEntity.setType("Εξαγωγή");
+                                }else if (!fromCountry.equalsIgnoreCase("Ελλάδα") && toCountry.equalsIgnoreCase("Ελλάδα")){
+                                    scheduleEntity.setType("Εισαγωγή");
+                                }else{
+                                    scheduleEntity.setType("Εσωτερικού");
+                                }
                                 entityManager.merge(scheduleEntity);
                                 update_result.put("status", "success");
                                 update_result.put("message", "Η ενημέρωση πραγματοποίηθηκε με επιτυχία");
@@ -261,6 +276,7 @@ public class ScheduleController {
                                             String toCity = json.findPath("toCity").asText();
                                             String toPostalCode = json.findPath("toPostalCode").asText();
                                             String toRegion = json.findPath("toRegion").asText();
+                                            String type = json.findPath("type").asText();
                                             String toCountry = json.findPath("toCountry").asText();
                                             String start = json.findPath("start").asText();
                                             String limit = json.findPath("limit").asText();
@@ -270,6 +286,9 @@ public class ScheduleController {
                                             }
                                             if (!fromAddress.equalsIgnoreCase("") && fromAddress != null) {
                                                 sqlMeasures += " and s.from_address like '%" + fromAddress + "%'";
+                                            }
+                                            if (!type.equalsIgnoreCase("") && type != null) {
+                                                sqlMeasures += " and s.type like '%" + type + "%'";
                                             }
                                             if (!fromCity.equalsIgnoreCase("") && fromCity != null) {
                                                 sqlMeasures += " and s.from_city like '%" + fromCity + "%'";
@@ -337,8 +356,17 @@ public class ScheduleController {
                                                 arrival.put("toLattitude", j.getToLattitude());
                                                 sHmpam.put("departure", departure);
                                                 sHmpam.put("arrival", arrival);
+                                                sHmpam.put("expanded",false);
                                                 sHmpam.put("updateDate", j.getUpdateDate());
+                                                sHmpam.put("type", j.getType());
+                                                String fullTracked = "select * from schedule_packages sp where sp.measurement_unit_id=23 and sp.schedule_id="+j.getId();
+                                                List <SchedulePackagesEntity> spList = entityManager.createNativeQuery(fullTracked,SchedulePackagesEntity.class).getResultList();
+                                                if(spList.size()>0){
+                                                    sHmpam.put("fullTracked",true);
+                                                }else{
+                                                    sHmpam.put("fullTracked", false);
 
+                                                }
 //                                                sHmpam.put("schedulePackageList",splFinalList);
                                                 schedList.add(sHmpam);
                                             }
@@ -462,6 +490,8 @@ public class ScheduleController {
                                                 spmap.put("id", sp.getId());
                                                 spmap.put("measurementUnitId", sp.getMeasurementUnitId());
                                                 MeasurementUnitEntity measurementUnit = entityManager.find(MeasurementUnitEntity.class,sp.getMeasurementUnitId());
+                                                spmap.put("measurementUnit_id", measurementUnit.getId());
+                                                spmap.put("measurementUnit_title", measurementUnit.getTitle());
                                                 spmap.put("measurementUnit", measurementUnit);
                                                 spmap.put("unitPrice", sp.getUnitPrice().toString());
                                                 spmap.put("updateDate", sp.getUpdateDate());
@@ -550,7 +580,52 @@ public class ScheduleController {
     }
 
 
-//deleteScheduleMeasureUnit
+//deleteScheduleMeasureUnit deleteAllScheduleMeasureUnitByScheduleId
+
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    @BodyParser.Of(BodyParser.Json.class)
+    public Result deleteAllScheduleMeasureUnitByScheduleId(final Http.Request request) throws IOException {
+        JsonNode json = request.body().asJson();
+        ((ObjectNode) json).remove("measurementUnit");
+        if (json == null) {
+            return badRequest("Expecting Json data");
+        } else {
+            try {
+                ObjectNode result = Json.newObject();
+                CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
+                            return jpaApi.withTransaction(entityManager -> {
+                                ObjectNode add_result = Json.newObject();
+                                Long scheduleId = json.findPath("scheduleId").asLong();
+                                Long expectId = json.findPath("expectId").asLong();
+                                System.out.println(scheduleId);
+                                String sqlS = "select * from schedule_packages sp where sp.schedule_id="+scheduleId;
+                                if(expectId!=null && expectId!=0){
+                                    sqlS+=" and sp.id!="+expectId;
+                                }
+                                System.out.println(sqlS);
+                                List<SchedulePackagesEntity> spList = entityManager.createNativeQuery(sqlS,SchedulePackagesEntity.class).getResultList();
+                                for(SchedulePackagesEntity s : spList){
+                                    entityManager.remove(s);
+                                }
+
+                                add_result.put("status", "success");
+                                add_result.put("message", "Η διαγραφή πραγματοποίηθηκε με επιτυχία");
+                                return add_result;
+                            });
+                        },
+                        executionContext);
+                result = (ObjectNode) addFuture.get();
+                return ok(result);
+            } catch (Exception e) {
+                ObjectNode result = Json.newObject();
+                e.printStackTrace();
+                result.put("status", "error");
+                result.put("message", "Προβλημα κατα την καταχωρηση");
+                return ok(result);
+            }
+        }
+    }
 
 
 
@@ -569,11 +644,11 @@ public class ScheduleController {
                             return jpaApi.withTransaction(entityManager -> {
                                 ObjectNode add_result = Json.newObject();
                                 Long id = json.findPath("id").asLong();
+                                System.out.println(json);
                                 SchedulePackagesEntity schedulePackagesEntity = entityManager.find(SchedulePackagesEntity.class,id);
                                 entityManager.remove(schedulePackagesEntity);
                                 add_result.put("status", "success");
-                                add_result.put("id", schedulePackagesEntity.getId());
-                                add_result.put("message", "Η ενημέρωση πραγματοποίηθηκε με επιτυχία");
+                                add_result.put("message", "Η διαγραφή πραγματοποίηθηκε με επιτυχία");
                                 return add_result;
                             });
                         },
@@ -623,6 +698,8 @@ public class ScheduleController {
                                 entityManager.persist(schedulePackagesEntity);
                                 add_result.put("status", "success");
                                 add_result.put("id", schedulePackagesEntity.getId());
+                                add_result.put("measurementUnit_id", schedulePackagesEntity.getMeasurementUnitId());
+                                add_result.put("measurementUnit_title", measurementUnit.findPath("title").asText());
                                 add_result.put("message", "Η ενημέρωση πραγματοποίηθηκε με επιτυχία");
                                 return add_result;
                             });

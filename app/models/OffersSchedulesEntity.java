@@ -6,26 +6,22 @@ import java.util.Date;
 import java.util.Objects;
 
 @Entity
-@Table(name = "schedule", schema = "internova_db", catalog = "")
-public class ScheduleEntity {
+@Table(name = "offers_schedules", schema = "internova_db", catalog = "")
+public class OffersSchedulesEntity {
     private long id;
+    private Long offerId;
     private String fromAddress;
     private String fromCity;
-    private String fromPostalCode;
-    private String fromRegion;
     private String fromCountry;
+    private String toAddress;
     private Double fromLattitude;
     private Double fromLongtitude;
-    private String toAddress;
     private String toCity;
-    private String toPostalCode;
-    private String toRegion;
     private String toCountry;
     private Double toLattitude;
     private Double toLongtitude;
     private Date creationDate;
     private Date updateDate;
-    private Integer version;
     private String type;
 
     @Id
@@ -37,6 +33,16 @@ public class ScheduleEntity {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    @Basic
+    @Column(name = "offer_id")
+    public Long getOfferId() {
+        return offerId;
+    }
+
+    public void setOfferId(Long offerId) {
+        this.offerId = offerId;
     }
 
     @Basic
@@ -60,26 +66,6 @@ public class ScheduleEntity {
     }
 
     @Basic
-    @Column(name = "from_postal_code")
-    public String getFromPostalCode() {
-        return fromPostalCode;
-    }
-
-    public void setFromPostalCode(String fromPostalCode) {
-        this.fromPostalCode = fromPostalCode;
-    }
-
-    @Basic
-    @Column(name = "from_region")
-    public String getFromRegion() {
-        return fromRegion;
-    }
-
-    public void setFromRegion(String fromRegion) {
-        this.fromRegion = fromRegion;
-    }
-
-    @Basic
     @Column(name = "from_country")
     public String getFromCountry() {
         return fromCountry;
@@ -87,6 +73,16 @@ public class ScheduleEntity {
 
     public void setFromCountry(String fromCountry) {
         this.fromCountry = fromCountry;
+    }
+
+    @Basic
+    @Column(name = "to_address")
+    public String getToAddress() {
+        return toAddress;
+    }
+
+    public void setToAddress(String toAddress) {
+        this.toAddress = toAddress;
     }
 
     @Basic
@@ -110,16 +106,6 @@ public class ScheduleEntity {
     }
 
     @Basic
-    @Column(name = "to_address")
-    public String getToAddress() {
-        return toAddress;
-    }
-
-    public void setToAddress(String toAddress) {
-        this.toAddress = toAddress;
-    }
-
-    @Basic
     @Column(name = "to_city")
     public String getToCity() {
         return toCity;
@@ -127,26 +113,6 @@ public class ScheduleEntity {
 
     public void setToCity(String toCity) {
         this.toCity = toCity;
-    }
-
-    @Basic
-    @Column(name = "to_postal_code")
-    public String getToPostalCode() {
-        return toPostalCode;
-    }
-
-    public void setToPostalCode(String toPostalCode) {
-        this.toPostalCode = toPostalCode;
-    }
-
-    @Basic
-    @Column(name = "to_region")
-    public String getToRegion() {
-        return toRegion;
-    }
-
-    public void setToRegion(String toRegion) {
-        this.toRegion = toRegion;
     }
 
     @Basic
@@ -200,46 +166,6 @@ public class ScheduleEntity {
     }
 
     @Basic
-    @Column(name = "version")
-    public Integer getVersion() {
-        return version;
-    }
-
-    public void setVersion(Integer version) {
-        this.version = version;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ScheduleEntity that = (ScheduleEntity) o;
-        return id == that.id &&
-                Objects.equals(fromAddress, that.fromAddress) &&
-                Objects.equals(fromCity, that.fromCity) &&
-                Objects.equals(fromPostalCode, that.fromPostalCode) &&
-                Objects.equals(fromRegion, that.fromRegion) &&
-                Objects.equals(fromCountry, that.fromCountry) &&
-                Objects.equals(fromLattitude, that.fromLattitude) &&
-                Objects.equals(fromLongtitude, that.fromLongtitude) &&
-                Objects.equals(toAddress, that.toAddress) &&
-                Objects.equals(toCity, that.toCity) &&
-                Objects.equals(toPostalCode, that.toPostalCode) &&
-                Objects.equals(toRegion, that.toRegion) &&
-                Objects.equals(toCountry, that.toCountry) &&
-                Objects.equals(toLattitude, that.toLattitude) &&
-                Objects.equals(toLongtitude, that.toLongtitude) &&
-                Objects.equals(creationDate, that.creationDate) &&
-                Objects.equals(updateDate, that.updateDate) &&
-                Objects.equals(version, that.version);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, fromAddress, fromCity, fromPostalCode, fromRegion, fromCountry, fromLattitude, fromLongtitude, toAddress, toCity, toPostalCode, toRegion, toCountry, toLattitude, toLongtitude, creationDate, updateDate, version);
-    }
-
-    @Basic
     @Column(name = "type")
     public String getType() {
         return type;
@@ -247,5 +173,32 @@ public class ScheduleEntity {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OffersSchedulesEntity that = (OffersSchedulesEntity) o;
+        return id == that.id &&
+                Objects.equals(offerId, that.offerId) &&
+                Objects.equals(fromAddress, that.fromAddress) &&
+                Objects.equals(fromCity, that.fromCity) &&
+                Objects.equals(fromCountry, that.fromCountry) &&
+                Objects.equals(toAddress, that.toAddress) &&
+                Objects.equals(fromLattitude, that.fromLattitude) &&
+                Objects.equals(fromLongtitude, that.fromLongtitude) &&
+                Objects.equals(toCity, that.toCity) &&
+                Objects.equals(toCountry, that.toCountry) &&
+                Objects.equals(toLattitude, that.toLattitude) &&
+                Objects.equals(toLongtitude, that.toLongtitude) &&
+                Objects.equals(creationDate, that.creationDate) &&
+                Objects.equals(updateDate, that.updateDate) &&
+                Objects.equals(type, that.type);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, offerId, fromAddress, fromCity, fromCountry, toAddress, fromLattitude, fromLongtitude, toCity, toCountry, toLattitude, toLongtitude, creationDate, updateDate, type);
     }
 }
