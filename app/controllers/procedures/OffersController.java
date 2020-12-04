@@ -777,7 +777,7 @@ public class OffersController {
                                     offersEntity.setComments(json.findPath("offers_comments").asText());
                                     offersEntity.setStatus(json.findPath("status").asText());
                                     offersEntity.setDeclineReasons(json.findPath("declineReasons").asText());
-                                    offersEntity.setCreationDate(new Date());
+                                    offersEntity.setUpdateDate(new Date());
                                     offersEntity.setCustomerId(custommer.findPath("customerId").asLong());
                                     offersEntity.setFromAddress(from.findPath("address").asText());
                                     offersEntity.setFromCity(from.findPath("city").asText());
