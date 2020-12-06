@@ -51,6 +51,7 @@ public class ScheduleController {
                                 ObjectNode add_result = Json.newObject();
                                 JsonNode arrival = json.findPath("arrival");
                                 JsonNode departure = json.findPath("departure");
+                                String type = json.findPath("type").asText();
                                 String fromAddress = departure.findPath("fromAddress").asText();
                                 String fromCity = departure.findPath("fromCity").asText();
                                 String fromPostalCode = departure.findPath("fromPostalCode").asText();
@@ -65,16 +66,7 @@ public class ScheduleController {
                                 String toCountry = arrival.findPath("toCountry").asText();
                                 Double toLattitude = arrival.findPath("toLattitude").asDouble();
                                 Double toLongtitude = arrival.findPath("toLongtitude").asDouble();
-                                if(fromAddress.equalsIgnoreCase("")
-                                        ||fromCountry.equalsIgnoreCase("")
-                                        ||toAddress.equalsIgnoreCase("")
-                                        ||toCountry.equalsIgnoreCase("")
-                                ){
-                                    add_result.put("status", "error");
-                                    add_result.put("message", "Παρακαλώ συμπληρώστε όλα τα υποχρεωτικά πεδία");
-                                    return add_result;
 
-                                }
                                 ScheduleEntity scheduleEntity = new ScheduleEntity();
                                 scheduleEntity.setFromAddress(fromAddress);
                                 scheduleEntity.setFromCity(fromCity);
@@ -91,13 +83,8 @@ public class ScheduleController {
                                 scheduleEntity.setToLattitude(toLattitude);
                                 scheduleEntity.setToLongtitude(toLongtitude);
                                 scheduleEntity.setCreationDate(new Date());
-                                if((fromCountry.equalsIgnoreCase("Ελλάδα") || fromCountry.equalsIgnoreCase("Greece") ) && !(fromCountry.equalsIgnoreCase("Ελλάδα") || fromCountry.equalsIgnoreCase("Greece"))){
-                                    scheduleEntity.setType("Εξαγωγή");
-                                }else if (!fromCountry.equalsIgnoreCase("Ελλάδα") && toCountry.equalsIgnoreCase("Ελλάδα")){
-                                    scheduleEntity.setType("Εισαγωγή");
-                                }else{
-                                    scheduleEntity.setType("Εσωτερικού");
-                                }
+                                scheduleEntity.setType(type);
+
                                 entityManager.persist(scheduleEntity);
                                 add_result.put("status", "success");
                                 add_result.put("id", scheduleEntity.getId());
@@ -131,6 +118,7 @@ public class ScheduleController {
                 ObjectNode result = Json.newObject();
                 CompletableFuture<JsonNode> updateFuture = CompletableFuture.supplyAsync(() -> {
                             return jpaApi.withTransaction(entityManager -> {
+                                System.out.println(json);
                                 ObjectNode update_result = Json.newObject();
                                 JsonNode arrival = json.findPath("arrival");
                                 JsonNode departure = json.findPath("departure");
@@ -150,15 +138,7 @@ public class ScheduleController {
                                 Double toLattitude = arrival.findPath("toLattitude").asDouble();
                                 Double toLongtitude = arrival.findPath("toLattitude").asDouble();
                                 ScheduleEntity scheduleEntity = entityManager.find(ScheduleEntity.class, id);
-                                if(fromAddress.equalsIgnoreCase("")
-                                        ||fromCountry.equalsIgnoreCase("")
-                                        ||toAddress.equalsIgnoreCase("")
-                                        ||toCountry.equalsIgnoreCase("")
-                                ){
-                                    update_result.put("status", "error");
-                                    update_result.put("message", "Παρακαλώ συμπληρώστε όλα τα υποχρεωτικά πεδία");
-                                    return update_result;
-                                }
+
                                 scheduleEntity.setFromAddress(fromAddress);
                                 scheduleEntity.setFromCity(fromCity);
                                 scheduleEntity.setFromPostalCode(fromPostalCode);
@@ -174,11 +154,11 @@ public class ScheduleController {
                                 scheduleEntity.setToLattitude(toLattitude);
                                 scheduleEntity.setToLongtitude(toLongtitude);
                                 scheduleEntity.setUpdateDate(new Date());
-                                if(fromCountry.equalsIgnoreCase("Ελλάδα") && !toCountry.equalsIgnoreCase("Ελλάδα")){
+                                if (fromCountry.equalsIgnoreCase("Ελλάδα") && !toCountry.equalsIgnoreCase("Ελλάδα")) {
                                     scheduleEntity.setType("Εξαγωγή");
-                                }else if (!fromCountry.equalsIgnoreCase("Ελλάδα") && toCountry.equalsIgnoreCase("Ελλάδα")){
+                                } else if (!fromCountry.equalsIgnoreCase("Ελλάδα") && toCountry.equalsIgnoreCase("Ελλάδα")) {
                                     scheduleEntity.setType("Εισαγωγή");
-                                }else{
+                                } else {
                                     scheduleEntity.setType("Εσωτερικού");
                                 }
                                 entityManager.merge(scheduleEntity);
@@ -201,7 +181,6 @@ public class ScheduleController {
     }
 
 
-
     @SuppressWarnings({"Duplicates", "unchecked"})
     @BodyParser.Of(BodyParser.Json.class)
     public Result deleteSchedule(final Http.Request request) throws IOException {
@@ -216,9 +195,9 @@ public class ScheduleController {
                                 ObjectNode update_result = Json.newObject();
                                 Long id = json.findPath("id").asLong();
                                 ScheduleEntity scheduleEntity = entityManager.find(ScheduleEntity.class, id);
-                                String sqlExist = " select * from schedule_packages sp where sp.schedule_id="+id;
-                                List<SchedulePackagesEntity> schedulePackagesEntityList = entityManager.createNativeQuery(sqlExist,SchedulePackagesEntity.class).getResultList();
-                                if(schedulePackagesEntityList.size()>0){
+                                String sqlExist = " select * from schedule_packages sp where sp.schedule_id=" + id;
+                                List<SchedulePackagesEntity> schedulePackagesEntityList = entityManager.createNativeQuery(sqlExist, SchedulePackagesEntity.class).getResultList();
+                                if (schedulePackagesEntityList.size() > 0) {
                                     update_result.put("status", "error");
                                     update_result.put("message", "Βρέθηκαν συνδεδεμένες εγγραφές");
                                     return update_result;
@@ -241,8 +220,6 @@ public class ScheduleController {
             }
         }
     }
-
-
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
@@ -323,9 +300,17 @@ public class ScheduleController {
                                                     sqlMeasures, ScheduleEntity.class).getResultList();
 
                                             if (!orderCol.equalsIgnoreCase("") && orderCol != null) {
-                                                sqlMeasures += " order by " + orderCol + " " + descAsc;
+                                                if (orderCol.equalsIgnoreCase("from_address")) {
+                                                    sqlMeasures += " order by s.from_country,from_city "+descAsc;
+                                                } else if (orderCol.equalsIgnoreCase("to_address")) {
+                                                    sqlMeasures += " order by s.to_country,to_city desc";
+                                                }else{
+                                                    sqlMeasures += " order by " + orderCol + " " + descAsc;
+                                                }
                                             } else {
+//                                                sqlMeasures += " order by s.from_country,from_city,to_country,to_city desc";
                                                 sqlMeasures += " order by s.creation_date desc";
+
                                             }
                                             if (!start.equalsIgnoreCase("") && start != null) {
                                                 sqlMeasures += " limit " + start + "," + limit;
@@ -356,14 +341,14 @@ public class ScheduleController {
                                                 arrival.put("toLattitude", j.getToLattitude());
                                                 sHmpam.put("departure", departure);
                                                 sHmpam.put("arrival", arrival);
-                                                sHmpam.put("expanded",false);
+                                                sHmpam.put("expanded", false);
                                                 sHmpam.put("updateDate", j.getUpdateDate());
                                                 sHmpam.put("type", j.getType());
-                                                String fullTracked = "select * from schedule_packages sp where sp.measurement_unit_id=23 and sp.schedule_id="+j.getId();
-                                                List <SchedulePackagesEntity> spList = entityManager.createNativeQuery(fullTracked,SchedulePackagesEntity.class).getResultList();
-                                                if(spList.size()>0){
-                                                    sHmpam.put("fullTracked",true);
-                                                }else{
+                                                String fullTracked = "select * from schedule_packages sp where sp.measurement_unit_id=23 and sp.schedule_id=" + j.getId();
+                                                List<SchedulePackagesEntity> spList = entityManager.createNativeQuery(fullTracked, SchedulePackagesEntity.class).getResultList();
+                                                if (spList.size() > 0) {
+                                                    sHmpam.put("fullTracked", true);
+                                                } else {
                                                     sHmpam.put("fullTracked", false);
 
                                                 }
@@ -399,7 +384,6 @@ public class ScheduleController {
             return ok(result);
         }
     }
-
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
@@ -440,7 +424,7 @@ public class ScheduleController {
                                             }
                                             if (!measureUnitLabel.equalsIgnoreCase("") && measureUnitLabel != null) {
                                                 sql += " and sp.measurement_unit_id in " +
-                                                        " (select id from measurement_unit mu where mu.title like '%"+measureUnitLabel+"%' ) ";
+                                                        " (select id from measurement_unit mu where mu.title like '%" + measureUnitLabel + "%' ) ";
                                             }
                                             if (!measureTo.equalsIgnoreCase("") && measureTo != null) {
                                                 sql += " and sp.to like '%" + measureTo + "%'";
@@ -453,18 +437,15 @@ public class ScheduleController {
                                             }
 
 
-
-
                                             List<SchedulePackagesEntity> schedulePackagesEntityListaLL
                                                     = (List<SchedulePackagesEntity>) entityManager.createNativeQuery(
                                                     sql, SchedulePackagesEntity.class).getResultList();
 
 
-
                                             if (!orderCol.equalsIgnoreCase("") && orderCol != null) {
-                                                if(orderCol.equalsIgnoreCase("measureUnitLabel")){
-                                                    sql +=  " order by (select title from measurement_unit r where r.id=sp.measurement_unit_id)"+ descAsc;
-                                                }else{
+                                                if (orderCol.equalsIgnoreCase("measureUnitLabel")) {
+                                                    sql += " order by (select title from measurement_unit r where r.id=sp.measurement_unit_id)" + descAsc;
+                                                } else {
                                                     sql += " order by " + orderCol + " " + descAsc;
                                                 }
                                             } else {
@@ -481,7 +462,7 @@ public class ScheduleController {
                                             List<SchedulePackagesEntity> scheduleEntityList
                                                     = (List<SchedulePackagesEntity>) entityManager.createNativeQuery(
                                                     sql, SchedulePackagesEntity.class).getResultList();
-                                            for(SchedulePackagesEntity sp : scheduleEntityList){
+                                            for (SchedulePackagesEntity sp : scheduleEntityList) {
                                                 HashMap<String, Object> spmap = new HashMap<String, Object>();
                                                 spmap.put("from", sp.getFromUnit().toString());
                                                 spmap.put("to", sp.getToUnit().toString());
@@ -489,7 +470,7 @@ public class ScheduleController {
                                                 spmap.put("shdulesPackageId", sp.getId());
                                                 spmap.put("id", sp.getId());
                                                 spmap.put("measurementUnitId", sp.getMeasurementUnitId());
-                                                MeasurementUnitEntity measurementUnit = entityManager.find(MeasurementUnitEntity.class,sp.getMeasurementUnitId());
+                                                MeasurementUnitEntity measurementUnit = entityManager.find(MeasurementUnitEntity.class, sp.getMeasurementUnitId());
                                                 spmap.put("measurementUnit_id", measurementUnit.getId());
                                                 spmap.put("measurementUnit_title", measurementUnit.getTitle());
                                                 spmap.put("measurementUnit", measurementUnit);
@@ -497,7 +478,7 @@ public class ScheduleController {
                                                 spmap.put("updateDate", sp.getUpdateDate());
                                                 spmap.put("summary", sp.getSummary());
                                                 spmap.put("creationDate", sp.getCreationDate());
-                                                spmap.put("measureUnitLabel", entityManager.find(MeasurementUnitEntity.class,sp.getMeasurementUnitId()).getTitle());
+                                                spmap.put("measureUnitLabel", entityManager.find(MeasurementUnitEntity.class, sp.getMeasurementUnitId()).getTitle());
                                                 schedList.add(spmap);
                                             }
                                             //searchMeasureSearch
@@ -532,8 +513,6 @@ public class ScheduleController {
     }
 
 
-
-
     @SuppressWarnings({"Duplicates", "unchecked"})
     @BodyParser.Of(BodyParser.Json.class)
     public Result addScheduleMeasureUnit(final Http.Request request) throws IOException {
@@ -547,7 +526,7 @@ public class ScheduleController {
                             return jpaApi.withTransaction(entityManager -> {
                                 ObjectNode add_result = Json.newObject();
                                 JsonNode measurementUnit = json.findPath("measurementUnit");
-                                ((ObjectNode)json).remove("measurementUnit");
+                                ((ObjectNode) json).remove("measurementUnit");
                                 Double unitPrice = json.findPath("unitPrice").asDouble();
                                 Integer to = json.findPath("to").asInt();
                                 Integer from = json.findPath("from").asInt();
@@ -599,13 +578,13 @@ public class ScheduleController {
                                 Long scheduleId = json.findPath("scheduleId").asLong();
                                 Long expectId = json.findPath("expectId").asLong();
                                 System.out.println(scheduleId);
-                                String sqlS = "select * from schedule_packages sp where sp.schedule_id="+scheduleId;
-                                if(expectId!=null && expectId!=0){
-                                    sqlS+=" and sp.id!="+expectId;
+                                String sqlS = "select * from schedule_packages sp where sp.schedule_id=" + scheduleId;
+                                if (expectId != null && expectId != 0) {
+                                    sqlS += " and sp.id!=" + expectId;
                                 }
                                 System.out.println(sqlS);
-                                List<SchedulePackagesEntity> spList = entityManager.createNativeQuery(sqlS,SchedulePackagesEntity.class).getResultList();
-                                for(SchedulePackagesEntity s : spList){
+                                List<SchedulePackagesEntity> spList = entityManager.createNativeQuery(sqlS, SchedulePackagesEntity.class).getResultList();
+                                for (SchedulePackagesEntity s : spList) {
                                     entityManager.remove(s);
                                 }
 
@@ -628,8 +607,6 @@ public class ScheduleController {
     }
 
 
-
-
     @SuppressWarnings({"Duplicates", "unchecked"})
     @BodyParser.Of(BodyParser.Json.class)
     public Result deleteScheduleMeasureUnit(final Http.Request request) throws IOException {
@@ -645,7 +622,7 @@ public class ScheduleController {
                                 ObjectNode add_result = Json.newObject();
                                 Long id = json.findPath("id").asLong();
                                 System.out.println(json);
-                                SchedulePackagesEntity schedulePackagesEntity = entityManager.find(SchedulePackagesEntity.class,id);
+                                SchedulePackagesEntity schedulePackagesEntity = entityManager.find(SchedulePackagesEntity.class, id);
                                 entityManager.remove(schedulePackagesEntity);
                                 add_result.put("status", "success");
                                 add_result.put("message", "Η διαγραφή πραγματοποίηθηκε με επιτυχία");
@@ -666,9 +643,6 @@ public class ScheduleController {
     }
 
 
-
-
-
     @SuppressWarnings({"Duplicates", "unchecked"})
     @BodyParser.Of(BodyParser.Json.class)
     public Result updateScheduleMeasureUnit(final Http.Request request) throws IOException {
@@ -682,13 +656,13 @@ public class ScheduleController {
                             return jpaApi.withTransaction(entityManager -> {
                                 ObjectNode add_result = Json.newObject();
                                 JsonNode measurementUnit = json.findPath("measurementUnit");
-                                ((ObjectNode)json).remove("measurementUnit");
+                                ((ObjectNode) json).remove("measurementUnit");
                                 Double unitPrice = json.findPath("unitPrice").asDouble();
                                 Integer to = json.findPath("to").asInt();
                                 Integer from = json.findPath("from").asInt();
                                 Long scheduleId = json.findPath("scheduleId").asLong();
                                 Long id = json.findPath("id").asLong();
-                                SchedulePackagesEntity schedulePackagesEntity = entityManager.find(SchedulePackagesEntity.class,id);
+                                SchedulePackagesEntity schedulePackagesEntity = entityManager.find(SchedulePackagesEntity.class, id);
                                 schedulePackagesEntity.setCreationDate(new Date());
                                 schedulePackagesEntity.setScheduleId(scheduleId);
                                 schedulePackagesEntity.setUnitPrice(unitPrice);
@@ -716,12 +690,6 @@ public class ScheduleController {
             }
         }
     }
-
-
-
-
-
-
 
 
 }

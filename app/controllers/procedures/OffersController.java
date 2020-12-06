@@ -1,5 +1,4 @@
 package controllers.procedures;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -10,24 +9,18 @@ import play.libs.Json;
 import play.mvc.BodyParser;
 import play.mvc.Http;
 import play.mvc.Result;
-
 import javax.inject.Inject;
-import javax.persistence.RollbackException;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
-
 public class OffersController {
     private JPAApi jpaApi;
     private DatabaseExecutionContext executionContext;
-
     @Inject
     public OffersController(JPAApi jpaApi, DatabaseExecutionContext executionContext) {
         this.jpaApi = jpaApi;
@@ -92,7 +85,6 @@ public class OffersController {
                                                     sHmpam.put("seller", sellerMap);
                                                     sHmpam.put("custommer", customerMap);
                                                 }
-                                                //
                                                 sHmpam.put("comments", j.getComments());
                                                 sHmpam.put("offerId", j.getId());
                                                 sHmpam.put("offerDate", j.getOfferDate());
@@ -117,7 +109,6 @@ public class OffersController {
                                                 toAddress.put("region", j.getToRegion());
                                                 sHmpam.put("to", toAddress);
                                                 sHmpam.put("status", j.getStatus());
-
                                                 filalist.add(sHmpam);
                                             }
                                             returnList_future.put("data", filalist);
@@ -148,8 +139,6 @@ public class OffersController {
             return ok(result);
         }
     }
-
-
 
     @SuppressWarnings({"Duplicates", "unchecked"})
     public Result getOffersSchedulesPackegesByUserId(final Http.Request request) throws IOException {
@@ -213,10 +202,7 @@ public class OffersController {
                                             if (!start.equalsIgnoreCase("") && start != null) {
                                                 sql += " limit " + start + "," + limit;
                                             }
-
-                                            System.out.println(sql);
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
-
                                             List<HashMap<String, Object>> schedList = new ArrayList<HashMap<String, Object>>();
                                             List<SchedulePackageOfferEntity> scheduleEntityList
                                                     = (List<SchedulePackageOfferEntity>) entityManager.createNativeQuery(
@@ -239,7 +225,6 @@ public class OffersController {
                                                 spmap.put("measureUnitLabel", entityManager.find(MeasurementUnitEntity.class,sp.getMeasureUnitId()).getTitle());
                                                 schedList.add(spmap);
                                             }
-                                            //searchMeasureSearch
                                             returnList_future.put("data", schedList);
                                             returnList_future.put("total", schedulePackagesEntityListaLL.size());
                                             returnList_future.put("status", "success");
@@ -269,10 +254,6 @@ public class OffersController {
             return ok(result);
         }
     }
-
-
-
-
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
@@ -337,7 +318,6 @@ public class OffersController {
                                                 sqlCustSupl += " and offer.customer_id  in " +
                                                         " ( select id from  customers_suppliers cs where cs.brand_name like '%" + customer + "%' )";
                                             }
-
                                             if (!status.equalsIgnoreCase("") && status != null) {
                                                 sqlCustSupl += " and offer.status like '%" + status + "%'";
                                             }
@@ -345,7 +325,6 @@ public class OffersController {
                                             if (!from.equalsIgnoreCase("") && from != null) {
                                                 sqlCustSupl += " and offer.from_address like '%" + from + "%'";
                                             }
-
                                             if (!to.equalsIgnoreCase("") && to != null) {
                                                 sqlCustSupl += " and offer.to_address like '%" + to + "%'";
                                             }
@@ -385,7 +364,6 @@ public class OffersController {
                                             if (!start.equalsIgnoreCase("") && start != null) {
                                                 sqlCustSupl += " limit " + start + "," + limit;
                                             }
-                                            System.out.println(sqlCustSupl);
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             List<HashMap<String, Object>> filalist = new ArrayList<HashMap<String, Object>>();
                                             List<OffersEntity> offersEntityList
@@ -473,14 +451,11 @@ public class OffersController {
                                                     osentMap.put("schedulePackageList", spoList);
                                                     offschelistFinal.add(osentMap);
                                                 }
-                                                //tableDataTimokatalogosProsfores
                                                 sHmpam.put("tableDataTimokatalogosProsfores", offschelistFinal);
-
                                                 String sqlSchedules = "select * from schedule_package_offer spo where offer_id="+j.getId();
                                                 List<SchedulePackageOfferEntity> schedulePackageOfferEntityList = (List<SchedulePackageOfferEntity>) entityManager.createNativeQuery(sqlSchedules,SchedulePackageOfferEntity.class).getResultList();
                                                 List<HashMap<String, Object>> schedulePackageOfferfinalList = new ArrayList<HashMap<String, Object>>();
                                                 for(SchedulePackageOfferEntity spoff : schedulePackageOfferEntityList){
-                                                    //suggestedOffersSchedules
                                                     HashMap<String, Object> spoffMap = new HashMap<String, Object>();
                                                     spoffMap.put("comments", spoff.getComments());
                                                     spoffMap.put("creationDate", spoff.getCreationDate());
@@ -494,7 +469,6 @@ public class OffersController {
                                                     spoffMap.put("measurementUnit",measurementUnitEntity);
                                                     spoffMap.put("measurementUnit_title",measurementUnitEntity.getTitle());
                                                     spoffMap.put("measureUnitLabel",measurementUnitEntity.getTitle());
-                                                    //
                                                     schedulePackageOfferfinalList.add(spoffMap);
                                                 }
                                                 sHmpam.put("schedulesPackages", schedulePackageOfferfinalList);
@@ -508,7 +482,6 @@ public class OffersController {
                                                 toAddress.put("region", j.getToRegion());
                                                 sHmpam.put("to", toAddress);
                                                 sHmpam.put("status", j.getStatus());
-
                                                 filalist.add(sHmpam);
                                             }
                                             returnList_future.put("data", filalist);
@@ -540,8 +513,6 @@ public class OffersController {
             return ok(result);
         }
     }
-
-
     @SuppressWarnings({"Duplicates", "unchecked"})
     @BodyParser.Of(BodyParser.Json.class)
     public Result deleteOffer(final Http.Request request) throws IOException {
@@ -582,11 +553,6 @@ public class OffersController {
         return m + new Random().nextInt(9 * m);
     }
 
-
-
-
-
-
     @SuppressWarnings({"Duplicates", "unchecked"})
     public Result getSuggestedOffersSchedulesByCustomer(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();
@@ -616,51 +582,60 @@ public class OffersController {
                                             String type = json.findPath("type").asText();
                                             String typeCategory = json.findPath("typeCategory").asText();
                                             String sqlCustSupl = "" +
-                                                    "select * from \n" +
+                                                    "select * from " +
+
                                                     "( " +
-                                                    "select \n " +
-                                                    "sched.id, \n " +
-                                                    "sched.from_city, \n " +
-                                                    "sched.from_country, \n " +
-                                                    "sched.to_city, \n " +
-                                                    "sched.to_country, \n " +
-                                                    "sched.id as object_id, \n " +
-                                                    "'Δρομολόγιο' as type , sched.creation_date , \n " +
-                                                    " null as from_address, \n " +
-                                                    " null as to_address \n " +
-                                                    " from internova_db.schedule sched where  sched.id in (select schedule_id from schedule_packages sp ) \n " +
-                                                    "union\n " +
-                                                    "select \n " +
-                                                    "offesched.id, \n " +
-                                                    "offesched.from_city, \n " +
-                                                    "offesched.from_country, \n " +
-                                                    "offesched.to_city, \n " +
-                                                    "offesched.to_country, \n " +
-                                                    "offesched.id as object_id, \n " +
-                                                    "'Προσφορά' as type , offesched.creation_date , \n " +
-                                                    " offesched.from_address as from_address, \n " +
-                                                    " offesched.to_address as to_address \n " +
-                                                    "from offers_schedules offesched\n " +
-                                                    "left join offers offe on (offe.id=offesched.offer_id)\n" +
-                                                    "where offe.customer_id="+customerId+"\n " +
-                                                    "union\n " +
-                                                    " select \n" +
-                                                    "offesched.id, \n " +
-                                                    "offesched.from_city, \n " +
-                                                    "offesched.from_country, \n " +
-                                                    "offesched.to_city, \n " +
-                                                    "offesched.to_country, \n " +
-                                                    "offesched.id as object_id, \n " +
-                                                    "'Προσφορά απο άλλους' as type , offesched.creation_date , \n " +
-                                                    " offesched.from_address as from_address, \n " +
-                                                    " offesched.to_address as to_address \n " +
-                                                    "from offers_schedules offesched\n " +
-                                                    "left join offers offe on (offe.id=offesched.offer_id)\n " +
-                                                    "where offe.customer_id!= "+customerId+"   \n " +
-                                                    " ) as sugg where 1=1 \n " +
-                                                    " \n" +
-                                                    " \n" +
-                                                    " ";
+
+                                                    "select " +
+                                                    "sched.id, " +
+                                                    "sched.from_city, " +
+                                                    "sched.from_country, " +
+                                                    "sched.to_city, " +
+                                                    "sched.to_country, " +
+                                                    "sched.id as object_id, " +
+                                                    "'Δρομολόγιο' as type , sched.creation_date , " +
+                                                    "null as from_address, " +
+                                                    "null as to_address " +
+                                                    "from internova_db.schedule sched " +
+                                                    "where  sched.id in " +
+                                                    "(select schedule_id " +
+                                                    "from schedule_packages sp ) "+
+
+                                                    " union " +
+
+                                                    "select " +
+                                                    "offesched.id, " +
+                                                    "offesched.from_city, " +
+                                                    "offesched.from_country, " +
+                                                    "offesched.to_city, " +
+                                                    "offesched.to_country, " +
+                                                    "offesched.id as object_id, " +
+                                                    "'Προσφορά' as type , offesched.creation_date , " +
+                                                    " offesched.from_address as from_address, " +
+                                                    " offesched.to_address as to_address "+
+                                                    "from offers_schedules offesched " +
+                                                    "left join offers offe on (offe.id=offesched.offer_id) "+
+                                                    "where offe.customer_id="+customerId+
+
+                                                    " union " +
+
+                                                    "select " +
+                                                    "offesched.id, " +
+                                                    "offesched.from_city, " +
+                                                    "offesched.from_country, " +
+                                                    "offesched.to_city, " +
+                                                    "offesched.to_country, " +
+                                                    "offesched.id as object_id, " +
+                                                    "'Προσφορά απο άλλους' as type , offesched.creation_date , " +
+                                                    " offesched.from_address as from_address, " +
+                                                    " offesched.to_address as to_address " +
+                                                    "from offers_schedules offesched " +
+                                                    "left join offers offe on (offe.id=offesched.offer_id) " +
+                                                    "where offe.customer_id!= "+customerId+
+
+                                                    " ) " +
+
+                                                    "as sugg where 1=1 ";
                                             if(typeCategory.equalsIgnoreCase("1")){
                                                 sqlCustSupl += " and sugg.type ='Δρομολόγιο'" ;
                                             }else if (typeCategory.equalsIgnoreCase("2")){
@@ -748,18 +723,12 @@ public class OffersController {
                                     JsonNode custommer = json.findPath("custommer2");
                                     ((ObjectNode) json).remove("custommer2");
                                     Long offerId = json.findPath("offerId").asLong();
-
                                     JsonNode internovaSeller = json.findPath("internovaSeller");
                                     JsonNode billing = json.findPath("billing");
                                     JsonNode from = json.findPath("from");
                                     JsonNode to = json.findPath("to");
-
                                     JsonNode tableDataTimokatalogosProsfores = json.findPath("tableDataTimokatalogosProsfores");
                                     ((ObjectNode) json).remove("tableDataTimokatalogosProsfores");
-
-//                                    JsonNode schedulePackageList = tableDataTimokatalogosProsfores.findPath("schedulePackageList");
-
-
                                     ((ObjectNode) json).remove("internovaSeller");
                                     ((ObjectNode) json).remove("schedulesPackages");
                                     ((ObjectNode) json).remove("billing");
@@ -794,10 +763,8 @@ public class OffersController {
                                     offersEntity.setToLattitude(to.findPath("lattitude").asDouble());
                                     offersEntity.setToLongtitude(to.findPath("longtitude").asDouble());
                                     entityManager.merge(offersEntity);
-
                                     String sqlOffSchedules = "select * from offers_schedules os where os.offer_id=" + offerId;
                                     List<OffersSchedulesEntity> ofList = (List<OffersSchedulesEntity>) entityManager.createNativeQuery(sqlOffSchedules, OffersSchedulesEntity.class).getResultList();
-
                                     for (OffersSchedulesEntity ofsElement : ofList) {
                                         String sqlSchedulesPackeges = "select * from schedule_package_offer spo where spo.offer_id=" + offerId + " and spo.offer_schedule_id=" + ofsElement.getId();
                                         List<SchedulePackageOfferEntity> spoEntList =
@@ -807,10 +774,6 @@ public class OffersController {
                                         }
                                         entityManager.remove(ofsElement);
                                     }
-
-
-
-
                                     Iterator itOffersSCHEDULDE = tableDataTimokatalogosProsfores.iterator();
                                     while (itOffersSCHEDULDE.hasNext()) {
                                         JsonNode offerScheduleNode = (JsonNode) itOffersSCHEDULDE.next();
