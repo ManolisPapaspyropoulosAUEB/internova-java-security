@@ -52,6 +52,7 @@ public class ManagersController {
                                 String lastname = json.findPath("lastname").asText();
                                 String position = json.findPath("position").asText();
                                 String telephone = json.findPath("telephone").asText();
+                                String gender = json.findPath("gender").asText();
                                 String email = json.findPath("email").asText();
                                 /**
                                  * metablhtes susthmatos (ergostasia,apothikes,prosfores,pelates kai promhtheytes)
@@ -66,6 +67,7 @@ public class ManagersController {
                                 manager.setPosition(position);
                                 manager.setTelephone(telephone);
                                 manager.setEmail(email);
+                                manager.setGender(gender);
                                 if (!system.isEmpty()) { //erxete apo kapoio apo ta ufistamena systhmata
                                     ManagersSystemEntity ms = new ManagersSystemEntity();
                                     if (selectedManagerId != 0) { //exei dialexei apo thn lista
@@ -124,6 +126,7 @@ public class ManagersController {
                                 String email = json.findPath("email").asText();
                                 String system = json.findPath("system").asText();
                                 Long systemId = json.findPath("systemId").asLong();
+                                String gender = json.findPath("gender").asText();
                                 Long id = json.findPath("id").asLong();
                                 ManagersEntity manager = entityManager.find(ManagersEntity.class, id);
                                 manager.setUpdateDate(new Date());
@@ -132,6 +135,7 @@ public class ManagersController {
                                 manager.setPosition(position);
                                 manager.setTelephone(telephone);
                                 manager.setEmail(email);
+                                manager.setGender(gender);
                                 manager.setSystem(system);
                                 manager.setSystemId(systemId);
                                 entityManager.merge(manager);
@@ -259,6 +263,7 @@ public class ManagersController {
                                             sHmpam.put("systemId", j.getSystemId());
                                             sHmpam.put("system_id", j.getSystemId());
                                             sHmpam.put("telephone", j.getTelephone());
+                                            sHmpam.put("gender", j.getGender());
                                             sHmpam.put("creationDate", j.getCreationDate());
                                             sHmpam.put("updateDate", j.getUpdateDate());
                                             serversList.add(sHmpam);
@@ -318,6 +323,7 @@ public class ManagersController {
                                             Long system_id = json.findPath("system_id").asLong();
                                             String id = json.findPath("id").asText();
                                             String firstName = json.findPath("firstName").asText();
+                                            String gender = json.findPath("gender").asText();
                                             String email = json.findPath("email").asText();
                                             String lastName = json.findPath("lastName").asText();
                                             String position = json.findPath("position").asText();
@@ -339,6 +345,9 @@ public class ManagersController {
                                             }
                                             if (!telephone.equalsIgnoreCase("") && telephone != null) {
                                                 sqlManagers += " and manager.telephone like '%" + telephone + "%'";
+                                            }
+                                            if (!gender.equalsIgnoreCase("") && gender != null) {
+                                                sqlManagers += " and manager.gender like '%" + gender + "%'";
                                             }
                                             if (!systemSearch.equalsIgnoreCase("") && systemSearch != null) {
                                                 sqlManagers += " and manager.system like '%" + systemSearch + "%'";
@@ -382,6 +391,7 @@ public class ManagersController {
                                                 sHmpam.put("email", j.getEmail());
                                                 sHmpam.put("position", j.getPosition());
                                                 sHmpam.put("telephone", j.getTelephone());
+                                                sHmpam.put("gender", j.getGender());
                                                 sHmpam.put("creationDate", j.getCreationDate());
                                                 sHmpam.put("updateDate", j.getUpdateDate());
                                                 String sqlmanagersSystems =

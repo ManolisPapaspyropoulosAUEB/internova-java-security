@@ -217,4 +217,38 @@ public class DocumentsController {
             return ok(result);
         }
     }
+
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    public Result downloadDocumentGet(final Http.Request request) throws IOException {
+        ObjectNode result = Json.newObject();
+        try {
+            JsonNode json = request.body().asJson();
+
+            ObjectMapper ow = new ObjectMapper();
+            File returnFile;
+            CompletableFuture<String> getFuture = CompletableFuture.supplyAsync(() -> {
+                        return jpaApi.withTransaction(
+                                entityManager -> {
+
+                                    String sql ="select * from documents d where d.id=" + json.findPath("id").asText();
+                                    List<DocumentsEntity> docsList
+                                            = (List<DocumentsEntity>) entityManager.createNativeQuery(
+                                            sql, DocumentsEntity.class).getResultList();
+                                    String path = uploadPath + docsList.get(0).getFullPath();
+                                    return path;
+                                });
+                    },
+                    executionContext);
+            String ret_path = getFuture.get();
+            File previewFile = new File(ret_path);
+            return ok(previewFile);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων");
+            return ok(result);
+        }
+    }
+
 }

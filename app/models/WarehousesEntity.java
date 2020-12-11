@@ -23,6 +23,7 @@ public class WarehousesEntity {
     private Double longitude;
     private Double latitude;
     private String country;
+    private String unloadingLoadingCode;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -196,5 +197,15 @@ public class WarehousesEntity {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    @Basic
+    @Column(name = "unloading_loading_code")
+    public String getUnloadingLoadingCode() {
+        return unloadingLoadingCode;
+    }
+
+    public void setUnloadingLoadingCode(String unloadingLoadingCode) {
+        this.unloadingLoadingCode = unloadingLoadingCode;
     }
 }

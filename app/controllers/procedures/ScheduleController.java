@@ -315,6 +315,7 @@ public class ScheduleController {
                                             if (!start.equalsIgnoreCase("") && start != null) {
                                                 sqlMeasures += " limit " + start + "," + limit;
                                             }
+                                            System.out.println(sqlMeasures);
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             List<HashMap<String, Object>> schedList = new ArrayList<HashMap<String, Object>>();
                                             List<ScheduleEntity> scheduleEntityList

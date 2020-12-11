@@ -48,6 +48,7 @@ POST        /getUploadsBySystemId                            controllers.documen
 POST        /uploadFile                                      controllers.documents.DocumentsController.uploadFile(req: Request)
 POST        /downloadDocument                                controllers.documents.DocumentsController.downloadDocument(req: Request)
 POST        /deleteAttatchment                               controllers.documents.DocumentsController.deleteAttatchment(req: Request)
+POST        /downloadDocumentGet                               controllers.documents.DocumentsController.downloadDocumentGet(req: Request)
 
 
 

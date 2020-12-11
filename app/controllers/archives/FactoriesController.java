@@ -78,6 +78,7 @@ public class FactoriesController {
                                             }
                                             sqlWarehouses+=" order by pos.creation_date desc ";
 
+
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             List<HashMap<String, Object>> filalist = new ArrayList<HashMap<String, Object>>();
                                             List<FactoriesEntity> warehousesEntityList
@@ -233,6 +234,8 @@ public class FactoriesController {
                                             if (!start.equalsIgnoreCase("") && start != null) {
                                                 sqlWarehouses += " limit " + start + "," + limit;
                                             }
+                                            System.out.println(sqlWarehouses);
+
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             List<HashMap<String, Object>> filalist = new ArrayList<HashMap<String, Object>>();
                                             List<FactoriesEntity> warehousesEntityList
@@ -261,6 +264,7 @@ public class FactoriesController {
                                                 sHmpam.put("site", j.getSite());
                                                 sHmpam.put("coordinates", j.getCoordinates());
                                                 sHmpam.put("unloadingLoadingCode", j.getUnloadingLoadingCode());
+                                                sHmpam.put("unloadingLoadingCodeMasked", j.getUnloadingLoadingCode());
                                                 sHmpam.put("appointmentDays", j.getAppointmentDays());
                                                 if(j.getAppointmentRequired()==1){
                                                     sHmpam.put("appointmentRequired", j.getAppointmentRequired());

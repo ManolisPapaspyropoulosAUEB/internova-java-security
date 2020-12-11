@@ -23,6 +23,8 @@ public class OffersSchedulesEntity {
     private Date creationDate;
     private Date updateDate;
     private String type;
+    private String fromPostalCode;
+    private String toPostalCode;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -200,5 +202,25 @@ public class OffersSchedulesEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, offerId, fromAddress, fromCity, fromCountry, toAddress, fromLattitude, fromLongtitude, toCity, toCountry, toLattitude, toLongtitude, creationDate, updateDate, type);
+    }
+
+    @Basic
+    @Column(name = "from_postal_code")
+    public String getFromPostalCode() {
+        return fromPostalCode;
+    }
+
+    public void setFromPostalCode(String fromPostalCode) {
+        this.fromPostalCode = fromPostalCode;
+    }
+
+    @Basic
+    @Column(name = "to_postal_code")
+    public String getToPostalCode() {
+        return toPostalCode;
+    }
+
+    public void setToPostalCode(String toPostalCode) {
+        this.toPostalCode = toPostalCode;
     }
 }

@@ -40,6 +40,15 @@ public class ProceduresPrintController {
 
 
 
+
+
+
+
+
+
+
+
+
     @SuppressWarnings({"Duplicates", "unchecked"})
     public Result exportOffersAsXls(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();
@@ -107,6 +116,9 @@ public class ProceduresPrintController {
                                             for (int col = 0; col < 8; col++) {
                                                 sheet.autoSizeColumn(col);
                                             }
+
+
+
                                             FileOutputStream fileOut = null;
                                             try {
                                                 fileOut = new FileOutputStream(filename);
@@ -135,6 +147,11 @@ public class ProceduresPrintController {
             return ok(result);
         }
     }
+
+
+
+
+
 
 
 

@@ -82,16 +82,33 @@ public class CustomersSuppliersController {
                                     warehousesEntity.setComments(comments);
                                     warehousesEntity.setWebsite(website);
                                     warehousesEntity.setAfm(afm);
-                                    warehousesEntity.setBillingId(billingId);
+                                    System.out.println(billingId);
+                                    if(billingId!=null && billingId!=0){
+                                        warehousesEntity.setBillingId(billingId);
+                                    }
                                     warehousesEntity.setCountry(country);
                                     warehousesEntity.setDoy(doy);
                                     warehousesEntity.setCustomerType(customerType);
                                     warehousesEntity.setInternovaSellerId(internovaSellerId);
+                                    System.out.println(internovaSellerId);
+
+                                    if(internovaSellerId!=null && internovaSellerId!=0){
+                                        warehousesEntity.setInternovaSellerId(internovaSellerId);
+                                    }
+
+
                                     warehousesEntity.setJob(job);
                                     entityManager.persist(warehousesEntity);
                                     add_result.put("customerSupplierId", warehousesEntity.getId());
-                                    add_result.put("internovaSellerName", entityManager.find(InternovaSellersEntity.class, warehousesEntity.getInternovaSellerId()).getName());
-                                    add_result.put("billingName", entityManager.find(BillingsEntity.class, warehousesEntity.getBillingId()).getName());
+
+                                    if(internovaSellerId!=null && internovaSellerId!=0){
+                                        add_result.put("internovaSellerName", entityManager.find(InternovaSellersEntity.class, warehousesEntity.getInternovaSellerId()).getName());
+                                    }
+
+
+                                    if(billingId!=null && billingId!=0){
+                                        add_result.put("billingName", entityManager.find(BillingsEntity.class, warehousesEntity.getBillingId()).getName());
+                                    }
                                     add_result.put("status", "success");
                                     add_result.put("message", "Η καταχωρηση πραγματοποίηθηκε με επιτυχία");
                                     return add_result;
@@ -161,11 +178,15 @@ public class CustomersSuppliersController {
                                     warehousesEntity.setComments(comments);
                                     warehousesEntity.setWebsite(website);
                                     warehousesEntity.setAfm(afm);
-                                    warehousesEntity.setBillingId(billingId);
+                                    if(billingId!=null && billingId!=0){
+                                        warehousesEntity.setBillingId(billingId);
+                                    }
                                     warehousesEntity.setCountry(country);
                                     warehousesEntity.setDoy(doy);
                                     warehousesEntity.setCustomerType(customerType);
-                                    warehousesEntity.setInternovaSellerId(internovaSellerId);
+                                    if(internovaSellerId!=null && internovaSellerId!=0){
+                                        warehousesEntity.setInternovaSellerId(internovaSellerId);
+                                    }
                                     warehousesEntity.setJob(job);
                                     entityManager.persist(warehousesEntity);
                                     add_result.put("status", "success");

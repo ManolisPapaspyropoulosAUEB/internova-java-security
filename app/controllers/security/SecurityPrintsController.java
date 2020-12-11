@@ -9,6 +9,10 @@ import models.DepartmentsEntity;
 import models.OrganizationsEntity;
 import models.RolesEntity;
 import models.UsersEntity;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -168,6 +172,28 @@ public class SecurityPrintsController {
                     CompletableFuture<String> createXLSResult = CompletableFuture.supplyAsync(() -> {
                                 return jpaApi.withTransaction(
                                         entityManager -> {
+                                            try {
+                                                PDDocument doc = new PDDocument();
+                                                PDPage blankPage = new PDPage();
+                                                doc.addPage( blankPage );
+                                                doc.save(new File("D:/developm/internova(Pr)/blank.pdf"));
+                                                PDPageContentStream contentStream = new PDPageContentStream(doc, blankPage);
+                                                contentStream.beginText();
+                                                contentStream.newLineAtOffset(20, 450);
+                                                contentStream.setFont(PDType1Font.TIMES_BOLD_ITALIC, 14);
+                                                contentStream.newLineAtOffset(20, 450);
+                                                String text = "Hi!!! This is the first sample PDF document.";
+                                                contentStream.showText(text);
+                                                contentStream.endText();
+                                                contentStream.close();
+
+                                                //D:\developm\internova(Pr)
+
+                                                doc.save(new File("D:/developm/internova(Pr)/blank.pdf"));
+                                                doc.close();
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
                                             ObjectNode resultNode = Json.newObject();
                                             String random_id = json.findPath("random_id").asText();
                                             Random rand = new Random();

@@ -18,6 +18,7 @@ public class ManagersEntity {
     private Long systemId;
     private Date creationDate;
     private Date updateDate;
+    private String gender;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -140,5 +141,15 @@ public class ManagersEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, lastName, firstName, position, telephone, email, system, systemId, creationDate, updateDate);
+    }
+
+    @Basic
+    @Column(name = "gender")
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 }

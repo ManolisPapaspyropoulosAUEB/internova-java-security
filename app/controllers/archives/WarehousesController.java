@@ -57,6 +57,7 @@ public class WarehousesController {
                                     Double latitude = json.findPath("latitude").asDouble();
                                     Double longitude = json.findPath("longitude").asDouble();
                                     String comments = json.findPath("comments").asText();
+                                    String unloadingLoadingCode = json.findPath("unloadingLoadingCode").asText();
                                     WarehousesEntity warehousesEntity = new WarehousesEntity();
                                     warehousesEntity.setAddress(address);
                                     warehousesEntity.setBrandName(brandName);
@@ -68,6 +69,7 @@ public class WarehousesController {
                                     warehousesEntity.setPostalCode(postalCode);
                                     warehousesEntity.setRegion(region);
                                     warehousesEntity.setTelephone(telephone);
+                                    warehousesEntity.setUnloadingLoadingCode(unloadingLoadingCode);
                                     warehousesEntity.setComments(comments);
                                     warehousesEntity.setLongitude(longitude);
                                     warehousesEntity.setLatitude(latitude);
@@ -127,6 +129,8 @@ public class WarehousesController {
                                     String comments = json.findPath("comments").asText();
                                     Double latitude = json.findPath("latitude").asDouble();
                                     Double longitude = json.findPath("longitude").asDouble();
+                                    String unloadingLoadingCode = json.findPath("unloadingLoadingCode").asText();
+
                                     WarehousesEntity warehousesEntity = entityManager.find(WarehousesEntity.class, id);
                                     warehousesEntity.setAddress(address);
                                     warehousesEntity.setCountry(country);
@@ -135,6 +139,7 @@ public class WarehousesController {
                                     warehousesEntity.setCreationDate(new Date());
                                     warehousesEntity.setEmail(email);
                                     warehousesEntity.setManager(manager);
+                                    warehousesEntity.setUnloadingLoadingCode(unloadingLoadingCode);
                                     warehousesEntity.setPostalCode(postalCode);
                                     warehousesEntity.setRegion(region);
                                     warehousesEntity.setTelephone(telephone);
@@ -274,6 +279,7 @@ public class WarehousesController {
                                                 sHmpam.put("email", j.getEmail());
                                                 sHmpam.put("comments", j.getComments());
                                                 sHmpam.put("id", j.getId());
+                                                sHmpam.put("unloadingLoadingCode", j.getUnloadingLoadingCode());
                                                 sHmpam.put("warehouseId", j.getId());
                                                 sHmpam.put("latitude", j.getLatitude());
                                                 sHmpam.put("country", j.getCountry());
@@ -400,10 +406,11 @@ public class WarehousesController {
                                             } else {
                                                 sqlWarehouses += " order by creation_date desc";
                                             }
+
                                             if (!start.equalsIgnoreCase("") && start != null) {
                                                 sqlWarehouses += " limit " + start + "," + limit;
                                             }
-
+                                            System.out.println(sqlWarehouses);
                                             String sqlMin = "select min(id) from warehouses w ";
                                             String sqlMax = "select max(id) from warehouses w ";
                                             BigInteger minId = (BigInteger) entityManager.createNativeQuery(sqlMin).getSingleResult();
@@ -423,6 +430,7 @@ public class WarehousesController {
                                                 sHmpam.put("creationDate", j.getCreationDate());
                                                 sHmpam.put("email", j.getEmail());
                                                 sHmpam.put("comments", j.getComments());
+                                                sHmpam.put("unloadingLoadingCode", j.getUnloadingLoadingCode());
                                                 sHmpam.put("id", j.getId());
                                                 sHmpam.put("country", j.getCountry());
                                                 sHmpam.put("warehouseId", j.getId());
