@@ -3,6 +3,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execution_context.DatabaseExecutionContext;
+import controllers.system.Application;
 import models.FactoriesEntity;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
@@ -21,11 +22,13 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
-public class FactoriesController {
+public class FactoriesController extends Application {
     private JPAApi jpaApi;
     private DatabaseExecutionContext executionContext;
     @Inject
-    public FactoriesController(JPAApi jpaApi, DatabaseExecutionContext executionContext) {
+    public FactoriesController(JPAApi jpaApi, DatabaseExecutionContext executionContext)  {
+        super(jpaApi,  executionContext);
+
         this.jpaApi = jpaApi;
         this.executionContext = executionContext;
     }
@@ -318,6 +321,7 @@ public class FactoriesController {
                                 return jpaApi.withTransaction(entityManager -> {
                                     ObjectNode result_add = Json.newObject();
                                     String brandName = json.findPath("brandName").asText();
+                                    String user_id = json.findPath("user_id").asText();
                                     String address = json.findPath("address").asText();
                                     String telephone = json.findPath("telephone").asText();
                                     String email = json.findPath("email").asText();
@@ -363,12 +367,15 @@ public class FactoriesController {
                                     result_add.put("status", "success");
                                     result_add.put("factoryId", factoriesEntity.getId());
                                     result_add.put("message", "Η καταχώρηση ολοκληρώθηκε με επιτυχία!");
+                                    result_add.put("DO_ID", factoriesEntity.getId());
+                                    result_add.put("system", "εργοστάσια");
+                                    result_add.put("user_id", user_id);
                                     return result_add;
                                 });
                             },
                             executionContext);
                     result = (ObjectNode) addFuture.get();
-                    return ok(result);
+                    return ok(result,request);
 
                 } catch (Exception e) {
                     ObjectNode result = Json.newObject();
@@ -394,6 +401,7 @@ public class FactoriesController {
                     CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
                                 return jpaApi.withTransaction(entityManager -> {
                                     ObjectNode result_add = Json.newObject();
+                                    String user_id = json.findPath("user_id").asText();
                                     String brandName = json.findPath("brandName").asText();
                                     String comments = json.findPath("comments").asText();
                                     String address = json.findPath("address").asText();
@@ -441,12 +449,15 @@ public class FactoriesController {
                                     entityManager.merge(factoriesEntity);
                                     result_add.put("status", "success");
                                     result_add.put("message", "Η ενημερωση ολοκληρώθηκε με επιτυχία!");
+                                    result_add.put("DO_ID", factoriesEntity.getId());
+                                    result_add.put("system", "εργοστάσια");
+                                    result_add.put("user_id", user_id);
                                     return result_add;
                                 });
                             },
                             executionContext);
                     result = (ObjectNode) addFuture.get();
-                    return ok(result);
+                    return ok(result,request);
 
                 } catch (Exception e) {
                     ObjectNode result = Json.newObject();
@@ -479,23 +490,27 @@ public class FactoriesController {
                                 return jpaApi.withTransaction(entityManager -> {
                                     ObjectNode result_add = Json.newObject();
                                     Long id = json.findPath("id").asLong();
+                                    Long user_id = json.findPath("user_id").asLong();
                                     FactoriesEntity factoriesEntity = entityManager.find(FactoriesEntity.class,id);
                                     entityManager.remove(factoriesEntity);
                                     result_add.put("status", "success");
                                     result_add.put("message", "Η διαγραφή ολοκληρώθηκε με επιτυχία!");
+                                    result_add.put("DO_ID", factoriesEntity.getId());
+                                    result_add.put("system", "εργοστάσια");
+                                    result_add.put("user_id", user_id);
                                     return result_add;
                                 });
                             },
                             executionContext);
                     result = (ObjectNode) addFuture.get();
-                    return ok(result);
+                    return ok(result,request);
 
                 } catch (Exception e) {
                     ObjectNode result = Json.newObject();
                     e.printStackTrace();
                     result.put("status", "error");
                     result.put("message", "Προβλημα κατα την καταχωρηση");
-                    return ok(result);
+                    return ok(result,request);
                 }
             }
         } catch (Exception e) {

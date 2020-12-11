@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.config.ConfigFactory;
 import controllers.execution_context.DatabaseExecutionContext;
+import controllers.system.Application;
 import models.*;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -27,11 +28,12 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
-public class OffersController {
+public class OffersController extends Application {
     private JPAApi jpaApi;
     private DatabaseExecutionContext executionContext;
     @Inject
     public OffersController(JPAApi jpaApi, DatabaseExecutionContext executionContext) {
+        super(jpaApi,  executionContext);
         this.jpaApi = jpaApi;
         this.executionContext = executionContext;
     }
@@ -517,17 +519,22 @@ public class OffersController {
                 CompletableFuture<JsonNode> deleteFuture = CompletableFuture.supplyAsync(() -> {
                             return jpaApi.withTransaction(entityManager -> {
                                 ObjectNode add_result = Json.newObject();
+                                ((ObjectNode)json).remove("tableDataTimokatalogosProsfores");
+                                Long user_id = json.findPath("user_id").asLong();
                                 Long id = json.findPath("id").asLong();
                                 OffersEntity offersEntity = entityManager.find(OffersEntity.class, id);
                                 entityManager.remove(offersEntity);
                                 add_result.put("status", "success");
                                 add_result.put("message", "Η διαγραφή πραγματοποίηθηκε με επιτυχία");
+                                add_result.put("DO_ID", offersEntity.getId());
+                                add_result.put("system", "Προσφορές");
+                                add_result.put("user_id", user_id);
                                 return add_result;
                             });
                         },
                         executionContext);
                 result = (ObjectNode) deleteFuture.get();
-                return ok(result);
+                return ok(result,request);
             } catch (Exception e) {
                 ObjectNode result = Json.newObject();
                 e.printStackTrace();
@@ -713,6 +720,7 @@ public class OffersController {
                                     JsonNode custommer = json.findPath("custommer2");
                                     ((ObjectNode) json).remove("custommer2");
                                     Long offerId = json.findPath("offerId").asLong();
+                                    String user_id = json.findPath("user_id").asText();
                                     JsonNode internovaSeller = json.findPath("internovaSeller");
                                     JsonNode billing = json.findPath("billing");
                                     JsonNode from = json.findPath("from");
@@ -863,6 +871,9 @@ public class OffersController {
                                     add_result.put("status", "success");
                                     add_result.put("offerId", offersEntity.getId());
                                     add_result.put("message", "Η ενημέρωση πραγματοποίηθηκε με επιτυχία");
+                                    add_result.put("DO_ID", offersEntity.getId());
+                                    add_result.put("system", "Προσφορές");
+                                    add_result.put("user_id", user_id);
                                     return add_result;
                                 } catch (ParseException e ) {
                                     ObjectNode add_result = Json.newObject();
@@ -875,7 +886,7 @@ public class OffersController {
                         },
                         executionContext);
                 result = (ObjectNode) addFuture.get();
-                return ok(result);
+                return ok(result,request);
             } catch (Exception e) {
                 ObjectNode result = Json.newObject();
                 e.printStackTrace();
@@ -947,6 +958,7 @@ public class OffersController {
                                 try {
                                     DateFormat myDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                                     JsonNode custommer = json.findPath("custommer2");
+                                    String user_id = json.findPath("user_id").asText();
                                     ((ObjectNode) json).remove("custommer2");
                                     JsonNode internovaSeller = json.findPath("internovaSeller");
                                     JsonNode billing = json.findPath("billing");
@@ -1055,6 +1067,9 @@ public class OffersController {
                                     add_result.put("status", "success");
                                     add_result.put("offerId", offersEntity.getId());
                                     add_result.put("message", "Η καταχωρηση πραγματοποίηθηκε με επιτυχία");
+                                    add_result.put("DO_ID", offersEntity.getId());
+                                    add_result.put("system", "Προσφορές");
+                                    add_result.put("user_id", user_id);
                                     return add_result;
                                 } catch (ParseException e) {
                                     ObjectNode add_result = Json.newObject();
@@ -1067,7 +1082,7 @@ public class OffersController {
                         },
                         executionContext);
                 result = (ObjectNode) addFuture.get();
-                return ok(result);
+                return ok(result,request);
             } catch (Exception e) {
                 ObjectNode result = Json.newObject();
                 e.printStackTrace();

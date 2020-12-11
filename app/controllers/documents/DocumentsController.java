@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.config.ConfigFactory;
 import controllers.execution_context.DatabaseExecutionContext;
+import controllers.system.Application;
 import models.DocumentsEntity;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
@@ -19,11 +20,12 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
-public class DocumentsController {
+public class DocumentsController extends Application {
     private JPAApi jpaApi;
     private DatabaseExecutionContext executionContext;
     @Inject
     public DocumentsController(JPAApi jpaApi, DatabaseExecutionContext executionContext) {
+        super(jpaApi,  executionContext);
         this.jpaApi = jpaApi;
         this.executionContext = executionContext;
     }

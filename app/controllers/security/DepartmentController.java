@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execution_context.DatabaseExecutionContext;
+import controllers.system.Application;
 import models.*;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
@@ -24,12 +25,13 @@ import java.util.concurrent.CompletableFuture;
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
-public class DepartmentController {
+public class DepartmentController extends Application {
     private JPAApi jpaApi;
     private DatabaseExecutionContext executionContext;
 
     @Inject
     public DepartmentController(JPAApi jpaApi, DatabaseExecutionContext executionContext) {
+        super(jpaApi,  executionContext);
         this.jpaApi = jpaApi;
         this.executionContext = executionContext;
     }
@@ -47,6 +49,7 @@ public class DepartmentController {
                     CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
                                 return jpaApi.withTransaction(entityManager -> {
                                     ObjectNode result_add = Json.newObject();
+                                    Integer user_id = json.findPath("user_id").asInt();
                                     String department = json.findPath("department").asText();
                                     Integer status = json.findPath("status").asInt();
                                     DepartmentsEntity o = new DepartmentsEntity();
@@ -56,12 +59,15 @@ public class DepartmentController {
                                     entityManager.persist(o);
                                     result_add.put("status", "success");
                                     result_add.put("message", "Η καταχώρηση ολοκληρώθηκε με επιτυχία!");
+                                    result_add.put("DO_ID", o.getId());
+                                    result_add.put("system", "Τμήμα");
+                                    result_add.put("user_id", user_id);
                                     return result_add;
                                 });
                             },
                             executionContext);
                     result = (ObjectNode) addFuture.get();
-                    return ok(result);
+                    return ok(result,request);
 
                 } catch (Exception e) {
                     ObjectNode result = Json.newObject();
@@ -96,6 +102,7 @@ public class DepartmentController {
                                     ObjectNode result_update = Json.newObject();
                                     String department = json.findPath("department").asText();
                                     Long id = json.findPath("id").asLong();
+                                    Long user_id = json.findPath("user_id").asLong();
                                     Integer status = json.findPath("status").asInt();
                                     DepartmentsEntity o = entityManager.find(DepartmentsEntity.class, id);
                                     o.setDepartment(department);
@@ -104,12 +111,15 @@ public class DepartmentController {
                                     entityManager.persist(o);
                                     result_update.put("status", "success");
                                     result_update.put("message", "Η ενημέρωση ολοκληρώθηκε με επιτυχία!");
+                                    result_update.put("DO_ID", o.getId());
+                                    result_update.put("system", "Τμήμα");
+                                    result_update.put("user_id", user_id);
                                     return result_update;
                                 });
                             },
                             executionContext);
                     result = (ObjectNode) updateFuture.get();
-                    return ok(result);
+                    return ok(result,request);
                 } catch (Exception e) {
                     ObjectNode result = Json.newObject();
                     e.printStackTrace();
@@ -141,6 +151,7 @@ public class DepartmentController {
                                 return jpaApi.withTransaction(entityManager -> {
                                     ObjectNode delete_result = Json.newObject();
                                     Long id = json.findPath("id").asLong();
+                                    Long user_id = json.findPath("user_id").asLong();
                                     String checkIfUsedSql = "select * from users r where r.dep_id=" + id;
                                     List<UsersEntity> usersEntityList = (List<UsersEntity>) entityManager.createNativeQuery(checkIfUsedSql, UsersEntity.class).getResultList();
                                     if (usersEntityList.size() > 0) {
@@ -153,6 +164,9 @@ public class DepartmentController {
                                         entityManager.remove(o);
                                         delete_result.put("status", "success");
                                         delete_result.put("message", "Η διαγραφή ολοκληρώθηκε με επιτυχία!");
+                                        delete_result.put("DO_ID",id);
+                                        delete_result.put("system", "Τμήμα");
+                                        delete_result.put("user_id", user_id);
                                     } else {
                                         delete_result.put("status", "error");
                                         delete_result.put("message", "Δεν βρέθηκε σχετική θέση");
@@ -163,14 +177,14 @@ public class DepartmentController {
                             },
                             executionContext);
                     result = (ObjectNode) deleteFuture.get();
-                    return ok(result);
+                    return ok(result,request);
 
                 } catch (Exception e) {
                     ObjectNode result = Json.newObject();
                     e.printStackTrace();
                     result.put("status", "error");
                     result.put("message", "Προβλημα κατα την διαγραφή");
-                    return ok(result);
+                    return ok(result,request);
                 }
             }
         } catch (Exception e) {

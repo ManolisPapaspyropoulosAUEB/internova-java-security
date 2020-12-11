@@ -3,6 +3,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execution_context.DatabaseExecutionContext;
+import controllers.system.Application;
 import models.*;
 import play.api.Configuration;
 import play.db.jpa.JPAApi;
@@ -23,7 +24,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
-public class UsersControllers {
+public class UsersControllers extends Application {
     protected Configuration configuration;
     private static final String ALGO = "AES";
     private static final byte[] keyValue =
@@ -34,6 +35,7 @@ public class UsersControllers {
     final static String uploadPath = "D:/developm/internova(Pr)/internova_JAVA_security/uploads/";
     @Inject
     public UsersControllers(JPAApi jpaApi, DatabaseExecutionContext executionContext) {
+        super(jpaApi,  executionContext);
         this.jpaApi = jpaApi;
         this.executionContext = executionContext;
     }
@@ -55,6 +57,7 @@ public class UsersControllers {
                                     String email = json.findPath("email").asText();
                                     String firstname = json.findPath("firstname").asText();
                                     String lastname = json.findPath("lastname").asText();
+                                    Long user_id = json.findPath("user_id").asLong();
                                     String password = json.findPath("password").asText();
                                     String phone = json.findPath("telephone").asText();
                                     String position = json.findPath("position").asText();
@@ -114,6 +117,9 @@ public class UsersControllers {
                                     add_result.put("status", "success");
                                     add_result.put("userId", user.getUserId());
                                     add_result.put("message", "Η καταχώρηση ολοκληρώθηκε με επιτυχία!");
+                                    add_result.put("DO_ID", user.getUserId());
+                                    add_result.put("system", "χρήστες");
+                                    add_result.put("user_id", user_id);
                                     return add_result;
                                 });
                             },
@@ -124,7 +130,7 @@ public class UsersControllers {
                     result.put("headers", request.getHeaders().asMap().toString());
                     //request.getHeaders().asMap().
 
-                    return ok(result);
+                    return ok(result,request);
 
                 } catch (Exception e) {
                     ObjectNode result = Json.newObject();
@@ -171,6 +177,7 @@ public class UsersControllers {
                                     String gender = json.findPath("gender").asText();
                                     String comments = json.findPath("comments").asText();
                                     Long id = json.findPath("userId").asLong();
+                                    Long user_id = json.findPath("user_id").asLong();
 
 
 //                                    Long roleId = json.findPath("selectedRole").findPath("id").asLong();
@@ -232,6 +239,9 @@ public class UsersControllers {
                                     resultfuture.put("status", "success");
                                     resultfuture.put("userId", user.getUserId());
                                     resultfuture.put("message", "Η ενημέρωση πραγματοποιήθηκε με επιτυχία!");
+                                    resultfuture.put("DO_ID", user.getUserId());
+                                    resultfuture.put("system", "χρήστες");
+                                    resultfuture.put("user_id", user_id);
                                     return resultfuture;
                                 });
                             },
@@ -239,7 +249,7 @@ public class UsersControllers {
 
 
                     result = (ObjectNode) updateFuture.get();
-                    return ok(result);
+                    return ok(result,request);
 
                 } catch (Exception e) {
                     ObjectNode result = Json.newObject();
@@ -290,6 +300,9 @@ public class UsersControllers {
                                         result_future.put("firstName", usersEntityList.get(0).getFirstname() );
                                         result_future.put("lastName", usersEntityList.get(0).getLastname() );
                                         result_future.put("email", usersEntityList.get(0).getEmail() );
+                                        result_future.put("DO_ID", usersEntityList.get(0).getUserId());
+                                        result_future.put("system", "login");
+                                        result_future.put("user_id", usersEntityList.get(0).getUserId());
                                         try {
                                             result_future.put("token", encrypt(getSaltString()) );
                                         } catch (Exception e) {
@@ -314,7 +327,7 @@ public class UsersControllers {
                             },
                             executionContext);
                     result = (ObjectNode) addFuture.get();
-                    return ok(result);
+                    return ok(result,request);
                 } catch (Exception e) {
                     ObjectNode result = Json.newObject();
                     e.printStackTrace();
@@ -345,11 +358,15 @@ public class UsersControllers {
                                 return jpaApi.withTransaction(entityManager -> {
                                     ObjectNode result_future = Json.newObject();
                                     Long id = json.findPath("userId").asLong();
+                                    Long user_id = json.findPath("user_id").asLong();
                                     UsersEntity o = entityManager.find(UsersEntity.class, id);
                                     if (o != null) {
                                         entityManager.remove(o);
                                         result_future.put("status", "success");
                                         result_future.put("message", "Η διαγραφή ολοκληρώθηκε με επιτυχία!");
+                                        result_future.put("DO_ID", o.getUserId());
+                                        result_future.put("system", "χρήστες");
+                                        result_future.put("user_id", user_id);
                                         String filesSql = "select * from documents d where d.user_id="+id;
                                         List<DocumentsEntity> docsList = (List<DocumentsEntity>)  entityManager.createNativeQuery(filesSql,DocumentsEntity.class).getResultList();
                                         for(DocumentsEntity doc : docsList){
@@ -363,6 +380,7 @@ public class UsersControllers {
                                     } else {
                                         result_future.put("status", "error");
                                         result_future.put("message", "Δεν βρέθηκε σχετικός ρόλος");
+
                                     }
 
                                     return result_future;
@@ -370,7 +388,7 @@ public class UsersControllers {
                             },
                             executionContext);
                     result = (ObjectNode) addFuture.get();
-                    return ok(result);
+                    return ok(result,request);
 
                 } catch (Exception e) {
                     ObjectNode result = Json.newObject();
@@ -410,6 +428,7 @@ public class UsersControllers {
                                 return jpaApi.withTransaction(entityManager -> {
                                     ObjectNode result_future = Json.newObject();
                                     Long id = json.findPath("userId").asLong();
+                                    Long user_id = json.findPath("user_id").asLong();
                                     UsersEntity user = entityManager.find(UsersEntity.class, id);
                                     try {
                                         user.setPassword(encrypt(password));
@@ -420,12 +439,15 @@ public class UsersControllers {
                                     }
                                     result_future.put("status", "success");
                                     result_future.put("message", "Η αλλαγή κωδικού πραγματοποιήθηκε με επιτυχία!");
+                                    result_future.put("DO_ID", user.getUserId());
+                                    result_future.put("system", "χρήστες");
+                                    result_future.put("user_id", user_id);
                                     return result_future;
                                 });
                             },
                             executionContext);
                     result = (ObjectNode) updateFuture.get();
-                    return ok(result);
+                    return ok(result,request);
 
                 } catch (Exception e) {
                     ObjectNode result = Json.newObject();

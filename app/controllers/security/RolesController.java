@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execution_context.DatabaseExecutionContext;
+import controllers.system.Application;
 import models.RolesEntity;
 import models.UsersEntity;
 import play.db.jpa.JPAApi;
@@ -25,12 +26,13 @@ import java.util.concurrent.CompletableFuture;
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
-public class RolesController {
+public class RolesController extends Application {
     private JPAApi jpaApi;
     private DatabaseExecutionContext executionContext;
 
     @Inject
     public RolesController(JPAApi jpaApi, DatabaseExecutionContext executionContext) {
+        super(jpaApi,  executionContext);
         this.jpaApi = jpaApi;
         this.executionContext = executionContext;
     }
@@ -52,6 +54,7 @@ public class RolesController {
                                     String name = json.findPath("name").asText();
                                     String description = json.findPath("description").asText();
                                     Integer status = json.findPath("status").asInt();
+                                    Long user_id = json.findPath("user_id").asLong();
                                     RolesEntity role = new RolesEntity();
                                     role.setName(name);
                                     role.setDescription(description);
@@ -60,12 +63,15 @@ public class RolesController {
                                     entityManager.persist(role);
                                     add_result.put("status", "success");
                                     add_result.put("message", "Η ενημέρωση ολοκληρώθηκε με επιτυχία!");
+                                    add_result.put("DO_ID", role.getRoleId());
+                                    add_result.put("system", "ρόλοι");
+                                    add_result.put("user_id", user_id);
                                     return add_result;
                                 });
                             },
                             executionContext);
                     result = (ObjectNode) addFuture.get();
-                    return ok(result);
+                    return ok(result,request);
                 } catch (Exception e) {
                     ObjectNode result = Json.newObject();
                     e.printStackTrace();
@@ -99,6 +105,7 @@ public class RolesController {
                                 return jpaApi.withTransaction(entityManager -> {
                                     ObjectNode result_update = Json.newObject();
                                     Long id = json.findPath("id").asLong();
+                                    Long user_id = json.findPath("user_id").asLong();
                                     String name = json.findPath("role_name").asText();
                                     String description = json.findPath("descriptionRole").asText();
                                     Integer status = json.findPath("status").asInt();
@@ -110,12 +117,15 @@ public class RolesController {
                                     entityManager.merge(role);
                                     result_update.put("status", "success");
                                     result_update.put("message", "Η ενημέρωση ολοκληρώθηκε με επιτυχία!");
+                                    result_update.put("DO_ID", role.getRoleId());
+                                    result_update.put("system", "ρόλοι");
+                                    result_update.put("user_id", user_id);
                                     return result_update;
                                 });
                             },
                             executionContext);
                     result = (ObjectNode) updateFuture.get();
-                    return ok(result);
+                    return ok(result,request);
 
                 } catch (Exception e) {
                     ObjectNode result = Json.newObject();
@@ -148,6 +158,7 @@ public class RolesController {
                                 return jpaApi.withTransaction(entityManager -> {
                                     ObjectNode result_delete = Json.newObject();
                                     Long id = json.findPath("id").asLong();
+                                    Long user_id = json.findPath("user_id").asLong();
 
                                     String checkIfUsedSql = "select * from users where users.role_id=" + id;
                                     List<UsersEntity> usersList = (List<UsersEntity>) entityManager.createNativeQuery(checkIfUsedSql, UsersEntity.class).getResultList();
@@ -161,6 +172,9 @@ public class RolesController {
                                         entityManager.remove(o);
                                         result_delete.put("status", "success");
                                         result_delete.put("message", "Η διαγραφή ολοκληρώθηκε με επιτυχία!");
+                                        result_delete.put("DO_ID", o.getRoleId());
+                                        result_delete.put("system", "ρόλοι");
+                                        result_delete.put("user_id", user_id);
                                     } else {
                                         result_delete.put("status", "error");
                                         result_delete.put("message", "Δεν βρέθηκε σχετικός ρόλος");
@@ -172,7 +186,7 @@ public class RolesController {
                             executionContext);
 
                     result = (ObjectNode) deleteFuture.get();
-                    return ok(result);
+                    return ok(result,request);
 
                 } catch (Exception e) {
                     ObjectNode result = Json.newObject();

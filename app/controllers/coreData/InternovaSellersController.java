@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execution_context.DatabaseExecutionContext;
+import controllers.system.Application;
 import models.CustomersSuppliersEntity;
 import models.InternovaSellersEntity;
 import models.OffersEntity;
@@ -27,11 +28,12 @@ import java.util.concurrent.ExecutionException;
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
-public class InternovaSellersController {
+public class InternovaSellersController extends Application {
     private JPAApi jpaApi;
     private DatabaseExecutionContext executionContext;
     @Inject
     public InternovaSellersController(JPAApi jpaApi, DatabaseExecutionContext executionContext) {
+        super(jpaApi,  executionContext);
         this.jpaApi = jpaApi;
         this.executionContext = executionContext;
     }
@@ -49,6 +51,7 @@ public class InternovaSellersController {
                 CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
                             return jpaApi.withTransaction(entityManager -> {
                                 ObjectNode add_result = Json.newObject();
+                                String user_id = json.findPath("user_id").asText();
                                 String name = json.findPath("name").asText();
                                 String description = json.findPath("description").asText();
                                 String sqlUnique = "select * from internova_sellers b where b.name=" + "'" + name + "'";
@@ -65,12 +68,15 @@ public class InternovaSellersController {
                                 entityManager.persist(internovaSellersEntity);
                                 add_result.put("status", "success");
                                 add_result.put("message", "Η καταχωρηση πραγματοποίηθηκε με επιτυχία");
+                                add_result.put("DO_ID", internovaSellersEntity.getId());
+                                add_result.put("system", "Πωλητές/Internova");
+                                add_result.put("user_id", user_id);
                                 return add_result;
                             });
                         },
                         executionContext);
                 result = (ObjectNode) addFuture.get();
-                return ok(result);
+                return ok(result,request);
             } catch (Exception e) {
                 ObjectNode result = Json.newObject();
                 e.printStackTrace();
@@ -96,6 +102,7 @@ public class InternovaSellersController {
                                 ObjectNode add_result = Json.newObject();
                                 String name = json.findPath("name").asText();
                                 String description = json.findPath("description").asText();
+                                Long user_id = json.findPath("user_id").asLong();
                                 Long id = json.findPath("id").asLong();
 
                                 String sqlUnique = "select * from internova_sellers b where b.name=" + "'" + name + "' and b.id!="+id;
@@ -113,12 +120,15 @@ public class InternovaSellersController {
                                 entityManager.merge(internovaSellersEntity);
                                 add_result.put("status", "success");
                                 add_result.put("message", "Η ενημέρωση πραγματοποίηθηκε με επιτυχία");
+                                add_result.put("DO_ID", internovaSellersEntity.getId());
+                                add_result.put("system", "Πωλητές/Internova");
+                                add_result.put("user_id", user_id);
                                 return add_result;
                             });
                         },
                         executionContext);
                 result = (ObjectNode) updateFuture.get();
-                return ok(result);
+                return ok(result,request);
             } catch (Exception e) {
                 ObjectNode result = Json.newObject();
                 e.printStackTrace();
@@ -144,6 +154,7 @@ public class InternovaSellersController {
                             return jpaApi.withTransaction(entityManager -> {
                                 ObjectNode add_result = Json.newObject();
                                 Long id = json.findPath("id").asLong();
+                                Long user_id = json.findPath("user_id").asLong();
                                 String sqlExistCs = "select * from customers_suppliers cs where cs.internova_seller_id=" + id;
                                 List<CustomersSuppliersEntity> suppliersEntityList = (List<CustomersSuppliersEntity>) entityManager.createNativeQuery(sqlExistCs, CustomersSuppliersEntity.class).getResultList();
                                 String sqlExistOffers = "select * from offers o where o.seller_id=" + id;
@@ -159,13 +170,16 @@ public class InternovaSellersController {
                                     entityManager.remove(internovaSellersEntity);
                                     add_result.put("status", "success");
                                     add_result.put("message", "Η Διαγραφή πραγματοποίηθηκε με επιτυχία");
+                                    add_result.put("DO_ID", internovaSellersEntity.getId());
+                                    add_result.put("system", "Πωλητές/Internova");
+                                    add_result.put("user_id", user_id);
                                 }
                                 return add_result;
                             });
                         },
                         executionContext);
                 result = (ObjectNode) deleteFuture.get();
-                return ok(result);
+                return ok(result,request);
             } catch (Exception e) {
                 ObjectNode result = Json.newObject();
                 e.printStackTrace();

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execution_context.DatabaseExecutionContext;
+import controllers.system.Application;
 import models.BillingsEntity;
 import models.CustomersSuppliersEntity;
 import models.OffersEntity;
@@ -30,12 +31,13 @@ import java.util.concurrent.ExecutionException;
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
-public class BillingsController {
+public class BillingsController extends Application {
     private JPAApi jpaApi;
     private DatabaseExecutionContext executionContext;
 
     @Inject
     public BillingsController(JPAApi jpaApi, DatabaseExecutionContext executionContext) {
+        super(jpaApi,executionContext);
         this.jpaApi = jpaApi;
         this.executionContext = executionContext;
     }
@@ -53,6 +55,7 @@ public class BillingsController {
                             return jpaApi.withTransaction(entityManager -> {
                                 ObjectNode add_result = Json.newObject();
                                 String name = json.findPath("name").asText();
+                                String user_id = json.findPath("user_id").asText();
                                 String description = json.findPath("description").asText();
                                 String sqlUnique = "select * from billings b where b.name=" + "'" + name + "'";
                                 List<BillingsEntity> billingsEntityList = entityManager.createNativeQuery(sqlUnique, BillingsEntity.class).getResultList();
@@ -68,12 +71,15 @@ public class BillingsController {
                                 entityManager.persist(billingsEntity);
                                 add_result.put("status", "success");
                                 add_result.put("message", "Η καταχωρηση πραγματοποίηθηκε με επιτυχία");
+                                add_result.put("DO_ID", billingsEntity.getId());
+                                add_result.put("system", "Λογαριασμοί/Billings");
+                                add_result.put("user_id", user_id);
                                 return add_result;
                             });
                         },
                         executionContext);
                 result = (ObjectNode) addFuture.get();
-                return ok(result);
+                return ok(result,request);
             } catch (Exception e) {
                 ObjectNode result = Json.newObject();
                 e.printStackTrace();
@@ -99,6 +105,7 @@ public class BillingsController {
                                 ObjectNode add_result = Json.newObject();
                                 Long id = json.findPath("id").asLong();
                                 String name = json.findPath("name").asText();
+                                String user_id = json.findPath("user_id").asText();
                                 String description = json.findPath("description").asText();
                                 String sqlUnique = "select * from billings b where b.name=" + "'" + name + "'  and b.id!=" + id;
                                 List<BillingsEntity> billingsEntityList = entityManager.createNativeQuery(sqlUnique, BillingsEntity.class).getResultList();
@@ -114,12 +121,15 @@ public class BillingsController {
                                 entityManager.persist(billingsEntity);
                                 add_result.put("status", "success");
                                 add_result.put("message", "Η ενημέρωση πραγματοποίηθηκε με επιτυχία");
+                                add_result.put("DO_ID", billingsEntity.getId());
+                                add_result.put("system", "Λογαριασμοί/Billings");
+                                add_result.put("user_id", user_id);
                                 return add_result;
                             });
                         },
                         executionContext);
                 result = (ObjectNode) addFuture.get();
-                return ok(result);
+                return ok(result,request);
             } catch (Exception e) {
                 ObjectNode result = Json.newObject();
                 e.printStackTrace();
@@ -144,6 +154,7 @@ public class BillingsController {
                             return jpaApi.withTransaction(entityManager -> {
                                 ObjectNode add_result = Json.newObject();
                                 Long id = json.findPath("id").asLong();
+                                Long user_id = json.findPath("user_id").asLong();
                                 BillingsEntity billingsEntity = entityManager.find(BillingsEntity.class, id);
 
                                 String sqlExistCs = "select * from customers_suppliers cs where cs.billing_id=" + id;
@@ -152,16 +163,19 @@ public class BillingsController {
                                 String sqlExistOffers = "select * from offers o where o.billing_id=" + id;
                                 List<OffersEntity> offersEntityList = (List<OffersEntity>) entityManager.createNativeQuery(sqlExistOffers, OffersEntity.class).getResultList();
 
-                                if(suppliersEntityList.size()>0){
+                                if (suppliersEntityList.size() > 0) {
                                     add_result.put("status", "error");
                                     add_result.put("message", "Αποτυχία Διαγραφής.Ο συγκεκριμένος λογαριασμός είναι συνδεδεμένος με πελάτη/προμηθευτή");
-                                }else if(offersEntityList.size()>0){
+                                } else if (offersEntityList.size() > 0) {
                                     add_result.put("status", "error");
                                     add_result.put("message", "Αποτυχία Διαγραφής.Ο συγκεκριμένος λογαριασμός είναι συνδεδεμένος με Προσφορά");
-                                }else{
+                                } else {
                                     entityManager.remove(billingsEntity);
                                     add_result.put("status", "success");
                                     add_result.put("message", "Η Διαγραφή πραγματοποίηθηκε με επιτυχία");
+                                    add_result.put("DO_ID", billingsEntity.getId());
+                                    add_result.put("system", "Λογαριασμοί/Billings");
+                                    add_result.put("user_id", user_id);
                                 }
 
                                 return add_result;
@@ -169,7 +183,7 @@ public class BillingsController {
                         },
                         executionContext);
                 result = (ObjectNode) addFuture.get();
-                return ok(result);
+                return ok(result,request);
             } catch (Exception e) {
                 ObjectNode result = Json.newObject();
                 e.printStackTrace();

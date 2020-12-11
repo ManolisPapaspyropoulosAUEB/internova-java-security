@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.config.ConfigFactory;
 import controllers.execution_context.DatabaseExecutionContext;
+import controllers.system.Application;
 import models.*;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -27,13 +28,15 @@ import java.util.concurrent.CompletableFuture;
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
-public class ProceduresPrintController {
+public class ProceduresPrintController extends Application {
+
     private JPAApi jpaApi;
     private DatabaseExecutionContext executionContext;
 
 
     @Inject
     public ProceduresPrintController(JPAApi jpaApi, DatabaseExecutionContext executionContext) {
+        super(jpaApi,  executionContext);
         this.jpaApi = jpaApi;
         this.executionContext = executionContext;
     }
@@ -138,6 +141,7 @@ public class ProceduresPrintController {
                     String ret_path = createXLSResult.get();
                     File previewFile = new File(ret_path);
                     return ok(previewFile);
+
                 }
             }
         } catch (Exception e) {

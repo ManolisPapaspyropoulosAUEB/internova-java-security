@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execution_context.DatabaseExecutionContext;
+import controllers.system.Application;
 import models.OrganizationsEntity;
 import models.UsersEntity;
 import play.db.jpa.JPAApi;
@@ -25,12 +26,13 @@ import java.util.concurrent.CompletableFuture;
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
-public class OrganizationsController {
+public class OrganizationsController extends Application {
     private JPAApi jpaApi;
     private DatabaseExecutionContext executionContext;
 
     @Inject
     public OrganizationsController(JPAApi jpaApi, DatabaseExecutionContext executionContext) {
+        super(jpaApi,  executionContext);
         this.jpaApi = jpaApi;
         this.executionContext = executionContext;
     }
@@ -50,18 +52,22 @@ public class OrganizationsController {
                                 return jpaApi.withTransaction(entityManager -> {
                                     ObjectNode result_add_organization = Json.newObject();
                                     String name = json.findPath("name").asText();
+                                    String user_id = json.findPath("user_id").asText();
                                     OrganizationsEntity o = new OrganizationsEntity();
                                     o.setName(name);
                                     o.setCreationDate(new Date());
                                     entityManager.persist(o);
                                     result_add_organization.put("status", "success");
                                     result_add_organization.put("message", "Η καταχώρηση ολοκληρώθηκε με επιτυχία!");
+                                    result_add_organization.put("DO_ID", o.getOrganizationId());
+                                    result_add_organization.put("system", "οργανισμοι");
+                                    result_add_organization.put("user_id", user_id);
                                     return result_add_organization;
                                 });
                             },
                             executionContext);
                     result = (ObjectNode) addOrganizanizationFuture.get();
-                    return ok(result);
+                    return ok(result,request);
 
                 } catch (Exception e) {
                     ObjectNode result = Json.newObject();
@@ -96,18 +102,22 @@ public class OrganizationsController {
                                     ObjectNode update_result = Json.newObject();
                                     String name = json.findPath("organizationName").asText();
                                     Long id = json.findPath("id").asLong();
+                                    Long user_id = json.findPath("user_id").asLong();
                                     OrganizationsEntity o = entityManager.find(OrganizationsEntity.class, id);
                                     o.setName(name);
                                     o.setUpdateDate(new Date());
                                     entityManager.merge(o);
                                     update_result.put("status", "success");
                                     update_result.put("message", "Η ενημέρωση ολοκληρώθηκε με επιτυχία!");
+                                    update_result.put("DO_ID", o.getOrganizationId());
+                                    update_result.put("system", "οργανισμοι");
+                                    update_result.put("user_id", user_id);
                                     return update_result;
                                 });
                             },
                             executionContext);
                     result = (ObjectNode) updateOrganizanizationFuture.get();
-                    return ok(result);
+                    return ok(result,request);
                 } catch (Exception e) {
                     ObjectNode result = Json.newObject();
                     e.printStackTrace();
@@ -142,6 +152,7 @@ public class OrganizationsController {
                                 return jpaApi.withTransaction(entityManager -> {
                                     ObjectNode delete_result = Json.newObject();
                                     Long id = json.findPath("id").asLong();
+                                    Long user_id = json.findPath("user_id").asLong();
                                     String checkIfUsedSql = "select * from users where users.org_id=" + id;
                                     List<UsersEntity> usersList = (List<UsersEntity>) entityManager.createNativeQuery(checkIfUsedSql, UsersEntity.class).getResultList();
                                     if (usersList.size() > 0) {
@@ -154,6 +165,9 @@ public class OrganizationsController {
                                         entityManager.remove(o);
                                         delete_result.put("status", "success");
                                         delete_result.put("message", "Η διαγραφή ολοκληρώθηκε με επιτυχία!");
+                                        delete_result.put("DO_ID", o.getOrganizationId());
+                                        delete_result.put("system", "οργανισμοι");
+                                        delete_result.put("user_id", user_id);
                                     } else {
                                         delete_result.put("status", "error");
                                         delete_result.put("message", "Δεν βρέθηκε σχετικός οργανισμός");
@@ -164,7 +178,7 @@ public class OrganizationsController {
                             },
                             executionContext);
                     result = (ObjectNode) deleteFuture.get();
-                    return ok(result);
+                    return ok(result,request);
 
                 } catch (Exception e) {
                     ObjectNode result = Json.newObject();

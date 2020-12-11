@@ -3,6 +3,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execution_context.DatabaseExecutionContext;
+import controllers.system.Application;
 import models.FactoriesEntity;
 import models.WarehousesEntity;
 import play.db.jpa.JPAApi;
@@ -22,11 +23,12 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
-public class WarehousesController {
+public class WarehousesController extends Application {
     private JPAApi jpaApi;
     private DatabaseExecutionContext executionContext;
     @Inject
     public WarehousesController(JPAApi jpaApi, DatabaseExecutionContext executionContext) {
+        super(jpaApi,  executionContext);
         this.jpaApi = jpaApi;
         this.executionContext = executionContext;
     }
@@ -50,6 +52,7 @@ public class WarehousesController {
                                     String country = json.findPath("country").asText();
                                     String city = json.findPath("city").asText();
                                     String email = json.findPath("email").asText();
+                                    String user_id = json.findPath("user_id").asText();
                                     String manager = json.findPath("manager").asText();
                                     String postalCode = json.findPath("postalCode").asText();
                                     String region = json.findPath("region").asText();
@@ -78,12 +81,15 @@ public class WarehousesController {
                                     add_result.put("status", "success");
                                     add_result.put("warehouseId", warehousesEntity.getId());
                                     add_result.put("message", "Η καταχωρηση πραγματοποίηθηκε με επιτυχία");
+                                    add_result.put("DO_ID", warehousesEntity.getId());
+                                    add_result.put("system", "αποθήκες");
+                                    add_result.put("user_id", user_id);
                                     return add_result;
                                 });
                             },
                             executionContext);
                     result = (ObjectNode) addFuture.get();
-                    return ok(result);
+                    return ok(result,request);
                 } catch (Exception e) {
                     ObjectNode result = Json.newObject();
                     e.printStackTrace();
@@ -122,6 +128,7 @@ public class WarehousesController {
                                     String manager = json.findPath("manager").asText();
                                     String postalCode = json.findPath("postalCode").asText();
                                     String country = json.findPath("country").asText();
+                                    String user_id = json.findPath("user_id").asText();
 
                                     String region = json.findPath("region").asText();
                                     String telephone = json.findPath("telephone").asText();
@@ -149,12 +156,15 @@ public class WarehousesController {
                                     entityManager.merge(warehousesEntity);
                                     add_result.put("status", "success");
                                     add_result.put("message", "Η ενημέρωση πραγματοποίηθηκε με επιτυχία");
+                                    add_result.put("DO_ID", warehousesEntity.getId());
+                                    add_result.put("system", "αποθήκες");
+                                    add_result.put("user_id", user_id);
                                     return add_result;
                                 });
                             },
                             executionContext);
                     result = (ObjectNode) addFuture.get();
-                    return ok(result);
+                    return ok(result,request);
 
                 } catch (Exception e) {
                     ObjectNode result = Json.newObject();
@@ -188,16 +198,20 @@ public class WarehousesController {
                                 return jpaApi.withTransaction(entityManager -> {
                                     ObjectNode delete_result = Json.newObject();
                                     Long id = json.findPath("id").asLong();
+                                    Long user_id = json.findPath("user_id").asLong();
                                     WarehousesEntity warehousesEntity = entityManager.find(WarehousesEntity.class, id);
                                     entityManager.remove(warehousesEntity);
                                     delete_result.put("status", "success");
                                     delete_result.put("message", "Η διαγραφή ολοκληρώθηκε με επιτυχία!");
+                                    delete_result.put("DO_ID", warehousesEntity.getId());
+                                    delete_result.put("system", "αποθήκες");
+                                    delete_result.put("user_id", user_id);
                                     return delete_result;
                                 });
                             },
                             executionContext);
                     result = (ObjectNode) deleteFuture.get();
-                    return ok(result);
+                    return ok(result,request);
 
                 } catch (Exception e) {
                     ObjectNode result = Json.newObject();
@@ -447,6 +461,7 @@ public class WarehousesController {
                                             returnList_future.put("total", filalistAll.size());
                                             returnList_future.put("status", "success");
                                             returnList_future.put("message", "success");
+
                                             return returnList_future;
                                         });
                             },

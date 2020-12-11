@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execution_context.DatabaseExecutionContext;
+import controllers.system.Application;
 import models.BillingsEntity;
 import models.CustomersSuppliersEntity;
 import models.InternovaSellersEntity;
@@ -28,13 +29,14 @@ import java.util.concurrent.CompletableFuture;
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
-public class CustomersSuppliersController {
+public class CustomersSuppliersController extends Application  {
 
     private JPAApi jpaApi;
     private DatabaseExecutionContext executionContext;
 
     @Inject
     public CustomersSuppliersController(JPAApi jpaApi, DatabaseExecutionContext executionContext) {
+        super(jpaApi,  executionContext);
         this.jpaApi = jpaApi;
         this.executionContext = executionContext;
     }
@@ -57,6 +59,7 @@ public class CustomersSuppliersController {
                                     String brandName = json.findPath("brandName").asText();
                                     String city = json.findPath("city").asText();
                                     String email = json.findPath("email").asText();
+                                    Long user_id = json.findPath("user_id").asLong();
                                     String postalCode = json.findPath("postalCode").asText();
                                     String region = json.findPath("region").asText();
                                     String telephone = json.findPath("telephone").asText();
@@ -111,12 +114,15 @@ public class CustomersSuppliersController {
                                     }
                                     add_result.put("status", "success");
                                     add_result.put("message", "Η καταχωρηση πραγματοποίηθηκε με επιτυχία");
+                                    add_result.put("DO_ID", warehousesEntity.getId());
+                                    add_result.put("system", "πελατες προμηθευτες");
+                                    add_result.put("user_id", user_id);
                                     return add_result;
                                 });
                             },
                             executionContext);
                     result = (ObjectNode) addFuture.get();
-                    return ok(result);
+                    return ok(result,request);
                 } catch (Exception e) {
                     ObjectNode result = Json.newObject();
                     e.printStackTrace();
@@ -149,6 +155,7 @@ public class CustomersSuppliersController {
                                 return jpaApi.withTransaction(entityManager -> {
                                     ObjectNode add_result = Json.newObject();
                                     String address = json.findPath("address").asText();
+                                    String user_id = json.findPath("user_id").asText();
                                     String brandName = json.findPath("brandName").asText();
                                     String city = json.findPath("city").asText();
                                     String email = json.findPath("email").asText();
@@ -191,12 +198,15 @@ public class CustomersSuppliersController {
                                     entityManager.persist(warehousesEntity);
                                     add_result.put("status", "success");
                                     add_result.put("message", "Η ενημέρωση πραγματοποίηθηκε με επιτυχία");
+                                    add_result.put("DO_ID", warehousesEntity.getId());
+                                    add_result.put("system", "πελατες προμηθευτες");
+                                    add_result.put("user_id", user_id);
                                     return add_result;
                                 });
                             },
                             executionContext);
                     result = (ObjectNode) addFuture.get();
-                    return ok(result);
+                    return ok(result,request);
                 } catch (Exception e) {
                     ObjectNode result = Json.newObject();
                     e.printStackTrace();
@@ -231,18 +241,22 @@ public class CustomersSuppliersController {
                                 return jpaApi.withTransaction(entityManager -> {
                                     ObjectNode delete_result = Json.newObject();
                                     Long id = json.findPath("id").asLong();
+                                    Long user_id = json.findPath("user_id").asLong();
                                     System.out.println(id);
                                     System.out.println(json);
                                     CustomersSuppliersEntity customersSuppliersEntity = entityManager.find(CustomersSuppliersEntity.class, id);
                                     entityManager.remove(customersSuppliersEntity);
                                     delete_result.put("status", "success");
                                     delete_result.put("message", "Η διαγραφή ολοκληρώθηκε με επιτυχία!");
+                                    delete_result.put("DO_ID", customersSuppliersEntity.getId());
+                                    delete_result.put("system", "πελατες προμηθευτες");
+                                    delete_result.put("user_id", user_id);
                                     return delete_result;
                                 });
                             },
                             executionContext);
                     result = (ObjectNode) deleteFuture.get();
-                    return ok(result);
+                    return ok(result,request);
 
                 } catch (Exception e) {
                     ObjectNode result = Json.newObject();

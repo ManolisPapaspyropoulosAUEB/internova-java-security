@@ -2,6 +2,7 @@ package models;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Objects;
 
 @Entity
@@ -12,9 +13,11 @@ public class AuditLogsEntity {
     private Long userId;
     private Long objectId;
     private String message;
-    private Timestamp creationDate;
+    private Date creationDate;
+    private String method;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     public long getId() {
         return id;
@@ -66,11 +69,11 @@ public class AuditLogsEntity {
 
     @Basic
     @Column(name = "creation_date")
-    public Timestamp getCreationDate() {
+    public Date getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(Timestamp creationDate) {
+    public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -90,5 +93,15 @@ public class AuditLogsEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, system, userId, objectId, message, creationDate);
+    }
+
+    @Basic
+    @Column(name = "method")
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
     }
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execution_context.DatabaseExecutionContext;
+import controllers.system.Application;
 import models.MeasurementUnitEntity;
 import models.ScheduleEntity;
 import models.SchedulePackagesEntity;
@@ -26,12 +27,13 @@ import java.util.concurrent.CompletableFuture;
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
-public class ScheduleController {
+public class ScheduleController extends Application {
     private JPAApi jpaApi;
     private DatabaseExecutionContext executionContext;
 
     @Inject
     public ScheduleController(JPAApi jpaApi, DatabaseExecutionContext executionContext) {
+        super(jpaApi,  executionContext);
         this.jpaApi = jpaApi;
         this.executionContext = executionContext;
     }
@@ -52,6 +54,7 @@ public class ScheduleController {
                                 JsonNode arrival = json.findPath("arrival");
                                 JsonNode departure = json.findPath("departure");
                                 String type = json.findPath("type").asText();
+                                String user_id = json.findPath("user_id").asText();
                                 String fromAddress = departure.findPath("fromAddress").asText();
                                 String fromCity = departure.findPath("fromCity").asText();
                                 String fromPostalCode = departure.findPath("fromPostalCode").asText();
@@ -90,12 +93,15 @@ public class ScheduleController {
                                 add_result.put("id", scheduleEntity.getId());
                                 add_result.put("type", scheduleEntity.getType());
                                 add_result.put("message", "Η καταχωρηση πραγματοποίηθηκε με επιτυχία");
+                                add_result.put("DO_ID", scheduleEntity.getId());
+                                add_result.put("system", "Τιμοκατάλογος");
+                                add_result.put("user_id", user_id);
                                 return add_result;
                             });
                         },
                         executionContext);
                 result = (ObjectNode) addFuture.get();
-                return ok(result);
+                return ok(result,request);
             } catch (Exception e) {
                 ObjectNode result = Json.newObject();
                 e.printStackTrace();
@@ -123,6 +129,7 @@ public class ScheduleController {
                                 JsonNode arrival = json.findPath("arrival");
                                 JsonNode departure = json.findPath("departure");
                                 Long id = json.findPath("id").asLong();
+                                String user_id = json.findPath("user_id").asText();
                                 String fromAddress = departure.findPath("fromAddress").asText();
                                 String fromCity = departure.findPath("fromCity").asText();
                                 String fromPostalCode = departure.findPath("fromPostalCode").asText();
@@ -164,12 +171,15 @@ public class ScheduleController {
                                 entityManager.merge(scheduleEntity);
                                 update_result.put("status", "success");
                                 update_result.put("message", "Η ενημέρωση πραγματοποίηθηκε με επιτυχία");
+                                update_result.put("DO_ID", scheduleEntity.getId());
+                                update_result.put("system", "Τιμοκατάλογος");
+                                update_result.put("user_id", user_id);
                                 return update_result;
                             });
                         },
                         executionContext);
                 result = (ObjectNode) updateFuture.get();
-                return ok(result);
+                return ok(result,request);
             } catch (Exception e) {
                 ObjectNode result = Json.newObject();
                 e.printStackTrace();
@@ -194,6 +204,7 @@ public class ScheduleController {
                             return jpaApi.withTransaction(entityManager -> {
                                 ObjectNode update_result = Json.newObject();
                                 Long id = json.findPath("id").asLong();
+                                String user_id = json.findPath("id").asText();
                                 ScheduleEntity scheduleEntity = entityManager.find(ScheduleEntity.class, id);
                                 String sqlExist = " select * from schedule_packages sp where sp.schedule_id=" + id;
                                 List<SchedulePackagesEntity> schedulePackagesEntityList = entityManager.createNativeQuery(sqlExist, SchedulePackagesEntity.class).getResultList();
@@ -205,12 +216,15 @@ public class ScheduleController {
                                 entityManager.remove(scheduleEntity);
                                 update_result.put("status", "success");
                                 update_result.put("message", "Η Διαγραφή πραγματοποίηθηκε με επιτυχία");
+                                update_result.put("DO_ID", scheduleEntity.getId());
+                                update_result.put("system", "Τιμοκατάλογος");
+                                update_result.put("user_id", user_id);
                                 return update_result;
                             });
                         },
                         executionContext);
                 result = (ObjectNode) updateFuture.get();
-                return ok(result);
+                return ok(result,request);
             } catch (Exception e) {
                 ObjectNode result = Json.newObject();
                 e.printStackTrace();
@@ -548,7 +562,7 @@ public class ScheduleController {
                         },
                         executionContext);
                 result = (ObjectNode) addFuture.get();
-                return ok(result);
+                return ok(result,request);
             } catch (Exception e) {
                 ObjectNode result = Json.newObject();
                 e.printStackTrace();
@@ -596,7 +610,7 @@ public class ScheduleController {
                         },
                         executionContext);
                 result = (ObjectNode) addFuture.get();
-                return ok(result);
+                return ok(result,request);
             } catch (Exception e) {
                 ObjectNode result = Json.newObject();
                 e.printStackTrace();
@@ -681,7 +695,7 @@ public class ScheduleController {
                         },
                         executionContext);
                 result = (ObjectNode) addFuture.get();
-                return ok(result);
+                return ok(result,request);
             } catch (Exception e) {
                 ObjectNode result = Json.newObject();
                 e.printStackTrace();

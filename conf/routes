@@ -21,7 +21,7 @@ POST        /updateRole                                      controllers.securit
 POST        /deleteRole                                      controllers.security.RolesController.deleteRole(req: Request)
 POST        /getRoles                                        controllers.security.RolesController.getRoles(req: Request)
 
-#UsersControllers
+#UsersControllers//
 POST        /addUser                                         controllers.security.UsersControllers.addUser(req: Request)
 POST        /updateUser                                      controllers.security.UsersControllers.updateUser(req: Request)
 POST        /deleteUser                                      controllers.security.UsersControllers.deleteUser(req: Request)

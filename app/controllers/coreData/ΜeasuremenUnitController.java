@@ -3,6 +3,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execution_context.DatabaseExecutionContext;
+import controllers.system.Application;
 import models.MeasurementUnitEntity;
 import models.SchedulePackageOfferEntity;
 import play.db.jpa.JPAApi;
@@ -21,11 +22,12 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
-public class ΜeasuremenUnitController {
+public class ΜeasuremenUnitController  extends Application {
     private JPAApi jpaApi;
     private DatabaseExecutionContext executionContext;
     @Inject
     public ΜeasuremenUnitController(JPAApi jpaApi, DatabaseExecutionContext executionContext) {
+        super(jpaApi,  executionContext);
         this.jpaApi = jpaApi;
         this.executionContext = executionContext;
     }
@@ -43,6 +45,7 @@ public class ΜeasuremenUnitController {
                                 ObjectNode add_result = Json.newObject();
                                 String title = json.findPath("title").asText();
                                 String comments = json.findPath("comments").asText();
+                                String user_id = json.findPath("user_id").asText();
                                 Double zIndex = json.findPath("zIndex").asDouble();
                                 Double xIndex = json.findPath("xIndex").asDouble();
                                 Double yIndex = json.findPath("yIndex").asDouble();
@@ -66,12 +69,15 @@ public class ΜeasuremenUnitController {
                                 entityManager.persist(measurementUnitEntity);
                                 add_result.put("status", "success");
                                 add_result.put("message", "Η καταχωρηση πραγματοποίηθηκε με επιτυχία");
+                                add_result.put("DO_ID", measurementUnitEntity.getId());
+                                add_result.put("system", "Υπεύθυνοι");
+                                add_result.put("user_id", user_id);
                                 return add_result;
                             });
                         },
                         executionContext);
                 result = (ObjectNode) addFuture.get();
-                return ok(result);
+                return ok(result,request);
             } catch (Exception e) {
                 ObjectNode result = Json.newObject();
                 e.printStackTrace();
@@ -97,6 +103,7 @@ public class ΜeasuremenUnitController {
                                 ObjectNode update_result = Json.newObject();
                                 String title = json.findPath("title").asText();
                                 Long id = json.findPath("id").asLong();
+                                Long user_id = json.findPath("user_id").asLong();
                                 String comments = json.findPath("comments").asText();
                                 Double zIndex = json.findPath("zIndex").asDouble();
                                 Double xIndex = json.findPath("xIndex").asDouble();
@@ -120,12 +127,15 @@ public class ΜeasuremenUnitController {
                                 entityManager.merge(measurementUnitEntity);
                                 update_result.put("status", "success");
                                 update_result.put("message", "Η καταχωρηση πραγματοποίηθηκε με επιτυχία");
+                                update_result.put("DO_ID", measurementUnitEntity.getId());
+                                update_result.put("system", "Υπεύθυνοι");
+                                update_result.put("user_id", user_id);
                                 return update_result;
                             });
                         },
                         executionContext);
                 result = (ObjectNode) updateFuture.get();
-                return ok(result);
+                return ok(result,request);
             } catch (Exception e) {
                 ObjectNode result = Json.newObject();
                 e.printStackTrace();
@@ -153,6 +163,13 @@ public class ΜeasuremenUnitController {
                                 // String existSql = "select * from ";
                                 add_result.put("status", "error");
                                 add_result.put("message", "Βρεθηκαν συνδεδεμενες εγγραφες");
+
+
+                                //                                update_result.put("DO_ID", measurementUnitEntity.getId());
+                                //                                update_result.put("system", "Υπεύθυνοι");
+                                //                                update_result.put("user_id", user_id);
+
+
                                 return add_result;
                             });
                         },
@@ -164,7 +181,7 @@ public class ΜeasuremenUnitController {
                 e.printStackTrace();
                 result.put("status", "error");
                 result.put("message", "Προβλημα κατα την καταχωρηση");
-                return ok(result);
+                return ok(result,request);
             }
         }
     }
