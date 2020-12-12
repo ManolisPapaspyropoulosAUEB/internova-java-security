@@ -204,7 +204,7 @@ public class ScheduleController extends Application {
                             return jpaApi.withTransaction(entityManager -> {
                                 ObjectNode update_result = Json.newObject();
                                 Long id = json.findPath("id").asLong();
-                                String user_id = json.findPath("id").asText();
+                                String user_id = json.findPath("user_id").asText();
                                 ScheduleEntity scheduleEntity = entityManager.find(ScheduleEntity.class, id);
                                 String sqlExist = " select * from schedule_packages sp where sp.schedule_id=" + id;
                                 List<SchedulePackagesEntity> schedulePackagesEntityList = entityManager.createNativeQuery(sqlExist, SchedulePackagesEntity.class).getResultList();

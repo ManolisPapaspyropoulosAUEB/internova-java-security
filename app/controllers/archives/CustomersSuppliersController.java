@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execution_context.DatabaseExecutionContext;
 import controllers.system.Application;
-import models.BillingsEntity;
-import models.CustomersSuppliersEntity;
-import models.InternovaSellersEntity;
-import models.ScheduleEntity;
+import models.*;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
 import play.mvc.BodyParser;
@@ -240,10 +237,19 @@ public class CustomersSuppliersController extends Application  {
                     CompletableFuture<JsonNode> deleteFuture = CompletableFuture.supplyAsync(() -> {
                                 return jpaApi.withTransaction(entityManager -> {
                                     ObjectNode delete_result = Json.newObject();
+                                    ((ObjectNode)json).remove("billing");
+                                    ((ObjectNode)json).remove("internovaSeller");
                                     Long id = json.findPath("id").asLong();
                                     Long user_id = json.findPath("user_id").asLong();
                                     System.out.println(id);
                                     System.out.println(json);
+                                    String sql = "select * from offers of where of.customer_id="+id;
+                                    List<OffersEntity> suppliersEntityList = ( List<OffersEntity>) entityManager.createNativeQuery(sql,OffersEntity.class).getResultList();
+                                    if(suppliersEntityList.size()>0){
+                                        delete_result.put("status", "error");
+                                        delete_result.put("message", "βρέθηκαν συνδεδεμένες εγγραφές");
+                                        return delete_result;
+                                    }
                                     CustomersSuppliersEntity customersSuppliersEntity = entityManager.find(CustomersSuppliersEntity.class, id);
                                     entityManager.remove(customersSuppliersEntity);
                                     delete_result.put("status", "success");
