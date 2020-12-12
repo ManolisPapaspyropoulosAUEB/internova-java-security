@@ -233,6 +233,8 @@ public class CustomersSuppliersController extends Application  {
                 return badRequest("Expecting Json data");
             } else {
                 try {
+
+                    //
                     ObjectNode result = Json.newObject();
                     CompletableFuture<JsonNode> deleteFuture = CompletableFuture.supplyAsync(() -> {
                                 return jpaApi.withTransaction(entityManager -> {
