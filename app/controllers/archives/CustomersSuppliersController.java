@@ -221,25 +221,6 @@ public class CustomersSuppliersController extends Application  {
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @SuppressWarnings({"Duplicates", "unchecked"})
     @BodyParser.Of(BodyParser.Json.class)
     public Result deleteCustomerSupplier(final Http.Request request) throws IOException {

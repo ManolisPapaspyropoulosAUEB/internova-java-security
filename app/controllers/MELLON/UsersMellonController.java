@@ -1,0 +1,410 @@
+package controllers.MELLON;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import controllers.execution_context.DatabaseExecutionContext;
+import models.UsersEntity;
+import models.UsersMellonEntity;
+import org.hibernate.exception.ConstraintViolationException;
+import play.db.jpa.JPAApi;
+import play.libs.Json;
+import play.mvc.BodyParser;
+import play.mvc.Http;
+import play.mvc.Result;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+import javax.inject.Inject;
+import javax.persistence.PersistenceException;
+import javax.persistence.RollbackException;
+import java.io.IOException;
+import java.security.Key;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
+import static play.mvc.Results.badRequest;
+import static play.mvc.Results.ok;
+
+public class UsersMellonController {
+    private JPAApi jpaApi;
+    private DatabaseExecutionContext executionContext;
+    private static final String ALGO = "AES";
+    private static final byte[] keyValue =
+            new byte[]{'T', 'h', 'e', 'B', 'e', 's', 't',
+                    'S', 'e', 'c', 'r', 'e', 't', 'K', 'e', 'y'};
+
+    @Inject
+    public UsersMellonController(JPAApi jpaApi, DatabaseExecutionContext executionContext) {
+        this.jpaApi = jpaApi;
+        this.executionContext = executionContext;
+    }
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    @BodyParser.Of(BodyParser.Json.class)
+    public Result createUser(final Http.Request request) throws IOException {
+        JsonNode json = request.body().asJson();
+        if (json == null) {
+            return badRequest("Expecting Json data");
+        } else {
+            try {
+                ObjectNode result = Json.newObject();
+                CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
+                            return jpaApi.withTransaction(entityManager -> {
+                                ObjectNode add_result = Json.newObject();
+                                String email = json.findPath("email").asText();
+                                String password = json.findPath("password").asText();
+                                String firstName = json.findPath("firstName").asText();
+                                String lastName = json.findPath("lastName").asText();
+                                String imageUrl = json.findPath("imageUrl").asText();
+                                Integer socialAuth = json.findPath("socialAuth").asInt();
+                                String socialPlatform = json.findPath("socialPlatform").asText();
+                                String googleId = json.findPath("googleId").asText();
+                                String facebookId = json.findPath("facebookId").asText();
+                                String address = json.findPath("address").asText();
+                                String phone = json.findPath("phone").asText();
+                                String vehicleType = json.findPath("vehicleType").asText();
+                                String addressCity = json.findPath("addressCity").asText();
+                                String postalCode = json.findPath("postalCode").asText();
+                                String sqlUniqueEmail = "select * from users_mellon b where b.email=" + "'" + email + "'";
+                                List<UsersMellonEntity> emailCheckList = entityManager.createNativeQuery(sqlUniqueEmail, UsersMellonEntity.class).getResultList();
+                                if (emailCheckList.size() > 0) {
+                                    add_result.put("status", "error");
+                                    add_result.put("message", "Το email που δώσατε χρησιμοποιείτε ήδη,προσπαθήστε ξανά");
+                                    return add_result;
+                                }
+                                UsersMellonEntity usersEntity = new UsersMellonEntity();
+                                usersEntity.setFirstName(firstName);
+                                usersEntity.setLastName(lastName);
+                                usersEntity.setEmail(email);
+                                usersEntity.setPassword(password);
+                                try {
+                                    usersEntity.setPassword(encrypt(password));
+                                } catch (Exception e) {
+                                    add_result.put("status", "error");
+                                    add_result.put("message", "Συστημικο προβλημα παρουσιαστηκε,παρακαλω επικοινωνηστε με τον administrator");
+                                    return add_result;
+                                }
+                                usersEntity.setStatus(1);
+                                usersEntity.setAddress(address);
+                                usersEntity.setVehicleType(vehicleType);
+                                usersEntity.setPhone(phone);
+                                usersEntity.setImageUrl(imageUrl);
+                                usersEntity.setSocialAuth(socialAuth);
+                                usersEntity.setSocialPlatform(socialPlatform);
+                                usersEntity.setGoogleId(googleId);
+                                usersEntity.setFacebookId(facebookId);
+                                usersEntity.setPostalCode(postalCode);
+                                usersEntity.setAddressCity(addressCity);
+                                entityManager.persist(usersEntity);
+                                add_result.put("status", "success");
+                                add_result.put("id", usersEntity.getId());
+                                add_result.put("message", "Η καταχωρηση πραγματοποίηθηκε με επιτυχία");
+                                return add_result;
+                            });
+                        },
+                        executionContext);
+                result = (ObjectNode) addFuture.get();
+                return ok(result);
+            } catch (Exception e) {
+                ObjectNode result = Json.newObject();
+                e.printStackTrace();
+                result.put("status", "error");
+                result.put("message", "Προβλημα κατα την καταχωρηση");
+                return ok(result);
+            }
+        }
+    }
+
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    @BodyParser.Of(BodyParser.Json.class)
+    public Result editUser(final Http.Request request) throws IOException {
+        JsonNode json = request.body().asJson();
+        if (json == null) {
+            return badRequest("Expecting Json data");
+        } else {
+            try {
+                ObjectNode result = Json.newObject();
+                CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
+                            return jpaApi.withTransaction(entityManager -> {
+                                ObjectNode add_result = Json.newObject();
+                                String email = json.findPath("email").asText();
+                                String password = json.findPath("password").asText();
+                                String firstName = json.findPath("firstName").asText();
+                                String lastName = json.findPath("lastName").asText();
+                                Long id = json.findPath("id").asLong();
+                                String imageUrl = json.findPath("imageUrl").asText();
+                                Integer socialAuth = json.findPath("socialAuth").asInt();
+                                String socialPlatform = json.findPath("socialPlatform").asText();
+                                String googleId = json.findPath("googleId").asText();
+                                String facebookId = json.findPath("facebookId").asText();
+                                String address = json.findPath("address").asText();
+                                String phone = json.findPath("phone").asText();
+                                String vehicleType = json.findPath("vehicleType").asText();
+                                String addressCity = json.findPath("addressCity").asText();
+                                String postalCode = json.findPath("postalCode").asText();
+
+                                String sqlUniqueEmail = "select * from users_mellon b where b.email=" + "'" + email + "' and b.id!="+id;
+                                List<UsersMellonEntity> emailCheckList = entityManager.createNativeQuery(sqlUniqueEmail, UsersMellonEntity.class).getResultList();
+                                if (emailCheckList.size() > 0) {
+                                    add_result.put("status", "error");
+                                    add_result.put("message", "Το email που δώσατε χρησιμοποιείτε ήδη,προσπαθήστε ξανά");
+                                    return add_result;
+                                }
+
+                                UsersMellonEntity usersEntity = entityManager.find(UsersMellonEntity.class,id);
+                                try {
+                                    usersEntity.setPassword(encrypt(password));
+                                } catch (Exception e) {
+                                    add_result.put("status", "error");
+                                    add_result.put("message", "Συστημικο προβλημα παρουσιαστηκε,παρακαλω επικοινωνηστε με τον administrator");
+                                    return add_result;
+                                }
+                                usersEntity.setFirstName(firstName);
+                                usersEntity.setLastName(lastName);
+                                usersEntity.setEmail(email);
+                                usersEntity.setStatus(1);
+                                usersEntity.setAddress(address);
+                                usersEntity.setVehicleType(vehicleType);
+                                usersEntity.setPhone(phone);
+                                usersEntity.setImageUrl(imageUrl);
+                                usersEntity.setSocialAuth(socialAuth);
+                                usersEntity.setSocialPlatform(socialPlatform);
+                                usersEntity.setGoogleId(googleId);
+                                usersEntity.setFacebookId(facebookId);
+                                usersEntity.setPostalCode(postalCode);
+                                usersEntity.setAddressCity(addressCity);
+                                usersEntity.setCreationDate(new Date());
+                                entityManager.persist(usersEntity);
+                                add_result.put("status", "success");
+                                add_result.put("message", "Η ενημέρωση πραγματοποίηθηκε με επιτυχία");
+                                return add_result;
+                            });
+                        },
+                        executionContext);
+                result = (ObjectNode) addFuture.get();
+                return ok(result);
+            } catch (Exception e) {
+                ObjectNode result = Json.newObject();
+                e.printStackTrace();
+                result.put("status", "error");
+                result.put("message", "Προβλημα κατα την καταχωρηση");
+                return ok(result);
+            }
+        }
+    }
+
+
+
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    public Result getMellonUsers(final Http.Request request) throws IOException, ExecutionException, InterruptedException {
+        ObjectNode result = Json.newObject();
+            JsonNode json = request.body().asJson();
+            if (json == null) {
+                return badRequest("Expecting Json data");
+            } else {
+                if (json == null) {
+                    result.put("status", "error");
+                    result.put("message", "Δεν εχετε αποστειλει εγκυρα δεδομενα.");
+                    return ok(result);
+                } else {
+                    ObjectMapper ow = new ObjectMapper();
+                    HashMap<String, Object> returnList = new HashMap<String, Object>();
+                    String jsonResult = "";
+                    CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
+                                return jpaApi.withTransaction(
+                                        entityManager -> {
+                                            String id = json.findPath("id").asText();
+                                            String sqlUsersMellon = "select * from users_mellon user where 1=1 ";
+                                            if (!id.equalsIgnoreCase("") && id != null) {
+                                                sqlUsersMellon += " ";
+                                            }
+                                            HashMap<String, Object> returnList_future = new HashMap<String, Object>();
+                                            List<HashMap<String, Object>> mellonUsersList = new ArrayList<HashMap<String, Object>>();
+                                            List<UsersMellonEntity> usersMellonEntityList
+                                                    = (List<UsersMellonEntity>) entityManager.createNativeQuery(
+                                                    sqlUsersMellon, UsersMellonEntity.class).getResultList();
+                                            for (UsersMellonEntity j : usersMellonEntityList) {
+                                                HashMap<String, Object> sHmpam = new HashMap<String, Object>();
+                                                sHmpam.put("id", j.getId());
+                                                sHmpam.put("address", j.getAddress());
+                                                sHmpam.put("addressCity", j.getAddressCity());
+                                                sHmpam.put("postalCode", j.getPostalCode());
+                                                sHmpam.put("email", j.getEmail());
+                                                sHmpam.put("firstName", j.getFirstName());
+                                                sHmpam.put("lastName", j.getLastName());
+                                                sHmpam.put("password", j.getPassword());
+                                                sHmpam.put("phone", j.getPhone());
+                                                sHmpam.put("socialAuth", j.getSocialAuth());
+                                                sHmpam.put("socialPlatform", j.getSocialPlatform());
+                                                sHmpam.put("status", j.getStatus());
+                                                sHmpam.put("vehicleType", j.getVehicleType());
+                                                sHmpam.put("creationDate", j.getCreationDate());
+                                                sHmpam.put("imageUrl", j.getImageUrl());
+                                                sHmpam.put("googleId", j.getGoogleId());
+                                                sHmpam.put("facebookId", j.getFacebookId());
+                                                mellonUsersList.add(sHmpam);
+                                            }
+                                            returnList_future.put("data", mellonUsersList);
+                                            returnList_future.put("total", mellonUsersList.size());
+                                            returnList_future.put("status", "success");
+                                            returnList_future.put("message", "success");
+                                            return returnList_future;
+                                        });
+                            },
+                            executionContext);
+                    returnList = getFuture.get();
+                    DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                    ow.setDateFormat(myDateFormat);
+                    try {
+                        jsonResult = ow.writeValueAsString(returnList);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        result.put("status", "error");
+                        result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων ");
+                        return ok(result);
+                    }
+                    return ok(jsonResult);
+                }
+            }
+    }
+
+
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    @BodyParser.Of(BodyParser.Json.class)
+    public Result loginMellonUser(final Http.Request request) throws IOException {
+        JsonNode json = request.body().asJson();
+        if (json == null) {
+            return badRequest("Expecting Json data");
+        } else {
+            try {
+                System.out.println(json);
+                ObjectNode result = Json.newObject();
+                CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
+                            return jpaApi.withTransaction(entityManager -> {
+                                ObjectNode result_future = Json.newObject();
+                                String email = json.findPath("email").asText();
+                                String password = json.findPath("password").asText();
+                                String loginSQL = "";
+                                try {
+                                    loginSQL = "select * from users_mellon u where u.email="+"'"+email+"'" +" and u.password="+"'"+encrypt(password)+"'";
+                                    System.out.println(loginSQL);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                List<UsersMellonEntity> usersEntityList = (List<UsersMellonEntity>)  entityManager.createNativeQuery(loginSQL,UsersMellonEntity.class).getResultList();
+                                if(usersEntityList.size()>0){
+                                    result_future.put("status", "ok");
+                                    result_future.put("id", usersEntityList.get(0).getId() );
+                                    result_future.put("firstName", usersEntityList.get(0).getFirstName() );
+                                    result_future.put("lastName", usersEntityList.get(0).getLastName() );
+                                    result_future.put("email", usersEntityList.get(0).getEmail() );
+                                    result_future.put("vehicleType", usersEntityList.get(0).getVehicleType() );
+                                    try {
+                                        result_future.put("password", decrypt(usersEntityList.get(0).getPassword()));
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                        result_future.put("status", "error");
+                                        result_future.put("message", "Προβλημα κατα την ανάκτηση");
+                                        return result_future;
+                                    }
+                                    try {
+                                        result_future.put("token", encrypt(getSaltString()) );
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                        result_future.put("status", "error");
+                                        result_future.put("message", "Προβλημα κατα την ανάκτηση");
+                                        return result_future;
+                                    }
+                                }else{
+                                    String emailSql = "select * from users u where u.email="+"'"+email+"'";
+                                    List<UsersEntity> usersEntityListEmailMatch = (List<UsersEntity>)  entityManager.createNativeQuery(emailSql,UsersEntity.class).getResultList();
+                                    if(usersEntityListEmailMatch.size()>0){
+                                        result_future.put("status", "error");
+                                        result_future.put("message", "Λάνθασμένος κωδικός πρόσβασης");
+                                    }else {
+                                        result_future.put("status", "error");
+                                        result_future.put("message", "Δεν βρέθηκε χρήστης με αυτό το email");
+                                    }
+                                }
+
+                                return result_future;
+                            });
+                        },
+                        executionContext);
+                result = (ObjectNode) addFuture.get();
+                return ok(result);
+            } catch (Exception e) {
+                ObjectNode result = Json.newObject();
+                e.printStackTrace();
+                result.put("status", "error");
+                result.put("message", "Προβλημα κατα την ανάκτηση");
+                return ok(result);
+            }
+        }
+
+    }
+
+
+
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+    @SuppressWarnings("Duplicates")
+    protected String getSaltString() {
+        String SALTCHARS = "abcdefghijklmnopqrstuvwxyz1234567890";
+        StringBuilder salt = new StringBuilder();
+        Random rnd = new Random();
+        while (salt.length() < 6) { // length of the random string.
+            int index = (int) (rnd.nextFloat() * SALTCHARS.length());
+            salt.append(SALTCHARS.charAt(index));
+        }
+        String saltStr = salt.toString();
+        return saltStr;
+    }
+
+    @SuppressWarnings("Duplicates")
+// Generates a random int with n digits
+    public static int generateRandomDigits(int n) {
+        int m = (int) Math.pow(10, n - 1);
+        return m + new Random().nextInt(9 * m);
+    }
+
+    @SuppressWarnings("Duplicates")
+    //encryption password user
+    private static Key generateKey() throws Exception {
+        Key key = new SecretKeySpec(keyValue, ALGO);
+        return key;
+    }
+
+    @SuppressWarnings("Duplicates")
+    public static String encrypt(String Data) throws Exception {
+        Key key = generateKey();
+        Cipher c = Cipher.getInstance(ALGO);
+        c.init(Cipher.ENCRYPT_MODE, key);
+        byte[] encVal = c.doFinal(Data.getBytes());
+
+        String encryptedValue = Base64.getEncoder().encodeToString(encVal);
+        return encryptedValue;
+    }
+
+    @SuppressWarnings("Duplicates")
+    public static String decrypt(String encryptedData) throws Exception {
+        Key key = generateKey();
+        Cipher c = Cipher.getInstance(ALGO);
+        c.init(Cipher.DECRYPT_MODE, key);
+        byte[] decordedValue = Base64.getDecoder().decode(encryptedData);
+        byte[] decValue = c.doFinal(decordedValue);
+        String decryptedValue = new String(decValue);
+        return decryptedValue;
+    }
+
+
+
+
+
+}

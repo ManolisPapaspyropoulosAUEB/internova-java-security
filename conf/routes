@@ -48,7 +48,7 @@ POST        /getUploadsBySystemId                            controllers.documen
 POST        /uploadFile                                      controllers.documents.DocumentsController.uploadFile(req: Request)
 POST        /downloadDocument                                controllers.documents.DocumentsController.downloadDocument(req: Request)
 POST        /deleteAttatchment                               controllers.documents.DocumentsController.deleteAttatchment(req: Request)
-POST        /downloadDocumentGet                               controllers.documents.DocumentsController.downloadDocumentGet(req: Request)
+POST        /downloadDocumentGet                             controllers.documents.DocumentsController.downloadDocumentGet(req: Request)
 
 
 
@@ -153,6 +153,12 @@ POST        /deleteScheduleMeasureUnit                       controllers.procedu
 POST        /deleteAllScheduleMeasureUnitByScheduleId        controllers.procedures.ScheduleController.deleteAllScheduleMeasureUnitByScheduleId(req: Request)
 
 
+
+#---------------------------------------------------------------------------USERS MELLON TEMPORARY API -------------------------------------------------------------------------------------
+POST        /createUser                                      controllers.MELLON.UsersMellonController.createUser(req: Request)
+POST        /editUser                                        controllers.MELLON.UsersMellonController.editUser(req: Request)
+POST        /getMellonUsers                                  controllers.MELLON.UsersMellonController.getMellonUsers(req: Request)
+POST        /loginMellonUser                                 controllers.MELLON.UsersMellonController.loginMellonUser(req: Request)
 
 
 
