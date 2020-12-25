@@ -60,7 +60,11 @@ public class UsersMellonEntity {
     @Basic
     @Column(name = "password")
     public String getPassword() {
-        return password;
+        if(password==null){
+            return "";
+        }else{
+            return password;
+        }
     }
 
     public void setPassword(String password) {
@@ -174,7 +178,12 @@ public class UsersMellonEntity {
     @Basic
     @Column(name = "address")
     public String getAddress() {
-        return address;
+        if(address==null){
+            return "";
+        }else{
+            return address;
+        }
+
     }
 
     public void setAddress(String address) {
@@ -184,7 +193,11 @@ public class UsersMellonEntity {
     @Basic
     @Column(name = "phone")
     public String getPhone() {
-        return phone;
+        if(phone==null){
+            return "";
+        }else{
+            return phone;
+        }
     }
 
     public void setPhone(String phone) {
@@ -194,7 +207,13 @@ public class UsersMellonEntity {
     @Basic
     @Column(name = "vehicle_type")
     public String getVehicleType() {
-        return vehicleType;
+
+        if(vehicleType==null){
+            return "";
+        }else{
+            return vehicleType;
+        }
+
     }
 
     public void setVehicleType(String vehicleType) {
@@ -204,7 +223,11 @@ public class UsersMellonEntity {
     @Basic
     @Column(name = "address_city")
     public String getAddressCity() {
-        return addressCity;
+        if(addressCity==null){
+            return "";
+        }else{
+            return addressCity;
+        }
     }
 
     public void setAddressCity(String addressCity) {
@@ -214,7 +237,11 @@ public class UsersMellonEntity {
     @Basic
     @Column(name = "postal_code")
     public String getPostalCode() {
-        return postalCode;
+        if(postalCode==null){
+            return "";
+        }else{
+            return postalCode;
+        }
     }
 
     public void setPostalCode(String postalCode) {

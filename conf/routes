@@ -154,11 +154,12 @@ POST        /deleteAllScheduleMeasureUnitByScheduleId        controllers.procedu
 
 
 
-#---------------------------------------------------------------------------USERS MELLON TEMPORARY API -------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------USERS MELLON TEMPORARY API  -------------------------------------------------------------------------------------
 POST        /createUser                                      controllers.MELLON.UsersMellonController.createUser(req: Request)
 POST        /editUser                                        controllers.MELLON.UsersMellonController.editUser(req: Request)
 POST        /getMellonUsers                                  controllers.MELLON.UsersMellonController.getMellonUsers(req: Request)
 POST        /loginMellonUser                                 controllers.MELLON.UsersMellonController.loginMellonUser(req: Request)
+POST        /registerAndLoginWithSocialCAccount              controllers.MELLON.UsersMellonController.registerAndLoginWithSocialCAccount(req: Request)
 
 
 
