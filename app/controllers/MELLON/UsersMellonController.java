@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execution_context.DatabaseExecutionContext;
 import models.UsersEntity;
 import models.UsersMellonEntity;
+import models.UsersMellonParkingHistoryEntity;
 import org.hibernate.exception.ConstraintViolationException;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
@@ -16,9 +17,8 @@ import play.mvc.Result;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
-import javax.persistence.PersistenceException;
-import javax.persistence.RollbackException;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.security.Key;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -142,7 +142,6 @@ public class UsersMellonController {
                                 String vehicleType = json.findPath("vehicleType").asText();
                                 String addressCity = json.findPath("addressCity").asText();
                                 String postalCode = json.findPath("postalCode").asText();
-
                                 String sqlUniqueEmail = "select * from users_mellon b where b.email=" + "'" + email + "' and b.id!=" + id;
                                 List<UsersMellonEntity> emailCheckList = entityManager.createNativeQuery(sqlUniqueEmail, UsersMellonEntity.class).getResultList();
                                 if (emailCheckList.size() > 0) {
@@ -150,7 +149,6 @@ public class UsersMellonController {
                                     add_result.put("message", "Το email που δώσατε χρησιμοποιείτε ήδη,προσπαθήστε ξανά");
                                     return add_result;
                                 }
-
                                 UsersMellonEntity usersEntity = entityManager.find(UsersMellonEntity.class, id);
                                 if (password != null && !password.equalsIgnoreCase("")) {
                                     try {
@@ -243,6 +241,31 @@ public class UsersMellonController {
                                             sHmpam.put("imageUrl", j.getImageUrl());
                                             sHmpam.put("googleId", j.getGoogleId());
                                             sHmpam.put("facebookId", j.getFacebookId());
+
+                                            String sqlChargeBycile = "select * from users_mellon_parking_history umph where umph.user_mellon_id="+j.getId()+
+                                                    " and umph.end_time is null";
+                                            List <UsersMellonParkingHistoryEntity> parkingHistoryEntityList =
+                                                    entityManager.createNativeQuery(sqlChargeBycile,UsersMellonParkingHistoryEntity.class).getResultList();
+                                            if(parkingHistoryEntityList.size()>0){
+                                                String sqlDur = " SELECT " +
+                                                        "  ((time_to_sec((TIMEDIFF(NOW(), umph.start_time))) / 60)*100000)" +
+                                                        " FROM  users_mellon_parking_history umph where umph.id="+parkingHistoryEntityList.get(0).getId();
+
+                                                System.out.println(sqlDur);
+
+                                                BigDecimal duration = (BigDecimal) entityManager.createNativeQuery(sqlDur).getSingleResult();
+                                                sHmpam.put("parkingExist",true);
+                                                sHmpam.put("currentDuration",new Date().getTime() - parkingHistoryEntityList.get(0).getStartTime().getTime());
+
+                                                System.out.println(duration.doubleValue());
+                                                System.out.println(duration);
+                                            }else{
+                                                sHmpam.put("parkingExist",false);
+                                                sHmpam.put("currentDuration",0);
+
+                                            }
+
+
                                             if (j.getFirstName() != null
                                                     && !j.getFirstName().equalsIgnoreCase("")
                                                     && j.getEmail() != null
@@ -259,8 +282,6 @@ public class UsersMellonController {
                                             } else {
                                                 sHmpam.put("firstTimeLogin", true);
                                             }
-
-
                                             mellonUsersList.add(sHmpam);
                                         }
                                         returnList_future.put("data", mellonUsersList);
@@ -286,7 +307,6 @@ public class UsersMellonController {
             }
         }
     }
-
 
     @SuppressWarnings({"Duplicates", "unchecked"})
     @BodyParser.Of(BodyParser.Json.class)
@@ -345,7 +365,6 @@ public class UsersMellonController {
                                         result_future.put("message", "Δεν βρέθηκε χρήστης με αυτό το email");
                                     }
                                 }
-
                                 return result_future;
                             });
                         },
@@ -379,7 +398,6 @@ public class UsersMellonController {
                                 ObjectNode result_future = Json.newObject();
                                 System.out.println(json);
                                 String email = json.findPath("email").asText();
-
                                 String sqlFindUserByEmail = "select * from users_mellon um where um.email='" + email + "'";
                                 List<UsersMellonEntity> usersMellonEntityList = entityManager.createNativeQuery(sqlFindUserByEmail, UsersMellonEntity.class).getResultList();
                                 if (usersMellonEntityList.size() > 0) {
@@ -421,6 +439,169 @@ public class UsersMellonController {
             }
         }
 
+    }
+
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    @BodyParser.Of(BodyParser.Json.class)
+    public Result createNewParkingEntryForUserMellon(final Http.Request request) throws IOException {
+        JsonNode json = request.body().asJson();
+        if (json == null) {
+            return badRequest("Expecting Json data");
+        } else {
+            try {
+                ObjectNode result = Json.newObject();
+                CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
+                            return jpaApi.withTransaction(entityManager -> {
+                                ObjectNode add_result = Json.newObject();
+                                Long userMellonId = json.findPath("userMellonId").asLong();
+                                String barcode = json.findPath("barcode").asText();
+                                String station = json.findPath("station").asText();
+                                Double duration = json.findPath("duration").asDouble();
+                                UsersMellonParkingHistoryEntity userParking = new UsersMellonParkingHistoryEntity();
+                                userParking.setCreationDate(new Date());
+                                userParking.setBarcode(barcode);
+                                userParking.setStation(station);
+                                userParking.setStartTime(new Date());
+                                userParking.setUserMellonId(userMellonId);
+                                entityManager.persist(userParking);
+                                add_result.put("status", "success");
+                                add_result.put("message", "Η διαδικασία πραγματοποίηθηκε με επιτυχία");
+                                return add_result;
+                            });
+                        },
+                        executionContext);
+                result = (ObjectNode) addFuture.get();
+                return ok(result);
+            } catch (Exception e) {
+                ObjectNode result = Json.newObject();
+                e.printStackTrace();
+                result.put("status", "error");
+                result.put("message", "Προβλημα κατα την καταχωρηση");
+                return ok(result);
+            }
+        }
+    }
+
+
+    static final long ONE_MINUTE_IN_MILLIS = 60000;//millisecs
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    @BodyParser.Of(BodyParser.Json.class)
+    public Result editNewParkingEntryForUserMellon(final Http.Request request) throws IOException {
+        JsonNode json = request.body().asJson();
+        if (json == null) {
+            return badRequest("Expecting Json data");
+        } else {
+            try {
+                ObjectNode result = Json.newObject();
+                CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
+                            return jpaApi.withTransaction(entityManager -> {
+                                ObjectNode add_result = Json.newObject();
+                                Long userMellonId = json.findPath("userMellonId").asLong();
+                                String barcode = json.findPath("barcode").asText();
+                                String sqlCodes = "select * from users_mellon_parking_history umph where umph.barcode='" + barcode + "' and umph.user_mellon_id=" + userMellonId + " and umph.end_time is null";
+                                List<UsersMellonParkingHistoryEntity> barcodeList = entityManager.createNativeQuery(sqlCodes, UsersMellonParkingHistoryEntity.class).getResultList();
+                                if (barcodeList.size() > 0) {
+                                    UsersMellonParkingHistoryEntity userParking = entityManager.find(UsersMellonParkingHistoryEntity.class, barcodeList.get(0).getId());
+                                    userParking.setEndTime(new Date());
+                                    String sqlDur = " SELECT " +
+                                            " ROUND(time_to_sec((TIMEDIFF(NOW(), umph.start_time))) / 60) " +
+                                            " FROM  users_mellon_parking_history umph where umph.id="+userParking.getId();
+                                    BigDecimal duration = (BigDecimal) entityManager.createNativeQuery(sqlDur).getSingleResult();
+                                    userParking.setDuration(duration.doubleValue());
+                                    entityManager.merge(userParking);
+                                    add_result.put("status", "success");
+                                    add_result.put("message", "Η ενημερωση πραγματοποίηθηκε με επιτυχία,το ποδήλατο ξεκλειδώθηκε");
+                                    return add_result;
+                                } else {
+                                    add_result.put("status", "error");
+                                    add_result.put("message", "Ο κωδικός δεν ταιριάζει με το ποδηλατο σας,ξαναπροσπαθήστε");
+                                    return add_result;
+                                }
+
+                            });
+                        },
+                        executionContext);
+                result = (ObjectNode) addFuture.get();
+                return ok(result);
+            } catch (Exception e) {
+                ObjectNode result = Json.newObject();
+                e.printStackTrace();
+                result.put("status", "error");
+                result.put("message", "Προβλημα κατα την καταχωρηση");
+                return ok(result);
+            }
+        }
+    }
+
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    public Result getParkinhHistoryByUser(final Http.Request request) throws IOException, ExecutionException, InterruptedException {
+        ObjectNode result = Json.newObject();
+        JsonNode json = request.body().asJson();
+        if (json == null) {
+            return badRequest("Expecting Json data");
+        } else {
+            if (json == null) {
+                result.put("status", "error");
+                result.put("message", "Δεν εχετε αποστειλει εγκυρα δεδομενα.");
+                return ok(result);
+            } else {
+                ObjectMapper ow = new ObjectMapper();
+                HashMap<String, Object> returnList = new HashMap<String, Object>();
+                String jsonResult = "";
+                CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
+                            return jpaApi.withTransaction(
+                                    entityManager -> {
+                                        String id = json.findPath("id").asText();
+                                        String sqlUsersMellon = "select * from users_mellon_parking_history uph where 1=1 ";
+                                        if (!id.equalsIgnoreCase("") && id != null) {
+                                            sqlUsersMellon += " and uph.user_mellon_id=" + id;
+                                        }
+
+                                        sqlUsersMellon+=" order by uph.creation_date desc ";
+                                        HashMap<String, Object> returnList_future = new HashMap<String, Object>();
+                                        List<HashMap<String, Object>> parkingHistoryList = new ArrayList<HashMap<String, Object>>();
+                                        List<UsersMellonParkingHistoryEntity> usersMellonParkingHistoryEntityList
+                                                = (List<UsersMellonParkingHistoryEntity>) entityManager.createNativeQuery(
+                                                sqlUsersMellon, UsersMellonParkingHistoryEntity.class).getResultList();
+                                        for (UsersMellonParkingHistoryEntity j : usersMellonParkingHistoryEntityList) {
+                                            HashMap<String, Object> sHmpam = new HashMap<String, Object>();
+                                            sHmpam.put("id", j.getId());
+                                            sHmpam.put("endTime", j.getEndTime());
+                                            sHmpam.put("startTime", j.getStartTime());
+                                            sHmpam.put("duration", j.getDuration());
+                                            sHmpam.put("station", j.getStation());
+                                            if(j.getDuration()!=null){
+                                                sHmpam.put("cost", j.getDuration() * 0.10 + "€");
+                                            }else{
+                                                sHmpam.put("cost", "Σε εξέλιξη");
+                                            }
+                                            parkingHistoryList.add(sHmpam);
+                                        }
+                                        returnList_future.put("data", parkingHistoryList);
+                                        returnList_future.put("total", parkingHistoryList.size());
+                                        returnList_future.put("status", "success");
+                                        returnList_future.put("message", "success");
+                                        return returnList_future;
+                                    });
+                        },
+                        executionContext);
+                returnList = getFuture.get();
+                DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                ow.setDateFormat(myDateFormat);
+                try {
+                    jsonResult = ow.writeValueAsString(returnList);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    result.put("status", "error");
+                    result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων ");
+                    return ok(result);
+                }
+                return ok(jsonResult);
+            }
+        }
     }
 
 

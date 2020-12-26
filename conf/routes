@@ -160,6 +160,9 @@ POST        /editUser                                        controllers.MELLON.
 POST        /getMellonUsers                                  controllers.MELLON.UsersMellonController.getMellonUsers(req: Request)
 POST        /loginMellonUser                                 controllers.MELLON.UsersMellonController.loginMellonUser(req: Request)
 POST        /registerAndLoginWithSocialCAccount              controllers.MELLON.UsersMellonController.registerAndLoginWithSocialCAccount(req: Request)
+POST        /createNewParkingEntryForUserMellon              controllers.MELLON.UsersMellonController.createNewParkingEntryForUserMellon(req: Request)
+POST        /editNewParkingEntryForUserMellon                controllers.MELLON.UsersMellonController.editNewParkingEntryForUserMellon(req: Request)
+POST        /getParkinhHistoryByUser                         controllers.MELLON.UsersMellonController.getParkinhHistoryByUser(req: Request)
 
 
 
