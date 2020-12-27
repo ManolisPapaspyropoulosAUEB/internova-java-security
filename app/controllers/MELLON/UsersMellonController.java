@@ -1,5 +1,4 @@
 package controllers.MELLON;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -7,13 +6,11 @@ import controllers.execution_context.DatabaseExecutionContext;
 import models.UsersEntity;
 import models.UsersMellonEntity;
 import models.UsersMellonParkingHistoryEntity;
-import org.hibernate.exception.ConstraintViolationException;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
 import play.mvc.BodyParser;
 import play.mvc.Http;
 import play.mvc.Result;
-
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
@@ -25,10 +22,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
-
 public class UsersMellonController {
     private JPAApi jpaApi;
     private DatabaseExecutionContext executionContext;
@@ -241,7 +236,6 @@ public class UsersMellonController {
                                             sHmpam.put("imageUrl", j.getImageUrl());
                                             sHmpam.put("googleId", j.getGoogleId());
                                             sHmpam.put("facebookId", j.getFacebookId());
-
                                             String sqlChargeBycile = "select * from users_mellon_parking_history umph where umph.user_mellon_id="+j.getId()+
                                                     " and umph.end_time is null";
                                             List <UsersMellonParkingHistoryEntity> parkingHistoryEntityList =
@@ -250,22 +244,13 @@ public class UsersMellonController {
                                                 String sqlDur = " SELECT " +
                                                         "  ((time_to_sec((TIMEDIFF(NOW(), umph.start_time))) / 60)*100000)" +
                                                         " FROM  users_mellon_parking_history umph where umph.id="+parkingHistoryEntityList.get(0).getId();
-
-                                                System.out.println(sqlDur);
-
                                                 BigDecimal duration = (BigDecimal) entityManager.createNativeQuery(sqlDur).getSingleResult();
                                                 sHmpam.put("parkingExist",true);
                                                 sHmpam.put("currentDuration",new Date().getTime() - parkingHistoryEntityList.get(0).getStartTime().getTime());
-
-                                                System.out.println(duration.doubleValue());
-                                                System.out.println(duration);
                                             }else{
                                                 sHmpam.put("parkingExist",false);
                                                 sHmpam.put("currentDuration",0);
-
                                             }
-
-
                                             if (j.getFirstName() != null
                                                     && !j.getFirstName().equalsIgnoreCase("")
                                                     && j.getEmail() != null
@@ -379,9 +364,7 @@ public class UsersMellonController {
                 return ok(result);
             }
         }
-
     }
-
 
     @SuppressWarnings({"Duplicates", "unchecked"})
     @BodyParser.Of(BodyParser.Json.class)
@@ -457,7 +440,6 @@ public class UsersMellonController {
                                 Long userMellonId = json.findPath("userMellonId").asLong();
                                 String barcode = json.findPath("barcode").asText();
                                 String station = json.findPath("station").asText();
-                                Double duration = json.findPath("duration").asDouble();
                                 UsersMellonParkingHistoryEntity userParking = new UsersMellonParkingHistoryEntity();
                                 userParking.setCreationDate(new Date());
                                 userParking.setBarcode(barcode);
@@ -485,7 +467,6 @@ public class UsersMellonController {
 
 
     static final long ONE_MINUTE_IN_MILLIS = 60000;//millisecs
-
     @SuppressWarnings({"Duplicates", "unchecked"})
     @BodyParser.Of(BodyParser.Json.class)
     public Result editNewParkingEntryForUserMellon(final Http.Request request) throws IOException {
@@ -559,7 +540,6 @@ public class UsersMellonController {
                                         if (!id.equalsIgnoreCase("") && id != null) {
                                             sqlUsersMellon += " and uph.user_mellon_id=" + id;
                                         }
-
                                         sqlUsersMellon+=" order by uph.creation_date desc ";
                                         HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                         List<HashMap<String, Object>> parkingHistoryList = new ArrayList<HashMap<String, Object>>();
