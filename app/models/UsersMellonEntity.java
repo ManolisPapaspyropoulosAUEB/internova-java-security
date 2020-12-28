@@ -25,6 +25,9 @@ public class UsersMellonEntity {
     private String vehicleType;
     private String addressCity;
     private String postalCode;
+    private Integer scooterInd;
+    private Integer bicycleInd;
+    private Integer electricBicycleInd;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -246,5 +249,35 @@ public class UsersMellonEntity {
 
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
+    }
+
+    @Basic
+    @Column(name = "scooter_ind")
+    public Integer getScooterInd() {
+        return scooterInd;
+    }
+
+    public void setScooterInd(Integer scooterInd) {
+        this.scooterInd = scooterInd;
+    }
+
+    @Basic
+    @Column(name = "bicycle_ind")
+    public Integer getBicycleInd() {
+        return bicycleInd;
+    }
+
+    public void setBicycleInd(Integer bicycleInd) {
+        this.bicycleInd = bicycleInd;
+    }
+
+    @Basic
+    @Column(name = "electric_bicycle_ind")
+    public Integer getElectricBicycleInd() {
+        return electricBicycleInd;
+    }
+
+    public void setElectricBicycleInd(Integer electricBicycleInd) {
+        this.electricBicycleInd = electricBicycleInd;
     }
 }

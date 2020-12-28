@@ -94,6 +94,12 @@ public class UsersMellonController {
                                 usersEntity.setFacebookId(facebookId);
                                 usersEntity.setPostalCode(postalCode);
                                 usersEntity.setAddressCity(addressCity);
+
+                                usersEntity.setBicycleInd(0);
+                                usersEntity.setScooterInd(0);
+                                usersEntity.setElectricBicycleInd(0);
+
+
                                 entityManager.persist(usersEntity);
                                 add_result.put("status", "success");
                                 add_result.put("id", usersEntity.getId());
@@ -137,6 +143,12 @@ public class UsersMellonController {
                                 String vehicleType = json.findPath("vehicleType").asText();
                                 String addressCity = json.findPath("addressCity").asText();
                                 String postalCode = json.findPath("postalCode").asText();
+
+                                Integer bicycleInd = json.findPath("bicycleInd").asInt();
+                                Integer scooterInd = json.findPath("scooterInd").asInt();
+                                Integer electricBicycleInd = json.findPath("electricBicycleInd").asInt();
+
+
                                 String sqlUniqueEmail = "select * from users_mellon b where b.email=" + "'" + email + "' and b.id!=" + id;
                                 List<UsersMellonEntity> emailCheckList = entityManager.createNativeQuery(sqlUniqueEmail, UsersMellonEntity.class).getResultList();
                                 if (emailCheckList.size() > 0) {
@@ -154,6 +166,11 @@ public class UsersMellonController {
                                         return add_result;
                                     }
                                 }
+                                usersEntity.setFirstName(firstName);
+                                usersEntity.setBicycleInd(bicycleInd);
+                                usersEntity.setScooterInd(scooterInd);
+                                usersEntity.setElectricBicycleInd(electricBicycleInd);
+                                usersEntity.setFirstName(firstName);
                                 usersEntity.setFirstName(firstName);
                                 usersEntity.setLastName(lastName);
                                 usersEntity.setEmail(email);
@@ -231,11 +248,31 @@ public class UsersMellonController {
                                             sHmpam.put("socialAuth", j.getSocialAuth());
                                             sHmpam.put("socialPlatform", j.getSocialPlatform());
                                             sHmpam.put("status", j.getStatus());
-                                            sHmpam.put("vehicleType", j.getVehicleType());
                                             sHmpam.put("creationDate", j.getCreationDate());
                                             sHmpam.put("imageUrl", j.getImageUrl());
                                             sHmpam.put("googleId", j.getGoogleId());
                                             sHmpam.put("facebookId", j.getFacebookId());
+                                            sHmpam.put("bicycleInd", j.getBicycleInd());
+                                            sHmpam.put("scooterInd", j.getScooterInd());
+                                            sHmpam.put("electricBicycleInd", j.getElectricBicycleInd());
+                                            if((j.getGoogleId()!=null && !j.getGoogleId().equalsIgnoreCase("")) || (j.getFacebookId()!=null  && !j.getFacebookId().equalsIgnoreCase("") )){
+                                                sHmpam.put("socialUser", true);
+                                            }
+                                            String vehicleType="";
+                                            if(j.getBicycleInd()==1){
+                                                vehicleType="bicycle,";
+                                            }
+                                            if(j.getScooterInd()==1){
+                                                vehicleType+="scooter,";
+                                            }
+                                            if(j.getElectricBicycleInd()==1){
+                                                vehicleType+="electric bicycle,";
+                                            }
+                                            if(!vehicleType.equalsIgnoreCase("")){
+                                                vehicleType = removeLastChar(vehicleType);
+                                            }
+
+                                            sHmpam.put("vehicleType",vehicleType);
                                             String sqlChargeBycile = "select * from users_mellon_parking_history umph where umph.user_mellon_id="+j.getId()+
                                                     " and umph.end_time is null";
                                             List <UsersMellonParkingHistoryEntity> parkingHistoryEntityList =
@@ -258,11 +295,7 @@ public class UsersMellonController {
                                                     && j.getAddress() != null
                                                     && !j.getAddress().equalsIgnoreCase("")
                                                     && j.getPhone() != null
-                                                    && !j.getPhone().equalsIgnoreCase("")
-                                                    && j.getVehicleType() != null
-                                                    && !j.getVehicleType().equalsIgnoreCase("")
-                                                    && j.getPassword() != null
-                                                    && !j.getPassword().equalsIgnoreCase("")) {
+                                                    && !j.getPhone().equalsIgnoreCase("")) {
                                                 sHmpam.put("firstTimeLogin", false);
                                             } else {
                                                 sHmpam.put("firstTimeLogin", true);
@@ -387,6 +420,7 @@ public class UsersMellonController {
                                     UsersMellonEntity mellonUser = entityManager.find(UsersMellonEntity.class, usersMellonEntityList.get(0).getId());
                                     mellonUser.setImageUrl(json.findPath("imageUrl").asText());
                                     mellonUser.setGoogleId(json.findPath("googleId").asText());
+                                    mellonUser.setFacebookId(json.findPath("facebookId").asText());
                                     entityManager.merge(mellonUser);
                                     result_future.put("id", mellonUser.getId());
                                     result_future.put("imageUrl", mellonUser.getImageUrl());
@@ -397,11 +431,15 @@ public class UsersMellonController {
                                 UsersMellonEntity newUserMellon = new UsersMellonEntity();
                                 newUserMellon.setImageUrl(json.findPath("imageUrl").asText());
                                 newUserMellon.setGoogleId(json.findPath("googleId").asText());
+                                newUserMellon.setFacebookId(json.findPath("facebookId").asText());
                                 newUserMellon.setCreationDate(new Date());
                                 newUserMellon.setFirstName(json.findPath("firstName").asText());
                                 newUserMellon.setLastName(json.findPath("lastName").asText());
                                 newUserMellon.setEmail(json.findPath("email").asText());
                                 newUserMellon.setStatus(1);
+                                newUserMellon.setElectricBicycleInd(0);
+                                newUserMellon.setScooterInd(0);
+                                newUserMellon.setBicycleInd(0);
                                 entityManager.persist(newUserMellon);
                                 result_future.put("id", newUserMellon.getId());
                                 result_future.put("imageUrl", newUserMellon.getImageUrl());
@@ -633,6 +671,11 @@ public class UsersMellonController {
         byte[] decValue = c.doFinal(decordedValue);
         String decryptedValue = new String(decValue);
         return decryptedValue;
+    }
+
+
+    private static String removeLastChar(String str) {
+        return str.substring(0, str.length() - 1);
     }
 
 
