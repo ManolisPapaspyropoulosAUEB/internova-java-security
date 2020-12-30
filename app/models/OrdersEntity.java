@@ -5,30 +5,33 @@ import java.util.Date;
 import java.util.Objects;
 
 @Entity
-@Table(name = "offers_schedules", schema = "internova_db", catalog = "")
-public class OffersSchedulesEntity {
+@Table(name = "orders", schema = "internova_db", catalog = "")
+public class OrdersEntity {
     private long id;
     private Long offerId;
+    private Long offerScheduleId;
+    private Long customerId;
     private String fromAddress;
     private String fromCity;
     private String fromCountry;
-    private String toAddress;
     private String fromPostalCode;
-    private Double fromLattitude;
-    private Double fromLongtitude;
+    private String fromLattitude;
+    private String fromLongtitude;
+    private String toAddress;
     private String toCity;
     private String toCountry;
     private String toPostalCode;
-    private Double toLattitude;
-    private Double toLongtitude;
+    private String toLattitude;
+    private String toLongtitude;
     private Date creationDate;
     private Date updateDate;
     private String type;
-    private String token;
+    private String status;
+    private Long factoryId;
+    private String offerScheduleToken;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     @Column(name = "id")
     public long getId() {
         return id;
@@ -46,6 +49,26 @@ public class OffersSchedulesEntity {
 
     public void setOfferId(Long offerId) {
         this.offerId = offerId;
+    }
+
+    @Basic
+    @Column(name = "offer_schedule_id")
+    public Long getOfferScheduleId() {
+        return offerScheduleId;
+    }
+
+    public void setOfferScheduleId(Long offerScheduleId) {
+        this.offerScheduleId = offerScheduleId;
+    }
+
+    @Basic
+    @Column(name = "customer_id")
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
     }
 
     @Basic
@@ -79,16 +102,6 @@ public class OffersSchedulesEntity {
     }
 
     @Basic
-    @Column(name = "to_address")
-    public String getToAddress() {
-        return toAddress;
-    }
-
-    public void setToAddress(String toAddress) {
-        this.toAddress = toAddress;
-    }
-
-    @Basic
     @Column(name = "from_postal_code")
     public String getFromPostalCode() {
         return fromPostalCode;
@@ -100,22 +113,32 @@ public class OffersSchedulesEntity {
 
     @Basic
     @Column(name = "from_lattitude")
-    public Double getFromLattitude() {
+    public String getFromLattitude() {
         return fromLattitude;
     }
 
-    public void setFromLattitude(Double fromLattitude) {
+    public void setFromLattitude(String fromLattitude) {
         this.fromLattitude = fromLattitude;
     }
 
     @Basic
     @Column(name = "from_longtitude")
-    public Double getFromLongtitude() {
+    public String getFromLongtitude() {
         return fromLongtitude;
     }
 
-    public void setFromLongtitude(Double fromLongtitude) {
+    public void setFromLongtitude(String fromLongtitude) {
         this.fromLongtitude = fromLongtitude;
+    }
+
+    @Basic
+    @Column(name = "to_address")
+    public String getToAddress() {
+        return toAddress;
+    }
+
+    public void setToAddress(String toAddress) {
+        this.toAddress = toAddress;
     }
 
     @Basic
@@ -150,21 +173,21 @@ public class OffersSchedulesEntity {
 
     @Basic
     @Column(name = "to_lattitude")
-    public Double getToLattitude() {
+    public String getToLattitude() {
         return toLattitude;
     }
 
-    public void setToLattitude(Double toLattitude) {
+    public void setToLattitude(String toLattitude) {
         this.toLattitude = toLattitude;
     }
 
     @Basic
     @Column(name = "to_longtitude")
-    public Double getToLongtitude() {
+    public String getToLongtitude() {
         return toLongtitude;
     }
 
-    public void setToLongtitude(Double toLongtitude) {
+    public void setToLongtitude(String toLongtitude) {
         this.toLongtitude = toLongtitude;
     }
 
@@ -199,29 +222,31 @@ public class OffersSchedulesEntity {
     }
 
     @Basic
-    @Column(name = "token")
-    public String getToken() {
-        return token;
+    @Column(name = "status")
+    public String getStatus() {
+        return status;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        OffersSchedulesEntity that = (OffersSchedulesEntity) o;
+        OrdersEntity that = (OrdersEntity) o;
         return id == that.id &&
                 Objects.equals(offerId, that.offerId) &&
+                Objects.equals(offerScheduleId, that.offerScheduleId) &&
+                Objects.equals(customerId, that.customerId) &&
                 Objects.equals(fromAddress, that.fromAddress) &&
                 Objects.equals(fromCity, that.fromCity) &&
                 Objects.equals(fromCountry, that.fromCountry) &&
-                Objects.equals(toAddress, that.toAddress) &&
                 Objects.equals(fromPostalCode, that.fromPostalCode) &&
                 Objects.equals(fromLattitude, that.fromLattitude) &&
                 Objects.equals(fromLongtitude, that.fromLongtitude) &&
+                Objects.equals(toAddress, that.toAddress) &&
                 Objects.equals(toCity, that.toCity) &&
                 Objects.equals(toCountry, that.toCountry) &&
                 Objects.equals(toPostalCode, that.toPostalCode) &&
@@ -230,11 +255,32 @@ public class OffersSchedulesEntity {
                 Objects.equals(creationDate, that.creationDate) &&
                 Objects.equals(updateDate, that.updateDate) &&
                 Objects.equals(type, that.type) &&
-                Objects.equals(token, that.token);
+                Objects.equals(status, that.status);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, offerId, fromAddress, fromCity, fromCountry, toAddress, fromPostalCode, fromLattitude, fromLongtitude, toCity, toCountry, toPostalCode, toLattitude, toLongtitude, creationDate, updateDate, type, token);
+        return Objects.hash(id, offerId, offerScheduleId, customerId, fromAddress, fromCity, fromCountry, fromPostalCode, fromLattitude, fromLongtitude, toAddress, toCity, toCountry, toPostalCode, toLattitude, toLongtitude, creationDate, updateDate, type, status);
+    }
+
+    @Basic
+    @Column(name = "factory_id")
+    public Long getFactoryId() {
+        return factoryId;
+    }
+
+    public void setFactoryId(Long factoryId) {
+        this.factoryId = factoryId;
+    }
+
+    @Basic
+    @Column(name = "offer_schedule_token")
+    public String getOfferScheduleToken() {
+        return offerScheduleToken;
+    }
+
+    public void setOfferScheduleToken(String offerScheduleToken) {
+        this.offerScheduleToken = offerScheduleToken;
     }
 }
+

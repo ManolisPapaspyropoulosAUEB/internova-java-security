@@ -117,7 +117,7 @@ POST        /deleteInternovaSeller                           controllers.coreDat
 POST        /getInternovaSellers                             controllers.coreData.InternovaSellersController.getInternovaSellers(req: Request)
 
 
-#OffersController
+#OffersController cloneOffer
 POST        /getOffers                                       controllers.procedures.OffersController.getOffers(req: Request)
 POST        /getAllOffersNoPagination                        controllers.procedures.OffersController.getAllOffersNoPagination(req: Request)
 POST        /deleteOffer                                     controllers.procedures.OffersController.deleteOffer(req: Request)
@@ -126,6 +126,17 @@ POST        /updateOffer                                     controllers.procedu
 POST        /getSuggestedOffersSchedulesByCustomer           controllers.procedures.OffersController.getSuggestedOffersSchedulesByCustomer(req: Request)
 POST        /getPackgesByOfferId                             controllers.procedures.OffersController.getPackgesByOfferId(req: Request)
 POST        /getOffersSchedulesPackegesByUserId              controllers.procedures.OffersController.getOffersSchedulesPackegesByUserId(req: Request)
+POST        /addOfferBetweenWayPoint                         controllers.procedures.OffersController.addOfferBetweenWayPoint(req: Request)
+POST        /updateOfferBetweenWayPoint                      controllers.procedures.OffersController.updateOfferBetweenWayPoint(req: Request)
+POST        /deleteOfferBetweenWayPoint                      controllers.procedures.OffersController.deleteOfferBetweenWayPoint(req: Request)
+POST        /getOffersSchedulesBetweenWayPoints              controllers.procedures.OffersController.getOffersSchedulesBetweenWayPoints(req: Request)
+#POST        /cloneOffer                                      controllers.procedures.OffersController.cloneOffer(req: Request)
+
+#OrdersController
+POST        /createOrder                                     controllers.procedures.OrdersController.createOrder(req: Request)
+POST        /getOrders                                       controllers.procedures.OrdersController.getOrders(req: Request)
+
+
 
 
 #ProceduresPrintController

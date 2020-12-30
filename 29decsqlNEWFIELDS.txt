@@ -1,0 +1,15 @@
+CREATE TABLE `internova_db`.`offer_schedule_between_waypoints` (
+  `id` BIGINT(100) NOT NULL AUTO_INCREMENT,
+  `offer_id` BIGINT(100) NULL,
+  `offer_schedule_id` BIGINT(100) NULL,
+  `from_address` VARCHAR(255) NULL,
+  `from_city` VARCHAR(255) NULL,
+  `from_country` VARCHAR(255) NULL,
+  `from_postal_code` VARCHAR(255) NULL,
+  `to_address` VARCHAR(255) NULL,
+  `to_city` VARCHAR(255) NULL,
+  `to_country` VARCHAR(255) NULL,
+  `to_postal_code` VARCHAR(255) NULL,
+  `creation_date` DATETIME NULL,
+  `update_date` DATETIME NULL,
+  PRIMARY KEY (`id`));
