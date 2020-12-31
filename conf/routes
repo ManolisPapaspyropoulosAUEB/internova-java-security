@@ -69,6 +69,7 @@ POST        /getAllWarehousesNoPagination                    controllers.archive
 
 #FactoriesController
 POST        /getFactories                                    controllers.archives.FactoriesController.getFactories(req: Request)
+POST        /getSuggestedFactories                              controllers.archives.FactoriesController.getSuggestedFactories(req: Request)
 POST        /addFactory                                      controllers.archives.FactoriesController.addFactory(req: Request)
 POST        /updateFactory                                   controllers.archives.FactoriesController.updateFactory(req: Request)
 POST        /deleteFactory                                   controllers.archives.FactoriesController.deleteFactory(req: Request)
@@ -132,7 +133,8 @@ POST        /deleteOfferBetweenWayPoint                      controllers.procedu
 POST        /getOffersSchedulesBetweenWayPoints              controllers.procedures.OffersController.getOffersSchedulesBetweenWayPoints(req: Request)
 #POST        /cloneOffer                                      controllers.procedures.OffersController.cloneOffer(req: Request)
 
-#OrdersController
+#OrdersController updateOrder
+POST        /updateOrder                                     controllers.procedures.OrdersController.updateOrder(req: Request)
 POST        /createOrder                                     controllers.procedures.OrdersController.createOrder(req: Request)
 POST        /getOrders                                       controllers.procedures.OrdersController.getOrders(req: Request)
 

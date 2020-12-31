@@ -395,6 +395,7 @@ public class OffersController extends Application {
                                                     = (List<OffersEntity>) entityManager.createNativeQuery(
                                                     sqlCustSupl, OffersEntity.class).getResultList();
 
+                                            System.out.println(sqlCustSupl);
                                             for (OffersEntity j : offersEntityList) {
                                                 HashMap<String, Object> sHmpam = new HashMap<String, Object>();
                                                 String orderCheck = "select * from orders ord where ord.offer_id="+j.getId();

@@ -29,6 +29,13 @@ public class OrdersEntity {
     private String status;
     private Long factoryId;
     private String offerScheduleToken;
+    private String aa;
+    private Long sellerId;
+    private Long billingId;
+    private String comments;
+    private String truckTemprature;
+    private Date arrivalFactoryDay;
+    private String generalInstructions;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -281,6 +288,76 @@ public class OrdersEntity {
 
     public void setOfferScheduleToken(String offerScheduleToken) {
         this.offerScheduleToken = offerScheduleToken;
+    }
+
+    @Basic
+    @Column(name = "aa")
+    public String getAa() {
+        return aa;
+    }
+
+    public void setAa(String aa) {
+        this.aa = aa;
+    }
+
+    @Basic
+    @Column(name = "seller_id")
+    public Long getSellerId() {
+        return sellerId;
+    }
+
+    public void setSellerId(Long sellerId) {
+        this.sellerId = sellerId;
+    }
+
+    @Basic
+    @Column(name = "billing_id")
+    public Long getBillingId() {
+        return billingId;
+    }
+
+    public void setBillingId(Long billingId) {
+        this.billingId = billingId;
+    }
+
+    @Basic
+    @Column(name = "comments")
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
+    @Basic
+    @Column(name = "truck_temprature")
+    public String getTruckTemprature() {
+        return truckTemprature;
+    }
+
+    public void setTruckTemprature(String truckTemprature) {
+        this.truckTemprature = truckTemprature;
+    }
+
+    @Basic
+    @Column(name = "arrival_factory_day")
+    public Date getArrivalFactoryDay() {
+        return arrivalFactoryDay;
+    }
+
+    public void setArrivalFactoryDay(Date arrivalFactoryDay) {
+        this.arrivalFactoryDay = arrivalFactoryDay;
+    }
+
+    @Basic
+    @Column(name = "general_instructions")
+    public String getGeneralInstructions() {
+        return generalInstructions;
+    }
+
+    public void setGeneralInstructions(String generalInstructions) {
+        this.generalInstructions = generalInstructions;
     }
 }
 

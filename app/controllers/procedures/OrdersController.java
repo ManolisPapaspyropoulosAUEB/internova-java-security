@@ -15,6 +15,7 @@ import play.mvc.Result;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -138,11 +139,10 @@ public class OrdersController extends Application {
 
         }
     }
-
-    //offersSchedulesEntity
     @SuppressWarnings({"Duplicates", "unchecked"})
-    public Result getOrders(final Http.Request request) throws IOException, ExecutionException, InterruptedException {
+    public Result getOrders(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();
+        try {
             JsonNode json = request.body().asJson();
             if (json == null) {
                 return badRequest("Expecting Json data");
@@ -155,61 +155,191 @@ public class OrdersController extends Application {
                     ObjectMapper ow = new ObjectMapper();
                     HashMap<String, Object> returnList = new HashMap<String, Object>();
                     String jsonResult = "";
-                    CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
+                    CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> { //
                                 return jpaApi.withTransaction(
                                         entityManager -> {
                                             String orderCol = json.findPath("orderCol").asText();
                                             String descAsc = json.findPath("descAsc").asText();
+                                            String id = json.findPath("id").asText();
+                                            String offerId = json.findPath("offerId").asText();
                                             String creationDate = json.findPath("creationDate").asText();
+                                            String customer = json.findPath("customer").asText();
+                                            String status = json.findPath("status").asText();
+                                            String from = json.findPath("from").asText();
+                                            String to = json.findPath("to").asText();
+                                            String seller = json.findPath("seller").asText();
+                                            String billing = json.findPath("billing").asText();
                                             String start = json.findPath("start").asText();
                                             String limit = json.findPath("limit").asText();
-                                            String sqlordrs = "select * from orders ord where 1=1 ";
-                                            List<OrdersEntity> ordersEntityListAll = entityManager.createNativeQuery(
-                                                    sqlordrs, OrdersEntity.class).getResultList();
-
-                                            if (!orderCol.equalsIgnoreCase("") && orderCol != null) {
-                                                sqlordrs += " order by " + orderCol + " " + descAsc;
-                                            } else {
-                                                sqlordrs += " order by creation_date desc";
+                                            String sqlCustSupl = "select * from orders ord where 1=1 ";
+                                            if (!id.equalsIgnoreCase("") && id != null) {
+                                                sqlCustSupl += " and ord.id =" + id + "";
                                             }
-                                            if (!start.equalsIgnoreCase("") && start != null) {
-                                                sqlordrs += " limit " + start + "," + limit;
+                                            if (!offerId.equalsIgnoreCase("") && offerId != null) {
+                                                sqlCustSupl += " and ord.id like '%" + offerId + "%'";
+                                            }
+                                            if (!seller.equalsIgnoreCase("") && seller != null) {
+                                                sqlCustSupl +=
+                                                        " and ord.seller_id " +
+                                                                " in ( select id" +
+                                                                "      from  internova_sellers isell" +
+                                                                "      where isell.name like '%" + seller + "%' ) " +
+                                                                " union " +
+                                                                " select ord.*" +
+                                                                " from orders ord " +
+                                                                " join customers_suppliers cs on (cs.id=ord.customer_id and ord.seller_id is null )" +
+                                                                " where " +
+                                                                " cs.internova_seller_id in " +
+                                                                " (select id from  internova_sellers isell where isell.name like '%" + seller + "%' )";
+                                            }
+
+                                            if (!customer.equalsIgnoreCase("") && customer != null) {
+                                                sqlCustSupl += " and ord.customer_id  in " +
+                                                        " ( select id from  customers_suppliers cs where cs.brand_name like '%" + customer + "%' )";
+                                            }
+                                            if (!status.equalsIgnoreCase("") && status != null) {
+                                                sqlCustSupl += " and ord.status like '%" + status + "%'";
+                                            }
+
+                                            if (!from.equalsIgnoreCase("") && from != null) {
+                                                sqlCustSupl += " and ord.from_address like '%" + from + "%'";
+                                            }
+                                            if (!to.equalsIgnoreCase("") && to != null) {
+                                                sqlCustSupl += " and ord.to_address like '%" + to + "%'";
+                                            }
+                                            if (!billing.equalsIgnoreCase("") && billing != null) {
+                                                sqlCustSupl +=
+                                                        " and ord.billing_id " +
+                                                                " in ( select id" +
+                                                                "      from  billings billing" +
+                                                                "      where billing.name like '%" + billing + "%' ) " +
+                                                                " union " +
+                                                                " select ord.*" +
+                                                                " from orders ord " +
+                                                                " join customers_suppliers cs on (cs.id=ord.customer_id and ord.billing_id is null )" +
+                                                                " where " +
+                                                                " cs.billing_id in " +
+                                                                " (select id from  billings billing where billing.name like '%" + billing + "%' )";
                                             }
                                             if (!creationDate.equalsIgnoreCase("") && creationDate != null) {
-                                                sqlordrs += " and SUBSTRING( role.creation_date, 1, 10)  = '" + creationDate + "'";
+                                                sqlCustSupl += " and SUBSTRING( offer.offer_date, 1, 10)  = '" + creationDate + "'";
                                             }
-                                            HashMap<String, Object> returnList_future = new HashMap<String, Object>();
-                                            List<HashMap<String, Object>> serversList = new ArrayList<HashMap<String, Object>>();
-                                            List<OrdersEntity> ordersEntityListfinal
+                                            List<OrdersEntity> filalistAll
                                                     = (List<OrdersEntity>) entityManager.createNativeQuery(
-                                                    sqlordrs, OrdersEntity.class).getResultList();
-                                            for (OrdersEntity j : ordersEntityListfinal) {
+                                                    sqlCustSupl, OrdersEntity.class).getResultList();
+                                            if (!orderCol.equalsIgnoreCase("") && orderCol != null) {
+                                                if (orderCol.equalsIgnoreCase("billingName")) {
+                                                    sqlCustSupl += " order by (select name from billings b where b.id=offer.billing_id)" + descAsc;
+                                                } else if (orderCol.equalsIgnoreCase("sellerName")) {
+                                                    sqlCustSupl += " order by (select name from internova_sellers iseller where iseller.id=offer.seller_id)" + descAsc;
+                                                } else if (orderCol.equalsIgnoreCase("brandName")) {
+                                                    sqlCustSupl += " order by (select brand_name from customers_suppliers cs where cs.id=offer.customer_id)" + descAsc;
+                                                } else {
+                                                    sqlCustSupl += " order by " + orderCol + " " + descAsc;
+                                                }
+                                            } else {
+                                                sqlCustSupl += " order by creation_date desc";
+                                            }
+                                            if (!start.equalsIgnoreCase("") && start != null) {
+                                                sqlCustSupl += " limit " + start + "," + limit;
+                                            }
+
+                                            HashMap<String, Object> returnList_future = new HashMap<String, Object>();
+                                            List<HashMap<String, Object>> filalist = new ArrayList<HashMap<String, Object>>();
+                                            List<OrdersEntity> ordersEntityList
+                                                    = (List<OrdersEntity>) entityManager.createNativeQuery(
+                                                    sqlCustSupl, OrdersEntity.class).getResultList();
+
+                                            for (OrdersEntity j : ordersEntityList) {
                                                 HashMap<String, Object> sHmpam = new HashMap<String, Object>();
+                                                sHmpam.put("id", j.getId());
                                                 sHmpam.put("customerId", j.getCustomerId());
-                                                sHmpam.put("customer", entityManager.find(CustomersSuppliersEntity.class, j.getCustomerId()));
-                                                sHmpam.put("fromAddress", j.getFromAddress());
-                                                sHmpam.put("fromCity", j.getFromCity());
-                                                sHmpam.put("fromCountry", j.getFromCountry());
-                                                sHmpam.put("fromLattitude", j.getFromLattitude());
-                                                sHmpam.put("fromLongtitude", j.getFromLongtitude());
-                                                sHmpam.put("fromPostalCode", j.getFromPostalCode());
-                                                sHmpam.put("offerId", j.getOfferId());
-                                                sHmpam.put("offerScheduleId", j.getOfferScheduleId());
-                                                sHmpam.put("status", j.getStatus());
-                                                sHmpam.put("toAddress", j.getToAddress());
-                                                sHmpam.put("toCity", j.getToCity());
-                                                sHmpam.put("toCountry", j.getToCountry());
-                                                sHmpam.put("toLattitude", j.getToLattitude());
-                                                sHmpam.put("toLongtitude", j.getToLongtitude());
-                                                sHmpam.put("postalCode", j.getToPostalCode());
+                                                if (j.getCustomerId() != null) {
+                                                    HashMap<String, Object> customerMap = new HashMap<String, Object>();
+                                                    HashMap<String, Object> billingsMap = new HashMap<String, Object>();
+                                                    HashMap<String, Object> sellerMap = new HashMap<String, Object>();
+                                                    CustomersSuppliersEntity customersSuppliersEntity = entityManager.find(CustomersSuppliersEntity.class, j.getCustomerId());
+                                                    customerMap.put("customerId", customersSuppliersEntity.getId());
+                                                    customerMap.put("email", customersSuppliersEntity.getEmail());
+                                                    customerMap.put("telephone", customersSuppliersEntity.getTelephone());
+                                                    customerMap.put("brandName", customersSuppliersEntity.getBrandName());
+                                                    if (j.getBillingId() != null) {
+                                                        billingsMap.put("billingId", j.getBillingId());
+                                                        billingsMap.put("billingName", entityManager.find(BillingsEntity.class, j.getBillingId()).getName());
+                                                    } else {
+                                                        billingsMap.put("billingId", customersSuppliersEntity.getBillingId());
+                                                        billingsMap.put("billingName", entityManager.find(BillingsEntity.class, customersSuppliersEntity.getBillingId()).getName());
+                                                    }
+                                                    sHmpam.put("billings", billingsMap);
+                                                    if (j.getSellerId() != null) {
+                                                        sellerMap.put("sellerId", j.getSellerId());
+                                                        sellerMap.put("sellerName", entityManager.find(InternovaSellersEntity.class, j.getSellerId()).getName());
+                                                    } else {
+                                                        sellerMap.put("sellerId", customersSuppliersEntity.getInternovaSellerId());
+                                                        sellerMap.put("sellerName", entityManager.find(InternovaSellersEntity.class, customersSuppliersEntity.getInternovaSellerId()).getName());
+                                                    }
+                                                    sHmpam.put("seller", sellerMap);
+                                                    sHmpam.put("custommer", customerMap);
+                                                }
+                                                sHmpam.put("comments", j.getComments());
+                                                sHmpam.put("factoryId", j.getFactoryId());
+                                                sHmpam.put("generalInstructions", j.getGeneralInstructions());
+                                                sHmpam.put("arrivalFactoryDay", j.getArrivalFactoryDay());
+                                                sHmpam.put("truckTemprature", j.getTruckTemprature());
                                                 sHmpam.put("creationDate", j.getCreationDate());
                                                 sHmpam.put("updateDate", j.getUpdateDate());
-                                                sHmpam.put("id", j.getId());
-                                                sHmpam.put("orderId", j.getId());
-                                                serversList.add(sHmpam);
+                                                sHmpam.put("childaddIndcator", false);
+                                                HashMap<String, Object> fromAddress = new HashMap<String, Object>();
+                                                if(j.getFactoryId()!=null){
+                                                    FactoriesEntity fact = entityManager.find(FactoriesEntity.class,j.getFactoryId());
+                                                    fromAddress.put("city", fact.getCity());
+                                                    fromAddress.put("address", fact.getAddress());
+                                                    fromAddress.put("postalCode", fact.getPostalCode());
+                                                    fromAddress.put("country", fact.getCountry());
+                                                    fromAddress.put("lattitude", fact.getLattitude());
+                                                    fromAddress.put("longtitude", fact.getLongtitude());
+                                                    sHmpam.put("from", fromAddress);
+                                                }else{
+                                                    fromAddress.put("city", j.getFromCity());
+                                                    fromAddress.put("address", j.getFromAddress());
+                                                    fromAddress.put("postalCode", j.getFromPostalCode());
+                                                    fromAddress.put("country", j.getFromCountry());
+                                                    fromAddress.put("lattitude", j.getFromLattitude());
+                                                    fromAddress.put("longtitude", j.getFromLongtitude());
+                                                    sHmpam.put("from", fromAddress);
+                                                }
+                                                HashMap<String, Object> toAddress = new HashMap<String, Object>();
+                                                toAddress.put("city", j.getFromCity());
+                                                toAddress.put("address", j.getToAddress());
+                                                toAddress.put("country", j.getToCountry());
+                                                toAddress.put("lattitude", j.getToLattitude());
+                                                toAddress.put("longtitude", j.getToLongtitude());
+                                                toAddress.put("postalCode", j.getToPostalCode());
+                                                sHmpam.put("to", toAddress);
+                                                sHmpam.put("status", j.getStatus());
+                                                String sqlWaypoints = "select * from order_waypoints op where op.order_id="+j.getId();
+                                                List<OrderWaypointsEntity> orderWaypointsEntityList = entityManager.createNativeQuery(sqlWaypoints,OrderWaypointsEntity.class).getResultList();
+                                                List<HashMap<String, Object>> orderWaypointsfinalList = new ArrayList<HashMap<String, Object>>();
+                                                for(OrderWaypointsEntity op: orderWaypointsEntityList){
+                                                    HashMap<String, Object> waypoint = new HashMap<String, Object>();
+                                                    waypoint.put("address", op.getAddress());
+                                                    waypoint.put("city", op.getCity());
+                                                    waypoint.put("country", op.getCountry());
+                                                    waypoint.put("creationDate", op.getCreationDate());
+                                                    waypoint.put("id", op.getId());
+                                                    waypoint.put("waypointId", op.getId());
+                                                    waypoint.put("lattitude", op.getLattitude());
+                                                    waypoint.put("longtitude", op.getLongtitude());
+                                                    waypoint.put("postalCode", op.getPostalCode());
+                                                    waypoint.put("warehouseId", op.getWarehouseId());
+                                                    waypoint.put("orderId", op.getOrderId());
+                                                    orderWaypointsfinalList.add(waypoint);
+                                                }
+                                                sHmpam.put("orderWaypointsfinalList", orderWaypointsfinalList);
+                                                filalist.add(sHmpam);
                                             }
-                                            returnList_future.put("data", serversList);
-                                            returnList_future.put("total", ordersEntityListAll.size());
+                                            returnList_future.put("data", filalist);
+                                            returnList_future.put("total", filalistAll.size());
                                             returnList_future.put("status", "success");
                                             returnList_future.put("message", "success");
                                             return returnList_future;
@@ -217,7 +347,7 @@ public class OrdersController extends Application {
                             },
                             executionContext);
                     returnList = getFuture.get();
-                    DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                    DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
                     ow.setDateFormat(myDateFormat);
                     try {
                         jsonResult = ow.writeValueAsString(returnList);
@@ -230,8 +360,119 @@ public class OrdersController extends Application {
                     return ok(jsonResult);
                 }
             }
-
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων");
+            return ok(result);
+        }
     }
+
+
+
+
+
+
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    @BodyParser.Of(BodyParser.Json.class)
+    public Result updateOrder(final Http.Request request) throws IOException {
+        JsonNode json = request.body().asJson();
+        if (json == null) {
+            return badRequest("Expecting Json data");
+        } else {
+            try {
+                ObjectNode result = Json.newObject();
+                CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
+                            return jpaApi.withTransaction(entityManager -> {
+                                ObjectNode add_result = Json.newObject();
+                                String user_id = json.findPath("user_id").asText();
+                                String factoryId = json.findPath("user_id").asText();
+                                Long orderId = json.findPath("orderId").asLong();
+                                String email = json.findPath("email").asText();
+                                String country = json.findPath("country").asText();
+                                String telephone = json.findPath("telephone").asText();
+                                String brandName = json.findPath("brandName").asText();
+                                String address = json.findPath("address").asText();
+                                String region = json.findPath("region").asText();
+                                String latitude = json.findPath("latitude").asText();
+                                String longitude = json.findPath("longitude").asText();
+                                String comments = json.findPath("comments").asText();
+                                String truckTemprature = json.findPath("truckTemprature").asText();
+                                String arrivalFactoryDay = json.findPath("arrivalFactoryDay").asText();
+                                String generalInstructions = json.findPath("generalInstructions").asText();
+                                OrdersEntity order = entityManager.find(OrdersEntity.class,orderId);
+                                order.setGeneralInstructions(generalInstructions);
+                                order.setTruckTemprature(truckTemprature);
+                                order.setComments(comments);
+                                Date offerDateString = null;
+                                try {
+                                    offerDateString = new SimpleDateFormat("yyyy-MM-dd").parse(arrivalFactoryDay);
+                                    order.setArrivalFactoryDay(offerDateString);
+
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+                                if(factoryId!=null && !factoryId.equalsIgnoreCase("")){
+                                    order.setFactoryId(Long.valueOf(factoryId));
+                                }else{
+                                    FactoriesEntity factory = new FactoriesEntity();
+                                    factory.setBrandName(brandName);
+                                    factory.setAddress(address);
+                                    factory.setTelephone(telephone);
+                                    factory.setCountry(country);
+                                    factory.setEmail(email);
+                                    factory.setRegion(region);
+                                    factory.setLongtitude(Double.valueOf(longitude));
+                                    factory.setLattitude(Double.valueOf(latitude));
+                                    entityManager.persist(factory);
+                                    order.setFactoryId(factory.getId());
+                                }
+                                entityManager.merge(order);
+
+
+
+
+
+                                add_result.put("status", "success");
+                                add_result.put("message", "Η δημιουργία νέας παραγγελίας καταχωρήθηκε με επιτυχία πραγματοποίηθηκε με επιτυχία");
+                                add_result.put("system", "ΠΑΡΑΓΓΕΛΙΕΣ");
+                                add_result.put("user_id", user_id);
+                                return add_result;
+                            });
+                        },
+                        executionContext);
+                result = (ObjectNode) addFuture.get();
+                return ok(result, request);
+            } catch (Exception e) {
+                ObjectNode result = Json.newObject();
+                e.printStackTrace();
+                result.put("status", "error");
+                result.put("message", "Προβλημα κατα την καταχωρηση");
+                return ok(result);
+            }
+
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }
