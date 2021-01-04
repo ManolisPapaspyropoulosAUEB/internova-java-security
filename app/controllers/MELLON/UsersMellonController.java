@@ -278,10 +278,6 @@ public class UsersMellonController {
                                             List <UsersMellonParkingHistoryEntity> parkingHistoryEntityList =
                                                     entityManager.createNativeQuery(sqlChargeBycile,UsersMellonParkingHistoryEntity.class).getResultList();
                                             if(parkingHistoryEntityList.size()>0){
-                                                String sqlDur = " SELECT " +
-                                                        "  ((time_to_sec((TIMEDIFF(NOW(), umph.start_time))) / 60)*100000)" +
-                                                        " FROM  users_mellon_parking_history umph where umph.id="+parkingHistoryEntityList.get(0).getId();
-                                                BigDecimal duration = (BigDecimal) entityManager.createNativeQuery(sqlDur).getSingleResult();
                                                 sHmpam.put("parkingExist",true);
                                                 sHmpam.put("currentDuration",new Date().getTime() - parkingHistoryEntityList.get(0).getStartTime().getTime());
                                             }else{
