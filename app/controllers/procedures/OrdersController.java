@@ -683,6 +683,7 @@ public class OrdersController extends Application {
                                 Long orderId = json.findPath("orderId").asLong();
                                 String email = json.findPath("email").asText();
 
+
                                 JsonNode selectedStratPointPackages = json.findPath("selectedStratPointPackages");
                                 ((ObjectNode) json).remove("selectedStratPointPackages");
                                 System.out.println(selectedStratPointPackages);
