@@ -138,10 +138,100 @@ public class OrdersController extends Application {
     }
 
 
+    //getOrderWaypoint getDistinctPckagesStartPoint
 
-    //getOrderWaypoint
 
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    public Result getDistinctPckagesStartPoint(final Http.Request request) throws IOException {
+        ObjectNode result = Json.newObject();
+        try {
+            JsonNode json = request.body().asJson();
+            if (json == null) {
+                return badRequest("Expecting Json data");
+            } else {
+                if (json == null) {
+                    result.put("status", "error");
+                    result.put("message", "Δεν εχετε αποστειλει εγκυρα δεδομενα.");
+                    return ok(result);
+                } else {
+                    ObjectMapper ow = new ObjectMapper();
+                    HashMap<String, Object> returnList = new HashMap<String, Object>();
+                    String jsonResult = "";
+                    CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
+                                return jpaApi.withTransaction(
+                                        entityManager -> {
+                                            List<HashMap<String, Object>> finalList = new ArrayList<HashMap<String, Object>>();
+                                            String orderId = json.findPath("orderId").asText();
+                                            String title = json.findPath("title").asText();
+                                            String sqlPackages = "" +
+                                                    "select distinct " +
+                                                    "op.measure_unit_id,mu.title\n" +
+                                                    " from order_packages op " +
+                                                    " join measurement_unit mu on (mu.id=op.measure_unit_id) " +
+                                                    " where op.order_id=" + orderId;
+                                            if (!title.equalsIgnoreCase("") && title != null) {
+                                                sqlPackages += " and mu.title like '%" + title + "%'";
+                                            }
+                                            System.out.println(sqlPackages);
+                                            HashMap<String, Object> returnList_future = new HashMap<String, Object>();
 
+                                            List tul = entityManager.createNativeQuery(sqlPackages).getResultList();
+                                            ArrayList<HashMap<String, Object>> foreisList = new ArrayList<>();
+                                            Iterator it = tul.iterator();
+
+                                            while (it.hasNext()) {
+                                                JsonNode tu = Json.toJson(it.next());
+                                                HashMap<String, Object> item = new HashMap<>();
+                                                item.put("measureUnitId", tu.get(0).asInt());
+                                                item.put("title", tu.get(1).asText());
+                                                item.put("orderId", orderId);
+                                                item.put("quantity", 0);
+                                                item.put("unitPrice", 0);
+                                                item.put("finalUnitPrice", 0);
+
+                                                String sqlDistansesValues = "select * FROM internova_db.order_packages where order_id=" + orderId + " and measure_unit_id=" + tu.get(0).asInt();
+                                                List<OrderPackagesEntity> distList = entityManager.createNativeQuery(sqlDistansesValues, OrderPackagesEntity.class).getResultList();
+                                                List<HashMap<String, Object>> fdvList = new ArrayList<HashMap<String, Object>>();
+                                                for (OrderPackagesEntity dv : distList) {
+                                                    HashMap<String, Object> distanceValues = new HashMap<>();
+                                                    distanceValues.put("measureUnitId", dv.getMeasureUnitId());
+                                                    distanceValues.put("from", dv.getFromUnit());
+                                                    distanceValues.put("to", dv.getToUnit());
+                                                    distanceValues.put("unitPrice", dv.getUnitPrice());
+                                                    fdvList.add(distanceValues);
+                                                }
+                                                item.put("distanceValues", fdvList);
+                                                finalList.add(item);
+                                            }
+
+                                            returnList_future.put("data", finalList);
+                                            returnList_future.put("status", "success");
+                                            returnList_future.put("message", "success");
+                                            return returnList_future;
+                                        });
+                            },
+                            executionContext);
+                    returnList = getFuture.get();
+                    DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                    ow.setDateFormat(myDateFormat);
+                    try {
+                        jsonResult = ow.writeValueAsString(returnList);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        result.put("status", "error");
+                        result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων ");
+                        return ok(result);
+                    }
+                    return ok(jsonResult);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων");
+            return ok(result);
+        }
+    }
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
@@ -167,7 +257,7 @@ public class OrdersController extends Application {
                                             //roleDescSearchInput warehouseId
                                             String waypointId = json.findPath("waypointId").asText();
 
-                                            String sqlroles = "select * from order_waypoints b where  b.id="+waypointId;
+                                            String sqlroles = "select * from order_waypoints b where  b.id=" + waypointId;
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             List<HashMap<String, Object>> serversList = new ArrayList<HashMap<String, Object>>();
                                             List<OrderWaypointsEntity> orgsList
@@ -201,7 +291,7 @@ public class OrdersController extends Application {
                                                     fromAddress.put("postalCode", j.getPostalCode());
                                                     fromAddress.put("country", j.getCountry());
                                                     fromAddress.put("lattitude", "");
-                                                    fromAddress.put("longtitude","");
+                                                    fromAddress.put("longtitude", "");
                                                     sHmpam.put("from", fromAddress);
                                                 }
                                                 serversList.add(sHmpam);
@@ -234,10 +324,6 @@ public class OrdersController extends Application {
             return ok(result);
         }
     }
-
-
-
-
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
@@ -437,10 +523,10 @@ public class OrdersController extends Application {
                                             for (OrderWaypointsEntity op : orderWaypointsEntityList) {
                                                 HashMap<String, Object> waypoint = new HashMap<String, Object>();
 
-                                                if(op.getWarehouseId()!=null){
-                                                    waypoint.put("address",entityManager.find(WarehousesEntity.class,op.getWarehouseId()).getAddress());
-                                                }else{
-                                                    waypoint.put("address","");
+                                                if (op.getWarehouseId() != null) {
+                                                    waypoint.put("address", entityManager.find(WarehousesEntity.class, op.getWarehouseId()).getAddress());
+                                                } else {
+                                                    waypoint.put("address", "");
                                                 }
                                                 waypoint.put("city", op.getCity());
                                                 waypoint.put("country", op.getCountry());
@@ -476,20 +562,40 @@ public class OrdersController extends Application {
                                             sHmpam.put("orderPackagesEntityList", unitFinalList);
 
                                             String selectedPackagesStartPoint = "select * from order_package_start_point opstp where opstp.order_id=" + j.getId();
-                                            List<HashMap<String, Object>> startPointPackages = new ArrayList<HashMap<String, Object>>();
+                                            List<HashMap<String, Object>> selectedStratPointPackages = new ArrayList<HashMap<String, Object>>();
                                             List<OrderPackageStartPointEntity> packagesStartList = entityManager.createNativeQuery(selectedPackagesStartPoint, OrderPackageStartPointEntity.class).getResultList();
 
                                             for (OrderPackageStartPointEntity opst : packagesStartList) {
                                                 HashMap<String, Object> packagesStart = new HashMap<String, Object>();
-                                                packagesStart.put("id", opst.getId());
-                                                packagesStart.put("orderPackageId", opst.getOrderPackageId());
-                                                packagesStart.put("unitPrice", opst.getUnitPrice());
-                                                packagesStart.put("quantity", opst.getQuantity());
+                                                packagesStart.put("measureUnitId", opst.getMeasureUnitId());
                                                 packagesStart.put("title", opst.getTitle());
-                                                packagesStart.put("type", opst.getType());
-                                                startPointPackages.add(packagesStart);
+                                                packagesStart.put("orderId", opst.getOrderId());
+                                                packagesStart.put("quantity", opst.getQuantity());
+                                                packagesStart.put("unitPrice", opst.getUnitPrice());
+                                                packagesStart.put("finalUnitPrice", opst.getFinalUnitPrice());
+                                                packagesStart.put("oldQuantity", opst.getQuantity());
+                                                packagesStart.put("oldUnitPrice", opst.getUnitPrice());
+                                                packagesStart.put("oldFinalUnitPrice", opst.getFinalUnitPrice());
+
+
+
+
+
+                                                String sqlDistansesValues = "select * FROM internova_db.order_packages where order_id=" + opst.getOrderId() + " and measure_unit_id=" + opst.getMeasureUnitId();
+                                                List<OrderPackagesEntity> distList = entityManager.createNativeQuery(sqlDistansesValues, OrderPackagesEntity.class).getResultList();
+                                                List<HashMap<String, Object>> fdvList = new ArrayList<HashMap<String, Object>>();
+                                                for (OrderPackagesEntity dv : distList) {
+                                                    HashMap<String, Object> distanceValues = new HashMap<>();
+                                                    distanceValues.put("measureUnitId", dv.getMeasureUnitId());
+                                                    distanceValues.put("from", dv.getFromUnit());
+                                                    distanceValues.put("to", dv.getToUnit());
+                                                    distanceValues.put("unitPrice", dv.getUnitPrice());
+                                                    fdvList.add(distanceValues);
+                                                }
+                                                packagesStart.put("distanceValues", fdvList);
+                                                selectedStratPointPackages.add(packagesStart);
                                             }
-                                            sHmpam.put("startPointPackages", startPointPackages);
+                                            sHmpam.put("selectedStratPointPackages", selectedStratPointPackages);
                                             filalist.add(sHmpam);
                                         }
                                         returnList_future.put("data", filalist);
@@ -518,10 +624,6 @@ public class OrdersController extends Application {
     }
 
 
-
-
-
-
     @SuppressWarnings({"Duplicates", "unchecked"})
     @BodyParser.Of(BodyParser.Json.class)
     public Result updateOrderWaypoint(final Http.Request request) throws IOException {
@@ -547,7 +649,7 @@ public class OrdersController extends Application {
                                 String postalCode = json.findPath("postalCode").asText();
                                 String lattitude = json.findPath("lattitude").asText();
                                 String longtitude = json.findPath("longtitude").asText();
-                                OrderWaypointsEntity orderWaypointsEntity = entityManager.find(OrderWaypointsEntity.class,waypointId);
+                                OrderWaypointsEntity orderWaypointsEntity = entityManager.find(OrderWaypointsEntity.class, waypointId);
 
                                 if (warehouseId != null && !warehouseId.equalsIgnoreCase("") && !warehouseId.equalsIgnoreCase("null")) {
                                     orderWaypointsEntity.setWarehouseId(Long.valueOf(warehouseId));
@@ -563,10 +665,11 @@ public class OrdersController extends Application {
                                     warehousesEntity.setRegion(region);
                                     warehousesEntity.setLongitude(Double.valueOf(longtitude));
                                     warehousesEntity.setLatitude(Double.valueOf(lattitude));
+                                    warehousesEntity.setCreationDate(new Date());
                                     entityManager.persist(warehousesEntity);
                                     orderWaypointsEntity.setWarehouseId(warehousesEntity.getId());
-                                    entityManager.merge(orderWaypointsEntity);
                                 }
+                                entityManager.merge(orderWaypointsEntity);
 
 
                                 add_result.put("status", "success");
@@ -591,21 +694,9 @@ public class OrdersController extends Application {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
     @SuppressWarnings({"Duplicates", "unchecked"})
     @BodyParser.Of(BodyParser.Json.class)
-    public Result updateOrder(final Http.Request request) throws IOException {
+    public Result updateOrderFactory(final Http.Request request) throws IOException {
         JsonNode json = request.body().asJson();
         if (json == null) {
             return badRequest("Expecting Json data");
@@ -618,43 +709,17 @@ public class OrdersController extends Application {
                                 String user_id = json.findPath("user_id").asText();
                                 String factoryId = json.findPath("factoryId").asText();
                                 Long orderId = json.findPath("orderId").asLong();
-                                String email = json.findPath("email").asText();
-                                JsonNode startPointPackages = json.findPath("startPointPackages");
-                                ((ObjectNode) json).remove("startPointPackages");
                                 String city = json.findPath("city").asText();
                                 String country = json.findPath("country").asText();
                                 String telephone = json.findPath("telephone").asText();
+                                String email = json.findPath("email").asText();
                                 String brandName = json.findPath("brandName").asText();
                                 String address = json.findPath("address").asText();
                                 String postalCode = json.findPath("postalCode").asText();
                                 String region = json.findPath("region").asText();
                                 String latitude = json.findPath("lattitude").asText();
                                 String longitude = json.findPath("longtitude").asText();
-                                String comments = json.findPath("comments").asText();
-                                String truckTemprature = json.findPath("truckTemprature").asText();
-                                String arrivalFactoryDay = json.findPath("arrivalFactoryDay").asText();
-                                String generalInstructions = json.findPath("generalInstructions").asText();
                                 OrdersEntity order = entityManager.find(OrdersEntity.class, orderId);
-                                //posta
-                                order.setGeneralInstructions(generalInstructions);
-                                if (!truckTemprature.equalsIgnoreCase("") && truckTemprature != null && !truckTemprature.equalsIgnoreCase("null")) {
-                                    order.setTruckTemprature(truckTemprature);
-                                } else {
-                                    order.setTruckTemprature("");
-                                }
-                                if (!comments.equalsIgnoreCase("") && comments != null && !comments.equalsIgnoreCase("null")) {
-                                    order.setComments(comments);
-                                } else {
-                                    order.setComments("");
-                                }
-                                Date offerDateString = null;
-                                try {
-                                    offerDateString = new SimpleDateFormat("yyyy-MM-dd").parse(arrivalFactoryDay);
-                                    order.setArrivalFactoryDay(offerDateString);
-
-                                } catch (ParseException e) {
-                                    e.printStackTrace();
-                                }
                                 if (factoryId != null && !factoryId.equalsIgnoreCase("") && !factoryId.equalsIgnoreCase("null")) {
                                     order.setFactoryId(Long.valueOf(factoryId));
                                 } else {
@@ -676,22 +741,99 @@ public class OrdersController extends Application {
                                     order.setFactoryId(factory.getId());
                                 }
                                 entityManager.merge(order);
+                                add_result.put("status", "success");
+                                add_result.put("message", "Η ενημέρωση της παραγγελίας πραγματοποιήθηκε με επιτυχία");
+                                add_result.put("system", "ΠΑΡΑΓΓΕΛΙΕΣ");
+                                add_result.put("user_id", user_id);
+                                return add_result;
+                            });
+                        },
+                        executionContext);
+                result = (ObjectNode) addFuture.get();
+                return ok(result, request);
+            } catch (Exception e) {
+                ObjectNode result = Json.newObject();
+                e.printStackTrace();
+                result.put("status", "error");
+                result.put("message", "Προβλημα κατα την καταχωρηση");
+                return ok(result);
+            }
+
+        }
+    }
+
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    @BodyParser.Of(BodyParser.Json.class)
+    public Result updateOrder(final Http.Request request) throws IOException {
+        JsonNode json = request.body().asJson();
+        if (json == null) {
+            return badRequest("Expecting Json data");
+        } else {
+            try {
+                ObjectNode result = Json.newObject();
+                CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
+                            return jpaApi.withTransaction(entityManager -> {
+                                ObjectNode add_result = Json.newObject();
+                                String user_id = json.findPath("user_id").asText();
+                                String factoryId = json.findPath("factoryId").asText();
+                                Long orderId = json.findPath("orderId").asLong();
+                                String email = json.findPath("email").asText();
+
+                                JsonNode selectedStratPointPackages = json.findPath("selectedStratPointPackages");
+                                ((ObjectNode) json).remove("selectedStratPointPackages");
+                                System.out.println(selectedStratPointPackages);
+                                //selectedStratPointPackages
+                                String comments = json.findPath("comments").asText();
+                                String truckTemprature = json.findPath("truckTemprature").asText();
+                                String arrivalFactoryDay = json.findPath("arrivalFactoryDay").asText();
+                                String generalInstructions = json.findPath("generalInstructions").asText();
+                                OrdersEntity order = entityManager.find(OrdersEntity.class, orderId);
+
+                                if (!generalInstructions.equalsIgnoreCase("") && generalInstructions != null && !generalInstructions.equalsIgnoreCase("null")) {
+                                    order.setGeneralInstructions(generalInstructions);
+                                } else {
+                                    order.setGeneralInstructions("");
+                                }
+                                //posta
+                                if (!truckTemprature.equalsIgnoreCase("") && truckTemprature != null && !truckTemprature.equalsIgnoreCase("null")) {
+                                    order.setTruckTemprature(truckTemprature);
+                                } else {
+                                    order.setTruckTemprature("");
+                                }
+                                if (!comments.equalsIgnoreCase("") && comments != null && !comments.equalsIgnoreCase("null")) {
+                                    order.setComments(comments);
+                                } else {
+                                    order.setComments("");
+                                }
+                                Date offerDateString = null;
+                                try {
+                                    offerDateString = new SimpleDateFormat("yyyy-MM-dd").parse(arrivalFactoryDay);
+                                    order.setArrivalFactoryDay(offerDateString);
+
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+
+                                entityManager.merge(order);
 
 
                                 String selectedPackagesStartPoint = "select * from order_package_start_point opstp where opstp.order_id=" + order.getId();
-                                List<OrderPackageStartPointEntity> packagesStartList = entityManager.createNativeQuery(selectedPackagesStartPoint, OrderPackageStartPointEntity.class).getResultList();
-                                for(OrderPackageStartPointEntity op : packagesStartList){
+                                List<OrderPackageStartPointEntity> packagesStartList =
+                                        entityManager.createNativeQuery(selectedPackagesStartPoint, OrderPackageStartPointEntity.class).getResultList();
+                                for (OrderPackageStartPointEntity op : packagesStartList) {
                                     entityManager.remove(op);
                                 }
-                                Iterator itStartPointPackages = startPointPackages.iterator();
+                                Iterator itStartPointPackages = selectedStratPointPackages.iterator();
                                 while (itStartPointPackages.hasNext()) {
                                     JsonNode startPointNode = (JsonNode) itStartPointPackages.next();
                                     OrderPackageStartPointEntity op = new OrderPackageStartPointEntity();
                                     op.setCreationDate(new Date());
                                     op.setOrderId(order.getId());
-                                    op.setOrderPackageId(startPointNode.findPath("orderPackageId").asLong());
                                     op.setQuantity(startPointNode.findPath("quantity").asInt());
                                     op.setUnitPrice(startPointNode.findPath("unitPrice").asDouble());
+                                    op.setFinalUnitPrice(startPointNode.findPath("finalUnitPrice").asDouble());
+                                    op.setMeasureUnitId(startPointNode.findPath("measureUnitId").asLong());
                                     op.setTitle(startPointNode.findPath("title").asText());
                                     entityManager.persist(op);
                                 }
@@ -717,6 +859,130 @@ public class OrdersController extends Application {
 
         }
     }
+
+
+
+
+//    @SuppressWarnings({"Duplicates", "unchecked"})
+//    @BodyParser.Of(BodyParser.Json.class)
+//    public Result updateOrder(final Http.Request request) throws IOException {
+//        JsonNode json = request.body().asJson();
+//        if (json == null) {
+//            return badRequest("Expecting Json data");
+//        } else {
+//            try {
+//                ObjectNode result = Json.newObject();
+//                CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
+//                            return jpaApi.withTransaction(entityManager -> {
+//                                ObjectNode add_result = Json.newObject();
+//                                String user_id = json.findPath("user_id").asText();
+//                                String factoryId = json.findPath("factoryId").asText();
+//                                Long orderId = json.findPath("orderId").asLong();
+//                                String email = json.findPath("email").asText();
+//
+//                                JsonNode selectedStratPointPackages = json.findPath("selectedStratPointPackages");
+//                                ((ObjectNode) json).remove("selectedStratPointPackages");
+//                                System.out.println(selectedStratPointPackages);
+//
+//                                //selectedStratPointPackages
+//                                String city = json.findPath("city").asText();
+//                                String country = json.findPath("country").asText();
+//                                String telephone = json.findPath("telephone").asText();
+//                                String brandName = json.findPath("brandName").asText();
+//                                String address = json.findPath("address").asText();
+//                                String postalCode = json.findPath("postalCode").asText();
+//                                String region = json.findPath("region").asText();
+//                                String latitude = json.findPath("lattitude").asText();
+//                                String longitude = json.findPath("longtitude").asText();
+//                                String comments = json.findPath("comments").asText();
+//                                String truckTemprature = json.findPath("truckTemprature").asText();
+//                                String arrivalFactoryDay = json.findPath("arrivalFactoryDay").asText();
+//                                String generalInstructions = json.findPath("generalInstructions").asText();
+//                                OrdersEntity order = entityManager.find(OrdersEntity.class, orderId);
+//                                //posta
+//                                order.setGeneralInstructions(generalInstructions);
+//                                if (!truckTemprature.equalsIgnoreCase("") && truckTemprature != null && !truckTemprature.equalsIgnoreCase("null")) {
+//                                    order.setTruckTemprature(truckTemprature);
+//                                } else {
+//                                    order.setTruckTemprature("");
+//                                }
+//                                if (!comments.equalsIgnoreCase("") && comments != null && !comments.equalsIgnoreCase("null")) {
+//                                    order.setComments(comments);
+//                                } else {
+//                                    order.setComments("");
+//                                }
+//                                Date offerDateString = null;
+//                                try {
+//                                    offerDateString = new SimpleDateFormat("yyyy-MM-dd").parse(arrivalFactoryDay);
+//                                    order.setArrivalFactoryDay(offerDateString);
+//
+//                                } catch (ParseException e) {
+//                                    e.printStackTrace();
+//                                }
+//                                if (factoryId != null && !factoryId.equalsIgnoreCase("") && !factoryId.equalsIgnoreCase("null")) {
+//                                    order.setFactoryId(Long.valueOf(factoryId));
+//                                } else {
+//                                    FactoriesEntity factory = new FactoriesEntity();
+//                                    factory.setBrandName(brandName);
+//                                    factory.setAddress(address);
+//                                    factory.setTelephone(telephone);
+//                                    factory.setCountry(country);
+//                                    factory.setEmail(email);
+//                                    factory.setCity(city);
+//                                    factory.setPostalCode(postalCode);
+//                                    factory.setRegion(region);
+//                                    factory.setLongtitude(Double.valueOf(longitude));
+//                                    factory.setLattitude(Double.valueOf(latitude));
+//                                    factory.setLattitude(Double.valueOf(latitude));
+//                                    factory.setAppointmentDays(0);
+//                                    factory.setAppointmentRequired((byte) 0);
+//                                    entityManager.persist(factory);
+//                                    order.setFactoryId(factory.getId());
+//                                }
+//                                entityManager.merge(order);
+//
+//
+//                                String selectedPackagesStartPoint = "select * from order_package_start_point opstp where opstp.order_id=" + order.getId();
+//                                List<OrderPackageStartPointEntity> packagesStartList =
+//                                        entityManager.createNativeQuery(selectedPackagesStartPoint, OrderPackageStartPointEntity.class).getResultList();
+//                                for (OrderPackageStartPointEntity op : packagesStartList) {
+//                                    entityManager.remove(op);
+//                                }
+//                                Iterator itStartPointPackages = selectedStratPointPackages.iterator();
+//                                while (itStartPointPackages.hasNext()) {
+//                                    JsonNode startPointNode = (JsonNode) itStartPointPackages.next();
+//                                    OrderPackageStartPointEntity op = new OrderPackageStartPointEntity();
+//                                    op.setCreationDate(new Date());
+//                                    op.setOrderId(order.getId());
+//                                    op.setQuantity(startPointNode.findPath("quantity").asInt());
+//                                    op.setUnitPrice(startPointNode.findPath("unitPrice").asDouble());
+//                                    op.setFinalUnitPrice(startPointNode.findPath("finalUnitPrice").asDouble());
+//                                    op.setMeasureUnitId(startPointNode.findPath("measureUnitId").asLong());
+//                                    op.setTitle(startPointNode.findPath("title").asText());
+//                                    entityManager.persist(op);
+//                                }
+//
+//
+//                                add_result.put("status", "success");
+//                                add_result.put("message", "Η ενημέρωση της παραγγελίας πραγματοποιήθηκε με επιτυχία");
+//                                add_result.put("system", "ΠΑΡΑΓΓΕΛΙΕΣ");
+//                                add_result.put("user_id", user_id);
+//                                return add_result;
+//                            });
+//                        },
+//                        executionContext);
+//                result = (ObjectNode) addFuture.get();
+//                return ok(result, request);
+//            } catch (Exception e) {
+//                ObjectNode result = Json.newObject();
+//                e.printStackTrace();
+//                result.put("status", "error");
+//                result.put("message", "Προβλημα κατα την καταχωρηση");
+//                return ok(result);
+//            }
+//
+//        }
+//    }
 
 
 }

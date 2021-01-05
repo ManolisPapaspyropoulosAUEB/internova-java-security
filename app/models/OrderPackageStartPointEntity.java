@@ -17,6 +17,8 @@ public class OrderPackageStartPointEntity {
     private Long typeId;
     private Date creationDate;
     private Long orderPackageId;
+    private Double finalUnitPrice;
+    private Long measureUnitId;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -127,5 +129,25 @@ public class OrderPackageStartPointEntity {
 
     public void setOrderPackageId(Long orderPackageId) {
         this.orderPackageId = orderPackageId;
+    }
+
+    @Basic
+    @Column(name = "final_unit_price")
+    public Double getFinalUnitPrice() {
+        return finalUnitPrice;
+    }
+
+    public void setFinalUnitPrice(Double finalUnitPrice) {
+        this.finalUnitPrice = finalUnitPrice;
+    }
+
+    @Basic
+    @Column(name = "measure_unit_id")
+    public Long getMeasureUnitId() {
+        return measureUnitId;
+    }
+
+    public void setMeasureUnitId(Long measureUnitId) {
+        this.measureUnitId = measureUnitId;
     }
 }
