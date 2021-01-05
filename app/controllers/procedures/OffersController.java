@@ -476,6 +476,9 @@ public class OffersController extends Application {
                                                             entityManager.createNativeQuery(sqlOrd, OrdersEntity.class).getResultList();
 
                                                     osentMap.put("countOrders", ordersEntityList.size());
+                                                    if(ordersEntityList.size()>0){
+                                                        osentMap.put("order_id", ordersEntityList.get(0).getId());
+                                                    }
                                                     osentMap.put("fromAddress", osent.getFromAddress());
                                                     osentMap.put("token", osent.getToken());
                                                     osentMap.put("fromCity", osent.getFromCity());
