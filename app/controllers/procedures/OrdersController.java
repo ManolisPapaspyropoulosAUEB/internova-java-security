@@ -402,6 +402,7 @@ public class OrdersController extends Application {
                                                 fromAddress.put("telephone", fact.getTelephone());
                                                 fromAddress.put("brandName", fact.getBrandName());
                                                 fromAddress.put("postalCode", fact.getPostalCode());
+                                                fromAddress.put("unloadingLoadingCode", fact.getUnloadingLoadingCode());
                                                 fromAddress.put("country", fact.getCountry());
                                                 fromAddress.put("lattitude", fact.getLattitude());
                                                 fromAddress.put("longtitude", fact.getLongtitude());
@@ -411,6 +412,7 @@ public class OrdersController extends Application {
                                                 fromAddress.put("address", j.getFromAddress());
                                                 fromAddress.put("email", "");
                                                 fromAddress.put("telephone", "");
+                                                fromAddress.put("unloadingLoadingCode", "");
                                                 fromAddress.put("brandName", "");
                                                 fromAddress.put("postalCode", j.getFromPostalCode());
                                                 fromAddress.put("country", j.getFromCountry());
@@ -608,6 +610,8 @@ public class OrdersController extends Application {
                                 String factoryId = json.findPath("factoryId").asText();
                                 Long orderId = json.findPath("orderId").asLong();
                                 String city = json.findPath("city").asText();
+                                String unloadingLoadingCode = json.findPath("unloadingLoadingCode").asText();
+                                //
                                 String country = json.findPath("country").asText();
                                 String telephone = json.findPath("telephone").asText();
                                 String email = json.findPath("email").asText();
@@ -623,6 +627,7 @@ public class OrdersController extends Application {
                                 } else {
                                     FactoriesEntity factory = new FactoriesEntity();
                                     factory.setBrandName(brandName);
+                                    factory.setUnloadingLoadingCode(unloadingLoadingCode);
                                     factory.setAddress(address);
                                     factory.setTelephone(telephone);
                                     factory.setCountry(country);
