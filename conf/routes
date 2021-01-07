@@ -171,7 +171,7 @@ POST        /deleteAllScheduleMeasureUnitByScheduleId        controllers.procedu
 
 
 
-#---------------------------------------------------------------------------USERS MELLON TEMPORARY API  -------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------USERS MELLON TEMPORARY API  -----addVehicle--------------------------------------------------------------------------------
 POST        /createUser                                      controllers.MELLON.UsersMellonController.createUser(req: Request)
 POST        /editUser                                        controllers.MELLON.UsersMellonController.editUser(req: Request)
 POST        /getMellonUsers                                  controllers.MELLON.UsersMellonController.getMellonUsers(req: Request)
@@ -180,6 +180,17 @@ POST        /registerAndLoginWithSocialCAccount              controllers.MELLON.
 POST        /createNewParkingEntryForUserMellon              controllers.MELLON.UsersMellonController.createNewParkingEntryForUserMellon(req: Request)
 POST        /editNewParkingEntryForUserMellon                controllers.MELLON.UsersMellonController.editNewParkingEntryForUserMellon(req: Request)
 POST        /getParkinhHistoryByUser                         controllers.MELLON.UsersMellonController.getParkinhHistoryByUser(req: Request)
+
+POST        /addStation                                      controllers.MELLON.StationsController.addStation(req: Request)
+POST        /deleteStation                                   controllers.MELLON.StationsController.deleteStation(req: Request)
+POST        /updateStation                                   controllers.MELLON.StationsController.updateStation(req: Request)
+POST        /getAllStations                                  controllers.MELLON.StationsController.getAllStations(req: Request)
+
+
+POST        /addStation                                      controllers.MELLON.VehiclesController.addVehicle(req: Request)
+POST        /deleteVehicle                                   controllers.MELLON.VehiclesController.deleteVehicle(req: Request)
+POST        /updateVehicle                                   controllers.MELLON.VehiclesController.updateVehicle(req: Request)
+POST        /getAllVehicles                                  controllers.MELLON.VehiclesController.getAllVehicles(req: Request)
 
 
 
