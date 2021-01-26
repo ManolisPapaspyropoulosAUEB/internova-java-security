@@ -118,11 +118,13 @@ POST        /deleteInternovaSeller                           controllers.coreDat
 POST        /getInternovaSellers                             controllers.coreData.InternovaSellersController.getInternovaSellers(req: Request)
 
 
-#OffersController cloneOffer
+#OffersController getCountries
 POST        /getOffers                                       controllers.procedures.OffersController.getOffers(req: Request)
 POST        /getAllOffersNoPagination                        controllers.procedures.OffersController.getAllOffersNoPagination(req: Request)
 POST        /deleteOffer                                     controllers.procedures.OffersController.deleteOffer(req: Request)
 POST        /addOffer                                        controllers.procedures.OffersController.addOffer(req: Request)
+POST        /insertCountriesDb                               controllers.procedures.OffersController.insertCountriesDb(req: Request)
+POST        /getCountries                                    controllers.procedures.OffersController.getCountries(req: Request)
 POST        /updateOffer                                     controllers.procedures.OffersController.updateOffer(req: Request)
 POST        /getSuggestedOffersSchedulesByCustomer           controllers.procedures.OffersController.getSuggestedOffersSchedulesByCustomer(req: Request)
 POST        /getPackgesByOfferId                             controllers.procedures.OffersController.getPackgesByOfferId(req: Request)

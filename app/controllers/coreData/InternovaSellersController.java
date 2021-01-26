@@ -240,9 +240,6 @@ public class InternovaSellersController extends Application {
                                             if (!start.equalsIgnoreCase("") && start != null) {
                                                 sqlroles += " limit " + start + "," + limit;
                                             }
-
-
-                                            System.out.println(sqlroles);
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             List<HashMap<String, Object>> serversList = new ArrayList<HashMap<String, Object>>();
                                             List<InternovaSellersEntity> orgsList

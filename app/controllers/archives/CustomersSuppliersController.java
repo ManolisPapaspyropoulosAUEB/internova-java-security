@@ -456,23 +456,6 @@ public class CustomersSuppliersController extends Application  {
             return ok(result);
         }
     }
-//
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

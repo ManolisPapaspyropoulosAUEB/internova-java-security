@@ -3,7 +3,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execution_context.DatabaseExecutionContext;
+import models.UsersMellonParkingHistoryEntity;
 import models.UsersMellonStationsEntity;
+import models.UsersMellonVehiclesEntity;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
 import play.mvc.BodyParser;
@@ -189,9 +191,16 @@ public class StationsController {
                                         for (UsersMellonStationsEntity j : orgsList) {
                                             HashMap<String, Object> sHmpam = new HashMap<String, Object>();
                                             sHmpam.put("id", j.getId());
-                                            sHmpam.put("spotsAvailable", j.getSpotsAvailable());
+
+                                            String availableSlotsSql = " SELECT * FROM " +
+                                                    "users_mellon_vehicles " +
+                                                    " where station=2  " +
+                                                    "and barcode not in " +
+                                                    "(select barcode from users_mellon_parking_history where end_time is null)  ";
+                                            List<UsersMellonVehiclesEntity> parkingListByStation = entityManager.createNativeQuery(availableSlotsSql,UsersMellonVehiclesEntity.class).getResultList();
+                                            sHmpam.put("spotsAvailable", parkingListByStation.size());
                                             sHmpam.put("stationName", j.getStationName());
-                                            sHmpam.put("label", j.getStationName().concat(" ").concat("Spots Available: ").concat(j.getSpotsAvailable()));
+                                            sHmpam.put("label", j.getStationName().concat(" ").concat("Spots Available: ").concat(sHmpam.get("spotsAvailable").toString()));
                                             sHmpam.put("statusStations", j.getStationName());
                                             sHmpam.put("lat", j.getLat());
                                             sHmpam.put("longt", j.getLongt());

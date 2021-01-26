@@ -12,7 +12,6 @@ import play.libs.Json;
 import play.mvc.BodyParser;
 import play.mvc.Http;
 import play.mvc.Result;
-
 import javax.inject.Inject;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -22,6 +21,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
@@ -41,7 +41,6 @@ public class RolesController extends Application {
     @SuppressWarnings({"Duplicates", "unchecked"})
     @BodyParser.Of(BodyParser.Json.class)
     public Result addRole(final Http.Request request) throws IOException {
-        try {
             JsonNode json = request.body().asJson();
             if (json == null) {
                 return badRequest("Expecting Json data");
@@ -80,20 +79,13 @@ public class RolesController extends Application {
                     return ok(result);
                 }
             }
-        } catch (Exception e) {
-            ObjectNode result = Json.newObject();
-            e.printStackTrace();
-            result.put("status", "error");
-            result.put("message", "Προβλημα κατα την καταχωρηση");
-            return ok(result);
-        }
+
     }
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
     @BodyParser.Of(BodyParser.Json.class)
     public Result updateRole(final Http.Request request) throws IOException {
-        try {
             JsonNode json = request.body().asJson();
             if (json == null) {
                 return badRequest("Expecting Json data");
@@ -135,19 +127,12 @@ public class RolesController extends Application {
                     return ok(result);
                 }
             }
-        } catch (Exception e) {
-            ObjectNode result = Json.newObject();
-            e.printStackTrace();
-            result.put("status", "error");
-            result.put("message", "Προβλημα κατα την ενημερωση");
-            return ok(result);
-        }
+
     }
 
     @SuppressWarnings({"Duplicates", "unchecked"})
     @BodyParser.Of(BodyParser.Json.class)
     public Result deleteRole(final Http.Request request) throws IOException {
-        try {
             JsonNode json = request.body().asJson();
             if (json == null) {
                 return badRequest("Expecting Json data");
@@ -196,20 +181,13 @@ public class RolesController extends Application {
                     return ok(result);
                 }
             }
-        } catch (Exception e) {
-            ObjectNode result = Json.newObject();
-            e.printStackTrace();
-            result.put("status", "error");
-            result.put("message", "Προβλημα κατα την διαγραφή");
-            return ok(result);
-        }
+
     }
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
-    public Result getRoles(final Http.Request request) throws IOException {
+    public Result getRoles(final Http.Request request) throws IOException, ExecutionException, InterruptedException {
         ObjectNode result = Json.newObject();
-        try {
             JsonNode json = request.body().asJson();
             if (json == null) {
                 return badRequest("Expecting Json data");
@@ -300,12 +278,7 @@ public class RolesController extends Application {
                     return ok(jsonResult);
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            result.put("status", "error");
-            result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων");
-            return ok(result);
-        }
+
     }
 
 

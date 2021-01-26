@@ -31,6 +31,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
@@ -398,13 +399,13 @@ public class OffersController extends Application {
                                             System.out.println(sqlCustSupl);
                                             for (OffersEntity j : offersEntityList) {
                                                 HashMap<String, Object> sHmpam = new HashMap<String, Object>();
-                                                String orderCheck = "select * from orders ord where ord.offer_id="+j.getId();
-                                                List<OrdersEntity> ordersEntityListcheck= entityManager.createNativeQuery(orderCheck,OrdersEntity.class).getResultList();
+                                                String orderCheck = "select * from orders ord where ord.offer_id=" + j.getId();
+                                                List<OrdersEntity> ordersEntityListcheck = entityManager.createNativeQuery(orderCheck, OrdersEntity.class).getResultList();
 
-                                                if(ordersEntityListcheck.size()>0){
+                                                if (ordersEntityListcheck.size() > 0) {
                                                     sHmpam.put("orderExist", true);
 
-                                                }else{
+                                                } else {
                                                     sHmpam.put("orderExist", false);
 
                                                 }
@@ -471,12 +472,12 @@ public class OffersController extends Application {
                                                 List<HashMap<String, Object>> offschelistFinal = new ArrayList<HashMap<String, Object>>();
                                                 for (OffersSchedulesEntity osent : offschelist) {
                                                     HashMap<String, Object> osentMap = new HashMap<String, Object>();
-                                                    String sqlOrd = "select * from orders ord where ord.offer_schedule_id= '" + osent.getId()+"'";
+                                                    String sqlOrd = "select * from orders ord where ord.offer_schedule_id= '" + osent.getId() + "'";
                                                     List<OrdersEntity> ordersEntityList =
                                                             entityManager.createNativeQuery(sqlOrd, OrdersEntity.class).getResultList();
 
                                                     osentMap.put("countOrders", ordersEntityList.size());
-                                                    if(ordersEntityList.size()>0){
+                                                    if (ordersEntityList.size() > 0) {
                                                         osentMap.put("order_id", ordersEntityList.get(0).getId());
                                                     }
                                                     osentMap.put("fromAddress", osent.getFromAddress());
@@ -783,7 +784,7 @@ public class OffersController extends Application {
                                     offersEntity.setStatus(json.findPath("status").asText());
                                     offersEntity.setDeclineReasons(json.findPath("declineReasons").asText());
                                     offersEntity.setUpdateDate(new Date());
-                                    offersEntity.setCustomerId(custommer.findPath("customerId").asLong());
+                                    offersEntity.setCustomerId(custommer.findPath("customerSupplierId").asLong());
                                     offersEntity.setFromAddress(from.findPath("address").asText());
                                     offersEntity.setFromCity(from.findPath("city").asText());
                                     offersEntity.setFromCountry(from.findPath("country").asText());
@@ -851,6 +852,7 @@ public class OffersController extends Application {
                                             schedulePackageOfferEntity.setMeasureUnitId(muList.get(0).getId());
                                             entityManager.persist(schedulePackageOfferEntity);
                                         }
+                                        //270.977,34
                                         Iterator itWayPoints = offerScheduleNode.findPath("waypointsEntityList").iterator();
                                         while (itWayPoints.hasNext()) {
                                             JsonNode wayPoint = (JsonNode) itWayPoints.next();
@@ -998,7 +1000,8 @@ public class OffersController extends Application {
                                     JsonNode from = json.findPath("from");
                                     JsonNode to = json.findPath("to");
                                     boolean cloneInd = json.findPath("cloneInd").asBoolean();
-                                    JsonNode tableDataTimokatalogosProsfores = json.findPath("tableDataTimokatalogosProsfores");
+                                    JsonNode tableDataTimokatalogosProsfores =
+                                            json.findPath("tableDataTimokatalogosProsfores");
                                     ((ObjectNode) json).remove("tableDataTimokatalogosProsfores");
                                     ((ObjectNode) json).remove("internovaSeller");
                                     ((ObjectNode) json).remove("schedulesPackages");
@@ -1015,15 +1018,15 @@ public class OffersController extends Application {
                                     offersEntity.setSellerId(internovaSeller.findPath("sellerId").asLong());
                                     offersEntity.setBillingId(billing.findPath("billingId").asLong());
                                     offersEntity.setComments(json.findPath("offers_comments").asText());
-                                    if(cloneInd==true){
+                                    if (cloneInd == true) {
                                         offersEntity.setStatus("ΝΕΑ");
-                                    }else{
+                                    } else {
                                         offersEntity.setStatus(json.findPath("status").asText());
                                     }
                                     offersEntity.setDeclineReasons(json.findPath("declineReasons").asText());
                                     offersEntity.setCreationDate(new Date());
-                                    if (custommer.findPath("id").asText() != null && !custommer.findPath("id").asText().equalsIgnoreCase("")) {
-                                        offersEntity.setCustomerId(custommer.findPath("id").asLong());
+                                    if (custommer.findPath("customerSupplierId").asText() != null && !custommer.findPath("customerSupplierId").asText().equalsIgnoreCase("")) {
+                                        offersEntity.setCustomerId(custommer.findPath("customerSupplierId").asLong());
                                     } else {
                                         offersEntity.setCustomerId(custommer.findPath("customerId").asLong());
 
@@ -1152,9 +1155,114 @@ public class OffersController extends Application {
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
-    public Result getPackgesByOfferId(final Http.Request request) throws IOException {
+    @BodyParser.Of(BodyParser.Json.class)
+    public Result insertCountriesDb(final Http.Request request) throws IOException {
+        JsonNode json = request.body().asJson();
+        if (json == null) {
+            return badRequest("Expecting Json data");
+        } else {
+            try {
+                ObjectNode result = Json.newObject();
+                CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
+                            return jpaApi.withTransaction(entityManager -> {
+                                ObjectNode add_result = Json.newObject();
+                                JsonNode data = json.findPath("data");
+                                Iterator countriesArrayJson = data.iterator();
+                                while (countriesArrayJson.hasNext()) {
+                                    JsonNode countryObject = (ObjectNode) countriesArrayJson.next();
+                                    CountriesEntity countriesEntity = new CountriesEntity();
+                                    countriesEntity.setName(countryObject.findPath("name").asText());
+                                    countriesEntity.setCode(countryObject.findPath("alpha2").asText());
+                                    countriesEntity.setCode2(countryObject.findPath("alpha3").asText());
+                                    countriesEntity.setCreationDate(new Date());
+                                    entityManager.persist(countriesEntity);
+                                }
+                                add_result.put("status", "success");
+                                add_result.put("message", "Η καταχωρηση πραγματοποίηθηκε με επιτυχία");
+                                return add_result;
+                            });
+                        },
+                        executionContext);
+                result = (ObjectNode) addFuture.get();
+                return ok(result, request);
+            } catch (Exception e) {
+                ObjectNode result = Json.newObject();
+                e.printStackTrace();
+                result.put("status", "error");
+                result.put("message", "Προβλημα κατα την καταχωρηση");
+                return ok(result);
+            }
+        }
+    }
+
+
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    public Result getCountries(final Http.Request request) throws IOException, ExecutionException, InterruptedException {
         ObjectNode result = Json.newObject();
-        try {
+            JsonNode json = request.body().asJson();
+            if (json == null) {
+                return badRequest("Expecting Json data");
+            } else {
+                if (json == null) {
+                    result.put("status", "error");
+                    result.put("message", "Δεν εχετε αποστειλει εγκυρα δεδομενα.");
+                    return ok(result);
+                } else {
+                    ObjectMapper ow = new ObjectMapper();
+                    HashMap<String, Object> returnList = new HashMap<String, Object>();
+                    String jsonResult = "";
+                    CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
+                                return jpaApi.withTransaction(
+                                        entityManager -> {
+
+                                            String sqlCountries = "select * from countries c where 1=1 ";
+                                            HashMap<String, Object> returnList_future = new HashMap<String, Object>();
+                                            List<HashMap<String, Object>> countriesList = new ArrayList<HashMap<String, Object>>();
+                                            List<CountriesEntity> orgsList
+                                                    = (List<CountriesEntity>) entityManager.createNativeQuery(
+                                                    sqlCountries, CountriesEntity.class).getResultList();
+                                            for (CountriesEntity j : orgsList) {
+                                                HashMap<String, Object> sHmpam = new HashMap<String, Object>();
+                                                sHmpam.put("id", j.getId());
+                                                sHmpam.put("name", j.getName());
+                                                sHmpam.put("code", j.getCode());
+                                                sHmpam.put("code2", j.getCode2());
+                                                sHmpam.put("creationDate", j.getCreationDate());
+                                                countriesList.add(sHmpam);
+                                            }
+                                            returnList_future.put("data", countriesList);
+                                            returnList_future.put("status", "success");
+                                            returnList_future.put("message", "success");
+                                            return returnList_future;
+                                        });
+                            },
+                            executionContext);
+                    returnList = getFuture.get();
+                    DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                    ow.setDateFormat(myDateFormat);
+                    try {
+                        jsonResult = ow.writeValueAsString(returnList);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        result.put("status", "error");
+                        result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων ");
+                        return ok(result);
+                    }
+                    return ok(jsonResult);
+                }
+            }
+    }
+
+
+
+
+
+
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    public Result getPackgesByOfferId(final Http.Request request) throws IOException, ExecutionException, InterruptedException {
+        ObjectNode result = Json.newObject();
             JsonNode json = request.body().asJson();
             if (json == null) {
                 return badRequest("Expecting Json data");
@@ -1216,12 +1324,7 @@ public class OffersController extends Application {
                     return ok(jsonResult);
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            result.put("status", "error");
-            result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων");
-            return ok(result);
-        }
+
     }
 
 
@@ -1359,9 +1462,8 @@ public class OffersController extends Application {
     }
 
     @SuppressWarnings({"Duplicates", "unchecked"})
-    public Result getOffersSchedulesBetweenWayPoints(final Http.Request request) throws IOException {
+    public Result getOffersSchedulesBetweenWayPoints(final Http.Request request) throws IOException, ExecutionException, InterruptedException {
         ObjectNode result = Json.newObject();
-        try {
             JsonNode json = request.body().asJson();
             if (json == null) {
                 return badRequest("Expecting Json data");
@@ -1426,15 +1528,8 @@ public class OffersController extends Application {
                     return ok(jsonResult);
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            result.put("status", "error");
-            result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων");
-            return ok(result);
-        }
+
     }
-
-
 
 
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -1491,9 +1586,6 @@ public class OffersController extends Application {
     private static String removeLastChar(String str) {
         return str.substring(0, str.length() - 1);
     }
-
-
-
 
 
 }

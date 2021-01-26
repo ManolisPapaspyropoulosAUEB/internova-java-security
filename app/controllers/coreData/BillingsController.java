@@ -1,5 +1,4 @@
 package controllers.coreData;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -8,16 +7,12 @@ import controllers.system.Application;
 import models.BillingsEntity;
 import models.CustomersSuppliersEntity;
 import models.OffersEntity;
-import org.hibernate.exception.ConstraintViolationException;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
 import play.mvc.BodyParser;
 import play.mvc.Http;
 import play.mvc.Result;
-
 import javax.inject.Inject;
-import javax.persistence.PersistenceException;
-import javax.persistence.RollbackException;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -26,15 +21,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-
-import static play.mvc.Results.badRequest;
-import static play.mvc.Results.ok;
-
 public class BillingsController extends Application {
     private JPAApi jpaApi;
     private DatabaseExecutionContext executionContext;
-
     @Inject
     public BillingsController(JPAApi jpaApi, DatabaseExecutionContext executionContext) {
         super(jpaApi,executionContext);
