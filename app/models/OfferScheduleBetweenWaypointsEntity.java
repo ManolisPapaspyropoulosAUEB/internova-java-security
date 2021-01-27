@@ -17,6 +17,7 @@ public class OfferScheduleBetweenWaypointsEntity {
     private String postalCode;
     private Date creationDate;
     private Date updateDate;
+    private Integer nestedScheduleIndicator;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -129,5 +130,15 @@ public class OfferScheduleBetweenWaypointsEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, offerId, offerScheduleId, address, city, country, postalCode, creationDate, updateDate);
+    }
+
+    @Basic
+    @Column(name = "nested_schedule_indicator")
+    public Integer getNestedScheduleIndicator() {
+        return nestedScheduleIndicator;
+    }
+
+    public void setNestedScheduleIndicator(Integer nestedScheduleIndicator) {
+        this.nestedScheduleIndicator = nestedScheduleIndicator;
     }
 }

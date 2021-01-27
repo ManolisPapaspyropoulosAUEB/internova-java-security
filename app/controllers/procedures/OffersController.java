@@ -857,6 +857,7 @@ public class OffersController extends Application {
                                         while (itWayPoints.hasNext()) {
                                             JsonNode wayPoint = (JsonNode) itWayPoints.next();
                                             OfferScheduleBetweenWaypointsEntity waypoint = new OfferScheduleBetweenWaypointsEntity();
+                                            waypoint.setNestedScheduleIndicator(wayPoint.findPath("nestedScheduleIndicator").asInt());
                                             waypoint.setCity(wayPoint.findPath("city").asText());
                                             waypoint.setCountry(wayPoint.findPath("country").asText());
                                             waypoint.setPostalCode(wayPoint.findPath("postalCode").asText());
@@ -1061,7 +1062,6 @@ public class OffersController extends Application {
                                         offersSchedulesEntity.setToCity(offerScheduleNode.findPath("arrival").findPath("toCity").asText());
                                         offersSchedulesEntity.setToCountry(offerScheduleNode.findPath("arrival").findPath("toCountry").asText());
                                         offersSchedulesEntity.setToPostalCode(offerScheduleNode.findPath("arrival").findPath("toPostalCode").asText());
-                                        offersSchedulesEntity.setType(offerScheduleNode.findPath("arrival").findPath("toPostalCode").asText());
                                         offersSchedulesEntity.setOfferId(offersEntity.getId());
                                         offersSchedulesEntity.setToken(encrypt(offersSchedulesEntity.getCreationDate().toString().concat(offersSchedulesEntity.getFromCity())));
                                         entityManager.persist(offersSchedulesEntity);
@@ -1115,6 +1115,7 @@ public class OffersController extends Application {
                                         while (itWayPoints.hasNext()) {
                                             JsonNode wayPoint = (JsonNode) itWayPoints.next();
                                             OfferScheduleBetweenWaypointsEntity waypoint = new OfferScheduleBetweenWaypointsEntity();
+                                            waypoint.setNestedScheduleIndicator(wayPoint.findPath("nestedScheduleIndicator").asInt());
                                             waypoint.setCity(wayPoint.findPath("city").asText());
                                             waypoint.setCountry(wayPoint.findPath("country").asText());
                                             waypoint.setPostalCode(wayPoint.findPath("postalCode").asText());
