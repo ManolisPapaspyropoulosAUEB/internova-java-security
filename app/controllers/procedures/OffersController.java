@@ -508,6 +508,7 @@ public class OffersController extends Application {
                                                         spoMap.put("from", spo.getFromUnit());
                                                         spoMap.put("to", spo.getToUnit());
                                                         spoMap.put("unitPrice", spo.getUnitPrice());
+                                                        spoMap.put("typePackageMeasure", spo.getTypePackageMeasure());
                                                         spoMap.put("scheduleId", osent.getId());//todo:na ginei object id
                                                         spoMap.put("id", spo.getId());
                                                         spoMap.put("comments", spo.getComments());
@@ -842,6 +843,7 @@ public class OffersController extends Application {
                                             SchedulePackageOfferEntity schedulePackageOfferEntity = new SchedulePackageOfferEntity();
                                             schedulePackageOfferEntity.setOfferId(offersEntity.getId());
                                             schedulePackageOfferEntity.setComments(schedulePackageOfferNode.findPath("comments").asText());
+                                            schedulePackageOfferEntity.setTypePackageMeasure(schedulePackageOfferNode.findPath("typePackageMeasure").asText());
                                             schedulePackageOfferEntity.setCreationDate(new Date());
                                             schedulePackageOfferEntity.setOfferScheduleId(offersSchedulesEntity.getId()); //TODO
                                             schedulePackageOfferEntity.setFromUnit(schedulePackageOfferNode.findPath("from").asInt());
@@ -1093,6 +1095,7 @@ public class OffersController extends Application {
                                             schedulePackageOfferEntity.setComments(schedulePackageOfferNode.findPath("comments").asText());
                                             schedulePackageOfferEntity.setCreationDate(new Date());
                                             schedulePackageOfferEntity.setOfferScheduleId(offersSchedulesEntity.getId()); //TODO
+                                            schedulePackageOfferEntity.setTypePackageMeasure(schedulePackageOfferNode.findPath("typePackageMeasure").asText());
                                             schedulePackageOfferEntity.setFromUnit(schedulePackageOfferNode.findPath("from").asInt());
                                             schedulePackageOfferEntity.setToUnit(schedulePackageOfferNode.findPath("to").asInt());
                                             schedulePackageOfferEntity.setUnitPrice(schedulePackageOfferNode.findPath("unitPrice").asDouble());

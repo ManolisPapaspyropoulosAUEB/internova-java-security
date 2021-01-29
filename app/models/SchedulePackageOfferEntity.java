@@ -18,6 +18,7 @@ public class SchedulePackageOfferEntity {
     private Date creationDate;
     private Date updateDate;
     private Long offerScheduleId;
+    private String typePackageMeasure;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -139,5 +140,15 @@ public class SchedulePackageOfferEntity {
 
     public void setOfferScheduleId(Long offerScheduleId) {
         this.offerScheduleId = offerScheduleId;
+    }
+
+    @Basic
+    @Column(name = "type_package_measure")
+    public String getTypePackageMeasure() {
+        return typePackageMeasure;
+    }
+
+    public void setTypePackageMeasure(String typePackageMeasure) {
+        this.typePackageMeasure = typePackageMeasure;
     }
 }
