@@ -13,6 +13,7 @@ public class CountriesEntity {
     private String code;
     private String code2;
     private Date creationDate;
+    private String nameEn;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -80,5 +81,15 @@ public class CountriesEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, code, code2, creationDate);
+    }
+
+    @Basic
+    @Column(name = "name_en")
+    public String getNameEn() {
+        return nameEn;
+    }
+
+    public void setNameEn(String nameEn) {
+        this.nameEn = nameEn;
     }
 }

@@ -493,11 +493,11 @@ public class OffersController extends Application {
                                                     osentMap.put("offerId", osent.getOfferId());
                                                     osentMap.put("id", osent.getId());
                                                     osentMap.put("type", osent.getType());
-                                                    String sqlWayPoints = "select * " +
+                                                    String sqlWayPoigetnts = "select * " +
                                                             " from offer_schedule_between_waypoints wp" +
                                                             " where wp.offer_id=" + j.getId() + " and wp.offer_schedule_id= " + osent.getId();
                                                     List<OfferScheduleBetweenWaypointsEntity> waypointsEntityList =
-                                                            entityManager.createNativeQuery(sqlWayPoints, OfferScheduleBetweenWaypointsEntity.class).getResultList();
+                                                            entityManager.createNativeQuery(sqlWayPoigetnts, OfferScheduleBetweenWaypointsEntity.class).getResultList();
                                                     osentMap.put("waypointsEntityList", waypointsEntityList);
                                                     List<HashMap<String, Object>> spoList = new ArrayList<HashMap<String, Object>>();
                                                     String offersUnit = "select * from schedule_package_offer spo where spo.offer_id=" + osent.getOfferId() +
@@ -1230,7 +1230,7 @@ public class OffersController extends Application {
                                                 HashMap<String, Object> sHmpam = new HashMap<String, Object>();
                                                 sHmpam.put("id", j.getId());
                                                 sHmpam.put("name", j.getName());
-                                                sHmpam.put("code", j.getCode());
+                                                sHmpam.put("code", j.getNameEn());
                                                 sHmpam.put("code2", j.getCode2());
                                                 sHmpam.put("creationDate", j.getCreationDate());
                                                 countriesList.add(sHmpam);
