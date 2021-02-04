@@ -17,6 +17,7 @@ public class OrderPackagesEntity {
     private String comments;
     private Date creationDate;
     private Date updateDate;
+    private Long orderScheduleId;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -139,5 +140,15 @@ public class OrderPackagesEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, measureUnitId, orderId, orderWaypointId, fromUnit, toUnit, unitPrice, comments, creationDate, updateDate);
+    }
+
+    @Basic
+    @Column(name = "order_schedule_id")
+    public Long getOrderScheduleId() {
+        return orderScheduleId;
+    }
+
+    public void setOrderScheduleId(Long orderScheduleId) {
+        this.orderScheduleId = orderScheduleId;
     }
 }

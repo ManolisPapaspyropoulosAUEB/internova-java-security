@@ -6,19 +6,20 @@ import java.util.Date;
 import java.util.Objects;
 
 @Entity
-@Table(name = "order_package_start_point", schema = "internova_db", catalog = "")
-public class OrderPackageStartPointEntity {
+@Table(name = "order_package_schedules", schema = "internova_db", catalog = "")
+public class OrderPackageSchedulesEntity {
     private long id;
     private Long orderId;
+    private Long orderPackageId;
+    private Long measureUnitId;
     private Integer quantity;
     private Double unitPrice;
     private String title;
     private String type;
     private Long typeId;
     private Date creationDate;
-    private Long orderPackageId;
     private Double finalUnitPrice;
-    private Long measureUnitId;
+    private Long orderScheduleId;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,6 +40,26 @@ public class OrderPackageStartPointEntity {
 
     public void setOrderId(Long orderId) {
         this.orderId = orderId;
+    }
+
+    @Basic
+    @Column(name = "order_package_id")
+    public Long getOrderPackageId() {
+        return orderPackageId;
+    }
+
+    public void setOrderPackageId(Long orderPackageId) {
+        this.orderPackageId = orderPackageId;
+    }
+
+    @Basic
+    @Column(name = "measure_unit_id")
+    public Long getMeasureUnitId() {
+        return measureUnitId;
+    }
+
+    public void setMeasureUnitId(Long measureUnitId) {
+        this.measureUnitId = measureUnitId;
     }
 
     @Basic
@@ -101,36 +122,6 @@ public class OrderPackageStartPointEntity {
         this.creationDate = creationDate;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        OrderPackageStartPointEntity that = (OrderPackageStartPointEntity) o;
-        return id == that.id &&
-                Objects.equals(orderId, that.orderId) &&
-                Objects.equals(quantity, that.quantity) &&
-                Objects.equals(unitPrice, that.unitPrice) &&
-                Objects.equals(title, that.title) &&
-                Objects.equals(type, that.type) &&
-                Objects.equals(typeId, that.typeId) &&
-                Objects.equals(creationDate, that.creationDate);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, orderId, quantity, unitPrice, title, type, typeId, creationDate);
-    }
-
-    @Basic
-    @Column(name = "order_package_id")
-    public Long getOrderPackageId() {
-        return orderPackageId;
-    }
-
-    public void setOrderPackageId(Long orderPackageId) {
-        this.orderPackageId = orderPackageId;
-    }
-
     @Basic
     @Column(name = "final_unit_price")
     public Double getFinalUnitPrice() {
@@ -142,12 +133,36 @@ public class OrderPackageStartPointEntity {
     }
 
     @Basic
-    @Column(name = "measure_unit_id")
-    public Long getMeasureUnitId() {
-        return measureUnitId;
+    @Column(name = "order_schedule_id")
+    public Long getOrderScheduleId() {
+        return orderScheduleId;
     }
 
-    public void setMeasureUnitId(Long measureUnitId) {
-        this.measureUnitId = measureUnitId;
+    public void setOrderScheduleId(Long orderScheduleId) {
+        this.orderScheduleId = orderScheduleId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OrderPackageSchedulesEntity that = (OrderPackageSchedulesEntity) o;
+        return id == that.id &&
+                Objects.equals(orderId, that.orderId) &&
+                Objects.equals(orderPackageId, that.orderPackageId) &&
+                Objects.equals(measureUnitId, that.measureUnitId) &&
+                Objects.equals(quantity, that.quantity) &&
+                Objects.equals(unitPrice, that.unitPrice) &&
+                Objects.equals(title, that.title) &&
+                Objects.equals(type, that.type) &&
+                Objects.equals(typeId, that.typeId) &&
+                Objects.equals(creationDate, that.creationDate) &&
+                Objects.equals(finalUnitPrice, that.finalUnitPrice) &&
+                Objects.equals(orderScheduleId, that.orderScheduleId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, orderId, orderPackageId, measureUnitId, quantity, unitPrice, title, type, typeId, creationDate, finalUnitPrice, orderScheduleId);
     }
 }

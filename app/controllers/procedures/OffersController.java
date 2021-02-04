@@ -466,20 +466,22 @@ public class OffersController extends Application {
                                                 String sqlOffersSchedules = "select * " +
                                                         " from offers_schedules os" +
                                                         " where os.offer_id= " + j.getId() + " " +
-                                                        " order by os.from_country,os.from_city asc";
+                                                        " order by os.creation_date asc";
+
                                                 List<OffersSchedulesEntity> offschelist = (List<OffersSchedulesEntity>)
                                                         entityManager.createNativeQuery(sqlOffersSchedules, OffersSchedulesEntity.class).getResultList();
                                                 List<HashMap<String, Object>> offschelistFinal = new ArrayList<HashMap<String, Object>>();
                                                 for (OffersSchedulesEntity osent : offschelist) {
-                                                    HashMap<String, Object> osentMap = new HashMap<String, Object>();
-                                                    String sqlOrd = "select * from orders ord where ord.offer_schedule_id= '" + osent.getId() + "'";
-                                                    List<OrdersEntity> ordersEntityList =
-                                                            entityManager.createNativeQuery(sqlOrd, OrdersEntity.class).getResultList();
 
-                                                    osentMap.put("countOrders", ordersEntityList.size());
-                                                    if (ordersEntityList.size() > 0) {
-                                                        osentMap.put("order_id", ordersEntityList.get(0).getId());
-                                                    }
+                                                    HashMap<String, Object> osentMap = new HashMap<String, Object>();
+                                                  //  String sqlOrd = "select * from orders ord where ord.offer_schedule_id= '" + osent.getId() + "'";
+//                                                    List<OrdersEntity> ordersEntityList =
+//                                                            entityManager.createNativeQuery(sqlOrd, OrdersEntity.class).getResultList();
+
+                                                    osentMap.put("countOrders",4);
+//                                                    if (ordersEntityList.size() > 0) {
+//                                                        osentMap.put("order_id", ordersEntityList.get(0).getId());
+//                                                    }
                                                     osentMap.put("fromAddress", osent.getFromAddress());
                                                     osentMap.put("token", osent.getToken());
                                                     osentMap.put("fromCity", osent.getFromCity());
@@ -633,7 +635,9 @@ public class OffersController extends Application {
                                                     "sched.id as object_id, " +
                                                     "'Δρομολόγιο' as type , sched.creation_date , " +
                                                     "null as from_address, " +
-                                                    "null as to_address " +
+                                                    "null as to_address, " +
+                                                    "sched.from_postal_code, " +
+                                                    "sched.to_postal_code " +
                                                     "from internova_db.schedule sched " +
                                                     "where  sched.id in " +
                                                     "(select schedule_id " +
@@ -650,7 +654,9 @@ public class OffersController extends Application {
                                                     "offesched.id as object_id, " +
                                                     "'Προσφορά' as type , offesched.creation_date , " +
                                                     " offesched.from_address as from_address, " +
-                                                    " offesched.to_address as to_address " +
+                                                    " offesched.to_address as to_address, " +
+                                                    "offesched.from_postal_code, " +
+                                                    "offesched.to_postal_code " +
                                                     "from offers_schedules offesched " +
                                                     "left join offers offe on (offe.id=offesched.offer_id) " +
                                                     "where offe.customer_id=" + customerId +
@@ -666,7 +672,9 @@ public class OffersController extends Application {
                                                     "offesched.id as object_id, " +
                                                     "'Προσφορά απο άλλους' as type , offesched.creation_date , " +
                                                     " offesched.from_address as from_address, " +
-                                                    " offesched.to_address as to_address " +
+                                                    " offesched.to_address as to_address, " +
+                                                    "offesched.from_postal_code, " +
+                                                    "offesched.to_postal_code " +
                                                     "from offers_schedules offesched " +
                                                     "left join offers offe on (offe.id=offesched.offer_id) " +
                                                     "where offe.customer_id!= " + customerId +
@@ -712,6 +720,18 @@ public class OffersController extends Application {
                                                 item.put("creationDate", tu.get(7).asText());
                                                 item.put("fromAddress", tu.get(8).asText());
                                                 item.put("toAddress", tu.get(9).asText());
+                                                item.put("fromPostalCode", tu.get(10).asText());
+                                                item.put("toPostalCode", tu.get(11).asText());
+                                                if(!typeCategory.equalsIgnoreCase("1")){
+                                                    String sql=
+                                                            " select * " +
+                                                            " from offer_schedule_between_waypoints wp" +
+                                                            " where wp.offer_schedule_id= "+tu.get(5).asText();
+                                                    List<OfferScheduleBetweenWaypointsEntity> waypointsEntityList =
+                                                            entityManager.createNativeQuery(sql,OfferScheduleBetweenWaypointsEntity.class).getResultList();
+                                                    item.put("waypointsEntityList",waypointsEntityList);
+
+                                                }
                                                 finalList.add(item);
                                             }
                                             returnList_future.put("data", finalList);
@@ -742,6 +762,133 @@ public class OffersController extends Application {
             return ok(result);
         }
     }
+
+
+
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    public Result getAllSuggestedSchedulesByCustomer(final Http.Request request) throws IOException {
+        ObjectNode result = Json.newObject();
+        try {
+            JsonNode json = request.body().asJson();
+            if (json == null) {
+                return badRequest("Expecting Json data");
+            } else {
+                if (json == null) {
+                    result.put("status", "error");
+                    result.put("message", "Δεν εχετε αποστειλει εγκυρα δεδομενα.");
+                    return ok(result);
+                } else {
+                    ObjectMapper ow = new ObjectMapper();
+                    HashMap<String, Object> returnList = new HashMap<String, Object>();
+                    String jsonResult = "";
+                    CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
+                                return jpaApi.withTransaction(
+                                        entityManager -> {
+
+                                            System.out.println(json);
+                                            String offerScheduleId = json.findPath("offerScheduleId").asText();
+                                            Long offerId = json.findPath("offerId").asLong();
+                                            OffersEntity offersEntity = entityManager.find(OffersEntity.class,offerId);
+
+
+                                            String sqlSuggSchedules = " " +
+                                                    "  select * from \n" +
+                                                    "( \n" +
+                                                    "select * \n" +
+                                                    "from offers_schedules offs where offer_id="+offerId+" and id!="+offerScheduleId+" \n" +
+                                                    "union \n" +
+                                                    "select * from \n" +
+                                                    "offers_schedules offs \n" +
+                                                    "where offs.offer_id in (select offer.id from offers offer where offer.customer_id="+offersEntity.getCustomerId()+" and offer.status='ΑΠΟΔΟΧΗ') \n" +
+                                                    "and  offs.offer_id!="+offerId+") as sugg \n" +
+                                                    "where sugg.from_city in \n" +
+                                                    "( \n" +
+                                                    "select offs.from_city as city from offers_schedules offs where offs.id="+offerScheduleId+" \n" +
+                                                    "union \n" +
+                                                    "select offs.to_city as city from offers_schedules offs where offs.id="+offerScheduleId+" \n" +
+                                                    "union \n" +
+                                                    "(select city from offer_schedule_between_waypoints waypoints where  waypoints.offer_schedule_id="+offerScheduleId+") \n" +
+                                                    " ); ";
+                                            System.out.println(sqlSuggSchedules);
+                                            HashMap<String, Object> returnList_future = new HashMap<String, Object>();
+                                            List<HashMap<String, Object>> serversList = new ArrayList<HashMap<String, Object>>();
+                                            List<OffersSchedulesEntity> orgsList
+                                                    = (List<OffersSchedulesEntity>) entityManager.createNativeQuery(
+                                                    sqlSuggSchedules, OffersSchedulesEntity.class).getResultList();
+                                            for (OffersSchedulesEntity j : orgsList) {
+                                                HashMap<String, Object> sHmpam = new HashMap<String, Object>();
+                                                sHmpam.put("offerScheduleId", j.getId());
+                                                sHmpam.put("id", j.getId());
+                                                sHmpam.put("offerId", j.getOfferId());
+                                                sHmpam.put("fromCountry", j.getFromCountry());
+                                                sHmpam.put("fromCity", j.getFromCity());
+                                                sHmpam.put("fromPostalCode", j.getFromPostalCode());
+                                                sHmpam.put("toCountry", j.getToCountry());
+                                                sHmpam.put("toCity", j.getToCity());
+                                                sHmpam.put("toPostalCode", j.getToPostalCode());
+
+                                                String packages = "select * " +
+                                                        "from schedule_package_offer pack " +
+                                                        "where pack.offer_schedule_id="+offerScheduleId;
+                                                List<SchedulePackageOfferEntity> packagesList = (List<SchedulePackageOfferEntity>) entityManager.createNativeQuery(
+                                                        packages,SchedulePackageOfferEntity.class).getResultList();
+                                                List<HashMap<String, Object>> schedList = new ArrayList<HashMap<String, Object>>();
+                                                for (SchedulePackageOfferEntity sp : packagesList) {
+                                                    HashMap<String, Object> packMap = new HashMap<String, Object>();
+                                                    packMap.put("from", sp.getFromUnit().toString());
+                                                    packMap.put("to", sp.getToUnit().toString());
+                                                    packMap.put("offersScheduleId", sp.getOfferScheduleId());
+                                                    packMap.put("shdulesPackageId", sp.getId());
+                                                    packMap.put("id", sp.getId());
+                                                    packMap.put("measurementUnitId", sp.getMeasureUnitId());
+                                                    MeasurementUnitEntity measurementUnit = entityManager.find(MeasurementUnitEntity.class, sp.getMeasureUnitId());
+                                                    packMap.put("measurementUnit_id", measurementUnit.getId());
+                                                    packMap.put("measurementUnit_title", measurementUnit.getTitle());
+                                                    packMap.put("measurementUnit", measurementUnit);
+                                                    packMap.put("unitPrice", sp.getUnitPrice().toString());
+                                                    packMap.put("updateDate", sp.getUpdateDate());
+                                                    packMap.put("creationDate", sp.getCreationDate());
+                                                    packMap.put("measureUnitLabel", entityManager.find(MeasurementUnitEntity.class, sp.getMeasureUnitId()).getTitle());
+                                                    schedList.add(packMap);
+                                                }
+                                                sHmpam.put("schedList", schedList);
+                                                serversList.add(sHmpam);
+                                            }
+                                            returnList_future.put("data", serversList);
+                                            returnList_future.put("status", "success");
+                                            returnList_future.put("message", "success");
+                                            return returnList_future;
+                                        });
+                            },
+                            executionContext);
+                    returnList = getFuture.get();
+                    DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                    ow.setDateFormat(myDateFormat);
+                    try {
+                        jsonResult = ow.writeValueAsString(returnList);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        result.put("status", "error");
+                        result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων ");
+                        return ok(result);
+                    }
+                    return ok(jsonResult);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων");
+            return ok(result);
+        }
+    }
+
+
+
+
+
+
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
@@ -991,9 +1138,7 @@ public class OffersController extends Application {
                 CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
                             return jpaApi.withTransaction(entityManager -> {
                                 try {
-
                                     System.out.println(json);
-
                                     DateFormat myDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                                     JsonNode custommer = json.findPath("custommer2");
                                     String user_id = json.findPath("user_id").asText();
@@ -1032,7 +1177,6 @@ public class OffersController extends Application {
                                         offersEntity.setCustomerId(custommer.findPath("customerSupplierId").asLong());
                                     } else {
                                         offersEntity.setCustomerId(custommer.findPath("customerId").asLong());
-
                                     }
                                     offersEntity.setFromAddress(from.findPath("address").asText());
                                     offersEntity.setFromCity(from.findPath("city").asText());
@@ -1048,7 +1192,6 @@ public class OffersController extends Application {
                                     offersEntity.setToRegion(to.findPath("region").asText());
                                     offersEntity.setToLattitude(to.findPath("lattitude").asDouble());
                                     offersEntity.setToLongtitude(to.findPath("longtitude").asDouble());
-
                                     entityManager.persist(offersEntity);
                                     Iterator itOffersSCHEDULDE = tableDataTimokatalogosProsfores.iterator();
                                     while (itOffersSCHEDULDE.hasNext()) {

@@ -18,6 +18,7 @@ public class OrderWaypointsEntity {
     private Date updateDate;
     private Date creationDate;
     private Long warehouseId;
+    private Long orderScheduleId;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -150,5 +151,15 @@ public class OrderWaypointsEntity {
 
     public void setWarehouseId(Long warehouseId) {
         this.warehouseId = warehouseId;
+    }
+
+    @Basic
+    @Column(name = "order_schedule_id")
+    public Long getOrderScheduleId() {
+        return orderScheduleId;
+    }
+
+    public void setOrderScheduleId(Long orderScheduleId) {
+        this.orderScheduleId = orderScheduleId;
     }
 }
