@@ -24,6 +24,7 @@ public class OrderSchedulesEntity {
     private Date updateDate;
     private String type;
     private Long offerId;
+    private Long offerScheduleId;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -210,5 +211,15 @@ public class OrderSchedulesEntity {
 
     public void setOfferId(Long offerId) {
         this.offerId = offerId;
+    }
+
+    @Basic
+    @Column(name = "offer_schedule_id")
+    public Long getOfferScheduleId() {
+        return offerScheduleId;
+    }
+
+    public void setOfferScheduleId(Long offerScheduleId) {
+        this.offerScheduleId = offerScheduleId;
     }
 }

@@ -474,14 +474,14 @@ public class OffersController extends Application {
                                                 for (OffersSchedulesEntity osent : offschelist) {
 
                                                     HashMap<String, Object> osentMap = new HashMap<String, Object>();
-                                                  //  String sqlOrd = "select * from orders ord where ord.offer_schedule_id= '" + osent.getId() + "'";
-//                                                    List<OrdersEntity> ordersEntityList =
-//                                                            entityManager.createNativeQuery(sqlOrd, OrdersEntity.class).getResultList();
+                                                    String sqlOrd = "select * from order_schedules ords where ords.offer_schedule_id= '" + osent.getId() + "'";
+                                                    List<OrderSchedulesEntity> orderSchedulesEntityList =
+                                                            entityManager.createNativeQuery(sqlOrd, OrderSchedulesEntity.class).getResultList();
 
-                                                    osentMap.put("countOrders",4);
-//                                                    if (ordersEntityList.size() > 0) {
-//                                                        osentMap.put("order_id", ordersEntityList.get(0).getId());
-//                                                    }
+                                                    osentMap.put("countOrders",orderSchedulesEntityList.size());
+                                                    if (orderSchedulesEntityList.size() > 0) {
+                                                        osentMap.put("order_id", orderSchedulesEntityList.get(0).getOrderId());
+                                                    }
                                                     osentMap.put("fromAddress", osent.getFromAddress());
                                                     osentMap.put("token", osent.getToken());
                                                     osentMap.put("fromCity", osent.getFromCity());
