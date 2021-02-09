@@ -98,6 +98,7 @@ public class FactoriesController extends Application {
                                                 sHmpam.put("comments", j.getComments());
                                                 sHmpam.put("id", j.getId());
                                                 sHmpam.put("factoryId", j.getId());
+                                                sHmpam.put("factoryType", j.getFactoryType());
                                                 sHmpam.put("manager", j.getManager());
                                                 sHmpam.put("postalCode", j.getPostalCode());
                                                 sHmpam.put("region", j.getRegion());
@@ -178,10 +179,11 @@ public class FactoriesController extends Application {
                                             String address = json.findPath("address").asText();
                                             String brandName = json.findPath("brandName").asText();
                                             String city = json.findPath("city").asText();
+                                            String country = json.findPath("country").asText();
+                                            String postalCode = json.findPath("postalCode").asText();
                                             String email = json.findPath("email").asText();
                                             String customerId = json.findPath("customerId").asText();
                                             String manager = json.findPath("manager").asText();
-                                            String postalCode = json.findPath("postalCode").asText();
                                             String region = json.findPath("region").asText();
                                             String telephone = json.findPath("telephone").asText();
                                             String creationDate = json.findPath("creationDate").asText();
@@ -221,38 +223,40 @@ public class FactoriesController extends Application {
                                             if(!factoryId.equalsIgnoreCase("") && factoryId!=null){
                                                 sqlFactFinal+=" and pos.id like '%"+factoryId+"%'";
                                             }
-                                            if(!factoryId.equalsIgnoreCase("") && factoryId!=null){
+                                            if(!factoryId.equalsIgnoreCase("") && factoryId!=null && !factoryId.equalsIgnoreCase("null")){
                                                 sqlFactFinal+=" and pos.id like '%"+factoryId+"%'";
                                             }
-
-                                            if(!address.equalsIgnoreCase("") && address!=null){
-                                                sqlFactFinal+=" and pos.address like '%"+address+"%'";
-                                            }
-                                            if(!brandName.equalsIgnoreCase("") && brandName!=null){
-                                                sqlFactFinal+=" and pos.brand_name like '%"+brandName+"%'";
-                                            }
-                                            if(!brandName.equalsIgnoreCase("") && brandName!=null){
-                                                sqlFactFinal+=" and pos.brand_name like '%"+brandName+"%'";
-                                            }
-                                            if(!city.equalsIgnoreCase("") && city!=null){
+                                            if(!city.equalsIgnoreCase("") && city!=null && !city.equalsIgnoreCase("null")){
                                                 sqlFactFinal+=" and pos.city like '%"+city+"%'";
                                             }
-                                            if(!email.equalsIgnoreCase("") && email!=null){
-                                                sqlFactFinal+=" and pos.email like '%"+email+"%'";
+                                            if(!country.equalsIgnoreCase("") && country!=null && !country.equalsIgnoreCase("null")){
+                                                sqlFactFinal+=" and pos.country like '%"+country+"%'";
                                             }
-                                            if(!manager.equalsIgnoreCase("") && manager!=null){
-                                                sqlFactFinal+=" and pos.manager like '%"+manager+"%'";
-                                            }
-                                            if(!postalCode.equalsIgnoreCase("") && postalCode!=null){
+
+                                            if(!postalCode.equalsIgnoreCase("") && postalCode!=null  && !postalCode.equalsIgnoreCase("null")){
                                                 sqlFactFinal+=" and pos.postal_code like '%"+postalCode+"%'";
                                             }
-                                            if(!region.equalsIgnoreCase("") && region!=null){
+
+                                            if(!address.equalsIgnoreCase("") && address!=null && !address.equalsIgnoreCase("null")){
+                                                sqlFactFinal+=" and pos.address like '%"+address+"%'";
+                                            }
+                                            if(!brandName.equalsIgnoreCase("") && brandName!=null && !brandName.equalsIgnoreCase("null")){
+                                                sqlFactFinal+=" and pos.brand_name like '%"+brandName+"%'";
+                                            }
+
+                                            if(!email.equalsIgnoreCase("") && email!=null && !email.equalsIgnoreCase("null")){
+                                                sqlFactFinal+=" and pos.email like '%"+email+"%'";
+                                            }
+                                            if(!manager.equalsIgnoreCase("") && manager!=null && !manager.equalsIgnoreCase("null")){
+                                                sqlFactFinal+=" and pos.manager like '%"+manager+"%'";
+                                            }
+                                            if(!region.equalsIgnoreCase("") && region!=null && !region.equalsIgnoreCase("null")){
                                                 sqlFactFinal+=" and pos.region like '%"+region+"%'";
                                             }
-                                            if(!telephone.equalsIgnoreCase("") && telephone!=null){
+                                            if(!telephone.equalsIgnoreCase("") && telephone!=null && !telephone.equalsIgnoreCase("null")){
                                                 sqlFactFinal+=" and pos.telephone like '%"+telephone+"%'";
                                             }
-                                            if(!creationDate.equalsIgnoreCase("") && creationDate!=null){
+                                            if(!creationDate.equalsIgnoreCase("") && creationDate!=null && !creationDate.equalsIgnoreCase("null")){
                                                 sqlFactFinal += " and SUBSTRING( role.creation_date, 1, 10)  = '" + creationDate + "'";
                                             }
 
@@ -276,6 +280,8 @@ public class FactoriesController extends Application {
                                             List<FactoriesEntity> warehousesEntityList
                                                     = (List<FactoriesEntity>) entityManager.createNativeQuery(
                                                     sqlFactFinal, FactoriesEntity.class).getResultList();
+
+                                            System.out.println(warehousesEntityList.size());
                                             for (FactoriesEntity j : warehousesEntityList) {
                                                 HashMap<String, Object> sHmpam = new HashMap<String, Object>();
                                                 sHmpam.put("address", j.getAddress());
@@ -285,6 +291,7 @@ public class FactoriesController extends Application {
                                                 sHmpam.put("appointmentRequired", j.getAppointmentRequired());
                                                 sHmpam.put("email", j.getEmail());
                                                 sHmpam.put("comments", j.getComments());
+                                                sHmpam.put("factoryType", j.getFactoryType());
                                                 sHmpam.put("id", j.getId());
                                                 sHmpam.put("factoryId", j.getId());
                                                 sHmpam.put("manager", j.getManager());
@@ -445,6 +452,7 @@ public class FactoriesController extends Application {
                                                 sHmpam.put("comments", j.getComments());
                                                 sHmpam.put("id", j.getId());
                                                 sHmpam.put("factoryId", j.getId());
+                                                sHmpam.put("factoryType", j.getFactoryType());
                                                 sHmpam.put("manager", j.getManager());
                                                 sHmpam.put("postalCode", j.getPostalCode());
                                                 sHmpam.put("region", j.getRegion());
@@ -520,6 +528,9 @@ public class FactoriesController extends Application {
                                     String region = json.findPath("region").asText();
                                     String manager = json.findPath("manager").asText();
                                     String country = json.findPath("country").asText();
+                                    String factoryType = json.findPath("factoryType").asText();
+
+                                    //
                                     String comments = json.findPath("comments").asText();
                                     Double longtitude = json.findPath("longitude").asDouble();
                                     Double lattitude = json.findPath("latitude").asDouble();
@@ -537,6 +548,7 @@ public class FactoriesController extends Application {
                                     factoriesEntity.setTelephone(telephone);
                                     factoriesEntity.setPostalCode(postalCode);
                                     factoriesEntity.setRegion(region);
+                                    factoriesEntity.setFactoryType(factoryType);
                                     factoriesEntity.setManager(manager);
                                     factoriesEntity.setCreationDate(new Date());
                                     factoriesEntity.setSchedule(schedule);
@@ -555,6 +567,8 @@ public class FactoriesController extends Application {
                                     }
                                     entityManager.persist(factoriesEntity);
                                     result_add.put("status", "success");
+                                    result_add.put("address", factoriesEntity.getAddress());
+                                    result_add.put("brandName", factoriesEntity.getBrandName());
                                     result_add.put("factoryId", factoriesEntity.getId());
                                     result_add.put("message", "Η καταχώρηση ολοκληρώθηκε με επιτυχία!");
                                     result_add.put("DO_ID", factoriesEntity.getId());
@@ -605,6 +619,7 @@ public class FactoriesController extends Application {
                                     String schedule = json.findPath("schedule").asText();
                                     String site = json.findPath("site").asText();
                                     String country = json.findPath("country").asText();
+                                    String factoryType = json.findPath("factoryType").asText();
                                     String coordinates = json.findPath("coordinates").asText();
                                     String unloadingLoadingCode = json.findPath("unloadingLoadingCode").asText();
                                     Integer appointmentDays = json.findPath("appointmentDays").asInt();
@@ -616,6 +631,8 @@ public class FactoriesController extends Application {
                                     factoriesEntity.setBrandName(brandName);
                                     factoriesEntity.setCity(city);
                                     factoriesEntity.setEmail(email);
+                                    factoriesEntity.setFactoryType(factoryType);
+
                                     factoriesEntity.setTelephone(telephone);
                                     factoriesEntity.setPostalCode(postalCode);
                                     factoriesEntity.setCountry(country);
@@ -638,6 +655,9 @@ public class FactoriesController extends Application {
                                     }
                                     entityManager.merge(factoriesEntity);
                                     result_add.put("status", "success");
+                                    result_add.put("address", factoriesEntity.getAddress());
+                                    result_add.put("brandName", factoriesEntity.getBrandName());
+                                    result_add.put("factoryId", factoriesEntity.getId());
                                     result_add.put("message", "Η ενημερωση ολοκληρώθηκε με επιτυχία!");
                                     result_add.put("DO_ID", factoriesEntity.getId());
                                     result_add.put("system", "εργοστάσια");
@@ -653,7 +673,7 @@ public class FactoriesController extends Application {
                     ObjectNode result = Json.newObject();
                     e.printStackTrace();
                     result.put("status", "error");
-                    result.put("message", "Προβλημα κατα την καταχωρηση");
+                    result.put("message", "Προβλημα κατα την ενημερωση");
                     return ok(result);
                 }
             }
@@ -661,7 +681,7 @@ public class FactoriesController extends Application {
             ObjectNode result = Json.newObject();
             e.printStackTrace();
             result.put("status", "error");
-            result.put("message", "Προβλημα κατα την καταχωρηση");
+            result.put("message", "Προβλημα κατα την ενημερωση");
             return ok(result);
         }
     }

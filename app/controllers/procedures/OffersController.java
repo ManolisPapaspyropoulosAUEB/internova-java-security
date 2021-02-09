@@ -792,24 +792,30 @@ public class OffersController extends Application {
                                             OffersEntity offersEntity = entityManager.find(OffersEntity.class,offerId);
 
 
-                                            String sqlSuggSchedules = " " +
-                                                    "  select * from \n" +
-                                                    "( \n" +
-                                                    "select * \n" +
-                                                    "from offers_schedules offs where offer_id="+offerId+" and id!="+offerScheduleId+" \n" +
-                                                    "union \n" +
-                                                    "select * from \n" +
-                                                    "offers_schedules offs \n" +
-                                                    "where offs.offer_id in (select offer.id from offers offer where offer.customer_id="+offersEntity.getCustomerId()+" and offer.status='ΑΠΟΔΟΧΗ') \n" +
-                                                    "and  offs.offer_id!="+offerId+") as sugg \n" +
-                                                    "where sugg.from_city in \n" +
-                                                    "( \n" +
-                                                    "select offs.from_city as city from offers_schedules offs where offs.id="+offerScheduleId+" \n" +
-                                                    "union \n" +
-                                                    "select offs.to_city as city from offers_schedules offs where offs.id="+offerScheduleId+" \n" +
-                                                    "union \n" +
-                                                    "(select city from offer_schedule_between_waypoints waypoints where  waypoints.offer_schedule_id="+offerScheduleId+") \n" +
-                                                    " ); ";
+//                                            String sqlSuggSchedules = " " +
+//                                                    "  select * from \n" +
+//                                                    "( \n" +
+//                                                    "select * \n" +
+//                                                    "from offers_schedules offs where offer_id="+offerId+" and id!="+offerScheduleId+" \n" +
+//                                                    "union \n" +
+//                                                    "select * from \n" +
+//                                                    "offers_schedules offs \n" +
+//                                                    "where offs.offer_id in (select offer.id from offers offer where offer.customer_id="+offersEntity.getCustomerId()+" and offer.status='ΑΠΟΔΟΧΗ') \n" +
+//                                                    "and  offs.offer_id!="+offerId+") as sugg \n" +
+//                                                    "where sugg.from_city in \n" +
+//                                                    "( \n" +
+//                                                    "select offs.from_city as city from offers_schedules offs where offs.id="+offerScheduleId+" \n" +
+//                                                    "union \n" +
+//                                                    "select offs.to_city as city from offers_schedules offs where offs.id="+offerScheduleId+" \n" +
+//                                                    "union \n" +
+//                                                    "(select city from offer_schedule_between_waypoints waypoints where  waypoints.offer_schedule_id="+offerScheduleId+") \n" +
+//                                                    " ); ";
+
+
+                                            String sqlSuggSchedules="" +
+                                                    "select *\n" +
+                                                    "from offers_schedules offs where offer_id="+offerId+" and id!="+offerScheduleId;
+
                                             System.out.println(sqlSuggSchedules);
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             List<HashMap<String, Object>> serversList = new ArrayList<HashMap<String, Object>>();
@@ -1362,8 +1368,12 @@ public class OffersController extends Application {
                     CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
                                 return jpaApi.withTransaction(
                                         entityManager -> {
-
+                                            String country = json.findPath("country").asText();
                                             String sqlCountries = "select * from countries c where 1=1 ";
+                                            if( country!=null && !country.equalsIgnoreCase("")){
+                                                sqlCountries+="and c.name="+"'"+country+"'";
+                                            }
+                                            System.out.println(sqlCountries);
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             List<HashMap<String, Object>> countriesList = new ArrayList<HashMap<String, Object>>();
                                             List<CountriesEntity> orgsList
@@ -1374,6 +1384,7 @@ public class OffersController extends Application {
                                                 sHmpam.put("id", j.getId());
                                                 sHmpam.put("name", j.getName());
                                                 sHmpam.put("code", j.getNameEn());
+                                                sHmpam.put("order_code", j.getCode());
                                                 sHmpam.put("code2", j.getCode2());
                                                 sHmpam.put("creationDate", j.getCreationDate());
                                                 countriesList.add(sHmpam);

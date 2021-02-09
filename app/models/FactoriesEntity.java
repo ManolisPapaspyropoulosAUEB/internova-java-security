@@ -29,6 +29,7 @@ public class FactoriesEntity {
     private Double longtitude;
     private Double lattitude;
     private Byte appointmentRequired;
+    private String factoryType;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -261,5 +262,15 @@ public class FactoriesEntity {
 
     public void setAppointmentRequired(Byte appointmentRequired) {
         this.appointmentRequired = appointmentRequired;
+    }
+
+    @Basic
+    @Column(name = "factory_type")
+    public String getFactoryType() {
+        return factoryType;
+    }
+
+    public void setFactoryType(String factoryType) {
+        this.factoryType = factoryType;
     }
 }

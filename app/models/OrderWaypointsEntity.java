@@ -17,10 +17,11 @@ public class OrderWaypointsEntity {
     private String longtitude;
     private Date updateDate;
     private Date creationDate;
-    private Long warehouseId;
     private Long orderScheduleId;
     private Integer nestedScheduleIndicator;
     private Long offerScheduleBetweenWaypointId;
+    private Long factoryId;
+    private Integer newWaypoint;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -146,16 +147,6 @@ public class OrderWaypointsEntity {
     }
 
     @Basic
-    @Column(name = "warehouse_id")
-    public Long getWarehouseId() {
-        return warehouseId;
-    }
-
-    public void setWarehouseId(Long warehouseId) {
-        this.warehouseId = warehouseId;
-    }
-
-    @Basic
     @Column(name = "order_schedule_id")
     public Long getOrderScheduleId() {
         return orderScheduleId;
@@ -183,5 +174,25 @@ public class OrderWaypointsEntity {
 
     public void setOfferScheduleBetweenWaypointId(Long offerScheduleBetweenWaypointId) {
         this.offerScheduleBetweenWaypointId = offerScheduleBetweenWaypointId;
+    }
+
+    @Basic
+    @Column(name = "factory_id")
+    public Long getFactoryId() {
+        return factoryId;
+    }
+
+    public void setFactoryId(Long factoryId) {
+        this.factoryId = factoryId;
+    }
+
+    @Basic
+    @Column(name = "new_waypoint")
+    public Integer getNewWaypoint() {
+        return newWaypoint;
+    }
+
+    public void setNewWaypoint(Integer newWaypoint) {
+        this.newWaypoint = newWaypoint;
     }
 }
