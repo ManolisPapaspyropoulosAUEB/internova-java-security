@@ -197,7 +197,6 @@ public class OrdersController extends Application {
                                         if (!title.equalsIgnoreCase("") && title != null) {
                                             sqlPackages += " and mu.title like '%" + title + "%'";
                                         }
-                                        System.out.println(sqlPackages);
                                         HashMap<String, Object> returnList_future = new HashMap<String, Object>();
 
                                         List tul = entityManager.createNativeQuery(sqlPackages).getResultList();
@@ -375,7 +374,6 @@ public class OrdersController extends Application {
                                             for (int i = 0; i < ordSchedList.size(); i++) {
                                                 offers = offers + ordSchedList.get(i) + ",";
                                             }
-                                            System.out.println(offers);
                                             try {
                                                 offers = removeLastChar(offers);
                                             } catch (Exception e) {
@@ -415,18 +413,40 @@ public class OrdersController extends Application {
                                                 schedmap.put("fromCountry", os.getFromCountry());
                                                 schedmap.put("fromPostalCode", os.getFromPostalCode());
 
-                                                if(os.getFactoryId()!=null){
-                                                    schedmap.put("fromAddress", entityManager.find(FactoriesEntity.class,(os.getFactoryId())).getAddress());
-                                                    schedmap.put("brandName", entityManager.find(FactoriesEntity.class,(os.getFactoryId())).getBrandName());
-                                                }else{
+                                                if (os.getFactoryId() != null) {
+                                                    schedmap.put("fromAddress", entityManager.find(FactoriesEntity.class, (os.getFactoryId())).getAddress());
+                                                    schedmap.put("brandName", entityManager.find(FactoriesEntity.class, (os.getFactoryId())).getBrandName());
+                                                    schedmap.put("latitude", entityManager.find(FactoriesEntity.class, (os.getFactoryId())).getLattitude());
+                                                    schedmap.put("longitude", entityManager.find(FactoriesEntity.class, (os.getFactoryId())).getLongtitude());
+                                                } else {
                                                     schedmap.put("fromAddress", "Δεν έχει οριστεί");
                                                     schedmap.put("brandName", "-");
+                                                    schedmap.put("lattitude","not available");
+                                                    schedmap.put("longtitude", "not available");
                                                 }
 
                                                 schedmap.put("toCity", os.getToCity());
                                                 schedmap.put("toCountry", os.getToCountry());
                                                 schedmap.put("toPostalCode", os.getToPostalCode());
                                                 schedmap.put("orderScheduleId", os.getId());
+
+
+                                                String itemsAfethriasFortwshs = "select * from orders_selections_by_point where order_id=" + os.getOrderId() +
+                                                        " and  order_schedule_id=" + os.getId() + " and order_waypoint_id is null";
+                                                List<OrdersSelectionsByPointEntity> itemsPackagesAfethrias = entityManager.createNativeQuery(itemsAfethriasFortwshs, OrdersSelectionsByPointEntity.class).getResultList();
+                                                List<HashMap<String, Object>> itemsPackagesAfethriasFinal = new ArrayList<HashMap<String, Object>>();
+
+                                                for (OrdersSelectionsByPointEntity osbp : itemsPackagesAfethrias) {
+                                                    HashMap<String, Object> osbpMap = new HashMap<String, Object>();
+                                                    osbpMap.put("title", osbp.getTitle());
+                                                    osbpMap.put("quantity", osbp.getQuantity());
+                                                    HashMap<String, Object> osbpMapS = new HashMap<String, Object>();
+                                                    osbpMapS.put("selectedPackage", osbpMap);
+                                                    osbpMapS.put("quantity", osbp.getQuantity());
+                                                    itemsPackagesAfethriasFinal.add(osbpMapS);
+                                                }
+                                                schedmap.put("itemsPackagesAfethrias", itemsPackagesAfethriasFinal);
+
 
                                                 String sqlOrdPackagesSchedules = "select * from order_package_schedules ops where  ops.order_id=" + os.getOrderId() +
                                                         " and ops.order_schedule_id=" + os.getId();
@@ -448,12 +468,11 @@ public class OrdersController extends Application {
                                                     ordPmap.put("orderScheduleId", ops.getOrderScheduleId());
                                                     ordPmap.put("quantity", ops.getQuantity());
 
-                                                    String sqlDv = "select * from order_distinct_item od where od.order_id="+ops.getOrderId() +" and od.order_schedule_id="+ops.getOrderScheduleId() +" and od.order_package_id="+ops.getId();
+                                                    String sqlDv = "select * from order_distinct_item od where od.order_id=" + ops.getOrderId() + " and od.order_schedule_id=" + ops.getOrderScheduleId() + " and od.order_package_id=" + ops.getId();
 
-                                                    System.out.println(sqlDv);
-                                                    List<OrderDistinctItemEntity> orderDistinctItemList = entityManager.createNativeQuery(sqlDv,OrderDistinctItemEntity.class).getResultList();
+                                                    List<OrderDistinctItemEntity> orderDistinctItemList = entityManager.createNativeQuery(sqlDv, OrderDistinctItemEntity.class).getResultList();
                                                     List<HashMap<String, Object>> odvList = new ArrayList<HashMap<String, Object>>();
-                                                    for(OrderDistinctItemEntity  odv :orderDistinctItemList){
+                                                    for (OrderDistinctItemEntity odv : orderDistinctItemList) {
                                                         HashMap<String, Object> distinctItemMap = new HashMap<String, Object>();
                                                         distinctItemMap.put("title", odv.getTitle());
                                                         distinctItemMap.put("from", odv.getFromUnit());
@@ -488,7 +507,7 @@ public class OrdersController extends Application {
                                                     item.put("unitPrice", 0);
                                                     item.put("finalUnitPrice", 0);
 
-                                                    String sqlDistansesValues = "select * FROM order_packages where order_id=" + os.getOrderId() + " and measure_unit_id=" + tu.get(0).asInt();
+                                                    String sqlDistansesValues = "select * from order_packages where order_id=" + os.getOrderId() + " and measure_unit_id=" + tu.get(0).asInt();
                                                     List<OrderPackagesEntity> distList = entityManager.createNativeQuery(sqlDistansesValues, OrderPackagesEntity.class).getResultList();
                                                     List<HashMap<String, Object>> fdvList = new ArrayList<HashMap<String, Object>>();
                                                     for (OrderPackagesEntity dv : distList) {
@@ -509,17 +528,26 @@ public class OrdersController extends Application {
                                                 List<HashMap<String, Object>> waypFinal = new ArrayList<HashMap<String, Object>>();
                                                 for (OrderWaypointsEntity waypOb : waypointsList) {
                                                     HashMap<String, Object> waypmap = new HashMap<String, Object>();
+                                                    waypmap.put("itemsPackagesFortwshsEndiamesouShmeiou", new ArrayList<HashMap<String, Object>>());
+                                                    waypmap.put("itemsPackagesEkfortwshsEndiamesouShmeiou", new ArrayList<HashMap<String, Object>>());
+                                                    waypmap.put("itemsPackagesEkfortwshsProorismou", new ArrayList<HashMap<String, Object>>());
+
+
                                                     waypmap.put("city", waypOb.getCity());
                                                     waypmap.put("country", waypOb.getCountry());
                                                     waypmap.put("postalCode", waypOb.getPostalCode());
 
 
-                                                    if(waypOb.getFactoryId()!=null){
-                                                        waypmap.put("address", entityManager.find(FactoriesEntity.class,(waypOb.getFactoryId())).getAddress());
-                                                        waypmap.put("brandName", entityManager.find(FactoriesEntity.class,(waypOb.getFactoryId())).getBrandName());
-                                                    }else{
+                                                    if (waypOb.getFactoryId() != null) {
+                                                        waypmap.put("address", entityManager.find(FactoriesEntity.class, (waypOb.getFactoryId())).getAddress());
+                                                        waypmap.put("brandName", entityManager.find(FactoriesEntity.class, (waypOb.getFactoryId())).getBrandName());
+                                                        waypmap.put("latitude", entityManager.find(FactoriesEntity.class, (waypOb.getFactoryId())).getLattitude());
+                                                        waypmap.put("longitude", entityManager.find(FactoriesEntity.class, (waypOb.getFactoryId())).getLongtitude());
+                                                    } else {
                                                         waypmap.put("address", "Δεν έχει οριστεί");
                                                         waypmap.put("brandName", "-");
+                                                        waypmap.put("lattitude","not available");
+                                                        waypmap.put("longtitude", "not available");
                                                     }
 
 
@@ -528,13 +556,74 @@ public class OrdersController extends Application {
                                                     if (waypOb.getOfferScheduleBetweenWaypointId() != null) {
                                                         waypmap.put("finalStation", false);
                                                     } else {
-                                                        if(waypOb.getNewWaypoint()!=null && waypOb.getNewWaypoint()==1){
+                                                        if (waypOb.getNewWaypoint() != null && waypOb.getNewWaypoint() == 1) {
                                                             waypmap.put("finalStation", false);
-                                                        }else{
+                                                        } else {
                                                             waypmap.put("finalStation", true);
                                                         }
                                                     }
                                                     waypmap.put("offerScheduleBetweenWaypointId", waypOb.getOfferScheduleBetweenWaypointId());
+
+
+                                                    String itemsEndFortSql =
+                                                            "select * from orders_selections_by_point where order_id=" + os.getOrderId() +
+                                                                    " and  order_schedule_id=" + waypOb.getOrderScheduleId() + " and order_waypoint_id =" + waypOb.getId() + " and type='Φόρτωση'";
+                                                    List<OrdersSelectionsByPointEntity> itemsPackagesFortwshsEndiamesouShmeiou =
+                                                            entityManager.createNativeQuery(itemsEndFortSql, OrdersSelectionsByPointEntity.class).getResultList();
+                                                    List<HashMap<String, Object>> itemsPackagesFortwshsEndiamesouShmeiouFinal = new ArrayList<HashMap<String, Object>>();
+
+                                                    for (OrdersSelectionsByPointEntity endshmFort : itemsPackagesFortwshsEndiamesouShmeiou) {
+                                                        HashMap<String, Object> osbpMap = new HashMap<String, Object>();
+                                                        osbpMap.put("title", endshmFort.getTitle());
+                                                        osbpMap.put("quantity", endshmFort.getQuantity());
+                                                        HashMap<String, Object> osbpMapS = new HashMap<String, Object>();
+                                                        osbpMapS.put("selectedPackage", osbpMap);
+                                                        osbpMapS.put("quantity", endshmFort.getQuantity());
+                                                        itemsPackagesFortwshsEndiamesouShmeiouFinal.add(osbpMapS);
+                                                    }
+                                                    waypmap.put("itemsPackagesFortwshsEndiamesouShmeiou", itemsPackagesFortwshsEndiamesouShmeiouFinal);
+
+
+                                                    String itemsEndEkfortSql =
+                                                            "select * from orders_selections_by_point where order_id=" + os.getOrderId() +
+                                                                    " and  order_schedule_id=" + waypOb.getOrderScheduleId() + " and order_waypoint_id =" + waypOb.getId() + " and type='Εκφόρτωση'";
+                                                    List<OrdersSelectionsByPointEntity> itemsPackagesEkfortwshsEndiamesouShmeiou =
+                                                            entityManager.createNativeQuery(itemsEndEkfortSql, OrdersSelectionsByPointEntity.class).getResultList();
+                                                    List<HashMap<String, Object>> itemsPackagesEkfortwshsEndiamesouShmeiouFinal = new ArrayList<HashMap<String, Object>>();
+
+                                                    for (OrdersSelectionsByPointEntity endshmFort : itemsPackagesEkfortwshsEndiamesouShmeiou) {
+                                                        HashMap<String, Object> osbpMap = new HashMap<String, Object>();
+                                                        osbpMap.put("title", endshmFort.getTitle());
+                                                        osbpMap.put("quantity", endshmFort.getQuantity());
+                                                        HashMap<String, Object> osbpMapS = new HashMap<String, Object>();
+                                                        osbpMapS.put("selectedPackage", osbpMap);
+                                                        osbpMapS.put("quantity", endshmFort.getQuantity());
+
+                                                        itemsPackagesEkfortwshsEndiamesouShmeiouFinal.add(osbpMapS);
+                                                    }
+                                                    waypmap.put("itemsPackagesEkfortwshsEndiamesouShmeiou", itemsPackagesEkfortwshsEndiamesouShmeiouFinal);
+
+
+                                                    String itemsEkfProorismou =
+                                                            "select * from orders_selections_by_point where order_id=" + os.getOrderId() +
+                                                                    " and  order_schedule_id=" + waypOb.getOrderScheduleId() + " and order_waypoint_id =" + waypOb.getId() + " and type='Εκφόρτωση Προορισμού'";
+                                                    List<OrdersSelectionsByPointEntity> itemsEkfProorismouList =
+                                                            entityManager.createNativeQuery(itemsEkfProorismou, OrdersSelectionsByPointEntity.class).getResultList();
+                                                    List<HashMap<String, Object>> itemsEkfProorismouFinal = new ArrayList<HashMap<String, Object>>();
+
+                                                    for (OrdersSelectionsByPointEntity endshmFort : itemsEkfProorismouList) {
+                                                        HashMap<String, Object> osbpMap = new HashMap<String, Object>();
+                                                        osbpMap.put("title", endshmFort.getTitle());
+                                                        osbpMap.put("quantity", endshmFort.getQuantity());
+                                                        HashMap<String, Object> osbpMapS = new HashMap<String, Object>();
+                                                        osbpMapS.put("selectedPackage", osbpMap);
+                                                        osbpMapS.put("quantity", endshmFort.getQuantity());
+
+                                                        itemsEkfProorismouFinal.add(osbpMapS);
+                                                    }
+                                                    waypmap.put("itemsPackagesEkfortwshsProorismou", itemsEkfProorismouFinal);
+
+
                                                     waypFinal.add(waypmap);
                                                 }
                                                 schedmap.put("waypointsList", waypFinal);
@@ -1032,30 +1121,41 @@ public class OrdersController extends Application {
                                 ObjectNode add_result = Json.newObject();
                                 String user_id = json.findPath("user_id").asText();
                                 Long orderId = json.findPath("orderId").asLong();
-                         //       System.out.println(json);
+                                String generalInstructions = json.findPath("generalInstructions").asText();
+                                String truckTemprature = json.findPath("truckTemprature").asText();
+                                //generalInstructions
+                                //       System.out.println(json);
 
                                 //order_distinct_item
 
-                                String sqlDv = "select * from order_distinct_item where order_id="+orderId;
-                                List<OrderDistinctItemEntity> orderDistinctItemEntitiesList = entityManager.createNativeQuery(sqlDv,OrderDistinctItemEntity.class).getResultList();
+                                String sqlDv = "select * from order_distinct_item where order_id=" + orderId;
+                                List<OrderDistinctItemEntity> orderDistinctItemEntitiesList = entityManager.createNativeQuery(sqlDv, OrderDistinctItemEntity.class).getResultList();
 
-                                for(OrderDistinctItemEntity odv : orderDistinctItemEntitiesList){
+                                for (OrderDistinctItemEntity odv : orderDistinctItemEntitiesList) {
                                     entityManager.remove(odv);
                                 }
 
-                                String sqlOrderPackages = " select * from  order_package_schedules ops where  ops.order_id="+orderId;
-                                List<OrderPackageSchedulesEntity> orderPackageSchedulesEntityList = entityManager.createNativeQuery(sqlOrderPackages,OrderPackageSchedulesEntity.class).getResultList();
-                                for(OrderPackageSchedulesEntity ops : orderPackageSchedulesEntityList){
+
+                                String sqlPackagesByPoints = "select * from orders_selections_by_point where order_id=" + orderId;
+                                List<OrdersSelectionsByPointEntity> ordersSelectionsByPointEntityList = entityManager.createNativeQuery(sqlPackagesByPoints, OrdersSelectionsByPointEntity.class).getResultList();
+                                for (OrdersSelectionsByPointEntity osp : ordersSelectionsByPointEntityList) {
+                                    entityManager.remove(osp);
+                                }
+
+
+                                String sqlOrderPackages = " select * from  order_package_schedules ops where  ops.order_id=" + orderId;
+                                List<OrderPackageSchedulesEntity> orderPackageSchedulesEntityList = entityManager.createNativeQuery(sqlOrderPackages, OrderPackageSchedulesEntity.class).getResultList();
+                                for (OrderPackageSchedulesEntity ops : orderPackageSchedulesEntityList) {
                                     entityManager.remove(ops);
                                 }
-                                String sqlWp = " select * from order_waypoints owp where owp.order_id="+orderId;
-                                List<OrderWaypointsEntity> orderWaypointsEntityList = entityManager.createNativeQuery(sqlWp,OrderWaypointsEntity.class).getResultList();
-                                for(OrderWaypointsEntity owp :orderWaypointsEntityList ){
+                                String sqlWp = " select * from order_waypoints owp where owp.order_id=" + orderId;
+                                List<OrderWaypointsEntity> orderWaypointsEntityList = entityManager.createNativeQuery(sqlWp, OrderWaypointsEntity.class).getResultList();
+                                for (OrderWaypointsEntity owp : orderWaypointsEntityList) {
                                     entityManager.remove(owp);
                                 }
-                                String sqlWpack = "select * from order_waypoints_packages owpack where owpack.order_id="+orderId;
-                                List<OrderWaypointsPackagesEntity> waypointsPackagesEntityList = entityManager.createNativeQuery(sqlWpack,OrderWaypointsPackagesEntity.class).getResultList();
-                                for(OrderWaypointsPackagesEntity wpack :waypointsPackagesEntityList ){
+                                String sqlWpack = "select * from order_waypoints_packages owpack where owpack.order_id=" + orderId;
+                                List<OrderWaypointsPackagesEntity> waypointsPackagesEntityList = entityManager.createNativeQuery(sqlWpack, OrderWaypointsPackagesEntity.class).getResultList();
+                                for (OrderWaypointsPackagesEntity wpack : waypointsPackagesEntityList) {
                                     entityManager.remove(wpack);
                                 }
 //                                String sqlOrdP = "select * from order_packages op where op.order_id="+orderId;
@@ -1063,27 +1163,45 @@ public class OrdersController extends Application {
 //                                for(OrderPackagesEntity op : orderPackagesEntityList){
 //                                 //   entityManager.remove(op);
 //                                }
-                                OrdersEntity ordersEntity = entityManager.find(OrdersEntity.class,orderId);
+                                OrdersEntity ordersEntity = entityManager.find(OrdersEntity.class, orderId);
+                                ordersEntity.setGeneralInstructions(generalInstructions);
+                                ordersEntity.setTruckTemprature(truckTemprature);
+                                entityManager.merge(ordersEntity);
                                 JsonNode finalTimeline = json.findPath("finalTimeline");
                                 Iterator fintIt = finalTimeline.iterator();
                                 while (fintIt.hasNext()) {
                                     JsonNode schedule = Json.toJson(fintIt.next());
                                     String factoryId = schedule.findPath("factoryId").asText();
                                     String offerScheduleBetweenWaypointId = schedule.findPath("offerScheduleBetweenWaypointId").asText();
-                                    if(schedule.findPath("timelinetype").asText().equalsIgnoreCase("Αφετηρία")){
-                                        OrderSchedulesEntity ordS = entityManager.find(OrderSchedulesEntity.class,schedule.findPath("orderScheduleId").asLong());
-                                        if(factoryId!=null &&  !factoryId.equalsIgnoreCase("") && !factoryId.equalsIgnoreCase("null")){
+                                    if (schedule.findPath("timelinetype").asText().equalsIgnoreCase("Αφετηρία")) {
+                                        OrderSchedulesEntity ordS = entityManager.find(OrderSchedulesEntity.class, schedule.findPath("orderScheduleId").asLong());
+                                        if (factoryId != null && !factoryId.equalsIgnoreCase("") && !factoryId.equalsIgnoreCase("null")) {
                                             ordS.setFactoryId(schedule.findPath("factoryId").asLong());
-                                            FactoriesEntity factory = entityManager.find(FactoriesEntity.class,ordS.getFactoryId());
+                                            FactoriesEntity factory = entityManager.find(FactoriesEntity.class, ordS.getFactoryId());
                                             ordS.setFromAddress(factory.getAddress());
                                             entityManager.merge(ordS);
                                         }
+
+                                        JsonNode itemsPackagesAfethrias = schedule.findPath("itemsPackagesAfethrias");
+                                        Iterator itemsAfethrias = itemsPackagesAfethrias.iterator();
+                                        while (itemsAfethrias.hasNext()) {
+                                            JsonNode itemsAfethriasNode = Json.toJson(itemsAfethrias.next());
+                                            String title = itemsAfethriasNode.findPath("selectedPackage").findPath("title").asText();
+                                            Integer quantity = itemsAfethriasNode.findPath("selectedPackage").findPath("quantity").asInt();
+                                            OrdersSelectionsByPointEntity selections = new OrdersSelectionsByPointEntity();
+                                            selections.setOrderId(orderId);
+                                            selections.setTitle(title);
+                                            selections.setOrderScheduleId(ordS.getId());
+                                            selections.setType("Φόρτωση");
+                                            selections.setQuantity(quantity);
+                                            entityManager.persist(selections);
+                                        }
+
 
                                         JsonNode orderPackageScheduleList = schedule.findPath("orderPackageScheduleList");
                                         Iterator orderPackIt = orderPackageScheduleList.iterator();
                                         while (orderPackIt.hasNext()) {
                                             JsonNode ordPjsonode = Json.toJson(orderPackIt.next());
-                                            System.out.println(ordPjsonode);
 
                                             Double finalUnitPrice = ordPjsonode.findPath("finalUnitPrice").asDouble();
                                             Long orderScheduleId = ordPjsonode.findPath("orderScheduleId").asLong();
@@ -1122,15 +1240,15 @@ public class OrdersController extends Application {
                                         }
 
 
-                                    }else{
+                                    } else {
 
                                         String newWaypoint = schedule.findPath("newWaypoint").asText();
 
                                         OrderWaypointsEntity orderWaypointsPackagesEntity = new OrderWaypointsEntity();
                                         orderWaypointsPackagesEntity.setCreationDate(new Date());
-                                        if(factoryId!=null &&  !factoryId.equalsIgnoreCase("") && !factoryId.equalsIgnoreCase("null")){
+                                        if (factoryId != null && !factoryId.equalsIgnoreCase("") && !factoryId.equalsIgnoreCase("null")) {
                                             orderWaypointsPackagesEntity.setFactoryId(schedule.findPath("factoryId").asLong());
-                                            FactoriesEntity factory = entityManager.find(FactoriesEntity.class,orderWaypointsPackagesEntity.getFactoryId());
+                                            FactoriesEntity factory = entityManager.find(FactoriesEntity.class, orderWaypointsPackagesEntity.getFactoryId());
                                             orderWaypointsPackagesEntity.setAddress(factory.getAddress());
                                             entityManager.merge(orderWaypointsPackagesEntity);
                                         }
@@ -1140,14 +1258,67 @@ public class OrdersController extends Application {
                                         orderWaypointsPackagesEntity.setPostalCode(schedule.findPath("postalCode").asText());
                                         orderWaypointsPackagesEntity.setOrderScheduleId(schedule.findPath("orderScheduleId").asLong());
                                         orderWaypointsPackagesEntity.setNestedScheduleIndicator(schedule.findPath("nestedScheduleIndicator").asInt());
-                                        if(offerScheduleBetweenWaypointId!=null &&  !offerScheduleBetweenWaypointId.equalsIgnoreCase("") && !offerScheduleBetweenWaypointId.equalsIgnoreCase("null")){
+                                        if (offerScheduleBetweenWaypointId != null && !offerScheduleBetweenWaypointId.equalsIgnoreCase("") && !offerScheduleBetweenWaypointId.equalsIgnoreCase("null")) {
                                             orderWaypointsPackagesEntity.setOfferScheduleBetweenWaypointId(schedule.findPath("offerScheduleBetweenWaypointId").asLong());
                                         }
-                                        if(newWaypoint!=null && !newWaypoint.equalsIgnoreCase("null") && !newWaypoint.equalsIgnoreCase("")){
+                                        if (newWaypoint != null && !newWaypoint.equalsIgnoreCase("null") && !newWaypoint.equalsIgnoreCase("")) {
                                             orderWaypointsPackagesEntity.setNewWaypoint(1);
                                         }
 
                                         entityManager.persist(orderWaypointsPackagesEntity);
+
+                                        JsonNode itemsPackagesEndiamesou = schedule.findPath("itemsPackagesFortwshsEndiamesouShmeiou");
+                                        Iterator itemsPackagesEndiamesouIter = itemsPackagesEndiamesou.iterator();
+                                        while (itemsPackagesEndiamesouIter.hasNext()) {
+                                            JsonNode itemsPackagesEndiamesouNode = Json.toJson(itemsPackagesEndiamesouIter.next());
+                                            //itemsPackagesEndiamesouNode.findPath("selectedPackage")
+                                            String title = itemsPackagesEndiamesouNode.findPath("selectedPackage").findPath("title").asText();
+                                            Integer quantity = itemsPackagesEndiamesouNode.findPath("selectedPackage").findPath("quantity").asInt();
+                                            OrdersSelectionsByPointEntity selections = new OrdersSelectionsByPointEntity();
+                                            selections.setOrderId(orderId);
+                                            selections.setTitle(title);
+                                            selections.setOrderScheduleId(orderWaypointsPackagesEntity.getOrderScheduleId());
+                                            selections.setOrderWaypointId(orderWaypointsPackagesEntity.getId());
+                                            selections.setType("Φόρτωση");
+                                            selections.setQuantity(quantity);
+                                            entityManager.persist(selections);
+                                        }
+
+
+                                        JsonNode itemsPackagesEndiamesouEkfortwsh = schedule.findPath("itemsPackagesEkfortwshsEndiamesouShmeiou");
+                                        Iterator itemsPackagesEkfortwshsEndiamesouShmeiouIter = itemsPackagesEndiamesouEkfortwsh.iterator();
+                                        while (itemsPackagesEkfortwshsEndiamesouShmeiouIter.hasNext()) {
+                                            JsonNode itemEkfortwshs = Json.toJson(itemsPackagesEkfortwshsEndiamesouShmeiouIter.next());
+                                            String title = itemEkfortwshs.findPath("selectedPackage").findPath("title").asText();
+                                            Integer quantity = itemEkfortwshs.findPath("selectedPackage").findPath("quantity").asInt();
+                                            OrdersSelectionsByPointEntity selections = new OrdersSelectionsByPointEntity();
+                                            selections.setOrderId(orderId);
+                                            selections.setTitle(title);
+                                            selections.setOrderScheduleId(orderWaypointsPackagesEntity.getOrderScheduleId());
+                                            selections.setOrderWaypointId(orderWaypointsPackagesEntity.getId());
+                                            selections.setType("Εκφόρτωση");
+                                            selections.setQuantity(quantity);
+                                            entityManager.persist(selections);
+                                        }
+
+
+                                        JsonNode itemsPackagesEkfortwshsProorismou = schedule.findPath("itemsPackagesEkfortwshsProorismou");
+                                        Iterator itemsPackagesEkfortwshsProorismouIter = itemsPackagesEkfortwshsProorismou.iterator();
+                                        while (itemsPackagesEkfortwshsProorismouIter.hasNext()) {
+                                            JsonNode itemEkfortwshsPr = Json.toJson(itemsPackagesEkfortwshsProorismouIter.next());
+                                            String title = itemEkfortwshsPr.findPath("selectedPackage").findPath("title").asText();
+                                            Integer quantity = itemEkfortwshsPr.findPath("quantity").asInt();
+                                            OrdersSelectionsByPointEntity selections = new OrdersSelectionsByPointEntity();
+                                            selections.setOrderId(orderId);
+                                            selections.setTitle(title);
+                                            selections.setOrderScheduleId(orderWaypointsPackagesEntity.getOrderScheduleId());
+                                            selections.setOrderWaypointId(orderWaypointsPackagesEntity.getId());
+                                            selections.setType("Εκφόρτωση Προορισμού");
+                                            selections.setQuantity(quantity);
+                                            entityManager.persist(selections);
+                                        }
+
+
                                     }
                                 }
 
