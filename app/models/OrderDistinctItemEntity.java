@@ -14,6 +14,7 @@ public class OrderDistinctItemEntity {
     private Integer toUnit;
     private Double unitPrice;
     private Long orderId;
+    private String typePackage;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -114,5 +115,15 @@ public class OrderDistinctItemEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, title, orderScheduleId, orderPackageId, fromUnit, toUnit, unitPrice, orderId);
+    }
+
+    @Basic
+    @Column(name = "type_package")
+    public String getTypePackage() {
+        return typePackage;
+    }
+
+    public void setTypePackage(String typePackage) {
+        this.typePackage = typePackage;
     }
 }

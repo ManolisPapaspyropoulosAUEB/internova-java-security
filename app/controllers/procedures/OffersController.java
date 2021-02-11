@@ -73,7 +73,23 @@ public class OffersController extends Application {
                     CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> { //
                                 return jpaApi.withTransaction(
                                         entityManager -> {
-                                            String sqlCustSupl = "select * from offers offer where 1=1 order by creation_date desc";
+                                            String sqlCustSupl = "select * from offers offer where 1=1 ";
+                                            String id = json.findPath("id").asText();
+                                            String customer = json.findPath("customer").asText();
+
+
+
+                                            if (!customer.equalsIgnoreCase("") && customer != null) {
+                                                sqlCustSupl += " and offer.customer_id  in " +
+                                                        " ( select id from  customers_suppliers cs where cs.brand_name like '%" + customer + "%' )";
+                                            }
+
+                                            if(id!=null && !id.equalsIgnoreCase("")){
+                                                sqlCustSupl+=" and offer.id like '%"+id+"%'";
+                                            }
+
+                                            sqlCustSupl+=" order by offer.creation_date desc";
+
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             List<HashMap<String, Object>> filalist = new ArrayList<HashMap<String, Object>>();
                                             List<OffersEntity> offersEntityList
@@ -319,11 +335,33 @@ public class OffersController extends Application {
                                             if (!id.equalsIgnoreCase("") && id != null) {
                                                 sqlCustSupl += " and offer.id =" + id + "";
                                             }
+                                            if (!customer.equalsIgnoreCase("") && customer != null) {
+                                                sqlCustSupl += " and offer.customer_id  in " +
+                                                        " ( select id from  customers_suppliers cs where cs.brand_name like '%" + customer + "%' )";
+                                            }
+
+                                            if (!status.equalsIgnoreCase("") && status != null) {
+                                                sqlCustSupl += " and offer.status like '%" + status + "%'";
+                                            }
                                             if (!offerId.equalsIgnoreCase("") && offerId != null) {
                                                 sqlCustSupl += " and offer.id like '%" + offerId + "%'";
                                             }
                                             if (!aa.equalsIgnoreCase("") && aa != null) {
                                                 sqlCustSupl += " and offer.aa like '%" + aa + "%'";
+                                            }
+                                            if (!billing.equalsIgnoreCase("") && billing != null) {
+                                                sqlCustSupl +=
+                                                        " and offer.billing_id " +
+                                                                " in ( select id" +
+                                                                "      from  billings billing" +
+                                                                "      where billing.name like '%" + billing + "%' ) " +
+                                                                " union " +
+                                                                " select offer.*" +
+                                                                " from offers offer " +
+                                                                " join customers_suppliers cs on (cs.id=offer.customer_id and offer.billing_id is null )" +
+                                                                " where " +
+                                                                " cs.billing_id in " +
+                                                                " (select id from  billings billing where billing.name like '%" + billing + "%' )";
                                             }
                                             if (!seller.equalsIgnoreCase("") && seller != null) {
                                                 sqlCustSupl +=
@@ -340,13 +378,7 @@ public class OffersController extends Application {
                                                                 " (select id from  internova_sellers isell where isell.name like '%" + seller + "%' )";
                                             }
 
-                                            if (!customer.equalsIgnoreCase("") && customer != null) {
-                                                sqlCustSupl += " and offer.customer_id  in " +
-                                                        " ( select id from  customers_suppliers cs where cs.brand_name like '%" + customer + "%' )";
-                                            }
-                                            if (!status.equalsIgnoreCase("") && status != null) {
-                                                sqlCustSupl += " and offer.status like '%" + status + "%'";
-                                            }
+
 
                                             if (!from.equalsIgnoreCase("") && from != null) {
                                                 sqlCustSupl += " and offer.from_address like '%" + from + "%'";
@@ -354,20 +386,7 @@ public class OffersController extends Application {
                                             if (!to.equalsIgnoreCase("") && to != null) {
                                                 sqlCustSupl += " and offer.to_address like '%" + to + "%'";
                                             }
-                                            if (!billing.equalsIgnoreCase("") && billing != null) {
-                                                sqlCustSupl +=
-                                                        " and offer.billing_id " +
-                                                                " in ( select id" +
-                                                                "      from  billings billing" +
-                                                                "      where billing.name like '%" + billing + "%' ) " +
-                                                                " union " +
-                                                                " select offer.*" +
-                                                                " from offers offer " +
-                                                                " join customers_suppliers cs on (cs.id=offer.customer_id and offer.billing_id is null )" +
-                                                                " where " +
-                                                                " cs.billing_id in " +
-                                                                " (select id from  billings billing where billing.name like '%" + billing + "%' )";
-                                            }
+
                                             if (!offerDate.equalsIgnoreCase("") && offerDate != null) {
                                                 sqlCustSupl += " and SUBSTRING( offer.offer_date, 1, 10)  = '" + offerDate + "'";
                                             }

@@ -19,6 +19,7 @@ public class OrderPackagesEntity {
     private Date updateDate;
     private Long orderScheduleId;
     private Long offerId;
+    private String typePackage;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -161,5 +162,15 @@ public class OrderPackagesEntity {
 
     public void setOfferId(Long offerId) {
         this.offerId = offerId;
+    }
+
+    @Basic
+    @Column(name = "type_package")
+    public String getTypePackage() {
+        return typePackage;
+    }
+
+    public void setTypePackage(String typePackage) {
+        this.typePackage = typePackage;
     }
 }

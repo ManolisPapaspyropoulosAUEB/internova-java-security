@@ -25,6 +25,9 @@ public class OrderSchedulesEntity {
     private String type;
     private Long offerId;
     private Long offerScheduleId;
+    private Date appointmentDay;
+    private String timeToArrive;
+    private Integer appointment;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -221,5 +224,35 @@ public class OrderSchedulesEntity {
 
     public void setOfferScheduleId(Long offerScheduleId) {
         this.offerScheduleId = offerScheduleId;
+    }
+
+    @Basic
+    @Column(name = "appointment_day")
+    public Date getAppointmentDay() {
+        return appointmentDay;
+    }
+
+    public void setAppointmentDay(Date appointmentDay) {
+        this.appointmentDay = appointmentDay;
+    }
+
+    @Basic
+    @Column(name = "time_to_arrive")
+    public String getTimeToArrive() {
+        return timeToArrive;
+    }
+
+    public void setTimeToArrive(String timeToArrive) {
+        this.timeToArrive = timeToArrive;
+    }
+
+    @Basic
+    @Column(name = "appointment")
+    public Integer getAppointment() {
+        return appointment;
+    }
+
+    public void setAppointment(Integer appointment) {
+        this.appointment = appointment;
     }
 }

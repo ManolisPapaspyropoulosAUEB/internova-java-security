@@ -1,6 +1,7 @@
 package models;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Objects;
 
@@ -22,6 +23,9 @@ public class OrderWaypointsEntity {
     private Long offerScheduleBetweenWaypointId;
     private Long factoryId;
     private Integer newWaypoint;
+    private Timestamp appointmentDay;
+    private String timeToArrive;
+    private Integer appointment;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -194,5 +198,35 @@ public class OrderWaypointsEntity {
 
     public void setNewWaypoint(Integer newWaypoint) {
         this.newWaypoint = newWaypoint;
+    }
+
+    @Basic
+    @Column(name = "appointment_day")
+    public Timestamp getAppointmentDay() {
+        return appointmentDay;
+    }
+
+    public void setAppointmentDay(Timestamp appointmentDay) {
+        this.appointmentDay = appointmentDay;
+    }
+
+    @Basic
+    @Column(name = "time_to_arrive")
+    public String getTimeToArrive() {
+        return timeToArrive;
+    }
+
+    public void setTimeToArrive(String timeToArrive) {
+        this.timeToArrive = timeToArrive;
+    }
+
+    @Basic
+    @Column(name = "appointment")
+    public Integer getAppointment() {
+        return appointment;
+    }
+
+    public void setAppointment(Integer appointment) {
+        this.appointment = appointment;
     }
 }

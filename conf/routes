@@ -143,6 +143,7 @@ POST        /getOrderWaypoints                               controllers.procedu
 POST        /updateOrderWaypoint                             controllers.procedures.OrdersController.updateOrderWaypoint(req: Request)
 POST        /getDistinctPckagesStartPoint                    controllers.procedures.OrdersController.getDistinctPckagesStartPoint(req: Request)
 POST        /updateOrderFactory                              controllers.procedures.OrdersController.updateOrderFactory(req: Request)
+POST        /deleteOrder                                     controllers.procedures.OrdersController.deleteOrder(req: Request)
 
 
 
