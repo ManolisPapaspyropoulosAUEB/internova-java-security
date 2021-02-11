@@ -110,6 +110,16 @@ POST        /updateBillingEntry                              controllers.coreDat
 POST        /deleteBilling                                   controllers.coreData.BillingsController.deleteBilling(req: Request)
 POST        /getBillings                                     controllers.coreData.BillingsController.getBillings(req: Request)
 
+#PackageTypeController
+POST        /addPackageTypeEntry                                 controllers.coreData.PackageTypeController.addPackageTypeEntry(req: Request)
+POST        /updatePackageTypeEntry                              controllers.coreData.PackageTypeController.updatePackageTypeEntry(req: Request)
+POST        /deletePackageTypeEntry                              controllers.coreData.PackageTypeController.deletePackageTypeEntry(req: Request)
+POST        /getPackagesTypesEntries                         controllers.coreData.PackageTypeController.getPackagesTypesEntries(req: Request)
+
+
+
+
+
 
 #InternovaSellersController
 POST        /addInternovaSeller                              controllers.coreData.InternovaSellersController.addInternovaSeller(req: Request)

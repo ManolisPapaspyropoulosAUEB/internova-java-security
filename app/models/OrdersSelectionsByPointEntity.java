@@ -13,6 +13,7 @@ public class OrdersSelectionsByPointEntity {
     private Long orderWaypointId;
     private String type;
     private Integer quantity;
+    private Integer packageTypeId;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -101,5 +102,15 @@ public class OrdersSelectionsByPointEntity {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    @Basic
+    @Column(name = "package_type_id")
+    public Integer getPackageTypeId() {
+        return packageTypeId;
+    }
+
+    public void setPackageTypeId(Integer packageTypeId) {
+        this.packageTypeId = packageTypeId;
     }
 }
