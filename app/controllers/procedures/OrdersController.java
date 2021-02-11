@@ -1079,18 +1079,6 @@ public class OrdersController extends Application {
                                 String truckTemprature = json.findPath("truckTemprature").asText();
                                 String sender = json.findPath("sender").asText();
                                 String status = json.findPath("status").asText();
-
-
-//                                String sqlDv =
-//                                        "select * " +
-//                                        "from order_distinct_item " +
-//                                        "where order_id=" + orderId;
-//                                List<OrderDistinctItemEntity> orderDistinctItemEntitiesList =
-//                                        entityManager.createNativeQuery(sqlDv,
-//                                        OrderDistinctItemEntity.class).getResultList();
-//                                for (OrderDistinctItemEntity odv : orderDistinctItemEntitiesList) {
-//                                    entityManager.remove(odv);
-//                                }
                                 String sqlPackagesByPoints =
                                         "select * " +
                                                 "from orders_selections_by_point " +
@@ -1161,10 +1149,9 @@ public class OrdersController extends Application {
                                             ordS.setFromAddress(factory.getAddress());
                                             entityManager.merge(ordS);
                                         }
-
                                         ordS.setAppointment(appointment);
                                         ordS.setTimeToArrive(timeToArrive);
-                                        DateFormat myDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                                        DateFormat myDateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
                                         if(appointmentDay!=null && !appointmentDay.equalsIgnoreCase("")){
                                             try {
                                                 Date appointmentDayDate = myDateFormat.parse(appointmentDay);
@@ -1173,7 +1160,6 @@ public class OrdersController extends Application {
                                                 e.printStackTrace();
                                             }
                                         }
-
                                         JsonNode itemsPackagesAfethrias = schedule.findPath("itemsPackagesAfethrias");
                                         Iterator itemsAfethrias = itemsPackagesAfethrias.iterator();
                                         while (itemsAfethrias.hasNext()) {
@@ -1220,7 +1206,6 @@ public class OrdersController extends Application {
                                             orderSched.setTitle(title);
                                             orderSched.setUnitPrice(unitPrice);
                                             entityManager.persist(orderSched);
-
                                             Iterator distinctItemIter = distinctItem.iterator();
                                             while (distinctItemIter.hasNext()) {
                                                 JsonNode distJson = Json.toJson(distinctItemIter.next());
@@ -1251,7 +1236,7 @@ public class OrdersController extends Application {
                                         }
                                         orderWaypointsPackagesEntity.setAppointment(appointment);
                                         orderWaypointsPackagesEntity.setTimeToArrive(timeToArrive);
-                                        DateFormat myDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                                        DateFormat myDateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
                                         if(appointmentDay!=null && !appointmentDay.equalsIgnoreCase("")){
                                             try {
                                                 Date appointmentDayDate = myDateFormat.parse(appointmentDay);
@@ -1260,9 +1245,6 @@ public class OrdersController extends Application {
                                                 e.printStackTrace();
                                             }
                                         }
-
-
-
                                         orderWaypointsPackagesEntity.setOrderId(orderId);
                                         orderWaypointsPackagesEntity.setCity(schedule.findPath("city").asText());
                                         orderWaypointsPackagesEntity.setCountry(schedule.findPath("country").asText());
