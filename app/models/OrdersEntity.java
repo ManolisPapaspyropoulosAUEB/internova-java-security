@@ -23,6 +23,7 @@ public class OrdersEntity {
     private String generalInstructions;
     private Date updateDate;
     private Date creationDate;
+    private String sender;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -85,8 +86,6 @@ public class OrdersEntity {
         this.offerId = offerId;
     }
 
-
-
     @Basic
     @Column(name = "customer_id")
     public Long getCustomerId() {
@@ -116,7 +115,6 @@ public class OrdersEntity {
     public void setStatus(String status) {
         this.status = status;
     }
-
 
     @Basic
     @Column(name = "comments")
@@ -203,5 +201,15 @@ public class OrdersEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, aa, sellerId, factoryId, billingId, offerId, customerId, type, status, comments, truckTemprature, arrivalFactoryDay, generalInstructions, updateDate, creationDate);
+    }
+
+    @Basic
+    @Column(name = "sender")
+    public String getSender() {
+        return sender;
+    }
+
+    public void setSender(String sender) {
+        this.sender = sender;
     }
 }

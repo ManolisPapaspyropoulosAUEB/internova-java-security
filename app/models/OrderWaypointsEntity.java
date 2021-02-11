@@ -23,7 +23,7 @@ public class OrderWaypointsEntity {
     private Long offerScheduleBetweenWaypointId;
     private Long factoryId;
     private Integer newWaypoint;
-    private Timestamp appointmentDay;
+    private Date appointmentDay;
     private String timeToArrive;
     private Integer appointment;
 
@@ -202,11 +202,11 @@ public class OrderWaypointsEntity {
 
     @Basic
     @Column(name = "appointment_day")
-    public Timestamp getAppointmentDay() {
+    public Date getAppointmentDay() {
         return appointmentDay;
     }
 
-    public void setAppointmentDay(Timestamp appointmentDay) {
+    public void setAppointmentDay(Date appointmentDay) {
         this.appointmentDay = appointmentDay;
     }
 
