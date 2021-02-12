@@ -178,8 +178,8 @@ public class FactoriesController extends Application {
                                             String factoryId = json.findPath("factoryId").asText();
                                             String address = json.findPath("address").asText();
                                             String brandName = json.findPath("brandName").asText();
-                                            String city = json.findPath("city").asText();
-                                            String country = json.findPath("country").asText();
+                                       //     String city = json.findPath("city").asText();
+                                         //   String country = json.findPath("country").asText();
                                             String postalCode = json.findPath("postalCode").asText();
                                             String email = json.findPath("email").asText();
                                             String customerId = json.findPath("customerId").asText();
@@ -226,13 +226,13 @@ public class FactoriesController extends Application {
                                             if(!factoryId.equalsIgnoreCase("") && factoryId!=null && !factoryId.equalsIgnoreCase("null")){
                                                 sqlFactFinal+=" and pos.id like '%"+factoryId+"%'";
                                             }
-                                            if(!city.equalsIgnoreCase("") && city!=null && !city.equalsIgnoreCase("null")){
-                                                sqlFactFinal+=" and pos.city like '%"+city+"%'";
-                                            }
-                                            if(!country.equalsIgnoreCase("") && country!=null && !country.equalsIgnoreCase("null")){
-                                                sqlFactFinal+=" and pos.country like '%"+country+"%'";
-                                            }
-
+//                                            if(!city.equalsIgnoreCase("") && city!=null && !city.equalsIgnoreCase("null")){
+//                                                sqlFactFinal+=" and pos.city like '%"+city+"%'";
+//                                            }
+//                                            if(!country.equalsIgnoreCase("") && country!=null && !country.equalsIgnoreCase("null")){
+//                                                sqlFactFinal+=" and pos.country like '%"+country+"%'";
+//                                            }
+//
                                             if(!postalCode.equalsIgnoreCase("") && postalCode!=null  && !postalCode.equalsIgnoreCase("null")){
                                                 sqlFactFinal+=" and pos.postal_code like '%"+postalCode+"%'";
                                             }

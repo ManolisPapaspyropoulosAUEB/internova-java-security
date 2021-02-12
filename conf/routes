@@ -182,6 +182,9 @@ POST        /updateScheduleMeasureUnit                       controllers.procedu
 POST        /deleteScheduleMeasureUnit                       controllers.procedures.ScheduleController.deleteScheduleMeasureUnit(req: Request)
 POST        /deleteAllScheduleMeasureUnitByScheduleId        controllers.procedures.ScheduleController.deleteAllScheduleMeasureUnitByScheduleId(req: Request)
 
+#CoreVariables
+POST        /getStackingFactor                                     controllers.CoreVariables.getStackingFactor(req: Request)
+POST        /updateStackingFactor                                     controllers.CoreVariables.updateStackingFactor(req: Request)
 
 
 #---------------------------------------------------------------------------USERS MELLON TEMPORARY API  -----addVehicle--------------------------------------------------------------------------------

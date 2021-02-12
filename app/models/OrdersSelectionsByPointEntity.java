@@ -15,6 +15,9 @@ public class OrdersSelectionsByPointEntity {
     private Integer quantity;
     private Integer packageTypeId;
     private String typePackage;
+    private String stackingType;
+    private Long measureUnitId;
+    private Double ldm;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -123,5 +126,35 @@ public class OrdersSelectionsByPointEntity {
 
     public void setTypePackage(String typePackage) {
         this.typePackage = typePackage;
+    }
+
+    @Basic
+    @Column(name = "stacking_type")
+    public String getStackingType() {
+        return stackingType;
+    }
+
+    public void setStackingType(String stackingType) {
+        this.stackingType = stackingType;
+    }
+
+    @Basic
+    @Column(name = "measure_unit_id")
+    public Long getMeasureUnitId() {
+        return measureUnitId;
+    }
+
+    public void setMeasureUnitId(Long measureUnitId) {
+        this.measureUnitId = measureUnitId;
+    }
+
+    @Basic
+    @Column(name = "ldm")
+    public Double getLdm() {
+        return ldm;
+    }
+
+    public void setLdm(Double ldm) {
+        this.ldm = ldm;
     }
 }

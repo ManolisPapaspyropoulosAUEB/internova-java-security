@@ -2,6 +2,7 @@ package controllers.procedures;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import controllers.CoreVariables;
 import controllers.execution_context.DatabaseExecutionContext;
 import controllers.system.Application;
 import models.*;
@@ -480,6 +481,8 @@ public class OrdersController extends Application {
                                                     HashMap<String, Object> osbpMap = new HashMap<String, Object>();
                                                     osbpMap.put("title", osbp.getTitle());
                                                     osbpMap.put("quantity", osbp.getQuantity());
+                                                    osbpMap.put("stackingType", osbp.getStackingType());
+                                                    osbpMap.put("ldm", osbp.getLdm());
                                                     osbpMap.put("oldQuantity", osbp.getQuantity());
                                                     osbpMap.put("packageTypeId", osbp.getPackageTypeId());
                                                     osbpMap.put("typePackage", osbp.getTypePackage());
@@ -493,6 +496,8 @@ public class OrdersController extends Application {
                                                     HashMap<String, Object> osbpMapS = new HashMap<String, Object>();
                                                     osbpMapS.put("selectedPackage", osbpMap);
                                                     osbpMapS.put("typePackage", osbp.getTypePackage());
+                                                    osbpMapS.put("stackingType", osbp.getStackingType());
+                                                    osbpMapS.put("ldm", osbp.getLdm());
                                                     osbpMapS.put("quantity", osbp.getQuantity());
                                                     osbpMapS.put("oldQuantity", osbp.getQuantity());
                                                     osbpMapS.put("packageTypeId", osbp.getPackageTypeId());
@@ -646,6 +651,9 @@ public class OrdersController extends Application {
                                                     String itemsEndFortSql =
                                                             "select * from orders_selections_by_point where order_id=" + os.getOrderId() +
                                                                     " and  order_schedule_id=" + waypOb.getOrderScheduleId() + " and order_waypoint_id =" + waypOb.getId() + " and type='Φόρτωση'";
+
+
+                                                    System.out.println(itemsEndFortSql);
                                                     List<OrdersSelectionsByPointEntity> itemsPackagesFortwshsEndiamesouShmeiou =
                                                             entityManager.createNativeQuery(itemsEndFortSql, OrdersSelectionsByPointEntity.class).getResultList();
                                                     List<HashMap<String, Object>> itemsPackagesFortwshsEndiamesouShmeiouFinal = new ArrayList<HashMap<String, Object>>();
@@ -655,6 +663,8 @@ public class OrdersController extends Application {
                                                         osbpMap.put("title", endshmFort.getTitle());
                                                         osbpMap.put("quantity", endshmFort.getQuantity());
                                                         osbpMap.put("oldQuantity", endshmFort.getQuantity());
+                                                        osbpMap.put("stackingType", endshmFort.getStackingType());
+                                                        osbpMap.put("ldm", endshmFort.getLdm());
                                                         osbpMap.put("packageTypeId", endshmFort.getPackageTypeId());
                                                         osbpMap.put("typePackage", endshmFort.getTypePackage());
                                                         if(endshmFort.getPackageTypeId()!=null){
@@ -668,7 +678,9 @@ public class OrdersController extends Application {
                                                         osbpMapS.put("selectedPackage", osbpMap);
                                                         osbpMapS.put("typePackage", endshmFort.getTypePackage());
                                                         osbpMapS.put("quantity", endshmFort.getQuantity());
+                                                        osbpMapS.put("stackingType", endshmFort.getStackingType());
                                                         osbpMapS.put("oldQuantity", endshmFort.getQuantity());
+                                                        osbpMapS.put("ldm", endshmFort.getLdm());
                                                         osbpMapS.put("packageTypeId", endshmFort.getPackageTypeId());
                                                         if(endshmFort.getPackageTypeId()!=null){
                                                             osbpMapS.put("packageType", entityManager.find(PackageTypeEntity.class,endshmFort.getPackageTypeId()).getType());
@@ -692,6 +704,8 @@ public class OrdersController extends Application {
                                                         HashMap<String, Object> osbpMap = new HashMap<String, Object>();
                                                         osbpMap.put("title", endshmFort.getTitle());
                                                         osbpMap.put("quantity", endshmFort.getQuantity());
+                                                        osbpMap.put("stackingType", endshmFort.getStackingType());
+                                                        osbpMap.put("ldm", endshmFort.getLdm());
                                                         osbpMap.put("oldQuantity", endshmFort.getQuantity());
                                                         osbpMap.put("packageTypeId", endshmFort.getPackageTypeId());
                                                         osbpMap.put("typePackage", endshmFort.getTypePackage());
@@ -706,6 +720,8 @@ public class OrdersController extends Application {
                                                         osbpMapS.put("selectedPackage", osbpMap);
                                                         osbpMapS.put("quantity", endshmFort.getQuantity());
                                                         osbpMapS.put("oldQuantity", endshmFort.getQuantity());
+                                                        osbpMapS.put("stackingType", endshmFort.getStackingType());
+                                                        osbpMapS.put("ldm", endshmFort.getLdm());
                                                         osbpMapS.put("packageTypeId", endshmFort.getPackageTypeId());
                                                         osbpMapS.put("typePackage", endshmFort.getTypePackage());
 
@@ -734,6 +750,8 @@ public class OrdersController extends Application {
                                                         osbpMap.put("title", endshmFort.getTitle());
                                                         osbpMap.put("quantity", endshmFort.getQuantity());
                                                         osbpMap.put("oldQuantity", endshmFort.getQuantity());
+                                                        osbpMap.put("stackingType", endshmFort.getStackingType());
+                                                        osbpMap.put("ldm", endshmFort.getLdm());
                                                         osbpMap.put("packageTypeId", endshmFort.getPackageTypeId());
                                                         osbpMap.put("typePackage", endshmFort.getTypePackage());
 
@@ -742,12 +760,12 @@ public class OrdersController extends Application {
                                                         }else{
                                                             osbpMap.put("packageType", "");
                                                         }
-
-
                                                         HashMap<String, Object> osbpMapS = new HashMap<String, Object>();
                                                         osbpMapS.put("selectedPackage", osbpMap);
                                                         osbpMapS.put("quantity", endshmFort.getQuantity());
                                                         osbpMapS.put("oldQuantity", endshmFort.getQuantity());
+                                                        osbpMapS.put("stackingType", endshmFort.getStackingType());
+                                                        osbpMapS.put("ldm", endshmFort.getLdm());
                                                         osbpMapS.put("packageTypeId", endshmFort.getPackageTypeId());
                                                         osbpMapS.put("typePackage", endshmFort.getTypePackage());
                                                         if(endshmFort.getPackageTypeId()!=null){
@@ -769,11 +787,6 @@ public class OrdersController extends Application {
                                             }
 
                                             sHmpam.put("schedulesList", schedulesList);
-//                                            String sqlMainSchedule = "select * from order_schedules os where os.order_id="+j.getId() +" and os.primary_schedule=1";
-//                                            List<OrderSchedulesEntity>
-//                                            sHmpam.put("mainSchedule", j.getC);
-
-
                                             String summSql = "select sum(final_unit_price) " +
                                                     "from order_package_schedules t " +
                                                     "where t.order_id=" + j.getId();
@@ -786,11 +799,7 @@ public class OrdersController extends Application {
 
                                             } else {
                                                 sHmpam.put("sumSchedules", "0.0");
-
                                             }
-
-
-                                            //selectedEntry sender
                                             sHmpam.put("offerId", offers);
                                             sHmpam.put("sender", j.getSender());
                                             sHmpam.put("customerId", j.getCustomerId());
@@ -1176,6 +1185,8 @@ public class OrdersController extends Application {
                                             String title = itemsAfethriasNode.findPath("selectedPackage").findPath("title").asText();
                                             String typePackage = itemsAfethriasNode.findPath("selectedPackage").findPath("typePackage").asText();
                                             ((ObjectNode) itemsAfethriasNode).remove("selectedPackage");
+                                            String stackingType = itemsAfethriasNode.findPath("stackingType").asText();
+
                                             Integer quantity = itemsAfethriasNode.findPath("quantity").asInt();
                                             Integer packageTypeId = itemsAfethriasNode.findPath("packageTypeId").asInt();
                                             OrdersSelectionsByPointEntity selections = new OrdersSelectionsByPointEntity();
@@ -1187,6 +1198,7 @@ public class OrdersController extends Application {
                                             }
                                             selections.setOrderScheduleId(ordS.getId());
                                             selections.setType("Φόρτωση");
+                                            selections.setStackingType(stackingType);
                                             selections.setQuantity(quantity);
                                             if (title.equalsIgnoreCase("")) {
                                                 add_result.put("status", "warning");
@@ -1194,6 +1206,36 @@ public class OrdersController extends Application {
                                                         "για φόρτωση στην αφετηρία " + ordS.getToCountry() + " " + ordS.getFromCity() + "," + ordS.getFromPostalCode());
                                                 return add_result;
                                             }
+                                            if (packageTypeId==0) {
+                                                add_result.put("status", "warning");
+                                                add_result.put("message", "Δεν έχετε επιλέξει Τύπος πρ/ντος " +
+                                                        "για φόρτωση στην αφετηρία " + ordS.getToCountry() + " " + ordS.getFromCity() + "," + ordS.getFromPostalCode());
+                                                return add_result;
+                                            }
+                                            if (stackingType.equalsIgnoreCase("")) {
+                                                add_result.put("status", "warning");
+                                                add_result.put("message", "Δεν έχετε επιλέξει είδος Φόρτωσης " +
+                                                        "για φόρτωση στην αφετηρία " + ordS.getToCountry() + " " + ordS.getFromCity() + "," + ordS.getFromPostalCode());
+                                                return add_result;
+                                            }
+
+                                            System.out.println("packageTypeId>>>"+packageTypeId);
+                                            System.out.println("stackingType>>>"+stackingType);
+
+                                            String sqlMu = "select * from measurement_unit mu where mu.title='"+title+"'";
+                                            List<MeasurementUnitEntity> muE = entityManager.createNativeQuery(sqlMu,MeasurementUnitEntity.class).getResultList();
+                                            MeasurementUnitEntity mue = entityManager.find(MeasurementUnitEntity.class,muE.get(0).getId());
+                                            Double ldm = 0.0;
+                                            if(stackingType.equalsIgnoreCase("Μη Στοιβάσιμη")){
+                                                ldm =( (mue.getxIndex()*mue.getyIndex())/(2.4));
+
+                                            }else{
+                                                Long cveid = Long.valueOf(1);
+                                                CoreVariablesEntity cve = entityManager.find(CoreVariablesEntity.class,cveid);
+                                                ldm =( (mue.getxIndex()*mue.getyIndex())/(2.4/(quantity*cve.getStackingFactor())));
+                                            }
+                                            selections.setLdm(ldm);
+                                            selections.setMeasureUnitId(muE.get(0).getId());
                                             entityManager.persist(selections);
                                         }
                                         JsonNode orderPackageScheduleList = schedule.findPath("orderPackageScheduleList");
@@ -1278,6 +1320,9 @@ public class OrdersController extends Application {
                                             String title = itemsPackagesEndiamesouNode.findPath("selectedPackage").findPath("title").asText();
                                             String typePackage = itemsPackagesEndiamesouNode.findPath("selectedPackage").findPath("typePackage").asText();
                                             ((ObjectNode) itemsPackagesEndiamesouNode).remove("selectedPackage");
+                                            String stackingType = itemsPackagesEndiamesouNode.findPath("stackingType").asText();
+
+
                                             Integer quantity = itemsPackagesEndiamesouNode.findPath("quantity").asInt();
                                             Integer packageTypeId = itemsPackagesEndiamesouNode.findPath("packageTypeId").asInt();
                                             System.out.println(quantity);
@@ -1289,6 +1334,7 @@ public class OrdersController extends Application {
                                             selections.setOrderWaypointId(orderWaypointsPackagesEntity.getId());
                                             selections.setType("Φόρτωση");
                                             selections.setQuantity(quantity);
+                                            selections.setStackingType(stackingType);
                                             if(packageTypeId!=0){
                                                 selections.setPackageTypeId(packageTypeId);
                                             }
@@ -1299,6 +1345,39 @@ public class OrdersController extends Application {
                                                         + orderWaypointsPackagesEntity.getCity() + "," + orderWaypointsPackagesEntity.getPostalCode());
                                                 return add_result;
                                             }
+                                            if (packageTypeId==0) {
+                                                add_result.put("status", "warning");
+                                                add_result.put("message", "Δεν έχετε επιλέξει Τύπος πρ/ντος " +
+                                                        "για φόρτωση στην αφετηρία " + orderWaypointsPackagesEntity.getCountry() + " " + orderWaypointsPackagesEntity.getCity() + "," + orderWaypointsPackagesEntity.getPostalCode());
+                                                return add_result;
+                                            }
+                                            if (stackingType.equalsIgnoreCase("")) {
+                                                add_result.put("status", "warning");
+                                                add_result.put("message", "Δεν έχετε επιλέξει είδος Φόρτωσης " +
+                                                        "για φόρτωση στην αφετηρία " + orderWaypointsPackagesEntity.getCountry() + " " + orderWaypointsPackagesEntity.getCity() + "," + orderWaypointsPackagesEntity.getPostalCode());
+                                                return add_result;
+                                            }
+
+                                            String sqlMu = "select * from measurement_unit mu where mu.title='"+title+"'";
+                                            List<MeasurementUnitEntity> muE = entityManager.createNativeQuery(sqlMu,MeasurementUnitEntity.class).getResultList();
+                                            MeasurementUnitEntity mue = entityManager.find(MeasurementUnitEntity.class,muE.get(0).getId());
+                                            Double ldm = 0.0;
+                                            if(stackingType.equalsIgnoreCase("Μη Στοιβάσιμη")){
+                                                ldm =( (mue.getxIndex()*mue.getyIndex())/(2.4));
+
+                                            }else{
+                                                Long cveid = Long.valueOf(1);
+                                                CoreVariablesEntity cve = entityManager.find(CoreVariablesEntity.class,cveid);
+                                                ldm =( (mue.getxIndex()*mue.getyIndex())/(2.4/(quantity*cve.getStackingFactor())));
+                                            }
+                                            selections.setLdm(ldm);
+                                            selections.setMeasureUnitId(muE.get(0).getId());
+
+
+
+
+
+
                                             entityManager.persist(selections);
                                         }
                                         JsonNode itemsPackagesEndiamesouEkfortwsh = schedule.findPath("itemsPackagesEkfortwshsEndiamesouShmeiou");
@@ -1308,6 +1387,7 @@ public class OrdersController extends Application {
                                             String title = itemEkfortwshs.findPath("selectedPackage").findPath("title").asText();
                                             String typePackage = itemEkfortwshs.findPath("selectedPackage").findPath("typePackage").asText();
                                             ((ObjectNode) itemEkfortwshs).remove("selectedPackage");
+                                            String stackingType = itemEkfortwshs.findPath("stackingType").asText();
                                             Integer quantity = itemEkfortwshs.findPath("quantity").asInt();
                                             Integer packageTypeId = itemEkfortwshs.findPath("packageTypeId").asInt();
                                             OrdersSelectionsByPointEntity selections = new OrdersSelectionsByPointEntity();
@@ -1318,6 +1398,7 @@ public class OrdersController extends Application {
                                             selections.setOrderWaypointId(orderWaypointsPackagesEntity.getId());
                                             selections.setType("Εκφόρτωση");
                                             selections.setQuantity(quantity);
+                                            selections.setStackingType(stackingType);
                                             if(packageTypeId!=0){
                                                 selections.setPackageTypeId(packageTypeId);
                                             }
@@ -1328,6 +1409,34 @@ public class OrdersController extends Application {
                                                         + orderWaypointsPackagesEntity.getCity() + "," + orderWaypointsPackagesEntity.getPostalCode());
                                                 return add_result;
                                             }
+                                            if (packageTypeId==0) {
+                                                add_result.put("status", "warning");
+                                                add_result.put("message", "Δεν έχετε επιλέξει Τύπος πρ/ντος " +
+                                                        "για φόρτωση στην αφετηρία " + orderWaypointsPackagesEntity.getCountry() + " " + orderWaypointsPackagesEntity.getCity() + "," + orderWaypointsPackagesEntity.getPostalCode());
+                                                return add_result;
+                                            }
+                                            if (stackingType.equalsIgnoreCase("")) {
+                                                add_result.put("status", "warning");
+                                                add_result.put("message", "Δεν έχετε επιλέξει είδος Φόρτωσης " +
+                                                        "για φόρτωση στην αφετηρία " + orderWaypointsPackagesEntity.getCountry() + " " + orderWaypointsPackagesEntity.getCity() + "," + orderWaypointsPackagesEntity.getPostalCode());
+                                                return add_result;
+                                            }
+
+                                            String sqlMu = "select * from measurement_unit mu where mu.title='"+title+"'";
+                                            List<MeasurementUnitEntity> muE = entityManager.createNativeQuery(sqlMu,MeasurementUnitEntity.class).getResultList();
+                                            MeasurementUnitEntity mue = entityManager.find(MeasurementUnitEntity.class,muE.get(0).getId());
+                                            Double ldm = 0.0;
+                                            if(stackingType.equalsIgnoreCase("Μη Στοιβάσιμη")){
+                                                ldm =( (mue.getxIndex()*mue.getyIndex())/(2.4));
+
+                                            }else{
+                                                Long cveid = Long.valueOf(1);
+                                                CoreVariablesEntity cve = entityManager.find(CoreVariablesEntity.class,cveid);
+                                                ldm =( (mue.getxIndex()*mue.getyIndex())/(2.4/(quantity*cve.getStackingFactor())));
+                                            }
+                                            selections.setLdm(ldm);
+
+
                                             entityManager.persist(selections);
                                         }
                                         JsonNode itemsPackagesEkfortwshsProorismou = schedule.findPath("itemsPackagesEkfortwshsProorismou");
@@ -1337,6 +1446,7 @@ public class OrdersController extends Application {
                                             String title = itemEkfortwshsPr.findPath("selectedPackage").findPath("title").asText();
                                             String typePackage = itemEkfortwshsPr.findPath("selectedPackage").findPath("typePackage").asText();
                                             ((ObjectNode) itemEkfortwshsPr).remove("selectedPackage");
+                                            String stackingType = itemEkfortwshsPr.findPath("stackingType").asText();
                                             Integer quantity = itemEkfortwshsPr.findPath("quantity").asInt();
                                             Integer packageTypeId = itemEkfortwshsPr.findPath("packageTypeId").asInt();
                                             OrdersSelectionsByPointEntity selections = new OrdersSelectionsByPointEntity();
@@ -1349,6 +1459,7 @@ public class OrdersController extends Application {
                                             selections.setOrderScheduleId(orderWaypointsPackagesEntity.getOrderScheduleId());
                                             selections.setOrderWaypointId(orderWaypointsPackagesEntity.getId());
                                             selections.setType("Εκφόρτωση Προορισμού");
+                                            selections.setStackingType(stackingType);
                                             selections.setQuantity(quantity);
                                             if (title.equalsIgnoreCase("")) {
                                                 add_result.put("status", "warning");
@@ -1357,6 +1468,35 @@ public class OrdersController extends Application {
                                                         + orderWaypointsPackagesEntity.getCity() + "," + orderWaypointsPackagesEntity.getPostalCode());
                                                 return add_result;
                                             }
+                                            if (packageTypeId==0) {
+                                                add_result.put("status", "warning");
+                                                add_result.put("message", "Δεν έχετε επιλέξει Τύπος πρ/ντος " +
+                                                        "για φόρτωση στην αφετηρία " + orderWaypointsPackagesEntity.getCountry() + " " + orderWaypointsPackagesEntity.getCity() + "," + orderWaypointsPackagesEntity.getPostalCode());
+                                                return add_result;
+                                            }
+                                            if (stackingType.equalsIgnoreCase("")) {
+                                                add_result.put("status", "warning");
+                                                add_result.put("message", "Δεν έχετε επιλέξει είδος Φόρτωσης " +
+                                                        "για φόρτωση στην αφετηρία " + orderWaypointsPackagesEntity.getCountry() + " " + orderWaypointsPackagesEntity.getCity() + "," + orderWaypointsPackagesEntity.getPostalCode());
+                                                return add_result;
+                                            }
+
+                                            String sqlMu = "select * from measurement_unit mu where mu.title='"+title+"'";
+                                            List<MeasurementUnitEntity> muE = entityManager.createNativeQuery(sqlMu,MeasurementUnitEntity.class).getResultList();
+                                            MeasurementUnitEntity mue = entityManager.find(MeasurementUnitEntity.class,muE.get(0).getId());
+                                            Double ldm = 0.0;
+                                            if(stackingType.equalsIgnoreCase("Μη Στοιβάσιμη")){
+                                                ldm =( (mue.getxIndex()*mue.getyIndex())/(2.4));
+
+                                            }else{
+                                                Long cveid = Long.valueOf(1);
+                                                CoreVariablesEntity cve = entityManager.find(CoreVariablesEntity.class,cveid);
+                                                ldm =( (mue.getxIndex()*mue.getyIndex())/(2.4/(quantity*cve.getStackingFactor())));
+                                            }
+                                            selections.setLdm(ldm);
+                                            selections.setMeasureUnitId(muE.get(0).getId());
+
+
                                             entityManager.persist(selections);
                                         }
                                     }
