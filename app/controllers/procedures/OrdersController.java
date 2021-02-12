@@ -1,5 +1,4 @@
 package controllers.procedures;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -483,6 +482,7 @@ public class OrdersController extends Application {
                                                     osbpMap.put("quantity", osbp.getQuantity());
                                                     osbpMap.put("oldQuantity", osbp.getQuantity());
                                                     osbpMap.put("packageTypeId", osbp.getPackageTypeId());
+                                                    osbpMap.put("typePackage", osbp.getTypePackage());
                                                     if(osbp.getPackageTypeId()!=null){
                                                         osbpMap.put("packageType", entityManager.find(PackageTypeEntity.class,osbp.getPackageTypeId()).getType());
                                                     }else{
@@ -492,6 +492,7 @@ public class OrdersController extends Application {
 
                                                     HashMap<String, Object> osbpMapS = new HashMap<String, Object>();
                                                     osbpMapS.put("selectedPackage", osbpMap);
+                                                    osbpMapS.put("typePackage", osbp.getTypePackage());
                                                     osbpMapS.put("quantity", osbp.getQuantity());
                                                     osbpMapS.put("oldQuantity", osbp.getQuantity());
                                                     osbpMapS.put("packageTypeId", osbp.getPackageTypeId());
@@ -655,6 +656,7 @@ public class OrdersController extends Application {
                                                         osbpMap.put("quantity", endshmFort.getQuantity());
                                                         osbpMap.put("oldQuantity", endshmFort.getQuantity());
                                                         osbpMap.put("packageTypeId", endshmFort.getPackageTypeId());
+                                                        osbpMap.put("typePackage", endshmFort.getTypePackage());
                                                         if(endshmFort.getPackageTypeId()!=null){
                                                             osbpMap.put("packageType", entityManager.find(PackageTypeEntity.class,endshmFort.getPackageTypeId()).getType());
                                                         }else{
@@ -664,6 +666,7 @@ public class OrdersController extends Application {
 
                                                         HashMap<String, Object> osbpMapS = new HashMap<String, Object>();
                                                         osbpMapS.put("selectedPackage", osbpMap);
+                                                        osbpMapS.put("typePackage", endshmFort.getTypePackage());
                                                         osbpMapS.put("quantity", endshmFort.getQuantity());
                                                         osbpMapS.put("oldQuantity", endshmFort.getQuantity());
                                                         osbpMapS.put("packageTypeId", endshmFort.getPackageTypeId());
@@ -691,6 +694,7 @@ public class OrdersController extends Application {
                                                         osbpMap.put("quantity", endshmFort.getQuantity());
                                                         osbpMap.put("oldQuantity", endshmFort.getQuantity());
                                                         osbpMap.put("packageTypeId", endshmFort.getPackageTypeId());
+                                                        osbpMap.put("typePackage", endshmFort.getTypePackage());
                                                         if(endshmFort.getPackageTypeId()!=null){
                                                             osbpMap.put("packageType", entityManager.find(PackageTypeEntity.class,endshmFort.getPackageTypeId()).getType());
                                                         }else{
@@ -703,6 +707,8 @@ public class OrdersController extends Application {
                                                         osbpMapS.put("quantity", endshmFort.getQuantity());
                                                         osbpMapS.put("oldQuantity", endshmFort.getQuantity());
                                                         osbpMapS.put("packageTypeId", endshmFort.getPackageTypeId());
+                                                        osbpMapS.put("typePackage", endshmFort.getTypePackage());
+
                                                         if(endshmFort.getPackageTypeId()!=null){
                                                             osbpMapS.put("packageType", entityManager.find(PackageTypeEntity.class,endshmFort.getPackageTypeId()).getType());
                                                         }else{
@@ -729,6 +735,8 @@ public class OrdersController extends Application {
                                                         osbpMap.put("quantity", endshmFort.getQuantity());
                                                         osbpMap.put("oldQuantity", endshmFort.getQuantity());
                                                         osbpMap.put("packageTypeId", endshmFort.getPackageTypeId());
+                                                        osbpMap.put("typePackage", endshmFort.getTypePackage());
+
                                                         if(endshmFort.getPackageTypeId()!=null){
                                                             osbpMap.put("packageType", entityManager.find(PackageTypeEntity.class,endshmFort.getPackageTypeId()).getType());
                                                         }else{
@@ -741,6 +749,7 @@ public class OrdersController extends Application {
                                                         osbpMapS.put("quantity", endshmFort.getQuantity());
                                                         osbpMapS.put("oldQuantity", endshmFort.getQuantity());
                                                         osbpMapS.put("packageTypeId", endshmFort.getPackageTypeId());
+                                                        osbpMapS.put("typePackage", endshmFort.getTypePackage());
                                                         if(endshmFort.getPackageTypeId()!=null){
                                                             osbpMapS.put("packageType", entityManager.find(PackageTypeEntity.class,endshmFort.getPackageTypeId()).getType());
                                                         }else{
@@ -1165,12 +1174,14 @@ public class OrdersController extends Application {
                                         while (itemsAfethrias.hasNext()) {
                                             JsonNode itemsAfethriasNode = Json.toJson(itemsAfethrias.next());
                                             String title = itemsAfethriasNode.findPath("selectedPackage").findPath("title").asText();
+                                            String typePackage = itemsAfethriasNode.findPath("selectedPackage").findPath("typePackage").asText();
                                             ((ObjectNode) itemsAfethriasNode).remove("selectedPackage");
                                             Integer quantity = itemsAfethriasNode.findPath("quantity").asInt();
                                             Integer packageTypeId = itemsAfethriasNode.findPath("packageTypeId").asInt();
                                             OrdersSelectionsByPointEntity selections = new OrdersSelectionsByPointEntity();
                                             selections.setOrderId(orderId);
                                             selections.setTitle(title);
+                                            selections.setTypePackage(typePackage);
                                             if(packageTypeId!=0){
                                                 selections.setPackageTypeId(packageTypeId);
                                             }
@@ -1265,6 +1276,7 @@ public class OrdersController extends Application {
                                             JsonNode itemsPackagesEndiamesouNode = Json.toJson(itemsPackagesEndiamesouIter.next());
                                             System.out.println(itemsPackagesEndiamesouNode);
                                             String title = itemsPackagesEndiamesouNode.findPath("selectedPackage").findPath("title").asText();
+                                            String typePackage = itemsPackagesEndiamesouNode.findPath("selectedPackage").findPath("typePackage").asText();
                                             ((ObjectNode) itemsPackagesEndiamesouNode).remove("selectedPackage");
                                             Integer quantity = itemsPackagesEndiamesouNode.findPath("quantity").asInt();
                                             Integer packageTypeId = itemsPackagesEndiamesouNode.findPath("packageTypeId").asInt();
@@ -1272,6 +1284,7 @@ public class OrdersController extends Application {
                                             OrdersSelectionsByPointEntity selections = new OrdersSelectionsByPointEntity();
                                             selections.setOrderId(orderId);
                                             selections.setTitle(title);
+                                            selections.setTypePackage(typePackage);
                                             selections.setOrderScheduleId(orderWaypointsPackagesEntity.getOrderScheduleId());
                                             selections.setOrderWaypointId(orderWaypointsPackagesEntity.getId());
                                             selections.setType("Φόρτωση");
@@ -1293,12 +1306,14 @@ public class OrdersController extends Application {
                                         while (itemsPackagesEkfortwshsEndiamesouShmeiouIter.hasNext()) {
                                             JsonNode itemEkfortwshs = Json.toJson(itemsPackagesEkfortwshsEndiamesouShmeiouIter.next());
                                             String title = itemEkfortwshs.findPath("selectedPackage").findPath("title").asText();
+                                            String typePackage = itemEkfortwshs.findPath("selectedPackage").findPath("typePackage").asText();
                                             ((ObjectNode) itemEkfortwshs).remove("selectedPackage");
                                             Integer quantity = itemEkfortwshs.findPath("quantity").asInt();
                                             Integer packageTypeId = itemEkfortwshs.findPath("packageTypeId").asInt();
                                             OrdersSelectionsByPointEntity selections = new OrdersSelectionsByPointEntity();
                                             selections.setOrderId(orderId);
                                             selections.setTitle(title);
+                                            selections.setTypePackage(typePackage);
                                             selections.setOrderScheduleId(orderWaypointsPackagesEntity.getOrderScheduleId());
                                             selections.setOrderWaypointId(orderWaypointsPackagesEntity.getId());
                                             selections.setType("Εκφόρτωση");
@@ -1320,11 +1335,13 @@ public class OrdersController extends Application {
                                         while (itemsPackagesEkfortwshsProorismouIter.hasNext()) {
                                             JsonNode itemEkfortwshsPr = Json.toJson(itemsPackagesEkfortwshsProorismouIter.next());
                                             String title = itemEkfortwshsPr.findPath("selectedPackage").findPath("title").asText();
+                                            String typePackage = itemEkfortwshsPr.findPath("selectedPackage").findPath("typePackage").asText();
                                             ((ObjectNode) itemEkfortwshsPr).remove("selectedPackage");
                                             Integer quantity = itemEkfortwshsPr.findPath("quantity").asInt();
                                             Integer packageTypeId = itemEkfortwshsPr.findPath("packageTypeId").asInt();
                                             OrdersSelectionsByPointEntity selections = new OrdersSelectionsByPointEntity();
                                             selections.setOrderId(orderId);
+                                            selections.setTypePackage(typePackage);
                                             selections.setTitle(title);
                                             if(packageTypeId!=0){
                                                 selections.setPackageTypeId(packageTypeId);

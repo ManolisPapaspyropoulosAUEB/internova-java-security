@@ -14,6 +14,7 @@ public class OrdersSelectionsByPointEntity {
     private String type;
     private Integer quantity;
     private Integer packageTypeId;
+    private String typePackage;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -112,5 +113,15 @@ public class OrdersSelectionsByPointEntity {
 
     public void setPackageTypeId(Integer packageTypeId) {
         this.packageTypeId = packageTypeId;
+    }
+
+    @Basic
+    @Column(name = "type_package")
+    public String getTypePackage() {
+        return typePackage;
+    }
+
+    public void setTypePackage(String typePackage) {
+        this.typePackage = typePackage;
     }
 }
