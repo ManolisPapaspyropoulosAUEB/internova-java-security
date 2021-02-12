@@ -1169,7 +1169,7 @@ public class OrdersController extends Application {
                                         }
                                         ordS.setAppointment(appointment);
                                         ordS.setTimeToArrive(timeToArrive);
-                                        DateFormat myDateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+                                        DateFormat myDateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm");
                                         if(appointmentDay!=null && !appointmentDay.equalsIgnoreCase("")){
                                             try {
                                                 Date appointmentDayDate = myDateFormat.parse(appointmentDay);
@@ -1289,7 +1289,7 @@ public class OrdersController extends Application {
                                         }
                                         orderWaypointsPackagesEntity.setAppointment(appointment);
                                         orderWaypointsPackagesEntity.setTimeToArrive(timeToArrive);
-                                        DateFormat myDateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+                                        DateFormat myDateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm");
                                         if(appointmentDay!=null && !appointmentDay.equalsIgnoreCase("")){
                                             try {
                                                 Date appointmentDayDate = myDateFormat.parse(appointmentDay);
