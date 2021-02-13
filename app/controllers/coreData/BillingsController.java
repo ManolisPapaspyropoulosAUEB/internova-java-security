@@ -21,6 +21,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 public class BillingsController extends Application {
     private JPAApi jpaApi;
     private DatabaseExecutionContext executionContext;
@@ -185,9 +187,8 @@ public class BillingsController extends Application {
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
-    public Result getBillings(final Http.Request request) throws IOException {
+    public Result getBillings(final Http.Request request) throws IOException, ExecutionException, InterruptedException {
         ObjectNode result = Json.newObject();
-        try {
             JsonNode json = request.body().asJson();
             if (json == null) {
                 return badRequest("Expecting Json data");
@@ -275,12 +276,7 @@ public class BillingsController extends Application {
                     return ok(jsonResult);
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            result.put("status", "error");
-            result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων");
-            return ok(result);
-        }
+
     }
 
 

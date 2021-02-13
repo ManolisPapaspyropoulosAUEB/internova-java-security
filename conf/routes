@@ -149,6 +149,7 @@ POST        /getAllSuggestedSchedulesByCustomer              controllers.procedu
 POST        /updateOrder                                     controllers.procedures.OrdersController.updateOrder(req: Request)
 POST        /createOrder                                     controllers.procedures.OrdersController.createOrder(req: Request)
 POST        /getOrders                                       controllers.procedures.OrdersController.getOrders(req: Request)
+POST        /getAllOrders                   controllers.procedures.OrdersController.getAllOrdersNoPagination(req: Request)
 POST        /getOrderWaypoints                               controllers.procedures.OrdersController.getOrderWaypoints(req: Request)
 POST        /updateOrderWaypoint                             controllers.procedures.OrdersController.updateOrderWaypoint(req: Request)
 POST        /getDistinctPckagesStartPoint                    controllers.procedures.OrdersController.getDistinctPckagesStartPoint(req: Request)
