@@ -24,6 +24,8 @@ public class OrdersEntity {
     private Date updateDate;
     private Date creationDate;
     private String sender;
+    private String grossWeight;
+    private String netWeight;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -211,5 +213,25 @@ public class OrdersEntity {
 
     public void setSender(String sender) {
         this.sender = sender;
+    }
+
+    @Basic
+    @Column(name = "gross_weight")
+    public String getGrossWeight() {
+        return grossWeight;
+    }
+
+    public void setGrossWeight(String grossWeight) {
+        this.grossWeight = grossWeight;
+    }
+
+    @Basic
+    @Column(name = "net_weight")
+    public String getNetWeight() {
+        return netWeight;
+    }
+
+    public void setNetWeight(String netWeight) {
+        this.netWeight = netWeight;
     }
 }

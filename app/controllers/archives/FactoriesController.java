@@ -568,6 +568,7 @@ public class FactoriesController extends Application {
                                     entityManager.persist(factoriesEntity);
                                     result_add.put("status", "success");
                                     result_add.put("address", factoriesEntity.getAddress());
+                                    result_add.put("appointmentRequired", factoriesEntity.getAppointmentRequired());
                                     result_add.put("brandName", factoriesEntity.getBrandName());
                                     result_add.put("factoryId", factoriesEntity.getId());
                                     result_add.put("message", "Η καταχώρηση ολοκληρώθηκε με επιτυχία!");
@@ -656,6 +657,7 @@ public class FactoriesController extends Application {
                                     entityManager.merge(factoriesEntity);
                                     result_add.put("status", "success");
                                     result_add.put("address", factoriesEntity.getAddress());
+                                    result_add.put("appointmentRequired", factoriesEntity.getAppointmentRequired());
                                     result_add.put("brandName", factoriesEntity.getBrandName());
                                     result_add.put("factoryId", factoriesEntity.getId());
                                     result_add.put("message", "Η ενημερωση ολοκληρώθηκε με επιτυχία!");
