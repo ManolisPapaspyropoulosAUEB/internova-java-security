@@ -1399,16 +1399,10 @@ public class OrdersController extends Application {
                                             String sqlMu = "select * from measurement_unit mu where mu.title='"+title+"'";
                                             List<MeasurementUnitEntity> muE = entityManager.createNativeQuery(sqlMu,MeasurementUnitEntity.class).getResultList();
                                             MeasurementUnitEntity mue = entityManager.find(MeasurementUnitEntity.class,muE.get(0).getId());
-                                            System.out.println(mue.getxIndex());
-                                            System.out.println(mue.getyIndex());
                                             Double ldm = 0.0;
                                             if(stackingType.equalsIgnoreCase("Μη Στοιβάσιμη")){
                                                 ldm =( (mue.getxIndex()*mue.getzIndex())/(2.4));
-
-
                                             }else{
-                                                System.out.println(quantity%2);
-
                                                 if(quantity%2==1){//tote monos
                                                     Double unique =( (mue.getxIndex()*mue.getzIndex())/(2.4));
 
@@ -1421,13 +1415,11 @@ public class OrdersController extends Application {
                                                     CoreVariablesEntity cve = entityManager.find(CoreVariablesEntity.class,cveid);
                                                     ldm=((((mue.getxIndex()*mue.getzIndex())/2.4))/cve.getStackingFactor())*quantity;
                                                 }
-
                                             }
                                             selections.setLdm(ldm);
                                             selections.setMeasureUnitId(muE.get(0).getId());
                                             entityManager.persist(selections);
                                         }
-
                                     } else {
                                         String newWaypoint = schedule.findPath("newWaypoint").asText();
                                         OrderWaypointsEntity orderWaypointsPackagesEntity = new OrderWaypointsEntity();
@@ -1511,11 +1503,20 @@ public class OrdersController extends Application {
                                             MeasurementUnitEntity mue = entityManager.find(MeasurementUnitEntity.class,muE.get(0).getId());
                                             Double ldm = 0.0;
                                             if(stackingType.equalsIgnoreCase("Μη Στοιβάσιμη")){
-                                                ldm =( (mue.getxIndex()*mue.getyIndex())/(2.4));
+                                                ldm =( (mue.getxIndex()*mue.getzIndex())/(2.4));
                                             }else{
-                                                Long cveid = Long.valueOf(1);
-                                                CoreVariablesEntity cve = entityManager.find(CoreVariablesEntity.class,cveid);
-                                                ldm =( (mue.getxIndex()*mue.getyIndex())/(2.4/(quantity*cve.getStackingFactor())));
+                                                if(quantity%2==1){//tote monos
+                                                    Double unique =( (mue.getxIndex()*mue.getzIndex())/(2.4));
+
+                                                    Long cveid = Long.valueOf(1);
+                                                    CoreVariablesEntity cve = entityManager.find(CoreVariablesEntity.class,cveid);
+                                                    ldm=((((mue.getxIndex()*mue.getzIndex())/2.4))/cve.getStackingFactor())*(quantity-1)+unique;
+
+                                                }else{
+                                                    Long cveid = Long.valueOf(1);
+                                                    CoreVariablesEntity cve = entityManager.find(CoreVariablesEntity.class,cveid);
+                                                    ldm=((((mue.getxIndex()*mue.getzIndex())/2.4))/cve.getStackingFactor())*quantity;
+                                                }
                                             }
                                             selections.setLdm(ldm);
                                             selections.setMeasureUnitId(muE.get(0).getId());
@@ -1569,13 +1570,23 @@ public class OrdersController extends Application {
                                             MeasurementUnitEntity mue = entityManager.find(MeasurementUnitEntity.class,muE.get(0).getId());
                                             Double ldm = 0.0;
                                             if(stackingType.equalsIgnoreCase("Μη Στοιβάσιμη")){
-                                                ldm =( (mue.getxIndex()*mue.getyIndex())/(2.4));
+                                                ldm =( (mue.getxIndex()*mue.getzIndex())/(2.4));
                                             }else{
-                                                Long cveid = Long.valueOf(1);
-                                                CoreVariablesEntity cve = entityManager.find(CoreVariablesEntity.class,cveid);
-                                                ldm =( (mue.getxIndex()*mue.getyIndex())/(2.4/(quantity*cve.getStackingFactor())));
+                                                if(quantity%2==1){//tote monos
+                                                    Double unique =( (mue.getxIndex()*mue.getzIndex())/(2.4));
+
+                                                    Long cveid = Long.valueOf(1);
+                                                    CoreVariablesEntity cve = entityManager.find(CoreVariablesEntity.class,cveid);
+                                                    ldm=((((mue.getxIndex()*mue.getzIndex())/2.4))/cve.getStackingFactor())*(quantity-1)+unique;
+
+                                                }else{
+                                                    Long cveid = Long.valueOf(1);
+                                                    CoreVariablesEntity cve = entityManager.find(CoreVariablesEntity.class,cveid);
+                                                    ldm=((((mue.getxIndex()*mue.getzIndex())/2.4))/cve.getStackingFactor())*quantity;
+                                                }
                                             }
                                             selections.setLdm(ldm);
+                                            selections.setMeasureUnitId(muE.get(0).getId());
                                             entityManager.persist(selections);
                                         }
                                         JsonNode itemsPackagesEkfortwshsProorismou = schedule.findPath("itemsPackagesEkfortwshsProorismou");
@@ -1625,11 +1636,20 @@ public class OrdersController extends Application {
                                             MeasurementUnitEntity mue = entityManager.find(MeasurementUnitEntity.class,muE.get(0).getId());
                                             Double ldm = 0.0;
                                             if(stackingType.equalsIgnoreCase("Μη Στοιβάσιμη")){
-                                                ldm =( (mue.getxIndex()*mue.getyIndex())/(2.4));
+                                                ldm =( (mue.getxIndex()*mue.getzIndex())/(2.4));
                                             }else{
-                                                Long cveid = Long.valueOf(1);
-                                                CoreVariablesEntity cve = entityManager.find(CoreVariablesEntity.class,cveid);
-                                                ldm =( (mue.getxIndex()*mue.getyIndex())/(2.4/(quantity*cve.getStackingFactor())));
+                                                if(quantity%2==1){//tote monos
+                                                    Double unique =( (mue.getxIndex()*mue.getzIndex())/(2.4));
+
+                                                    Long cveid = Long.valueOf(1);
+                                                    CoreVariablesEntity cve = entityManager.find(CoreVariablesEntity.class,cveid);
+                                                    ldm=((((mue.getxIndex()*mue.getzIndex())/2.4))/cve.getStackingFactor())*(quantity-1)+unique;
+
+                                                }else{
+                                                    Long cveid = Long.valueOf(1);
+                                                    CoreVariablesEntity cve = entityManager.find(CoreVariablesEntity.class,cveid);
+                                                    ldm=((((mue.getxIndex()*mue.getzIndex())/2.4))/cve.getStackingFactor())*quantity;
+                                                }
                                             }
                                             selections.setLdm(ldm);
                                             selections.setMeasureUnitId(muE.get(0).getId());
