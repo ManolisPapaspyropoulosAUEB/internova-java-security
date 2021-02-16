@@ -26,6 +26,7 @@ public class OrdersEntity {
     private String sender;
     private String grossWeight;
     private String netWeight;
+    private String timologioCode;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -233,5 +234,15 @@ public class OrdersEntity {
 
     public void setNetWeight(String netWeight) {
         this.netWeight = netWeight;
+    }
+
+    @Basic
+    @Column(name = "timologio_code")
+    public String getTimologioCode() {
+        return timologioCode;
+    }
+
+    public void setTimologioCode(String timologioCode) {
+        this.timologioCode = timologioCode;
     }
 }

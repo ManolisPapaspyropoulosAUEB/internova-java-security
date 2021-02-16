@@ -226,13 +226,7 @@ public class FactoriesController extends Application {
                                             if(!factoryId.equalsIgnoreCase("") && factoryId!=null && !factoryId.equalsIgnoreCase("null")){
                                                 sqlFactFinal+=" and pos.id like '%"+factoryId+"%'";
                                             }
-//                                            if(!city.equalsIgnoreCase("") && city!=null && !city.equalsIgnoreCase("null")){
-//                                                sqlFactFinal+=" and pos.city like '%"+city+"%'";
-//                                            }
-//                                            if(!country.equalsIgnoreCase("") && country!=null && !country.equalsIgnoreCase("null")){
-//                                                sqlFactFinal+=" and pos.country like '%"+country+"%'";
-//                                            }
-//
+
                                             if(!postalCode.equalsIgnoreCase("") && postalCode!=null  && !postalCode.equalsIgnoreCase("null")){
                                                 sqlFactFinal+=" and pos.postal_code like '%"+postalCode+"%'";
                                             }
@@ -530,6 +524,8 @@ public class FactoriesController extends Application {
                                     String country = json.findPath("country").asText();
                                     String factoryType = json.findPath("factoryType").asText();
 
+                                    postalCode = postalCode.replaceAll("\\s+","");
+
                                     //
                                     String comments = json.findPath("comments").asText();
                                     Double longtitude = json.findPath("longitude").asDouble();
@@ -627,12 +623,14 @@ public class FactoriesController extends Application {
                                     Double longtitude = json.findPath("longitude").asDouble();
                                     Double lattitude = json.findPath("latitude").asDouble();
                                     boolean appointmentRequired = json.findPath("appointmentRequired").asBoolean();//appointmentRequired
+                                    postalCode = postalCode.replaceAll("\\s+","");
                                     FactoriesEntity factoriesEntity = entityManager.find(FactoriesEntity.class,id);
                                     factoriesEntity.setAddress(address);
                                     factoriesEntity.setBrandName(brandName);
                                     factoriesEntity.setCity(city);
                                     factoriesEntity.setEmail(email);
                                     factoriesEntity.setFactoryType(factoryType);
+
 
                                     factoriesEntity.setTelephone(telephone);
                                     factoriesEntity.setPostalCode(postalCode);
@@ -687,6 +685,16 @@ public class FactoriesController extends Application {
             return ok(result);
         }
     }
+
+
+
+
+
+
+
+
+
+
 
     @SuppressWarnings({"Duplicates", "unchecked"})
     @BodyParser.Of(BodyParser.Json.class)

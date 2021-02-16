@@ -28,6 +28,7 @@ public class OrderSchedulesEntity {
     private Date appointmentDay;
     private String timeToArrive;
     private Integer appointment;
+    private String truckLoadingCode;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -254,5 +255,15 @@ public class OrderSchedulesEntity {
 
     public void setAppointment(Integer appointment) {
         this.appointment = appointment;
+    }
+
+    @Basic
+    @Column(name = "truck_loading_code")
+    public String getTruckLoadingCode() {
+        return truckLoadingCode;
+    }
+
+    public void setTruckLoadingCode(String truckLoadingCode) {
+        this.truckLoadingCode = truckLoadingCode;
     }
 }

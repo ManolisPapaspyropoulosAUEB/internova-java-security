@@ -13,6 +13,7 @@ import play.mvc.Result;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -254,7 +255,8 @@ public class OrdersController extends Application {
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
-    public Result getOrders(final Http.Request request) throws IOException, ExecutionException, InterruptedException {
+    public Result getOrders(final Http.Request request) throws IOException,
+            ExecutionException, InterruptedException {
         ObjectNode result = Json.newObject();
         JsonNode json = request.body().asJson();
         if (json == null) {
@@ -405,7 +407,6 @@ public class OrdersController extends Application {
                                                     + " order by ord_s.primary_schedule desc ";
                                             List<OrderSchedulesEntity> orderSchedulesEntityList =
                                                     entityManager.createNativeQuery(sqlOrdersSchedules, OrderSchedulesEntity.class).getResultList();
-
                                             List<HashMap<String, Object>> schedulesList = new ArrayList<HashMap<String, Object>>();
                                             for (OrderSchedulesEntity os : orderSchedulesEntityList) {
                                                 HashMap<String, Object> schedmap = new HashMap<String, Object>();
@@ -420,16 +421,13 @@ public class OrdersController extends Application {
                                                 schedmap.put("orderScheduleId", os.getId());
                                                 schedmap.put("fromCountry", os.getFromCountry());
                                                 schedmap.put("fromPostalCode", os.getFromPostalCode());
+                                                schedmap.put("truckLoadingCode", os.getTruckLoadingCode());
                                                 if(os.getTimeToArrive()!=null && !os.getTimeToArrive().equalsIgnoreCase("null")){
                                                     schedmap.put("timeToArrive", os.getTimeToArrive());
                                                 }else{
                                                     schedmap.put("timeToArrive", "");
                                                 }
-//                                                schedmap.put("appointment", os.getAppointment());
-
-
                                                 schedmap.put("appointmentDay", os.getAppointmentDay());
-
                                                 if (os.getFactoryId() != null) {
                                                     FactoriesEntity factory = entityManager.find(FactoriesEntity.class, os.getFactoryId());
                                                     schedmap.put("factory",entityManager.find(FactoriesEntity.class, os.getFactoryId()));
@@ -607,11 +605,10 @@ public class OrdersController extends Application {
                                                     waypmap.put("itemsPackagesFortwshsEndiamesouShmeiou", new ArrayList<HashMap<String, Object>>());
                                                     waypmap.put("itemsPackagesEkfortwshsEndiamesouShmeiou", new ArrayList<HashMap<String, Object>>());
                                                     waypmap.put("itemsPackagesEkfortwshsProorismou", new ArrayList<HashMap<String, Object>>());
+                                                    waypmap.put("truckLoadingCode",waypOb.getTruckLoadingCode());
                                                     if (waypOb.getFactoryId() != null) {
                                                         waypmap.put("factory",entityManager.find(FactoriesEntity.class, waypOb.getFactoryId()));
                                                     }
-
-
                                                     if (waypOb.getFactoryId() != null) {
                                                         FactoriesEntity factory = entityManager.find(FactoriesEntity.class, waypOb.getFactoryId());
                                                         waypmap.put("factory",entityManager.find(FactoriesEntity.class, waypOb.getFactoryId()));
@@ -634,8 +631,6 @@ public class OrdersController extends Application {
                                                     }else{
                                                         waypmap.put("colorAppointmentDay",false);
                                                     }
-
-
                                                     waypmap.put("city", waypOb.getCity());
                                                     waypmap.put("country", waypOb.getCountry());
                                                     waypmap.put("postalCode", waypOb.getPostalCode());
@@ -763,7 +758,6 @@ public class OrdersController extends Application {
                                                         osbpMap.put("ldm", endshmFort.getLdm());
                                                         osbpMap.put("packageTypeId", endshmFort.getPackageTypeId());
                                                         osbpMap.put("typePackage", endshmFort.getTypePackage());
-
                                                         if(endshmFort.getPackageTypeId()!=null){
                                                             osbpMap.put("packageType", entityManager.find(PackageTypeEntity.class,endshmFort.getPackageTypeId()).getType());
                                                         }else{
@@ -799,13 +793,13 @@ public class OrdersController extends Application {
                                                     createNativeQuery(summSql).getSingleResult();
                                             if (sumSchedules != null) {
                                                 sHmpam.put("sumSchedules", sumSchedules);
-
                                             } else {
                                                 sHmpam.put("sumSchedules", "0.0");
                                             }
                                             sHmpam.put("offerId", offers);
                                             sHmpam.put("sender", j.getSender());
                                             sHmpam.put("customerId", j.getCustomerId());
+                                            sHmpam.put("timologioCode", j.getTimologioCode());
                                             sHmpam.put("id", j.getId());
                                             sHmpam.put("orderId", j.getId());
                                             sHmpam.put("comments", j.getComments());
@@ -865,44 +859,31 @@ public class OrdersController extends Application {
                 CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
                             return jpaApi.withTransaction(
                                     entityManager -> {
-
-                                        //      id:this.idsearch,
-                                        //      customer:this.customerSearch,
-
                                         String id = json.findPath("id").asText();
                                         String customer = json.findPath("customer").asText();
                                         String sqlroles = "select * from orders b where 1=1 ";
                                         HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                         List<HashMap<String, Object>> serversList = new ArrayList<HashMap<String, Object>>();
-
-
-
                                         if (!customer.equalsIgnoreCase("") && customer != null) {
                                             sqlroles += " and b.customer_id  in " +
                                                     " ( select id from  customers_suppliers cs where cs.brand_name like '%" + customer + "%' )";
                                         }
-
                                         if(id!=null && !id.equalsIgnoreCase("")){
                                             sqlroles+=" and b.id like '%"+id+"%'";
                                         }
-
-
                                         List<OrdersEntity> orgsList
                                                 = (List<OrdersEntity>) entityManager.createNativeQuery(
                                                 sqlroles, OrdersEntity.class).getResultList();
-
                                         for (OrdersEntity j : orgsList) {
                                             HashMap<String, Object> sHmpam = new HashMap<String, Object>();
                                             sHmpam.put("id", j.getId());
                                             sHmpam.put("orderId", j.getId());
-
                                             String sqlOrdersSchedules = "select * from order_schedules ord_s where ord_s.order_id=" + j.getId()
                                                     + " and ord_s.primary_schedule=1 ";
                                             List<OrderSchedulesEntity> osList =
                                                     entityManager.createNativeQuery(sqlOrdersSchedules, OrderSchedulesEntity.class).getResultList();
                                             sHmpam.put("mainSchedule", osList.get(0).getFromCountry() + " " + osList.get(0).getFromCity() + "  /  "
                                                     + osList.get(0).getToCountry() + " " + osList.get(0).getToCity());
-
                                             CustomersSuppliersEntity cust = entityManager.find(CustomersSuppliersEntity.class,j.getCustomerId());
                                             sHmpam.put("brandName", cust.getBrandName());
                                             sHmpam.put("creationDate", j.getCreationDate());
@@ -1188,6 +1169,10 @@ public class OrdersController extends Application {
                 CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
                             return jpaApi.withTransaction(entityManager -> {
                                 ObjectNode add_result = Json.newObject();
+
+                                Long cveid = Long.valueOf(1);
+                                CoreVariablesEntity cve = entityManager.find(CoreVariablesEntity.class,cveid);
+
                                 String user_id = json.findPath("user_id").asText();
                                 Long orderId = json.findPath("orderId").asLong();
                                 String generalInstructions = json.findPath("generalInstructions").asText();
@@ -1195,6 +1180,8 @@ public class OrdersController extends Application {
                                 String grossWeight = json.findPath("grossWeight").asText();
                                 String truckTemprature = json.findPath("truckTemprature").asText();
                                 String sender = json.findPath("sender").asText();
+                                String timologioCode = json.findPath("timologioCode").asText();
+                                //
                                 String status = json.findPath("status").asText();
                                 String comments = json.findPath("comments").asText();
                                 String sqlPackagesByPoints =
@@ -1269,8 +1256,14 @@ public class OrdersController extends Application {
                                 if (sender != null && !sender.equalsIgnoreCase("null")) {
                                     ordersEntity.setSender(sender);
                                 }
+                                if(comments != null && !comments.equalsIgnoreCase("null")){
+                                    ordersEntity.setComments(comments);
+                                }
+
+                                if(timologioCode != null && !timologioCode.equalsIgnoreCase("null")){
+                                    ordersEntity.setTimologioCode(timologioCode);
+                                }
                                 ordersEntity.setStatus(status);
-                                ordersEntity.setComments(comments);
                                 entityManager.merge(ordersEntity);
                                 JsonNode finalTimeline = json.findPath("finalTimeline");
                                 Iterator fintIt = finalTimeline.iterator();
@@ -1280,13 +1273,7 @@ public class OrdersController extends Application {
                                     String timeToArrive = schedule.findPath("timeToArrive").asText();
                                     Integer appointment = schedule.findPath("appointment").asInt();
                                     String appointmentDay = schedule.findPath("appointmentDay").asText();
-
-
-
-
-
-
-
+                                    String truckLoadingCode = schedule.findPath("truckLoadingCode").asText();
                                     String offerScheduleBetweenWaypointId = schedule.findPath("offerScheduleBetweenWaypointId").asText();
                                     if (schedule.findPath("timelinetype").asText().equalsIgnoreCase("Αφετηρία")) {
                                         OrderSchedulesEntity ordS = entityManager.find(OrderSchedulesEntity.class, schedule.findPath("orderScheduleId").asLong());
@@ -1302,18 +1289,14 @@ public class OrdersController extends Application {
                                         if(appointmentDay!=null && !appointmentDay.equalsIgnoreCase("")){
                                             try {
                                                 Date appointmentDayDate = myDateFormat.parse(appointmentDay);
-
-
-
-
-
-
                                                 ordS.setAppointmentDay(appointmentDayDate);
                                             } catch (ParseException e) {
                                                 e.printStackTrace();
                                             }
                                         }
-
+                                        if(truckLoadingCode!=null && !truckLoadingCode.equalsIgnoreCase("") && !truckLoadingCode.equalsIgnoreCase("null")){
+                                            ordS.setTruckLoadingCode(truckLoadingCode);
+                                        }
                                         JsonNode orderPackageScheduleList = schedule.findPath("orderPackageScheduleList");
                                         Iterator orderPackIt = orderPackageScheduleList.iterator();
                                         while (orderPackIt.hasNext()) {
@@ -1354,8 +1337,6 @@ public class OrdersController extends Application {
                                                 entityManager.persist(odv);
                                             }
                                         }
-
-
                                         JsonNode itemsPackagesAfethrias = schedule.findPath("itemsPackagesAfethrias");
                                         Iterator itemsAfethrias = itemsPackagesAfethrias.iterator();
                                         while (itemsAfethrias.hasNext()) {
@@ -1364,7 +1345,6 @@ public class OrdersController extends Application {
                                             String typePackage = itemsAfethriasNode.findPath("selectedPackage").findPath("typePackage").asText();
                                             ((ObjectNode) itemsAfethriasNode).remove("selectedPackage");
                                             String stackingType = itemsAfethriasNode.findPath("stackingType").asText();
-
                                             Integer quantity = itemsAfethriasNode.findPath("quantity").asInt();
                                             Integer packageTypeId = itemsAfethriasNode.findPath("packageTypeId").asInt();
                                             OrdersSelectionsByPointEntity selections = new OrdersSelectionsByPointEntity();
@@ -1400,22 +1380,7 @@ public class OrdersController extends Application {
                                             List<MeasurementUnitEntity> muE = entityManager.createNativeQuery(sqlMu,MeasurementUnitEntity.class).getResultList();
                                             MeasurementUnitEntity mue = entityManager.find(MeasurementUnitEntity.class,muE.get(0).getId());
                                             Double ldm = 0.0;
-                                            if(stackingType.equalsIgnoreCase("Μη Στοιβάσιμη")){
-                                                ldm =( (mue.getxIndex()*mue.getzIndex())/(2.4));
-                                            }else{
-                                                if(quantity%2==1){//tote monos
-                                                    Double unique =( (mue.getxIndex()*mue.getzIndex())/(2.4));
-
-                                                    Long cveid = Long.valueOf(1);
-                                                    CoreVariablesEntity cve = entityManager.find(CoreVariablesEntity.class,cveid);
-                                                    ldm=((((mue.getxIndex()*mue.getzIndex())/2.4))/cve.getStackingFactor())*(quantity-1)+unique;
-
-                                                }else{
-                                                    Long cveid = Long.valueOf(1);
-                                                    CoreVariablesEntity cve = entityManager.find(CoreVariablesEntity.class,cveid);
-                                                    ldm=((((mue.getxIndex()*mue.getzIndex())/2.4))/cve.getStackingFactor())*quantity;
-                                                }
-                                            }
+                                            ldm= calculateLdm(stackingType,mue,quantity,cve.getStackingFactor());
                                             selections.setLdm(ldm);
                                             selections.setMeasureUnitId(muE.get(0).getId());
                                             entityManager.persist(selections);
@@ -1439,6 +1404,9 @@ public class OrdersController extends Application {
                                             } catch (ParseException e) {
                                                 e.printStackTrace();
                                             }
+                                        }
+                                        if(truckLoadingCode!=null && !truckLoadingCode.equalsIgnoreCase("") && !truckLoadingCode.equalsIgnoreCase("null")){
+                                            orderWaypointsPackagesEntity.setTruckLoadingCode(truckLoadingCode);
                                         }
                                         orderWaypointsPackagesEntity.setOrderId(orderId);
                                         orderWaypointsPackagesEntity.setCity(schedule.findPath("city").asText());
@@ -1502,22 +1470,7 @@ public class OrdersController extends Application {
                                             List<MeasurementUnitEntity> muE = entityManager.createNativeQuery(sqlMu,MeasurementUnitEntity.class).getResultList();
                                             MeasurementUnitEntity mue = entityManager.find(MeasurementUnitEntity.class,muE.get(0).getId());
                                             Double ldm = 0.0;
-                                            if(stackingType.equalsIgnoreCase("Μη Στοιβάσιμη")){
-                                                ldm =( (mue.getxIndex()*mue.getzIndex())/(2.4));
-                                            }else{
-                                                if(quantity%2==1){//tote monos
-                                                    Double unique =( (mue.getxIndex()*mue.getzIndex())/(2.4));
-
-                                                    Long cveid = Long.valueOf(1);
-                                                    CoreVariablesEntity cve = entityManager.find(CoreVariablesEntity.class,cveid);
-                                                    ldm=((((mue.getxIndex()*mue.getzIndex())/2.4))/cve.getStackingFactor())*(quantity-1)+unique;
-
-                                                }else{
-                                                    Long cveid = Long.valueOf(1);
-                                                    CoreVariablesEntity cve = entityManager.find(CoreVariablesEntity.class,cveid);
-                                                    ldm=((((mue.getxIndex()*mue.getzIndex())/2.4))/cve.getStackingFactor())*quantity;
-                                                }
-                                            }
+                                            ldm= calculateLdm(stackingType,mue,quantity,cve.getStackingFactor());
                                             selections.setLdm(ldm);
                                             selections.setMeasureUnitId(muE.get(0).getId());
                                             entityManager.persist(selections);
@@ -1569,22 +1522,7 @@ public class OrdersController extends Application {
                                             List<MeasurementUnitEntity> muE = entityManager.createNativeQuery(sqlMu,MeasurementUnitEntity.class).getResultList();
                                             MeasurementUnitEntity mue = entityManager.find(MeasurementUnitEntity.class,muE.get(0).getId());
                                             Double ldm = 0.0;
-                                            if(stackingType.equalsIgnoreCase("Μη Στοιβάσιμη")){
-                                                ldm =( (mue.getxIndex()*mue.getzIndex())/(2.4));
-                                            }else{
-                                                if(quantity%2==1){//tote monos
-                                                    Double unique =( (mue.getxIndex()*mue.getzIndex())/(2.4));
-
-                                                    Long cveid = Long.valueOf(1);
-                                                    CoreVariablesEntity cve = entityManager.find(CoreVariablesEntity.class,cveid);
-                                                    ldm=((((mue.getxIndex()*mue.getzIndex())/2.4))/cve.getStackingFactor())*(quantity-1)+unique;
-
-                                                }else{
-                                                    Long cveid = Long.valueOf(1);
-                                                    CoreVariablesEntity cve = entityManager.find(CoreVariablesEntity.class,cveid);
-                                                    ldm=((((mue.getxIndex()*mue.getzIndex())/2.4))/cve.getStackingFactor())*quantity;
-                                                }
-                                            }
+                                            ldm= calculateLdm(stackingType,mue,quantity,cve.getStackingFactor());
                                             selections.setLdm(ldm);
                                             selections.setMeasureUnitId(muE.get(0).getId());
                                             entityManager.persist(selections);
@@ -1635,22 +1573,7 @@ public class OrdersController extends Application {
                                             List<MeasurementUnitEntity> muE = entityManager.createNativeQuery(sqlMu,MeasurementUnitEntity.class).getResultList();
                                             MeasurementUnitEntity mue = entityManager.find(MeasurementUnitEntity.class,muE.get(0).getId());
                                             Double ldm = 0.0;
-                                            if(stackingType.equalsIgnoreCase("Μη Στοιβάσιμη")){
-                                                ldm =( (mue.getxIndex()*mue.getzIndex())/(2.4));
-                                            }else{
-                                                if(quantity%2==1){//tote monos
-                                                    Double unique =( (mue.getxIndex()*mue.getzIndex())/(2.4));
-
-                                                    Long cveid = Long.valueOf(1);
-                                                    CoreVariablesEntity cve = entityManager.find(CoreVariablesEntity.class,cveid);
-                                                    ldm=((((mue.getxIndex()*mue.getzIndex())/2.4))/cve.getStackingFactor())*(quantity-1)+unique;
-
-                                                }else{
-                                                    Long cveid = Long.valueOf(1);
-                                                    CoreVariablesEntity cve = entityManager.find(CoreVariablesEntity.class,cveid);
-                                                    ldm=((((mue.getxIndex()*mue.getzIndex())/2.4))/cve.getStackingFactor())*quantity;
-                                                }
-                                            }
+                                            ldm= calculateLdm(stackingType,mue,quantity,cve.getStackingFactor());
                                             selections.setLdm(ldm);
                                             selections.setMeasureUnitId(muE.get(0).getId());
                                             entityManager.persist(selections);
@@ -1676,6 +1599,26 @@ public class OrdersController extends Application {
 
         }
     }
+
+
+    private double calculateLdm(String stackingType,MeasurementUnitEntity mue,Integer quantity,Double stackingFactor){
+        Double ldm= 0.0;
+        DecimalFormat df = new DecimalFormat("###.#");
+
+        if(stackingType.equalsIgnoreCase("Μη Στοιβάσιμη")){
+            ldm =( (mue.getxIndex()*mue.getzIndex())/(2.4))*quantity;
+        }else{
+            if(quantity%2==1){//tote monos
+                Double unique =( (mue.getxIndex()*mue.getzIndex())/(2.4));
+                ldm=((((mue.getxIndex()*mue.getzIndex())/2.4))/stackingFactor)*(quantity-1)+unique;
+            }else{
+                ldm=((((mue.getxIndex()*mue.getzIndex())/2.4))/stackingFactor)*quantity;
+            }
+        }
+        ldm= Double.valueOf(df.format(ldm));
+        return  ldm;
+    }
+
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
