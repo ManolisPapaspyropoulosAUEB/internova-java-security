@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 public class AuditLogsController {
@@ -185,9 +187,8 @@ public class AuditLogsController {
     }
 
     @SuppressWarnings({"Duplicates","unchecked"})
-    public Result getAuditLogs(final Http.Request request) throws IOException {
+    public Result getAuditLogs(final Http.Request request) throws IOException, ExecutionException, InterruptedException {
         ObjectNode result = Json.newObject();
-        try {
             JsonNode json = request.body().asJson();
             if (json == null) {
                 return badRequest("Expecting Json data");
@@ -239,11 +240,6 @@ public class AuditLogsController {
                     return ok(jsonResult);
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            result.put("status", "error");
-            result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων");
-            return ok(result);
-        }
+
     }
 }

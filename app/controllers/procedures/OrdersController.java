@@ -614,7 +614,7 @@ public class OrdersController extends Application {
                                                         waypmap.put("factory",entityManager.find(FactoriesEntity.class, waypOb.getFactoryId()));
                                                         waypmap.put("appointment",entityManager.find(FactoriesEntity.class, waypOb.getFactoryId()).getAppointmentRequired());
 
-                                                        if(os.getAppointmentDay()!=null){
+                                                        if(waypOb.getAppointmentDay()!=null){
                                                             Date date2 = new Date();
                                                             int currentDate = Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(date2));
                                                             int appointmentDayMinusReq =
