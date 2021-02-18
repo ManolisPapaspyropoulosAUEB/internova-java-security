@@ -141,7 +141,6 @@ public class AuditLogsController {
     @SuppressWarnings({"Duplicates","unchecked"})
     @BodyParser.Of(BodyParser.Json.class)
     public Result deleteLog(final Http.Request request) throws IOException {
-        try {
             JsonNode json = request.body().asJson();
             if (json == null) {
                 return badRequest("Expecting Json data");
@@ -177,13 +176,7 @@ public class AuditLogsController {
                     return ok(result);
                 }
             }
-        } catch (Exception e) {
-            ObjectNode result = Json.newObject();
-            e.printStackTrace();
-            result.put("status", "error");
-            result.put("message", "Προβλημα κατα την διαγραφή");
-            return ok(result);
-        }
+
     }
 
     @SuppressWarnings({"Duplicates","unchecked"})
