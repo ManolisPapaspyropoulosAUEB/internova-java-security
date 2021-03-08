@@ -17,7 +17,17 @@ lazy val root = (project in file("."))
       "org.awaitility" % "awaitility" % "4.0.1" % "test",
       "org.assertj" % "assertj-core" % "3.14.0" % "test",
       "org.apache.pdfbox" % "pdfbox" % "2.0.1",
-      "org.mockito" % "mockito-core" % "3.1.0" % "test"),
+      "org.mockito" % "mockito-core" % "3.1.0" % "test",
+      "commons-net" % "commons-net" % "3.8.0",
+      "com.springml" % "sftp.client" % "1.0.3",
+      "com.lightbend.akka" %% "akka-stream-alpakka-ftp" % "2.0.2",
+      "com.typesafe.akka" %% "akka-stream" % "2.5.31"
+
+
+
+
+
+    ),
 
 
     Test / testOptions += Tests.Argument(TestFrameworks.JUnit, "-a", "-v"),

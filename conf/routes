@@ -30,7 +30,9 @@ POST        /getAllUsersNoPagination                         controllers.securit
 POST        /updatePassword                                  controllers.security.UsersControllers.updatePassword(req: Request)
 POST        /login                                           controllers.security.UsersControllers.login(req: Request)
 
-#AuditLogsController
+#AuditLogsController ftpRetrieveFromPath ftpRetrieveFromPath2
+POST        /ftpRetrieveFromPath                                     controllers.security.AuditLogsController.ftpRetrieveFromPath(req: Request)
+#POST        /ftpRetrieveFromPathAkka                                     controllers.security.AuditLogsController.ftpRetrieveFromPathAkka(req: Request)
 POST        /addAuditLog                                     controllers.security.AuditLogsController.addAuditLog(req: Request)
 POST        /updateAuditLog                                  controllers.security.AuditLogsController.updateAuditLog(req: Request)
 POST        /deleteLog                                       controllers.security.AuditLogsController.deleteLog(req: Request)
@@ -159,8 +161,9 @@ POST        /deleteOrder                                     controllers.procedu
 
 
 
-#ProceduresPrintController
+#ProceduresPrintController Json
 POST        /exportOffersAsXls                               controllers.procedures.ProceduresPrintController.exportOffersAsXls(req: Request)
+POST        /exportOrdersAsXls                               controllers.procedures.ProceduresPrintController.exportOrdersAsXls(req: Request)
 POST        /exportScheduleAsXlsx                            controllers.procedures.ProceduresPrintController.exportScheduleAsXlsx(req: Request)
 
 

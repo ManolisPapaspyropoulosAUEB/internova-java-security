@@ -155,6 +155,97 @@ public class ProceduresPrintController extends Application {
 
 
 
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    public Result exportOrdersAsXls(final Http.Request request) throws IOException {
+        ObjectNode result = Json.newObject();
+        try {
+            JsonNode json = request.body().asJson();
+            if (json == null) {
+                return badRequest("Expecting Json data");
+            } else {
+                if (json == null) {
+                    result.put("status", "error");
+                    result.put("message", "Δεν εχετε αποστειλει εγκυρα δεδομενα.");
+                    return ok(result);
+                } else {
+                    ObjectMapper ow = new ObjectMapper();
+                    String jsonResult = "";
+                    CompletableFuture<String> createXLSResult = CompletableFuture.supplyAsync(() -> {
+                                return jpaApi.withTransaction(
+                                        entityManager -> {
+                                            ObjectNode resultNode = Json.newObject();
+                                            String random_id = json.findPath("random_id").asText();
+                                            Random rand = new Random();
+                                            String filename =  ConfigFactory.load().getString("uploads_reports")+"orders" + random_id + ".xls";
+                                            HSSFWorkbook workbook = new HSSFWorkbook();
+                                            HSSFSheet sheet = workbook.createSheet("FirstSheet");
+                                            HSSFRow rowhead = sheet.createRow((short) 0);
+                                            rowhead.createCell((short) 0).setCellValue("ID");
+                                            rowhead.createCell((short) 1).setCellValue("OFFER ID");
+                                            rowhead.createCell((short) 2).setCellValue("ΠΕΛΑΤΗΣ");
+                                            rowhead.createCell((short) 3).setCellValue("ΚΑΤΑΣΤΑΣΗ");
+                                            rowhead.createCell((short) 4).setCellValue("ΔΡΟΜΟΛΟΓΙΟ");
+                                            rowhead.createCell((short) 5).setCellValue("ΗΜΕΡΟΜΗΝΙΑ ΠΑΡΑΓΓΕΛΙΑΣ");
+                                            String sql = "select * from orders ";
+                                            List<OrdersEntity> ordersEntityList = (List<OrdersEntity>)
+                                                    entityManager.createNativeQuery(sql, OrdersEntity.class).getResultList();
+                                            for (int i = 0; i < ordersEntityList.size(); i++) {
+                                                CustomersSuppliersEntity customersSuppliersEntity = entityManager.find(CustomersSuppliersEntity.class, ordersEntityList.get(i).getCustomerId());
+                                                HSSFRow row = sheet.createRow((short) i + 1);
+                                                row.createCell((short) 0).setCellValue(ordersEntityList.get(i).getId());
+                                                row.createCell((short) 1).setCellValue(ordersEntityList.get(i).getOfferId());
+                                                row.createCell((short) 2).setCellValue( entityManager.find(CustomersSuppliersEntity.class,ordersEntityList.get(i).getCustomerId()).getBrandName());
+                                                row.createCell((short) 3).setCellValue(ordersEntityList.get(i).getStatus());
+                                                String sqlOrdersSchedules = "select * from order_schedules ord_s where ord_s.order_id=" + ordersEntityList.get(i).getId()
+                                                        + " and ord_s.primary_schedule=1 ";
+
+                                                List<OrderSchedulesEntity> osList =
+                                                        entityManager.createNativeQuery(sqlOrdersSchedules, OrderSchedulesEntity.class).getResultList();
+                                                row.createCell((short) 4).setCellValue(osList.get(0).getFromCountry() + " " + osList.get(0).getFromCity() + "  /  "
+                                                        + osList.get(0).getToCountry() + " " + osList.get(0).getToCity());
+                                                DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                                                String creationDateString = myDateFormat.format(ordersEntityList.get(i).getCreationDate());
+                                                row.createCell((short) 5).setCellValue(creationDateString);
+                                            }
+                                            for (int col = 0; col < 6; col++) {
+                                                sheet.autoSizeColumn(col);
+                                            }
+
+
+
+                                            FileOutputStream fileOut = null;
+                                            try {
+                                                fileOut = new FileOutputStream(filename);
+                                                workbook.write(fileOut);
+                                                fileOut.close();
+                                                return filename;
+                                            } catch (FileNotFoundException e) {
+                                                e.printStackTrace();
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
+                                            resultNode.put("message", "success");
+                                            return filename;
+                                        });
+                            },
+                            executionContext);
+                    String ret_path = createXLSResult.get();
+                    File previewFile = new File(ret_path);
+                    return ok(previewFile);
+
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων");
+            return ok(result);
+        }
+    }
+
+
+
+
 
 
 

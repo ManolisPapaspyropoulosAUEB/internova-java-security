@@ -1581,6 +1581,8 @@ public class OrdersController extends Application {
                                     }
                                 }
                                 add_result.put("status", "success");
+                                add_result.put("user_id", user_id);
+                                add_result.put("DO_ID", ordersEntity.getId());
                                 add_result.put("message", "Η ενημέρωση της " + "παραγγελίας πραγματοποιήθηκε με επιτυχία");
                                 add_result.put("system", "ΠΑΡΑΓΓΕΛΙΕΣ");
                                 return add_result;
@@ -1588,7 +1590,7 @@ public class OrdersController extends Application {
                         },
                         executionContext);
                 result = (ObjectNode) addFuture.get();
-                return ok(result);
+                return ok(result,request);
             } catch (Exception e) {
                 ObjectNode result = Json.newObject();
                 e.printStackTrace();
