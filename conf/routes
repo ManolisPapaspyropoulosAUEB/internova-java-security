@@ -31,7 +31,7 @@ POST        /updatePassword                                  controllers.securit
 POST        /login                                           controllers.security.UsersControllers.login(req: Request)
 
 #AuditLogsController ftpRetrieveFromPath ftpRetrieveFromPath2
-POST        /ftpRetrieveFromPath                                     controllers.security.AuditLogsController.ftpRetrieveFromPath(req: Request)
+POST        /ftpRetrieveFromPath                             controllers.security.AuditLogsController.ftpRetrieveFromPath(req: Request)
 #POST        /ftpRetrieveFromPathAkka                                     controllers.security.AuditLogsController.ftpRetrieveFromPathAkka(req: Request)
 POST        /addAuditLog                                     controllers.security.AuditLogsController.addAuditLog(req: Request)
 POST        /updateAuditLog                                  controllers.security.AuditLogsController.updateAuditLog(req: Request)
@@ -77,6 +77,21 @@ POST        /updateFactory                                   controllers.archive
 POST        /deleteFactory                                   controllers.archives.FactoriesController.deleteFactory(req: Request)
 POST        /getAllFactoriesNoPagination                     controllers.archives.FactoriesController.getAllFactoriesNoPagination(req: Request)
 
+#TrucksController deleteTruckSupplier
+POST        /addTruck                                        controllers.archives.TrucksController.addTruck(req: Request)
+POST        /updateTruck                                     controllers.archives.TrucksController.updateTruck(req: Request)
+POST        /deleteTruck                                     controllers.archives.TrucksController.deleteTruck(req: Request)
+POST        /getTrucks                                       controllers.archives.TrucksController.getTrucks(req: Request)
+POST        /getTrucksExpect                                 controllers.archives.TrucksController.getTrucksExpect(req: Request)
+POST        /deleteTruckSupplier                             controllers.archives.TrucksController.deleteTruckSupplier(req: Request)
+POST        /addTruckType                                    controllers.archives.TrucksController.addTruckType(req: Request)
+POST        /updateTruckType                                 controllers.archives.TrucksController.updateTruckType(req: Request)
+POST        /getTruckTypes                                   controllers.archives.TrucksController.getTruckTypes(req: Request)
+POST        /deleteTruckTypes                                controllers.archives.TrucksController.deleteTruckTypes(req: Request)
+
+
+
+
 #ManagersController
 POST        /addManager                                      controllers.coreData.ManagersController.addManager(req: Request)
 POST        /updateManager                                   controllers.coreData.ManagersController.updateManager(req: Request)
@@ -92,6 +107,11 @@ POST        /updateCustomerSupplier                          controllers.archive
 POST        /deleteCustomerSupplier                          controllers.archives.CustomersSuppliersController.deleteCustomerSupplier(req: Request)
 POST        /getCustomersSuppliers                           controllers.archives.CustomersSuppliersController.getCustomersSuppliers(req: Request)
 POST        /getAllCustomersSuppliersNoPagination            controllers.archives.CustomersSuppliersController.getAllCustomersSuppliersNoPagination(req: Request)
+
+POST        /addSupplierRoadCost                             controllers.archives.CustomersSuppliersController.addSupplierRoadCost(req: Request)
+POST        /updateSupplierRoadCost                          controllers.archives.CustomersSuppliersController.updateSupplierRoadCost(req: Request)
+POST        /deleteRoadCost                                  controllers.archives.CustomersSuppliersController.deleteRoadCost(req: Request)
+POST        /getRoadCosts                                    controllers.archives.CustomersSuppliersController.getRoadCosts(req: Request)
 
 
 
@@ -113,9 +133,9 @@ POST        /deleteBilling                                   controllers.coreDat
 POST        /getBillings                                     controllers.coreData.BillingsController.getBillings(req: Request)
 
 #PackageTypeController
-POST        /addPackageTypeEntry                                 controllers.coreData.PackageTypeController.addPackageTypeEntry(req: Request)
-POST        /updatePackageTypeEntry                              controllers.coreData.PackageTypeController.updatePackageTypeEntry(req: Request)
-POST        /deletePackageTypeEntry                              controllers.coreData.PackageTypeController.deletePackageTypeEntry(req: Request)
+POST        /addPackageTypeEntry                             controllers.coreData.PackageTypeController.addPackageTypeEntry(req: Request)
+POST        /updatePackageTypeEntry                          controllers.coreData.PackageTypeController.updatePackageTypeEntry(req: Request)
+POST        /deletePackageTypeEntry                          controllers.coreData.PackageTypeController.deletePackageTypeEntry(req: Request)
 POST        /getPackagesTypesEntries                         controllers.coreData.PackageTypeController.getPackagesTypesEntries(req: Request)
 
 
@@ -151,7 +171,7 @@ POST        /getAllSuggestedSchedulesByCustomer              controllers.procedu
 POST        /updateOrder                                     controllers.procedures.OrdersController.updateOrder(req: Request)
 POST        /createOrder                                     controllers.procedures.OrdersController.createOrder(req: Request)
 POST        /getOrders                                       controllers.procedures.OrdersController.getOrders(req: Request)
-POST        /getAllOrders                   controllers.procedures.OrdersController.getAllOrdersNoPagination(req: Request)
+POST        /getAllOrders                                    controllers.procedures.OrdersController.getAllOrdersNoPagination(req: Request)
 POST        /getOrderWaypoints                               controllers.procedures.OrdersController.getOrderWaypoints(req: Request)
 POST        /updateOrderWaypoint                             controllers.procedures.OrdersController.updateOrderWaypoint(req: Request)
 POST        /getDistinctPckagesStartPoint                    controllers.procedures.OrdersController.getDistinctPckagesStartPoint(req: Request)
@@ -187,8 +207,8 @@ POST        /deleteScheduleMeasureUnit                       controllers.procedu
 POST        /deleteAllScheduleMeasureUnitByScheduleId        controllers.procedures.ScheduleController.deleteAllScheduleMeasureUnitByScheduleId(req: Request)
 
 #CoreVariables
-POST        /getStackingFactor                                     controllers.CoreVariables.getStackingFactor(req: Request)
-POST        /updateStackingFactor                                     controllers.CoreVariables.updateStackingFactor(req: Request)
+POST        /getStackingFactor                               controllers.CoreVariables.getStackingFactor(req: Request)
+POST        /updateStackingFactor                            controllers.CoreVariables.updateStackingFactor(req: Request)
 
 
 #---------------------------------------------------------------------------USERS MELLON TEMPORARY API  -----addVehicle--------------------------------------------------------------------------------

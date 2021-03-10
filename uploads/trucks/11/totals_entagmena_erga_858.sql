@@ -1,0 +1,136 @@
+
+-- sums se epipedo EIDIKOU AXONA
+select 
+(
+SELECT 
+nvl(sum(tde.SYNOL_EPIL_DAP),0) as SYNOL_EPIL_DAP
+FROM MV_ACCEPTED_TDE_SX tde
+JOIN cfp_grant_schemes gsch on (gsch.CODE=tde.GS_CODE)
+WHERE gsch.ID = 1461
+AND TRUNC(tde.LAST_UPDATE_DATE) <= sysdate
+AND tde.EF_ID=17662
+AND tde.PA_CODE='PA1.1'
+) as SYNOL_EPIL_DAP,
+KATAXWRIMENES_DAPANES,
+EPIKYRWMENES_DAPANES,
+PISTOPOIIMENES_DAPANES
+from
+(
+SELECT 
+nvl(SUM(deda.KATAXWRIMENES_DAPANES),0) AS KATAXWRIMENES_DAPANES,
+nvl(SUM(deda.EPIKYRWMENES_DAPANES),0) AS EPIKYRWMENES_DAPANES,
+nvl(SUM(deda.PISTOPOIIMENES_DAPANES),0) AS PISTOPOIIMENES_DAPANES
+FROM table(PKG_MON_DEDA.f_get_deda_gs_status_tde(
+	17662,
+	'OP1',
+    SYSDATE,
+    1461
+)) deda
+JOIN cfp_grant_schemes cfp on (cfp.ID=deda.GS_ID)
+WHERE cfp.PA_CODE='PA1.1'
+);
+
+
+
+
+
+
+-- sums se epipedo EIDIKOU STOXOU
+select 
+(
+SELECT 
+nvl(sum(tde.SYNOL_EPIL_DAP),0) as SYNOL_EPIL_DAP
+FROM MV_ACCEPTED_TDE_SX tde
+JOIN cfp_grant_schemes gsch on (gsch.CODE=tde.GS_CODE)
+WHERE gsch.ID = 1461
+AND TRUNC(tde.LAST_UPDATE_DATE) <= sysdate
+AND tde.EF_ID=17662
+AND tde.so_code='1α.1'
+) as SYNOL_EPIL_DAP,
+KATAXWRIMENES_DAPANES,
+EPIKYRWMENES_DAPANES,
+PISTOPOIIMENES_DAPANES
+from
+(
+SELECT 
+nvl(SUM(deda.KATAXWRIMENES_DAPANES),0) AS KATAXWRIMENES_DAPANES,
+nvl(SUM(deda.EPIKYRWMENES_DAPANES),0) AS EPIKYRWMENES_DAPANES,
+nvl(SUM(deda.PISTOPOIIMENES_DAPANES),0) AS PISTOPOIIMENES_DAPANES
+FROM table(PKG_MON_DEDA.f_get_deda_gs_status_tde(
+	17662,
+	'OP1',
+    SYSDATE,
+    1461
+)) deda
+JOIN cfp_grant_schemes cfp on (cfp.ID=deda.GS_ID)
+WHERE cfp.so_code='1α.1'
+);
+
+
+
+
+-- sums se epipedo sxediou
+select 
+(
+SELECT 
+nvl(sum(tde.SYNOL_EPIL_DAP),0) as SYNOL_EPIL_DAP
+FROM MV_ACCEPTED_TDE_SX tde
+JOIN cfp_grant_schemes gsch on (gsch.CODE=tde.GS_CODE)
+WHERE gsch.ID = 1461
+AND TRUNC(tde.LAST_UPDATE_DATE) <= sysdate
+AND tde.EF_ID=17662
+) as SYNOL_EPIL_DAP,
+KATAXWRIMENES_DAPANES,
+EPIKYRWMENES_DAPANES,
+PISTOPOIIMENES_DAPANES
+from
+(
+SELECT 
+nvl(SUM(deda.KATAXWRIMENES_DAPANES),0) AS KATAXWRIMENES_DAPANES,
+nvl(SUM(deda.EPIKYRWMENES_DAPANES),0) AS EPIKYRWMENES_DAPANES,
+nvl(SUM(deda.PISTOPOIIMENES_DAPANES),0) AS PISTOPOIIMENES_DAPANES
+FROM table(PKG_MON_DEDA.f_get_deda_gs_status_tde(
+	17662,
+	'OP1',
+    SYSDATE,
+    1461
+)) deda);
+
+
+
+
+-- sums se epipedo PROSKLHSHS
+select 
+(
+SELECT 
+nvl(sum(tde.SYNOL_EPIL_DAP),0) as SYNOL_EPIL_DAP
+FROM MV_ACCEPTED_TDE_SX tde
+JOIN cfp_grant_schemes gsch on (gsch.CODE=tde.GS_CODE)
+
+WHERE tde.inv_code = 'ΕΠ1/1.1α.1/1/07.2018/ΣΧ'
+AND TRUNC(tde.LAST_UPDATE_DATE) <= sysdate
+AND tde.EF_ID=17662
+) as SYNOL_EPIL_DAP,
+KATAXWRIMENES_DAPANES,
+EPIKYRWMENES_DAPANES,
+PISTOPOIIMENES_DAPANES
+from
+(
+SELECT 
+nvl(SUM(deda.KATAXWRIMENES_DAPANES),0) AS KATAXWRIMENES_DAPANES,
+nvl(SUM(deda.EPIKYRWMENES_DAPANES),0) AS EPIKYRWMENES_DAPANES,
+nvl(SUM(deda.PISTOPOIIMENES_DAPANES),0) AS PISTOPOIIMENES_DAPANES
+FROM table(PKG_MON_DEDA.f_get_deda_gs_status_tde(
+	17662,
+	'OP1',
+    SYSDATE,
+    1461
+)) deda
+JOIN cfp_grant_schemes cfp on (cfp.ID=deda.GS_ID)
+JOIN cfp_gs_invitation cfpinv on (cfpinv.grant_scheme_id=deda.GS_ID)
+WHERE cfpinv.code='ΕΠ1/1.1α.1/1/07.2018/ΣΧ'
+
+);
+
+
+

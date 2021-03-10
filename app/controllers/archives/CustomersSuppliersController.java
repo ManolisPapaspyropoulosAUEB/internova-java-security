@@ -550,4 +550,255 @@ public class CustomersSuppliersController extends Application  {
     }
 
 
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    @BodyParser.Of(BodyParser.Json.class)
+    public Result addSupplierRoadCost(final Http.Request request) throws IOException {
+        try {
+            JsonNode json = request.body().asJson();
+            if (json == null) {
+                return badRequest("Expecting Json data");
+            } else {
+                try {
+                    ObjectNode result = Json.newObject();
+                    CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
+                                return jpaApi.withTransaction(entityManager -> {
+                                    ObjectNode add_result = Json.newObject();
+                                    Long customersSuppliersId = json.findPath("customersSuppliersId").asLong();
+                                    String fromCountry = json.findPath("fromCountry").asText();
+                                    String fromCity = json.findPath("fromCity").asText();
+                                    String toCountry = json.findPath("toCountry").asText();
+                                    String toCity = json.findPath("toCity").asText();
+                                    Double cost = json.findPath("cost").asDouble();
+
+                                    SuppliersRoadsCostsEntity suproad = new SuppliersRoadsCostsEntity();
+                                    suproad.setCustomersSuppliersId(customersSuppliersId);
+                                    suproad.setFromCity(fromCity);
+                                    suproad.setFromCountry(fromCountry);
+                                    suproad.setToCountry(toCountry);
+                                    suproad.setToCity(toCity);
+                                    suproad.setCost(cost);
+                                    entityManager.persist(suproad);
+
+                                    add_result.put("status", "success");
+                                    add_result.put("message", "Η καταχωρηση πραγματοποίηθηκε με επιτυχία");
+                                    return add_result;
+                                });
+                            },
+                            executionContext);
+                    result = (ObjectNode) addFuture.get();
+                    return ok(result);
+                } catch (Exception e) {
+                    ObjectNode result = Json.newObject();
+                    e.printStackTrace();
+                    result.put("status", "error");
+                    result.put("message", "Προβλημα κατα την καταχωρηση");
+                    return ok(result);
+                }
+            }
+        } catch (Exception e) {
+            ObjectNode result = Json.newObject();
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "Προβλημα κατα την καταχωρηση");
+            return ok(result);
+        }
+    }
+
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    @BodyParser.Of(BodyParser.Json.class)
+    public Result updateSupplierRoadCost(final Http.Request request) throws IOException {
+        try {
+            JsonNode json = request.body().asJson();
+            if (json == null) {
+                return badRequest("Expecting Json data");
+            } else {
+                try {
+                    ObjectNode result = Json.newObject();
+                    CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
+                                return jpaApi.withTransaction(entityManager -> {
+                                    ObjectNode add_result = Json.newObject();
+                                    Long customersSuppliersId = json.findPath("customersSuppliersId").asLong();
+                                    String fromCountry = json.findPath("fromCountry").asText();
+                                    String fromCity = json.findPath("fromCity").asText();
+                                    String toCountry = json.findPath("toCountry").asText();
+                                    String toCity = json.findPath("toCity").asText();
+                                    Double cost = json.findPath("cost").asDouble();
+                                    Long id = json.findPath("id").asLong();
+
+                                    SuppliersRoadsCostsEntity suproad = entityManager.find(SuppliersRoadsCostsEntity.class,id);
+                                    suproad.setCustomersSuppliersId(customersSuppliersId);
+                                    suproad.setFromCity(fromCity);
+                                    suproad.setFromCountry(fromCountry);
+                                    suproad.setToCountry(toCountry);
+                                    suproad.setToCity(toCity);
+                                    suproad.setCost(cost);
+                                    entityManager.merge(suproad);
+
+                                    add_result.put("status", "success");
+                                    add_result.put("message", "Η ενημέρωση πραγματοποίηθηκε με επιτυχία");
+                                    return add_result;
+                                });
+                            },
+                            executionContext);
+                    result = (ObjectNode) addFuture.get();
+                    return ok(result);
+                } catch (Exception e) {
+                    ObjectNode result = Json.newObject();
+                    e.printStackTrace();
+                    result.put("status", "error");
+                    result.put("message", "Προβλημα κατα την καταχωρηση");
+                    return ok(result);
+                }
+            }
+        } catch (Exception e) {
+            ObjectNode result = Json.newObject();
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "Προβλημα κατα την καταχωρηση");
+            return ok(result);
+        }
+    }
+
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    @BodyParser.Of(BodyParser.Json.class)
+    public Result deleteRoadCost(final Http.Request request) throws IOException {
+        try {
+            JsonNode json = request.body().asJson();
+            if (json == null) {
+                return badRequest("Expecting Json data");
+            } else {
+                try {
+                    ObjectNode result = Json.newObject();
+                    CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
+                                return jpaApi.withTransaction(entityManager -> {
+                                    ObjectNode add_result = Json.newObject();
+                                    Long id = json.findPath("id").asLong();
+                                    SuppliersRoadsCostsEntity suproad = entityManager.find(SuppliersRoadsCostsEntity.class,id);
+                                    entityManager.remove(suproad);
+                                    add_result.put("status", "success");
+                                    add_result.put("message", "Η διαγραφή πραγματοποίηθηκε με επιτυχία");
+                                    return add_result;
+                                });
+                            },
+                            executionContext);
+                    result = (ObjectNode) addFuture.get();
+                    return ok(result);
+                } catch (Exception e) {
+                    ObjectNode result = Json.newObject();
+                    e.printStackTrace();
+                    result.put("status", "error");
+                    result.put("message", "Προβλημα κατα την διαγραφή");
+                    return ok(result);
+                }
+            }
+        } catch (Exception e) {
+            ObjectNode result = Json.newObject();
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "Προβλημα κατα την διαγραφή");
+            return ok(result);
+        }
+    }
+
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    public Result getRoadCosts(final Http.Request request) throws IOException {
+        ObjectNode result = Json.newObject();
+        try {
+            JsonNode json = request.body().asJson();
+            if (json == null) {
+                return badRequest("Expecting Json data");
+            } else {
+                if (json == null) {
+                    result.put("status", "error");
+                    result.put("message", "Δεν εχετε αποστειλει εγκυρα δεδομενα.");
+                    return ok(result);
+                } else {
+                    ObjectMapper ow = new ObjectMapper();
+                    HashMap<String, Object> returnList = new HashMap<String, Object>();
+                    String jsonResult = "";
+                    CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
+                                return jpaApi.withTransaction(
+                                        entityManager -> {
+                                            String customersSuppliersId = json.findPath("customersSuppliersId").asText();
+                                            String fromCountry = json.findPath("fromCountry").asText();
+                                            String fromCity = json.findPath("fromCity").asText();
+                                            String toCountry = json.findPath("toCountry").asText();
+                                            String toCity = json.findPath("toCity").asText();
+                                            String cost = json.findPath("cost").asText();
+                                            String sqlCustSupl = "select * from suppliers_roads_costs srcosts where 1=1  ";
+                                            if(customersSuppliersId!=null && !customersSuppliersId.equalsIgnoreCase("") && !customersSuppliersId.equalsIgnoreCase("null")){
+                                                sqlCustSupl+=" and srcosts.customers_suppliers_id="+customersSuppliersId;
+                                            }
+                                            if(fromCountry!=null && !fromCountry.equalsIgnoreCase("") && !fromCountry.equalsIgnoreCase("null")){
+                                                sqlCustSupl+=" and srcosts.from_country like '%"+fromCountry+"%'";
+                                            }
+                                            if(fromCity!=null && !fromCity.equalsIgnoreCase("") && !fromCity.equalsIgnoreCase("null")){
+                                                sqlCustSupl+=" and srcosts.from_city= '%"+fromCity+"%'";
+                                            }
+                                            if(toCountry!=null && !toCountry.equalsIgnoreCase("") && !toCountry.equalsIgnoreCase("null")){
+                                                sqlCustSupl+=" and srcosts.to_country like '%"+toCountry+"%'";
+                                            }
+                                            if(toCity!=null && !toCity.equalsIgnoreCase("") && !toCity.equalsIgnoreCase("null")){
+                                                sqlCustSupl+=" and srcosts.to_city like '%"+toCity+"%'";
+                                            }
+                                            if(cost!=null && !cost.equalsIgnoreCase("") && !cost.equalsIgnoreCase("null")){
+                                                sqlCustSupl+=" and srcosts.cost like '%"+cost+"%'";
+                                            }
+                                            sqlCustSupl+=" order by creation_date desc";
+
+                                            HashMap<String, Object> returnList_future = new HashMap<String, Object>();
+                                            List<HashMap<String, Object>> filalist = new ArrayList<HashMap<String, Object>>();
+                                            List<SuppliersRoadsCostsEntity> scostsList
+                                                    = (List<SuppliersRoadsCostsEntity>) entityManager.createNativeQuery(
+                                                    sqlCustSupl, SuppliersRoadsCostsEntity.class).getResultList();
+                                            for (SuppliersRoadsCostsEntity j : scostsList) {
+                                                HashMap<String, Object> sHmpam = new HashMap<String, Object>();
+                                                sHmpam.put("id", j.getId());
+                                                sHmpam.put("customersSuppliersId", j.getCustomersSuppliersId());
+                                                sHmpam.put("fromCountry", j.getFromCountry());
+                                                sHmpam.put("fromCity", j.getFromCity());
+                                                sHmpam.put("toCountry", j.getToCountry());
+                                                sHmpam.put("toCity", j.getToCity());
+                                                sHmpam.put("cost", j.getCost());
+                                                sHmpam.put("creationDate", j.getCreationDate());
+                                                sHmpam.put("updateDate", j.getUpdateDate());
+                                                filalist.add(sHmpam);
+                                            }
+                                            returnList_future.put("data", filalist);
+                                            returnList_future.put("status", "success");
+                                            returnList_future.put("message", "success");
+                                            return returnList_future;
+                                        });
+                            },
+                            executionContext);
+                    returnList = getFuture.get();
+                    DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                    ow.setDateFormat(myDateFormat);
+                    try {
+                        jsonResult = ow.writeValueAsString(returnList);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        result.put("status", "error");
+                        result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων ");
+                        return ok(result);
+                    }
+                    return ok(jsonResult);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων");
+            return ok(result);
+        }
+    }
+
+
+
+
+
 }

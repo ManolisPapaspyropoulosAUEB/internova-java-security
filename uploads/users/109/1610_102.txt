@@ -1,0 +1,102 @@
+
+
+
+
+SELECT * FROM PRJ_TDE_GS_ELIG_EXP_SUMMARY e WHERE e.tde_id=17840;
+
+
+SELECT NVL(SUM(f.ELIG_PUBLIC_EXP),0) FROM PRJ_TDE_GS_ELIG_EXP f WHERE f.TDE_ID=17840
+ AND f.ELIG_EXP_ID = 1147 AND f.PARTNER_ID = 218545;
+ 
+ 
+ -------------------------------------------------------------
+ 
+ 
+SELECT NVL(SUM(f.ELIG_PUBLIC_EXP),0) FROM PRJ_TDE_GS_ELIG_EXP f WHERE f.TDE_ID=17840
+ AND f.ELIG_EXP_ID = 1147 AND f.PARTNER_ID = 218545;
+ 
+ 
+ SELECT  NVL(SUM(f.ELIG_PUBLIC_EXP),0),NVL(SUM(f.elig_private_exp),0), NVL(SUM(e.ELIG_PUBLIC_EXP),0),NVL(SUM(e.elig_private_exp),0) FROM PRJ_TDE_GS_ELIG_EXP_SUMMARY e
+ JOIN PRJ_TDE_GS_ELIG_EXP f ON (f.partner_id=e.partner_id and f.elig_exp_id=e.grant_schemes_elig_exp_id)
+ WHERE e.tde_id=17840;
+
+
+
+
+SELECT  * FROM PRJ_TDE_GS_ELIG_EXP_SUMMARY e
+ JOIN PRJ_TDE_GS_ELIG_EXP f ON (f.partner_id=e.partner_id and f.elig_exp_id=e.grant_schemes_elig_exp_id)
+ WHERE e.tde_id=17840;
+ 
+ 
+ 
+ 
+ 
+-----
+
+
+SELECT
+e.elig_public_exp,
+
+e.elig_private_exp,
+
+(SELECT NVL(SUM(f.ELIG_PUBLIC_EXP),0)
+FROM PRJ_TDE_GS_ELIG_EXP f
+WHERE f.TDE_ID=e.tde_id and f.elig_exp_id=e.grant_schemes_elig_exp_id and f.partner_id=e.partner_id) 
+as public_exp1a,
+
+(SELECT NVL(SUM(f.ELIG_PRIVATE_EXP),0)
+FROM PRJ_TDE_GS_ELIG_EXP f
+WHERE f.TDE_ID=e.tde_id 
+and f.elig_exp_id=e.grant_schemes_elig_exp_id and f.partner_id=e.partner_id)
+as private_exp1a
+
+
+FROM PRJ_TDE_GS_ELIG_EXP_SUMMARY e WHERE e.tde_id=17840;
+
+
+-----------------------------------------------------------------
+
+select sum (sum_ELIG_PUBLIC_EXP+sum_ELIG_PRIVATE_EXP)
+
+from
+(
+SELECT
+NVL(SUM(e.ELIG_PUBLIC_EXP),0) as sum_ELIG_PUBLIC_EXP,
+
+ NVL(SUM(e.ELIG_PRIVATE_EXP),0) as sum_ELIG_PRIVATE_EXP
+
+
+
+
+FROM PRJ_TDE_GS_ELIG_EXP_SUMMARY e WHERE e.tde_id=17840)  ;
+
+
+
+
+
+SELECT
+
+(NVL(SUM(e.ELIG_PUBLIC_EXP),0)+ NVL(SUM(e.ELIG_PRIVATE_EXP),0)) as synolikos_proup,
+
+NVL(SUM(e.ELIG_PUBLIC_EXP),0) as sum_ELIG_PUBLIC_EXP,
+
+ NVL(SUM(e.ELIG_PRIVATE_EXP),0) as sum_ELIG_PRIVATE_EXP,
+  e.partner_id
+
+
+
+
+
+FROM PRJ_TDE_GS_ELIG_EXP_SUMMARY e WHERE e.tde_id=17840
+group by  e.partner_id
+;
+
+tde_id=17840 and partner_id=218545
+15243	17840	218545	0	0	2880	1872	1008	65	15/12/20	1147
+15246	17840	218545	0	0	14400	9360	5040	65	15/12/20	1141
+
+
+ 
+ 
+ 
+ 
