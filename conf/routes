@@ -71,6 +71,7 @@ POST        /getAllWarehousesNoPagination                    controllers.archive
 
 #FactoriesController
 POST        /getFactories                                    controllers.archives.FactoriesController.getFactories(req: Request)
+POST        /getFactoryCustomers                                    controllers.archives.FactoriesController.getFactoryCustomers(req: Request)
 POST        /getSuggestedFactories                           controllers.archives.FactoriesController.getSuggestedFactories(req: Request)
 POST        /addFactory                                      controllers.archives.FactoriesController.addFactory(req: Request)
 POST        /updateFactory                                   controllers.archives.FactoriesController.updateFactory(req: Request)
@@ -107,7 +108,6 @@ POST        /updateCustomerSupplier                          controllers.archive
 POST        /deleteCustomerSupplier                          controllers.archives.CustomersSuppliersController.deleteCustomerSupplier(req: Request)
 POST        /getCustomersSuppliers                           controllers.archives.CustomersSuppliersController.getCustomersSuppliers(req: Request)
 POST        /getAllCustomersSuppliersNoPagination            controllers.archives.CustomersSuppliersController.getAllCustomersSuppliersNoPagination(req: Request)
-
 POST        /addSupplierRoadCost                             controllers.archives.CustomersSuppliersController.addSupplierRoadCost(req: Request)
 POST        /updateSupplierRoadCost                          controllers.archives.CustomersSuppliersController.updateSupplierRoadCost(req: Request)
 POST        /deleteRoadCost                                  controllers.archives.CustomersSuppliersController.deleteRoadCost(req: Request)

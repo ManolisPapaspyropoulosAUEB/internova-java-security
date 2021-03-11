@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execution_context.DatabaseExecutionContext;
 import controllers.system.Application;
+import models.CustomersSuppliersEntity;
 import models.FactoriesEntity;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
@@ -338,6 +339,93 @@ public class FactoriesController extends Application {
             return ok(result);
         }
     }
+
+
+    //getFactoryCustomers
+
+    //getAllFactoriesNoPagination
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    public Result getFactoryCustomers(final Http.Request request) throws IOException {
+        ObjectNode result = Json.newObject();
+        System.out.println("getAllFactoriesNoPagination>>");
+        try {
+            JsonNode json = request.body().asJson();
+            if (json == null) {
+                return badRequest("Expecting Json data");
+            } else {
+                if (json == null) {
+                    result.put("status", "error");
+                    result.put("message", "Δεν εχετε αποστειλει εγκυρα δεδομενα.");
+                    return ok(result);
+                } else {
+                    ObjectMapper ow = new ObjectMapper();
+                    HashMap<String, Object> returnList = new HashMap<String, Object>();
+                    String jsonResult = "";
+                    CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
+                                return jpaApi.withTransaction(
+                                        entityManager -> {//appointmentRequired warehouseId
+                                            String factoryId = json.findPath("factoryId").asText();
+
+                                            String sqlCusts= " select * \n" +
+                                                    "from customers_suppliers cs \n" +
+                                                    "where cs.id in\n" +
+                                                    "(select customer_id \n" +
+                                                    "from orders ord\n" +
+                                                    "where ord.id in \n" +
+                                                    "(select order_id from order_schedules ords where ords.factory_id="+factoryId+") \n" +
+                                                    "union\n" +
+                                                    "select customer_id \n" +
+                                                    "from orders ord\n" +
+                                                    "where ord.id in \n" +
+                                                    "(select order_id from order_waypoints ordw where ordw.factory_id=  "+factoryId+" ) \n" + ") ";
+                                            HashMap<String, Object> returnList_future = new HashMap<String, Object>();
+                                            List<HashMap<String, Object>> filalist = new ArrayList<HashMap<String, Object>>();
+                                            List<CustomersSuppliersEntity> suppliersEntityList
+                                                    = (List<CustomersSuppliersEntity>) entityManager.createNativeQuery(
+                                                    sqlCusts, CustomersSuppliersEntity.class).getResultList();
+                                            for (CustomersSuppliersEntity j : suppliersEntityList) {
+                                                HashMap<String, Object> sHmpam = new HashMap<String, Object>();
+                                                sHmpam.put("brandName", j.getBrandName());
+                                                sHmpam.put("email", j.getEmail());
+                                                sHmpam.put("afm", j.getAfm());
+                                                sHmpam.put("id", j.getId());
+                                                sHmpam.put("customerSupplierId", j.getId());
+                                                sHmpam.put("telephone", j.getTelephone());
+
+                                                filalist.add(sHmpam);
+                                            }
+                                            returnList_future.put("data", filalist);
+                                            returnList_future.put("total", filalist.size());
+                                            returnList_future.put("status", "success");
+                                            returnList_future.put("message", "success");
+                                            return returnList_future;
+                                        });
+                            },
+                            executionContext);
+                    returnList = getFuture.get();
+                    DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                    ow.setDateFormat(myDateFormat);
+                    try {
+                        jsonResult = ow.writeValueAsString(returnList);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        result.put("status", "error");
+                        result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων ");
+                        return ok(result);
+                    }
+                    return ok(jsonResult);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων");
+            return ok(result);
+        }
+    }
+
+
+
 
 
 

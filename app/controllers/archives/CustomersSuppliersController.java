@@ -89,14 +89,9 @@ public class CustomersSuppliersController extends Application  {
                                     warehousesEntity.setCountry(country);
                                     warehousesEntity.setDoy(doy);
                                     warehousesEntity.setCustomerType(customerType);
-                                    warehousesEntity.setInternovaSellerId(internovaSellerId);
-                                    System.out.println(internovaSellerId);
-
                                     if(internovaSellerId!=null && internovaSellerId!=0){
                                         warehousesEntity.setInternovaSellerId(internovaSellerId);
                                     }
-
-
                                     warehousesEntity.setJob(job);
                                     entityManager.persist(warehousesEntity);
                                     add_result.put("customerSupplierId", warehousesEntity.getId());
@@ -112,6 +107,7 @@ public class CustomersSuppliersController extends Application  {
                                     add_result.put("status", "success");
                                     add_result.put("message", "Η καταχωρηση πραγματοποίηθηκε με επιτυχία");
                                     add_result.put("DO_ID", warehousesEntity.getId());
+                                    add_result.put("customerSupplierId", warehousesEntity.getId());
                                     add_result.put("system", "πελατες προμηθευτες");
                                     add_result.put("user_id", user_id);
                                     return add_result;
