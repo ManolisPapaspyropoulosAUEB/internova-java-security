@@ -54,6 +54,7 @@ public class TrucksController extends Application {
                                     String brandName = json.findPath("brandName").asText();
                                     String plateNumber = json.findPath("plateNumber").asText();
                                     String description = json.findPath("description").asText();
+                                    String trailerTrackor = json.findPath("trailerTrackor").asText();
                                     Long typeTruckId = json.findPath("typeTruckId").asLong();
                                     Long user_id = json.findPath("user_id").asLong();
                                     Long suplierId = json.findPath("suplierId").asLong();
@@ -64,6 +65,7 @@ public class TrucksController extends Application {
                                     truck.setDescription(description);
                                     truck.setTypeTruckId(typeTruckId);
                                     truck.setCreationDate(new Date());
+                                    truck.setTrailerTrackor(trailerTrackor);
                                     entityManager.persist(truck);
                                     if(suplierId!=null && suplierId!=0){
                                         SuppliersTrucksEntity supTrEnt = new SuppliersTrucksEntity();
@@ -122,12 +124,19 @@ public class TrucksController extends Application {
                                     Long user_id = json.findPath("user_id").asLong();
                                     Long id = json.findPath("id").asLong();
                                     Long suplierId = json.findPath("suplierId").asLong();
+                                    String trailerTrackor = json.findPath("trailerTrackor").asText();
                                     TrucksEntity truck = entityManager.find(TrucksEntity.class, id);
                                     truck.setBrandName(brandName);
                                     truck.setPlateNumber(plateNumber);
                                     truck.setDescription(description);
-                                    truck.setTypeTruckId(typeTruckId);
+                                 //   truck.setTypeTruckId(typeTruckId);
                                     truck.setUdpateDate(new Date());
+                                    truck.setTrailerTrackor(trailerTrackor);
+                                    if(trailerTrackor.equalsIgnoreCase("trailer")){
+                                        truck.setTypeTruckId(typeTruckId);
+                                    }else{
+                                        truck.setTypeTruckId((long) 0);
+                                    }
                                     entityManager.merge(truck);
                                     if(suplierId!=null && suplierId!=0){
                                         SuppliersTrucksEntity supTrEnt = new SuppliersTrucksEntity();
@@ -295,6 +304,7 @@ public class TrucksController extends Application {
                                         Long suplierId = json.findPath("suplierId").asLong();
                                         String id = json.findPath("id").asText();
                                         String plateNumber = json.findPath("plateNumber").asText();
+                                        String trailerTrackor = json.findPath("trailerTrackor").asText();
                                         String creationDate = json.findPath("creationDate").asText();
                                         String start = json.findPath("start").asText();
                                         String limit = json.findPath("limit").asText();
@@ -304,6 +314,9 @@ public class TrucksController extends Application {
                                         }
                                         if (!description.equalsIgnoreCase("") && description != null) {
                                             sqlTrucks += " and truck.description like '%" + description + "%'";
+                                        }
+                                        if (  trailerTrackor != null && !trailerTrackor.equalsIgnoreCase("")  && !trailerTrackor.equalsIgnoreCase("null") && !trailerTrackor.equalsIgnoreCase("all") ) {
+                                            sqlTrucks += " and truck.trailer_trackor  ='" + trailerTrackor + "'";
                                         }
                                         if (suplierId != null && suplierId != 0) {
                                             sqlTrucks += " and truck.id in " +
@@ -347,6 +360,7 @@ public class TrucksController extends Application {
                                             sHmpam.put("brandName", j.getBrandName());
                                             sHmpam.put("description", j.getDescription());
                                             sHmpam.put("plateNumber", j.getPlateNumber());
+                                            sHmpam.put("trailerTrackor", j.getTrailerTrackor());
                                             if(j.getTypeTruckId()!=0){
                                                 sHmpam.put("typeTruckId", j.getTypeTruckId());
                                                 sHmpam.put("typeTruck", entityManager.find(TruckTypeEntity.class,j.getTypeTruckId()).getType());

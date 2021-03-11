@@ -15,6 +15,7 @@ public class TrucksEntity {
     private String description;
     private Date creationDate;
     private Date udpateDate;
+    private String trailerTrackor;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -104,5 +105,15 @@ public class TrucksEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, plateNumber, typeTruckId, brandName, description, creationDate, udpateDate);
+    }
+
+    @Basic
+    @Column(name = "trailer_trackor")
+    public String getTrailerTrackor() {
+        return trailerTrackor;
+    }
+
+    public void setTrailerTrackor(String trailerTrackor) {
+        this.trailerTrackor = trailerTrackor;
     }
 }
