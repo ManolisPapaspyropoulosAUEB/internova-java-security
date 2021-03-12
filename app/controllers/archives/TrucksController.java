@@ -407,8 +407,6 @@ public class TrucksController extends Application {
                 result.put("message", "Δεν εχετε αποστειλει εγκυρα δεδομενα.");
                 return ok(result);
             } else {
-                System.out.println(json);
-                System.out.println(json.isEmpty());
                 ObjectMapper ow = new ObjectMapper();
                 HashMap<String, Object> returnList = new HashMap<String, Object>();
                 String jsonResult = "";
@@ -432,6 +430,7 @@ public class TrucksController extends Application {
                                             sHmpam.put("id", j.getId());
                                             sHmpam.put("brandName", j.getBrandName());
                                             sHmpam.put("description", j.getDescription());
+                                            sHmpam.put("trailerTrackor", j.getTrailerTrackor());
                                             sHmpam.put("plateNumber", j.getPlateNumber());
                                             if(j.getTypeTruckId()!=0){
                                                 sHmpam.put("typeTruckId", j.getTypeTruckId());

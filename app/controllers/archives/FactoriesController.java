@@ -13,7 +13,6 @@ import play.mvc.Http;
 import play.mvc.Result;
 import javax.inject.Inject;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,8 +20,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import static play.mvc.Results.badRequest;
-import static play.mvc.Results.ok;
 public class FactoriesController extends Application {
     private JPAApi jpaApi;
     private DatabaseExecutionContext executionContext;
@@ -34,7 +31,6 @@ public class FactoriesController extends Application {
         this.executionContext = executionContext;
     }
 
-    //getAllFactoriesNoPagination
     @SuppressWarnings({"Duplicates", "unchecked"})
     public Result getAllFactoriesNoPagination(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();
@@ -56,15 +52,11 @@ public class FactoriesController extends Application {
                                 return jpaApi.withTransaction(
                                         entityManager -> {//appointmentRequired warehouseId
                                             String sqlWarehouses= "select * from factories pos where 1=1";
-
-
                                             String address = json.findPath("address").asText();
                                             String telephone = json.findPath("telephone").asText();
                                             String brandName = json.findPath("brandName").asText();
                                             String city = json.findPath("city").asText();
                                             String country = json.findPath("country").asText();
-
-
                                             if (!address.equalsIgnoreCase("") && address != null) {
                                                 sqlWarehouses += " and pos.address like '%"+address+"%'" ;
                                             }
@@ -81,8 +73,6 @@ public class FactoriesController extends Application {
                                                 sqlWarehouses += " and pos.country like '%"+country+"%'" ;
                                             }
                                             sqlWarehouses+=" order by pos.creation_date desc ";
-
-
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             List<HashMap<String, Object>> filalist = new ArrayList<HashMap<String, Object>>();
                                             List<FactoriesEntity> warehousesEntityList
@@ -179,8 +169,6 @@ public class FactoriesController extends Application {
                                             String factoryId = json.findPath("factoryId").asText();
                                             String address = json.findPath("address").asText();
                                             String brandName = json.findPath("brandName").asText();
-                                       //     String city = json.findPath("city").asText();
-                                         //   String country = json.findPath("country").asText();
                                             String postalCode = json.findPath("postalCode").asText();
                                             String email = json.findPath("email").asText();
                                             String customerId = json.findPath("customerId").asText();
@@ -192,32 +180,22 @@ public class FactoriesController extends Application {
                                             String start = json.findPath("start").asText();
                                             String limit = json.findPath("limit").asText();
                                             String sqlFactFinal="";
-
                                             String sqlFact1= "" +
                                                     " select pos.* " +
                                                     " from factories pos  " +
                                                     " where id in ( select factory_id from orders ord where ord.customer_id= "+customerId+")" ;
-
                                             String sqlFact2= " select * " +
                                                     "from factories pos  " +
                                                     "where id in ( select factory_id from orders ord where ord.customer_id!= "+customerId+")" ;
-
-
                                             String sqlFact3= " select * " +
                                                     "from factories pos where 1=1 ";
-
                                             if(typeCategory.equalsIgnoreCase("1")){
                                                 sqlFactFinal=sqlFact1;
                                             }else if (typeCategory.equalsIgnoreCase("2")){
                                                 sqlFactFinal=sqlFact2;
                                             }else if (typeCategory.equalsIgnoreCase("3")){
                                                 sqlFactFinal=sqlFact3;
-
                                             }
-
-
-
-
                                             if(!id.equalsIgnoreCase("") && id!=null){
                                                 sqlFactFinal+=" and pos.id = "+id;
                                             }
@@ -231,14 +209,12 @@ public class FactoriesController extends Application {
                                             if(!postalCode.equalsIgnoreCase("") && postalCode!=null  && !postalCode.equalsIgnoreCase("null")){
                                                 sqlFactFinal+=" and pos.postal_code like '%"+postalCode+"%'";
                                             }
-
                                             if(!address.equalsIgnoreCase("") && address!=null && !address.equalsIgnoreCase("null")){
                                                 sqlFactFinal+=" and pos.address like '%"+address+"%'";
                                             }
                                             if(!brandName.equalsIgnoreCase("") && brandName!=null && !brandName.equalsIgnoreCase("null")){
                                                 sqlFactFinal+=" and pos.brand_name like '%"+brandName+"%'";
                                             }
-
                                             if(!email.equalsIgnoreCase("") && email!=null && !email.equalsIgnoreCase("null")){
                                                 sqlFactFinal+=" and pos.email like '%"+email+"%'";
                                             }
@@ -254,9 +230,7 @@ public class FactoriesController extends Application {
                                             if(!creationDate.equalsIgnoreCase("") && creationDate!=null && !creationDate.equalsIgnoreCase("null")){
                                                 sqlFactFinal += " and SUBSTRING( role.creation_date, 1, 10)  = '" + creationDate + "'";
                                             }
-
                                             System.out.println(sqlFactFinal);
-
                                             List<FactoriesEntity> filalistAll
                                                     = (List<FactoriesEntity>) entityManager.createNativeQuery(
                                                     sqlFactFinal, FactoriesEntity.class).getResultList();
@@ -268,14 +242,11 @@ public class FactoriesController extends Application {
                                             if (!start.equalsIgnoreCase("") && start != null) {
                                                 sqlFactFinal += " limit " + start + "," + limit;
                                             }
-                                            System.out.println(sqlFactFinal);
-
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             List<HashMap<String, Object>> filalist = new ArrayList<HashMap<String, Object>>();
                                             List<FactoriesEntity> warehousesEntityList
                                                     = (List<FactoriesEntity>) entityManager.createNativeQuery(
                                                     sqlFactFinal, FactoriesEntity.class).getResultList();
-
                                             System.out.println(warehousesEntityList.size());
                                             for (FactoriesEntity j : warehousesEntityList) {
                                                 HashMap<String, Object> sHmpam = new HashMap<String, Object>();
@@ -366,18 +337,19 @@ public class FactoriesController extends Application {
                                         entityManager -> {//appointmentRequired warehouseId
                                             String factoryId = json.findPath("factoryId").asText();
 
-                                            String sqlCusts= " select * \n" +
-                                                    "from customers_suppliers cs \n" +
-                                                    "where cs.id in\n" +
-                                                    "(select customer_id \n" +
-                                                    "from orders ord\n" +
-                                                    "where ord.id in \n" +
-                                                    "(select order_id from order_schedules ords where ords.factory_id="+factoryId+") \n" +
-                                                    "union\n" +
-                                                    "select customer_id \n" +
-                                                    "from orders ord\n" +
-                                                    "where ord.id in \n" +
-                                                    "(select order_id from order_waypoints ordw where ordw.factory_id=  "+factoryId+" ) \n" + ") ";
+                                            String sqlCusts=
+                                                    " select *  " +
+                                                    "from customers_suppliers cs " +
+                                                    "where cs.id in " +
+                                                    "(select customer_id " +
+                                                    "from orders ord " +
+                                                    "where ord.id in " +
+                                                    "(select order_id from order_schedules ords where ords.factory_id="+factoryId+") " +
+                                                    "union " +
+                                                    "select customer_id " +
+                                                    "from orders ord " +
+                                                    "where ord.id in " +
+                                                    "(select order_id from order_waypoints ordw where ordw.factory_id=  "+factoryId+")" + ")";
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             List<HashMap<String, Object>> filalist = new ArrayList<HashMap<String, Object>>();
                                             List<CustomersSuppliersEntity> suppliersEntityList
@@ -773,15 +745,6 @@ public class FactoriesController extends Application {
             return ok(result);
         }
     }
-
-
-
-
-
-
-
-
-
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})

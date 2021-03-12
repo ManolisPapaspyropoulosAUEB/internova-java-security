@@ -733,7 +733,7 @@ public class CustomersSuppliersController extends Application  {
                                                 sqlCustSupl+=" and srcosts.from_country like '%"+fromCountry+"%'";
                                             }
                                             if(fromCity!=null && !fromCity.equalsIgnoreCase("") && !fromCity.equalsIgnoreCase("null")){
-                                                sqlCustSupl+=" and srcosts.from_city= '%"+fromCity+"%'";
+                                                sqlCustSupl+=" and srcosts.from_city like '%"+fromCity+"%'";
                                             }
                                             if(toCountry!=null && !toCountry.equalsIgnoreCase("") && !toCountry.equalsIgnoreCase("null")){
                                                 sqlCustSupl+=" and srcosts.to_country like '%"+toCountry+"%'";
@@ -746,6 +746,7 @@ public class CustomersSuppliersController extends Application  {
                                             }
                                             sqlCustSupl+=" order by creation_date desc";
 
+                                            System.out.println(sqlCustSupl);
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             List<HashMap<String, Object>> filalist = new ArrayList<HashMap<String, Object>>();
                                             List<SuppliersRoadsCostsEntity> scostsList
