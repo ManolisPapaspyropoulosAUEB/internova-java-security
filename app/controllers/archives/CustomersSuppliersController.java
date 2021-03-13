@@ -279,6 +279,86 @@ public class CustomersSuppliersController extends Application {
     }
 
 
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    public Result getRoadCostsBySuplier(final Http.Request request) throws IOException {
+        ObjectNode result = Json.newObject();
+        try {
+            JsonNode json = request.body().asJson();
+            if (json == null) {
+                return badRequest("Expecting Json data");
+            } else {
+                if (json == null) {
+                    result.put("status", "error");
+                    result.put("message", "Δεν εχετε αποστειλει εγκυρα δεδομενα.");
+                    return ok(result);
+                } else {
+                    ObjectMapper ow = new ObjectMapper();
+                    HashMap<String, Object> returnList = new HashMap<String, Object>();
+                    String jsonResult = "";
+                    CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
+                                return jpaApi.withTransaction(
+                                        entityManager -> {
+                                            String id = json.findPath("id").asText();
+                                            String sqlNaulo = " select * from " +
+                                                    " suppliers_roads_costs src" +
+                                                    " where src.customers_suppliers_id="+id;
+                                            System.out.println(sqlNaulo);
+                                            List<SuppliersRoadsCostsEntity> nauloList = entityManager.
+                                                    createNativeQuery(sqlNaulo,SuppliersRoadsCostsEntity.class).getResultList();
+
+
+
+                                            HashMap<String, Object> returnList_future = new HashMap<String, Object>();
+                                            List<HashMap<String, Object>> schedList = new ArrayList<HashMap<String, Object>>();
+                                            for (SuppliersRoadsCostsEntity naulo : nauloList) {
+                                                HashMap<String, Object> spmap = new HashMap<String, Object>();
+                                                spmap.put("creationDate",naulo.getCreationDate());
+                                                spmap.put("cost",naulo.getCost());
+                                                spmap.put("fromCountry",naulo.getFromCountry());
+                                                spmap.put("fromCity",naulo.getFromCity());
+                                                spmap.put("fromCountry",naulo.getFromCountry());
+                                                spmap.put("toCity",naulo.getToCity());
+                                                spmap.put("toCountry",naulo.getToCountry());
+                                                spmap.put("id",naulo.getId());
+                                                spmap.put("nauloId",naulo.getId());
+                                                schedList.add(spmap);
+                                            }
+                                            //searchMeasureSearch
+                                            returnList_future.put("data", schedList);
+                                            returnList_future.put("total", schedList.size());
+                                            returnList_future.put("status", "success");
+                                            returnList_future.put("message", "success");
+                                            return returnList_future;
+                                        });
+                            },
+                            executionContext);
+                    returnList = getFuture.get();
+                    DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                    ow.setDateFormat(myDateFormat);
+                    try {
+                        jsonResult = ow.writeValueAsString(returnList);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        result.put("status", "error");
+                        result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων ");
+                        return ok(result);
+                    }
+                    return ok(jsonResult);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων");
+            return ok(result);
+        }
+    }
+
+
+
+
+
     @SuppressWarnings({"Duplicates", "unchecked"})
     public Result getCustomersSuppliers(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();
@@ -298,12 +378,13 @@ public class CustomersSuppliersController extends Application {
                     CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
                                 return jpaApi.withTransaction(
                                         entityManager -> {
-                                            //roleDescSearchInput afmSearch customersSupliersTypesSearch
+                                            //placesSearchInput
                                             String orderCol = json.findPath("orderCol").asText();
                                             String descAsc = json.findPath("descAsc").asText();
                                             String id = json.findPath("id").asText();
                                             String customerSupplierId = json.findPath("customerSupplierId").asText();
                                             String address = json.findPath("address").asText();
+                                            String placesSearchInput = json.findPath("placesSearchInput").asText();
                                             String countryCitySearch = json.findPath("countryCitySearch").asText();
                                             String job = json.findPath("job").asText();
                                             String customersSupliersTypes = json.findPath("customersSupliersTypes").asText();
@@ -358,6 +439,21 @@ public class CustomersSuppliersController extends Application {
                                                 sqlCustSupl += " and pos.country like '%" + country + "%'";
                                             }
 
+                                            if (placesSearchInput != null && !placesSearchInput.equalsIgnoreCase("") ) {
+                                                sqlCustSupl += " and pos.id in " +
+                                                        "(" +
+                                                        "select customers_suppliers_id " +
+                                                        "from suppliers_roads_costs src " +
+                                                        "where src.from_city like'%"+placesSearchInput+"%' or " +
+                                                        " src.from_country like '%"+placesSearchInput+"%' or " +
+                                                        " src.to_country like '%"+placesSearchInput+"%' or" +
+                                                        " src.to_city like '%"+placesSearchInput+"%' or " +
+                                                        " CONCAT(from_country, \" \", from_city,\" \",to_country,\" \",to_city) like '%"+placesSearchInput+"%' )";
+                                            }
+
+
+                                            //placesSearchInput
+
                                             if (!email.equalsIgnoreCase("") && email != null) {
                                                 sqlCustSupl += " and pos.email like '%" + email + "%'";
                                             }
@@ -373,6 +469,7 @@ public class CustomersSuppliersController extends Application {
                                             if (!creationDate.equalsIgnoreCase("") && creationDate != null) {
                                                 sqlCustSupl += " and SUBSTRING( role.creation_date, 1, 10)  = '" + creationDate + "'";
                                             }
+                                            System.out.println(sqlCustSupl);
                                             List<CustomersSuppliersEntity> filalistAll
                                                     = (List<CustomersSuppliersEntity>) entityManager.createNativeQuery(
                                                     sqlCustSupl, CustomersSuppliersEntity.class).getResultList();
@@ -394,6 +491,15 @@ public class CustomersSuppliersController extends Application {
                                             Integer index = 0;
                                             for (CustomersSuppliersEntity j : warehousesEntityList) {
                                                 HashMap<String, Object> sHmpam = new HashMap<String, Object>();
+                                                if (j.getInternovaSellerId() != null) {
+                                                    sHmpam.put("internovaSeller", entityManager.find(InternovaSellersEntity.class, j.getInternovaSellerId()));
+                                                    sHmpam.put("internovaSellerName", entityManager.find(InternovaSellersEntity.class, j.getInternovaSellerId()).getName());
+                                                }
+                                                if (j.getBillingId() != null) {
+                                                    sHmpam.put("billing", entityManager.find(BillingsEntity.class, j.getBillingId()));
+                                                    sHmpam.put("billingName", entityManager.find(BillingsEntity.class, j.getBillingId()).getName());
+                                                }
+                                                sHmpam.put("internovaSellerId", j.getInternovaSellerId());
                                                 sHmpam.put("address", j.getAddress());
                                                 sHmpam.put("brandName", j.getBrandName());
                                                 sHmpam.put("city", j.getCity());
@@ -409,15 +515,6 @@ public class CustomersSuppliersController extends Application {
                                                 sHmpam.put("billingId", j.getBillingId());
                                                 sHmpam.put("doy", j.getDoy());
                                                 sHmpam.put("website", j.getWebsite());
-                                                sHmpam.put("internovaSellerId", j.getInternovaSellerId());
-                                                if (j.getInternovaSellerId() != null) {
-                                                    sHmpam.put("internovaSeller", entityManager.find(InternovaSellersEntity.class, j.getInternovaSellerId()));
-                                                    sHmpam.put("internovaSellerName", entityManager.find(InternovaSellersEntity.class, j.getInternovaSellerId()).getName());
-                                                }
-                                                if (j.getBillingId() != null) {
-                                                    sHmpam.put("billing", entityManager.find(BillingsEntity.class, j.getBillingId()));
-                                                    sHmpam.put("billingName", entityManager.find(BillingsEntity.class, j.getBillingId()).getName());
-                                                }
                                                 sHmpam.put("comments", j.getComments());
                                                 sHmpam.put("customerType", j.getCustomerType());
                                                 sHmpam.put("creationDate", j.getCreationDate());
@@ -575,6 +672,7 @@ public class CustomersSuppliersController extends Application {
                                     suproad.setToCountry(toCountry);
                                     suproad.setToCity(toCity);
                                     suproad.setCost(cost);
+                                    suproad.setCreationDate(new Date());
                                     entityManager.persist(suproad);
 
                                     add_result.put("status", "success");

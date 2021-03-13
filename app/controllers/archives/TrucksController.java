@@ -297,8 +297,6 @@ public class TrucksController extends Application {
                 CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
                             return jpaApi.withTransaction(
                                     entityManager -> {
-                                        //suplierName
-                                        //trailerTrackor
                                         String orderCol = json.findPath("orderCol").asText();
                                         String descAsc = json.findPath("descAsc").asText();
                                         String brandName = json.findPath("brandName").asText();
@@ -350,18 +348,32 @@ public class TrucksController extends Application {
                                         if (!creationDate.equalsIgnoreCase("") && creationDate != null) {
                                             sqlTrucks += " and SUBSTRING( b.creation_date, 1, 10)  = '" + creationDate + "'";
                                         }
-                                        System.out.println(sqlTrucks);
                                         List<TrucksEntity> rolesListAll
                                                 = (List<TrucksEntity>) entityManager.createNativeQuery(
                                                 sqlTrucks, TrucksEntity.class).getResultList();
-
                                         if (!orderCol.equalsIgnoreCase("") && orderCol != null) {
-                                            sqlTrucks += " order by " + orderCol + " " + descAsc;
+                                            if(orderCol.equalsIgnoreCase("suplier_name")){
+                                                sqlTrucks +=  " order by (\n" +
+                                                        " select brand_name \n" +
+                                                        " from customers_suppliers cs \n" +
+                                                        " where cs.id in \n" +
+                                                        " (select customers_suppliers_id \n" +
+                                                        " from suppliers_trucks strucks \n" +
+                                                        " where strucks.truck_id=truck.id \n" +
+                                                        " ) \n" +
+                                                        " ) \n"+ descAsc;
+                                            }else if (orderCol.equalsIgnoreCase("type_truck")) {
+                                                sqlTrucks+=" order by (\n" +
+                                                        " select tp.type\n" +
+                                                        " from truck_type tp\n" +
+                                                        " where tp.id=truck.type_truck_id\n" +
+                                                        " )"+ descAsc;
+                                            }else{
+                                                sqlTrucks += " order by " + orderCol + " " + descAsc;
+                                            }
                                         } else {
                                             sqlTrucks += " order by creation_date desc";
                                         }
-
-
                                         if (!start.equalsIgnoreCase("") && start != null) {
                                             sqlTrucks += " limit " + start + "," + limit;
                                         }
@@ -395,7 +407,6 @@ public class TrucksController extends Application {
                                                 sHmpam.put("suplierName",suppl.getBrandName());
                                             }else{
                                                 sHmpam.put("suplierName","");
-
                                             }
                                             serversList.add(sHmpam);
                                         }
