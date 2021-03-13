@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execution_context.DatabaseExecutionContext;
 import controllers.system.Application;
+import models.CustomersSuppliersEntity;
 import models.SuppliersTrucksEntity;
 import models.TruckTypeEntity;
 import models.TrucksEntity;
@@ -296,9 +297,12 @@ public class TrucksController extends Application {
                 CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
                             return jpaApi.withTransaction(
                                     entityManager -> {
+                                        //suplierName
+                                        //trailerTrackor
                                         String orderCol = json.findPath("orderCol").asText();
                                         String descAsc = json.findPath("descAsc").asText();
                                         String brandName = json.findPath("brandName").asText();
+                                        String suplierName = json.findPath("suplierName").asText();
                                         String description = json.findPath("description").asText();
                                         String typeTruck = json.findPath("typeTruck").asText();
                                         Long suplierId = json.findPath("suplierId").asLong();
@@ -322,6 +326,18 @@ public class TrucksController extends Application {
                                             sqlTrucks += " and truck.id in " +
                                                     " (select truck_id from suppliers_trucks ms where ms.customers_suppliers_id =" + suplierId + ")";
                                         }
+                                        if(suplierName!=null && !suplierName.equalsIgnoreCase("") && !suplierName.equalsIgnoreCase("null")){
+                                            sqlTrucks +=
+                                                    " and " +
+                                                    " truck.id in " +
+                                                    " (select truck_id " +
+                                                    " from suppliers_trucks st " +
+                                                    " where st.customers_suppliers_id " +
+                                                    " in (select id" +
+                                                    " from customers_suppliers cs" +
+                                                    " where cs.brand_name like '%"
+                                                            +suplierName+"%'))";
+                                        }
                                         if (!typeTruck.equalsIgnoreCase("") && typeTruck != null) {
                                             sqlTrucks += " and truck.type_truck_id in (select id  from truck_type tp where type like '%"+typeTruck+"%')";
                                         }
@@ -334,6 +350,7 @@ public class TrucksController extends Application {
                                         if (!creationDate.equalsIgnoreCase("") && creationDate != null) {
                                             sqlTrucks += " and SUBSTRING( b.creation_date, 1, 10)  = '" + creationDate + "'";
                                         }
+                                        System.out.println(sqlTrucks);
                                         List<TrucksEntity> rolesListAll
                                                 = (List<TrucksEntity>) entityManager.createNativeQuery(
                                                 sqlTrucks, TrucksEntity.class).getResultList();
@@ -361,14 +378,25 @@ public class TrucksController extends Application {
                                             sHmpam.put("description", j.getDescription());
                                             sHmpam.put("plateNumber", j.getPlateNumber());
                                             sHmpam.put("trailerTrackor", j.getTrailerTrackor());
+                                            sHmpam.put("creationDate", j.getCreationDate());
+                                            sHmpam.put("udpateDate", j.getUdpateDate());
                                             if(j.getTypeTruckId()!=0){
                                                 sHmpam.put("typeTruckId", j.getTypeTruckId());
                                                 sHmpam.put("typeTruck", entityManager.find(TruckTypeEntity.class,j.getTypeTruckId()).getType());
                                             }else{
                                                 sHmpam.put("typeTruck","");
                                             }
-                                            sHmpam.put("creationDate", j.getCreationDate());
-                                            sHmpam.put("udpateDate", j.getUdpateDate());
+                                            String sqlSuppl="select * from suppliers_trucks st where st.truck_id="+j.getId();
+                                            List<SuppliersTrucksEntity> suppliersTrucksEntityList =  entityManager.createNativeQuery(sqlSuppl,SuppliersTrucksEntity.class).getResultList();
+                                            if(suppliersTrucksEntityList.size()>0){
+                                                CustomersSuppliersEntity suppl =
+                                                        entityManager.find(CustomersSuppliersEntity.class,suppliersTrucksEntityList.get(0).getCustomersSuppliersId());
+                                                sHmpam.put("suplier",suppl);
+                                                sHmpam.put("suplierName",suppl.getBrandName());
+                                            }else{
+                                                sHmpam.put("suplierName","");
+
+                                            }
                                             serversList.add(sHmpam);
                                         }
                                         returnList_future.put("data", serversList);
@@ -418,8 +446,7 @@ public class TrucksController extends Application {
                                                 "from trucks m " +
                                                 "where m.id not in " +
                                                 "(select truck_id " +
-                                                "from suppliers_trucks ms " +
-                                                "where ms.customers_suppliers_id= " + suplierId +")";
+                                                "from suppliers_trucks ms )";
                                         HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                         List<HashMap<String, Object>> serversList = new ArrayList<HashMap<String, Object>>();
                                         List<TrucksEntity> orgsList

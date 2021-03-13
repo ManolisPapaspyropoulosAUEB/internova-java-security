@@ -15,6 +15,7 @@ import javax.inject.Inject;
 import java.io.*;
 import java.nio.file.Paths;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -126,7 +127,28 @@ public class DocumentsController extends Application {
                                                 sHmpam.put("name", j.getName());
                                                 sHmpam.put("originalFilename", j.getOriginalFilename()+"."+j.getExtension());
                                                 sHmpam.put("userId", j.getUserId());
+                                                sHmpam.put("endDate", j.getEndDate());
                                                 sHmpam.put("uploadDate", j.getUploadDate());
+
+
+
+                                                if(j.getEndDate()!=null){
+                                                    Date date2 = new Date();
+                                                    int currentDate = Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(date2));
+                                                    int endD =
+                                                            Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(j.getEndDate()));
+                                                    if(currentDate>endD){
+                                                        sHmpam.put("colorEndDate",true);
+                                                    }else{
+                                                        sHmpam.put("colorEndDate",false);
+                                                    }
+                                                }else{
+                                                    sHmpam.put("colorEndDate",false);
+                                                }
+
+
+
+
                                                 serversList.add(sHmpam);
                                             }
                                             returnList_future.put("data", serversList);
@@ -137,7 +159,7 @@ public class DocumentsController extends Application {
                             },
                             executionContext);
                     returnList = getFuture.get();
-                    DateFormat myDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    DateFormat myDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                     ow.setDateFormat(myDateFormat);
                     try {
                         jsonResult = ow.writeValueAsString(returnList);
@@ -175,6 +197,48 @@ public class DocumentsController extends Application {
                                     entityManager.remove(doc);
                                     res.put("status", "success");
                                     res.put("message", "Το εγγραφο διαγράφτηκε με επιτυχία");
+                                    return res;
+                                });
+                    },
+                    executionContext);
+            result = (ObjectNode) getFuture.get();
+            return ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "Πρόβλημα κατά την διαγραφή");
+            return ok(result);
+        }
+    }
+
+
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    public Result updateAttatchment(final Http.Request request) throws IOException {
+        ObjectNode result = Json.newObject();
+        try {
+            JsonNode json = request.body().asJson();
+            ObjectMapper ow = new ObjectMapper();
+            CompletableFuture<JsonNode> getFuture = CompletableFuture.supplyAsync(() -> {
+                        return jpaApi.withTransaction(
+                                entityManager -> {
+                                    ObjectNode res = Json.newObject();
+                                    Integer id = json.findPath("id").asInt();
+                                    String endDate = json.findPath("endDate").asText();
+                                    DocumentsEntity doc = entityManager.find(DocumentsEntity.class,id);
+
+                                    DateFormat myDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                                    if(endDate!=null && !endDate.equalsIgnoreCase("")){
+                                        try {
+                                            Date endDayDate = myDateFormat.parse(endDate);
+                                            doc.setEndDate(endDayDate);
+                                        } catch (ParseException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                    entityManager.merge(doc);
+                                    res.put("status", "success");
+                                    res.put("message", "Το εγγραφο ενημερώθηκε με επιτυχία");
                                     return res;
                                 });
                     },

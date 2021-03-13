@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.0.4.final using JasperReports Library version 6.0.4  -->
+<!-- 2021-03-12T16:10:13 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="gs_sums" pageWidth="1860" pageHeight="802" columnWidth="1860" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="d5db437c-b94b-4436-af9d-4d8c9ffa0d5c">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<parameter name="REF_DATE" class="java.util.Date">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA[".\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="OP_CODE" class="java.lang.String"/>
+	<parameter name="PA_CODE" class="java.lang.String"/>
+	<parameter name="SO_CODE" class="java.lang.String"/>
+	<parameter name="GS_CODE" class="java.lang.String"/>
+	<parameter name="GS_TITLE" class="java.lang.String"/>
+	<parameter name="GS_ID" class="java.math.BigDecimal"/>
+	<queryString language="SQL">
+		<![CDATA[-- 
+select 
+sum(SYNOL_EPIL_DAP) AS SYNOL_EPIL_DAP,
+sum(KATAXWRIMENES_DAPANES) AS KATAXWRIMENES_DAPANES,
+sum(EPIKYRWMENES_DAPANES) AS EPIKYRWMENES_DAPANES,
+sum(PISTOPOIIMENES_DAPANES) AS PISTOPOIIMENES_DAPANES
+from 
+(
+SELECT 
+tde.SYNOL_EPIL_DAP,
+(
+SELECT 
+NVL(deda.KATAXWRIMENES_DAPANES,0) AS KATAXWRIMENES_DAPANES
+FROM PRJ_TDE_DIM_INTERV_FIELDS dimIF
+JOIN CORE_DIM core_dim ON (core_dim.ID = dimIF.DIM_ID)
+LEFT JOIN table(PKG_MON_DEDA.f_get_deda_gs_status_tde2(
+	tde.TDE_ID,
+	tde.EF_ID,
+	$P{OP_CODE},
+	$P{REF_DATE},
+$P{GS_ID}
+)) deda ON (deda.TDE_ID = dimIF.TDE_ID)
+
+WHERE dimIF.TDE_ID = tde.TDE_ID
+) AS KATAXWRIMENES_DAPANES,
+(
+SELECT 
+NVL(deda.EPIKYRWMENES_DAPANES,0) AS EPIKYRWMENES_DAPANES
+FROM PRJ_TDE_DIM_INTERV_FIELDS dimIF
+JOIN CORE_DIM core_dim ON (core_dim.ID = dimIF.DIM_ID)
+LEFT JOIN table(PKG_MON_DEDA.f_get_deda_gs_status_tde2(
+	tde.TDE_ID,
+	tde.EF_ID,
+	$P{OP_CODE},
+	$P{REF_DATE},
+ $P{GS_ID}
+)) deda ON (deda.TDE_ID = dimIF.TDE_ID)
+
+WHERE dimIF.TDE_ID = tde.TDE_ID
+) AS EPIKYRWMENES_DAPANES,
+(
+SELECT 
+NVL(deda.PISTOPOIIMENES_DAPANES,0) AS PISTOPOIIMENES_DAPANES
+FROM PRJ_TDE_DIM_INTERV_FIELDS dimIF
+JOIN CORE_DIM core_dim ON (core_dim.ID = dimIF.DIM_ID)
+LEFT JOIN table(PKG_MON_DEDA.f_get_deda_gs_status_tde2(
+	tde.TDE_ID,
+	tde.EF_ID,
+	$P{OP_CODE},
+	$P{REF_DATE},
+ $P{GS_ID}
+)) deda ON (deda.TDE_ID = dimIF.TDE_ID)
+
+WHERE dimIF.TDE_ID = tde.TDE_ID
+) AS PISTOPOIIMENES_DAPANES
+FROM MV_ACCEPTED_TDE_SX tde
+WHERE tde.GS_CODE=$P{GS_CODE}
+AND TRUNC(tde.LAST_UPDATE_DATE) <=$P{REF_DATE})]]>
+	</queryString>
+	<field name="SYNOL_EPIL_DAP" class="java.math.BigDecimal"/>
+	<field name="KATAXWRIMENES_DAPANES" class="java.math.BigDecimal"/>
+	<field name="PISTOPOIIMENES_DAPANES" class="java.math.BigDecimal"/>
+	<field name="EPIKYRWMENES_DAPANES" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<frame>
+				<reportElement x="20" y="0" width="1840" height="20" uuid="3794be98-a96c-4b68-95d4-c295b331db3e"/>
+				<textField>
+					<reportElement positionType="Float" mode="Opaque" x="0" y="0" width="1040" height="20" backcolor="#9999FF" uuid="8032835f-ff34-48c2-9796-08983576b641"/>
+					<box>
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<textFieldExpression><![CDATA[""]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" evaluationTime="Report" pattern="">
+					<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="1040" y="0" width="100" height="20" backcolor="#9999FF" uuid="45fdcfcb-efa8-4b28-817e-cfc6208cd771">
+						<property name="net.sf.jasperreports.export.xls.pattern" value="#,##0.00"/>
+						<property name="local_mesure_unity" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<box leftPadding="3" rightPadding="3">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{SYNOL_EPIL_DAP}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="">
+					<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="1140" y="0" width="100" height="20" backcolor="#9999FF" uuid="88812b36-f91e-4f34-ae6d-9b457a34b4de">
+						<property name="net.sf.jasperreports.export.xls.pattern" value="#,##0.00"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<box leftPadding="3" rightPadding="3">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{SYNOL_EPIL_DAP}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="">
+					<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="1240" y="0" width="100" height="20" backcolor="#9999FF" uuid="936a90c6-c832-4bf2-a2de-27dafb11bf07">
+						<property name="net.sf.jasperreports.export.xls.pattern" value="#,##0.00"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<box leftPadding="3" rightPadding="3">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{PISTOPOIIMENES_DAPANES}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="">
+					<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="1340" y="0" width="100" height="20" backcolor="#9999FF" uuid="1b98fcfa-9e12-4753-bc4f-483f65f70476">
+						<property name="net.sf.jasperreports.export.xls.pattern" value="#,##0.00"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<box leftPadding="3" rightPadding="3">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{EPIKYRWMENES_DAPANES}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="">
+					<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="1440" y="0" width="100" height="20" backcolor="#9999FF" uuid="f6265320-3c66-492a-b7a3-298e99951e6c">
+						<property name="net.sf.jasperreports.export.xls.pattern" value="#,##0.00"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<box leftPadding="3" rightPadding="3">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{KATAXWRIMENES_DAPANES}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="">
+					<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="1540" y="0" width="100" height="20" backcolor="#9999FF" uuid="1bbd6028-0e3f-4701-9178-30a810fcf562">
+						<property name="net.sf.jasperreports.export.xls.pattern" value="#,##0.00"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<box leftPadding="3" rightPadding="3">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{PISTOPOIIMENES_DAPANES}.doubleValue()+$F{EPIKYRWMENES_DAPANES}.doubleValue()
++$F{KATAXWRIMENES_DAPANES}.doubleValue()]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="">
+					<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="1640" y="0" width="100" height="20" backcolor="#9999FF" uuid="48202621-e54f-4661-b8f7-50cd568e9be3">
+						<property name="net.sf.jasperreports.export.xls.pattern" value="#,##0.00"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<box leftPadding="3" rightPadding="3">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new BigDecimal(0)]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="">
+					<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="1740" y="0" width="100" height="20" backcolor="#9999FF" uuid="17c9824d-4842-4699-9f77-016feeae92d1">
+						<property name="net.sf.jasperreports.export.xls.pattern" value="#,##0.00"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<box leftPadding="3" rightPadding="3">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{PISTOPOIIMENES_DAPANES}.doubleValue()+$F{EPIKYRWMENES_DAPANES}.doubleValue()
++$F{KATAXWRIMENES_DAPANES}.doubleValue()]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

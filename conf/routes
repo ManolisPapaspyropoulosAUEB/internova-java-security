@@ -51,6 +51,7 @@ POST        /uploadFile                                      controllers.documen
 POST        /downloadDocument                                controllers.documents.DocumentsController.downloadDocument(req: Request)
 POST        /deleteAttatchment                               controllers.documents.DocumentsController.deleteAttatchment(req: Request)
 POST        /downloadDocumentGet                             controllers.documents.DocumentsController.downloadDocumentGet(req: Request)
+POST        /updateAttatchment                               controllers.documents.DocumentsController.updateAttatchment(req: Request)
 
 
 
@@ -71,7 +72,7 @@ POST        /getAllWarehousesNoPagination                    controllers.archive
 
 #FactoriesController
 POST        /getFactories                                    controllers.archives.FactoriesController.getFactories(req: Request)
-POST        /getFactoryCustomers                                    controllers.archives.FactoriesController.getFactoryCustomers(req: Request)
+POST        /getFactoryCustomers                             controllers.archives.FactoriesController.getFactoryCustomers(req: Request)
 POST        /getSuggestedFactories                           controllers.archives.FactoriesController.getSuggestedFactories(req: Request)
 POST        /addFactory                                      controllers.archives.FactoriesController.addFactory(req: Request)
 POST        /updateFactory                                   controllers.archives.FactoriesController.updateFactory(req: Request)

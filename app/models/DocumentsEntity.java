@@ -17,6 +17,7 @@ public class DocumentsEntity {
     private String originalFilename;
     private Long subFolderId;
     private String system;
+    private Date endDate;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -126,5 +127,15 @@ public class DocumentsEntity {
 
     public void setSystem(String system) {
         this.system = system;
+    }
+
+    @Basic
+    @Column(name = "end_date")
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 }

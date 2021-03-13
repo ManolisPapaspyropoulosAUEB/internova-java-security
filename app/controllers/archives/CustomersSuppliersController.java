@@ -26,14 +26,14 @@ import java.util.concurrent.CompletableFuture;
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
-public class CustomersSuppliersController extends Application  {
+public class CustomersSuppliersController extends Application {
 
     private JPAApi jpaApi;
     private DatabaseExecutionContext executionContext;
 
     @Inject
     public CustomersSuppliersController(JPAApi jpaApi, DatabaseExecutionContext executionContext) {
-        super(jpaApi,  executionContext);
+        super(jpaApi, executionContext);
         this.jpaApi = jpaApi;
         this.executionContext = executionContext;
     }
@@ -83,25 +83,25 @@ public class CustomersSuppliersController extends Application  {
                                     warehousesEntity.setWebsite(website);
                                     warehousesEntity.setAfm(afm);
                                     System.out.println(billingId);
-                                    if(billingId!=null && billingId!=0){
+                                    if (billingId != null && billingId != 0) {
                                         warehousesEntity.setBillingId(billingId);
                                     }
                                     warehousesEntity.setCountry(country);
                                     warehousesEntity.setDoy(doy);
                                     warehousesEntity.setCustomerType(customerType);
-                                    if(internovaSellerId!=null && internovaSellerId!=0){
+                                    if (internovaSellerId != null && internovaSellerId != 0) {
                                         warehousesEntity.setInternovaSellerId(internovaSellerId);
                                     }
                                     warehousesEntity.setJob(job);
                                     entityManager.persist(warehousesEntity);
                                     add_result.put("customerSupplierId", warehousesEntity.getId());
 
-                                    if(internovaSellerId!=null && internovaSellerId!=0){
+                                    if (internovaSellerId != null && internovaSellerId != 0) {
                                         add_result.put("internovaSellerName", entityManager.find(InternovaSellersEntity.class, warehousesEntity.getInternovaSellerId()).getName());
                                     }
 
 
-                                    if(billingId!=null && billingId!=0){
+                                    if (billingId != null && billingId != 0) {
                                         add_result.put("billingName", entityManager.find(BillingsEntity.class, warehousesEntity.getBillingId()).getName());
                                     }
                                     add_result.put("status", "success");
@@ -115,7 +115,7 @@ public class CustomersSuppliersController extends Application  {
                             },
                             executionContext);
                     result = (ObjectNode) addFuture.get();
-                    return ok(result,request);
+                    return ok(result, request);
                 } catch (Exception e) {
                     ObjectNode result = Json.newObject();
                     e.printStackTrace();
@@ -178,13 +178,13 @@ public class CustomersSuppliersController extends Application  {
                                     warehousesEntity.setComments(comments);
                                     warehousesEntity.setWebsite(website);
                                     warehousesEntity.setAfm(afm);
-                                    if(billingId!=null && billingId!=0){
+                                    if (billingId != null && billingId != 0) {
                                         warehousesEntity.setBillingId(billingId);
                                     }
                                     warehousesEntity.setCountry(country);
                                     warehousesEntity.setDoy(doy);
                                     warehousesEntity.setCustomerType(customerType);
-                                    if(internovaSellerId!=null && internovaSellerId!=0){
+                                    if (internovaSellerId != null && internovaSellerId != 0) {
                                         warehousesEntity.setInternovaSellerId(internovaSellerId);
                                     }
                                     warehousesEntity.setJob(job);
@@ -199,7 +199,7 @@ public class CustomersSuppliersController extends Application  {
                             },
                             executionContext);
                     result = (ObjectNode) addFuture.get();
-                    return ok(result,request);
+                    return ok(result, request);
                 } catch (Exception e) {
                     ObjectNode result = Json.newObject();
                     e.printStackTrace();
@@ -234,15 +234,15 @@ public class CustomersSuppliersController extends Application  {
                     CompletableFuture<JsonNode> deleteFuture = CompletableFuture.supplyAsync(() -> {
                                 return jpaApi.withTransaction(entityManager -> {
                                     ObjectNode delete_result = Json.newObject();
-                                    ((ObjectNode)json).remove("billing");
-                                    ((ObjectNode)json).remove("internovaSeller");
+                                    ((ObjectNode) json).remove("billing");
+                                    ((ObjectNode) json).remove("internovaSeller");
                                     Long id = json.findPath("id").asLong();
                                     Long user_id = json.findPath("user_id").asLong();
                                     System.out.println(id);
                                     System.out.println(json);
-                                    String sql = "select * from offers of where of.customer_id="+id;
-                                    List<OffersEntity> suppliersEntityList = ( List<OffersEntity>) entityManager.createNativeQuery(sql,OffersEntity.class).getResultList();
-                                    if(suppliersEntityList.size()>0){
+                                    String sql = "select * from offers of where of.customer_id=" + id;
+                                    List<OffersEntity> suppliersEntityList = (List<OffersEntity>) entityManager.createNativeQuery(sql, OffersEntity.class).getResultList();
+                                    if (suppliersEntityList.size() > 0) {
                                         delete_result.put("status", "error");
                                         delete_result.put("message", "βρέθηκαν συνδεδεμένες εγγραφές");
                                         return delete_result;
@@ -259,7 +259,7 @@ public class CustomersSuppliersController extends Application  {
                             },
                             executionContext);
                     result = (ObjectNode) deleteFuture.get();
-                    return ok(result,request);
+                    return ok(result, request);
 
                 } catch (Exception e) {
                     ObjectNode result = Json.newObject();
@@ -307,6 +307,7 @@ public class CustomersSuppliersController extends Application  {
                                             String countryCitySearch = json.findPath("countryCitySearch").asText();
                                             String job = json.findPath("job").asText();
                                             String customersSupliersTypes = json.findPath("customersSupliersTypes").asText();
+                                            boolean supplier = json.findPath("supplier").asBoolean();
                                             String brandName = json.findPath("brandName").asText();
                                             String country = json.findPath("country").asText();
                                             String city = json.findPath("city").asText();
@@ -320,13 +321,13 @@ public class CustomersSuppliersController extends Application  {
                                             String limit = json.findPath("limit").asText();
                                             String sqlCustSupl = "select * from customers_suppliers pos where 1=1 ";
                                             if (!id.equalsIgnoreCase("") && id != null) {
-                                                sqlCustSupl += " and pos.id like " + id ;
+                                                sqlCustSupl += " and pos.id like " + id;
                                             }
                                             if (!countryCitySearch.equalsIgnoreCase("") && countryCitySearch != null) {
-                                                sqlCustSupl += " and ( pos.city like '%" + countryCitySearch + "%' or  pos.country like   '%"+ countryCitySearch+"%'  )" ;
+                                                sqlCustSupl += " and ( pos.city like '%" + countryCitySearch + "%' or  pos.country like   '%" + countryCitySearch + "%'  )";
                                             }
                                             if (!customerSupplierId.equalsIgnoreCase("") && customerSupplierId != null) {
-                                                sqlCustSupl += " and pos.id like '%" + customerSupplierId+"%'";
+                                                sqlCustSupl += " and pos.id like '%" + customerSupplierId + "%'";
                                             }
                                             if (!address.equalsIgnoreCase("") && address != null) {
                                                 sqlCustSupl += " and pos.address like '%" + address + "%'";
@@ -340,7 +341,9 @@ public class CustomersSuppliersController extends Application  {
                                             if (!customersSupliersTypes.equalsIgnoreCase("") && customersSupliersTypes != null && !customersSupliersTypes.equalsIgnoreCase("null")) {
                                                 sqlCustSupl += " and pos.customer_type = '" + customersSupliersTypes + "'";
                                             }
-
+                                            if (supplier == true) {
+                                                sqlCustSupl += " and pos.customer_type in ('Προμηθευτής','Πελάτης & Προμηθευτής')";
+                                            }
                                             if (!brandName.equalsIgnoreCase("") && brandName != null) {
                                                 sqlCustSupl += " and pos.brand_name like '%" + brandName + "%'";
                                             }
@@ -454,7 +457,6 @@ public class CustomersSuppliersController extends Application  {
     }
 
 
-
     @SuppressWarnings({"Duplicates", "unchecked"})
     public Result getAllCustomersSuppliersNoPagination(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();
@@ -546,7 +548,6 @@ public class CustomersSuppliersController extends Application  {
     }
 
 
-
     @SuppressWarnings({"Duplicates", "unchecked"})
     @BodyParser.Of(BodyParser.Json.class)
     public Result addSupplierRoadCost(final Http.Request request) throws IOException {
@@ -623,7 +624,7 @@ public class CustomersSuppliersController extends Application  {
                                     Double cost = json.findPath("cost").asDouble();
                                     Long id = json.findPath("id").asLong();
 
-                                    SuppliersRoadsCostsEntity suproad = entityManager.find(SuppliersRoadsCostsEntity.class,id);
+                                    SuppliersRoadsCostsEntity suproad = entityManager.find(SuppliersRoadsCostsEntity.class, id);
                                     suproad.setCustomersSuppliersId(customersSuppliersId);
                                     suproad.setFromCity(fromCity);
                                     suproad.setFromCountry(fromCountry);
@@ -672,7 +673,7 @@ public class CustomersSuppliersController extends Application  {
                                 return jpaApi.withTransaction(entityManager -> {
                                     ObjectNode add_result = Json.newObject();
                                     Long id = json.findPath("id").asLong();
-                                    SuppliersRoadsCostsEntity suproad = entityManager.find(SuppliersRoadsCostsEntity.class,id);
+                                    SuppliersRoadsCostsEntity suproad = entityManager.find(SuppliersRoadsCostsEntity.class, id);
                                     entityManager.remove(suproad);
                                     add_result.put("status", "success");
                                     add_result.put("message", "Η διαγραφή πραγματοποίηθηκε με επιτυχία");
@@ -726,25 +727,25 @@ public class CustomersSuppliersController extends Application  {
                                             String toCity = json.findPath("toCity").asText();
                                             String cost = json.findPath("cost").asText();
                                             String sqlCustSupl = "select * from suppliers_roads_costs srcosts where 1=1  ";
-                                            if(customersSuppliersId!=null && !customersSuppliersId.equalsIgnoreCase("") && !customersSuppliersId.equalsIgnoreCase("null")){
-                                                sqlCustSupl+=" and srcosts.customers_suppliers_id="+customersSuppliersId;
+                                            if (customersSuppliersId != null && !customersSuppliersId.equalsIgnoreCase("") && !customersSuppliersId.equalsIgnoreCase("null")) {
+                                                sqlCustSupl += " and srcosts.customers_suppliers_id=" + customersSuppliersId;
                                             }
-                                            if(fromCountry!=null && !fromCountry.equalsIgnoreCase("") && !fromCountry.equalsIgnoreCase("null")){
-                                                sqlCustSupl+=" and srcosts.from_country like '%"+fromCountry+"%'";
+                                            if (fromCountry != null && !fromCountry.equalsIgnoreCase("") && !fromCountry.equalsIgnoreCase("null")) {
+                                                sqlCustSupl += " and srcosts.from_country like '%" + fromCountry + "%'";
                                             }
-                                            if(fromCity!=null && !fromCity.equalsIgnoreCase("") && !fromCity.equalsIgnoreCase("null")){
-                                                sqlCustSupl+=" and srcosts.from_city like '%"+fromCity+"%'";
+                                            if (fromCity != null && !fromCity.equalsIgnoreCase("") && !fromCity.equalsIgnoreCase("null")) {
+                                                sqlCustSupl += " and srcosts.from_city like '%" + fromCity + "%'";
                                             }
-                                            if(toCountry!=null && !toCountry.equalsIgnoreCase("") && !toCountry.equalsIgnoreCase("null")){
-                                                sqlCustSupl+=" and srcosts.to_country like '%"+toCountry+"%'";
+                                            if (toCountry != null && !toCountry.equalsIgnoreCase("") && !toCountry.equalsIgnoreCase("null")) {
+                                                sqlCustSupl += " and srcosts.to_country like '%" + toCountry + "%'";
                                             }
-                                            if(toCity!=null && !toCity.equalsIgnoreCase("") && !toCity.equalsIgnoreCase("null")){
-                                                sqlCustSupl+=" and srcosts.to_city like '%"+toCity+"%'";
+                                            if (toCity != null && !toCity.equalsIgnoreCase("") && !toCity.equalsIgnoreCase("null")) {
+                                                sqlCustSupl += " and srcosts.to_city like '%" + toCity + "%'";
                                             }
-                                            if(cost!=null && !cost.equalsIgnoreCase("") && !cost.equalsIgnoreCase("null")){
-                                                sqlCustSupl+=" and srcosts.cost like '%"+cost+"%'";
+                                            if (cost != null && !cost.equalsIgnoreCase("") && !cost.equalsIgnoreCase("null")) {
+                                                sqlCustSupl += " and srcosts.cost like '%" + cost + "%'";
                                             }
-                                            sqlCustSupl+=" order by creation_date desc";
+                                            sqlCustSupl += " order by creation_date desc";
 
                                             System.out.println(sqlCustSupl);
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
@@ -793,9 +794,6 @@ public class CustomersSuppliersController extends Application  {
             return ok(result);
         }
     }
-
-
-
 
 
 }
