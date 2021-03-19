@@ -30,8 +30,9 @@ POST        /getAllUsersNoPagination                         controllers.securit
 POST        /updatePassword                                  controllers.security.UsersControllers.updatePassword(req: Request)
 POST        /login                                           controllers.security.UsersControllers.login(req: Request)
 
-#AuditLogsController ftpRetrieveFromPath ftpRetrieveFromPath2
+#AuditLogsController ftpRetrieveFromPath ftpRetrieveFromFrankana
 POST        /ftpRetrieveFromPath                             controllers.security.AuditLogsController.ftpRetrieveFromPath(req: Request)
+POST        /ftpRetrieveFromFrankana                         controllers.security.AuditLogsController.ftpRetrieveFromFrankana(req: Request)
 #POST        /ftpRetrieveFromPathAkka                                     controllers.security.AuditLogsController.ftpRetrieveFromPathAkka(req: Request)
 POST        /addAuditLog                                     controllers.security.AuditLogsController.addAuditLog(req: Request)
 POST        /updateAuditLog                                  controllers.security.AuditLogsController.updateAuditLog(req: Request)
@@ -113,7 +114,8 @@ POST        /addSupplierRoadCost                             controllers.archive
 POST        /updateSupplierRoadCost                          controllers.archives.CustomersSuppliersController.updateSupplierRoadCost(req: Request)
 POST        /deleteRoadCost                                  controllers.archives.CustomersSuppliersController.deleteRoadCost(req: Request)
 POST        /getRoadCosts                                    controllers.archives.CustomersSuppliersController.getRoadCosts(req: Request)
-POST        /getRoadCostsBySuplier                                    controllers.archives.CustomersSuppliersController.getRoadCostsBySuplier(req: Request)
+POST        /getRoadCostsBySuplier                           controllers.archives.CustomersSuppliersController.getRoadCostsBySuplier(req: Request)
+POST        /viesvalidator                           controllers.archives.CustomersSuppliersController.viesvalidator(req: Request)
 
 
 

@@ -13,9 +13,15 @@ import akka.util.ByteString;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.Session;
 import controllers.execution_context.DatabaseExecutionContext;
 import models.AuditLogsEntity;
 import models.UsersEntity;
+import org.apache.commons.codec.binary.StringUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.net.PrintCommandListener;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
@@ -28,7 +34,11 @@ import play.mvc.Result;
 import javax.inject.Inject;
 import java.io.*;
 import java.net.InetAddress;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,6 +48,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Stream;
 
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
@@ -108,57 +119,57 @@ public class AuditLogsController {
 //
 
 
-    @SuppressWarnings({"Duplicates", "unchecked"})
-    @BodyParser.Of(BodyParser.Json.class)
     public Result ftpRetrieveFromPath(final Http.Request request) throws IOException {
         try {
             JsonNode json = request.body().asJson();
+            //JsonNode json = request.body().asJson();
+            System.out.println("uss " + json.findPath("user_id").asText());
             if (json == null) {
                 return badRequest("Expecting Json data");
             } else {
                 try {
                     ObjectNode result = Json.newObject();
-                    FTPClient fClient = new FTPClient();
+                    JSch jsch = new JSch();
                     try {
-                        fClient.connect("212.185.120.138", 22);
-                        int replyCode = fClient.getReplyCode();
-                        boolean success = fClient.login("138181", "Um7vZ9q1");
-                        if (!success) {
-                            System.out.println("Could not login to the server");
-                        } else {
-                            System.out.println("You are now logged on!");
+                        String user = "138181";
+                        String host = "212.185.120.138";
+                        int port = 22;
+                        String pass = "Um7vZ9q1";
+                        Session session = jsch.getSession(user, host, port);
+                        session.setConfig("StrictHostKeyChecking", "no");
+                        session.setPassword(pass);
+                        session.connect();
+                        System.out.println("Connection established.");
+                        System.out.println("Creating SFTP Channel.");
+                        Channel channel = session.openChannel("sftp");
+                        channel.connect();
+                        ChannelSftp sftpChannel = (ChannelSftp) channel;
+                        String strCurrentLine = null;
+                        BufferedReader objReader = null;
+                        InputStream stream = sftpChannel.get("/Oeffentlicher_Bereich/Bestandsabfrage/Frankana/frankana_lager.txt");
+                        try {
+                       //     FileUtils.copyInputStreamToFile(stream, new File("ee2.txt"));
+                            String cont = FileUtils.readFileToString(new File("ee2.txt"), Charset.forName("UTF-8"));
+                            String cont2 = FileUtils.readFileToString(new File("ee2.txt"), Charset.forName("UTF-16LE"));
+                            System.out.println(cont);
+                            System.out.println(cont2);
+
+                            //       String cont = FileUtils.readFileToString(new File("testak.txt"), Charset.forName("UTF-16LE"));
+                            //     System.out.println(cont);
+
+                        } finally {
+                            stream.close();
                         }
-                        fClient.enterLocalPassiveMode();
-                        fClient.setFileType(FTP.BINARY_FILE_TYPE);
-                        File localFile = new File("files\\shared.txt");
-                        String remoteFile = "shared.txt";
-                        InputStream inputStream = new FileInputStream(localFile);
-                        System.out.println("Start uploading the file");
-                        boolean done = fClient.storeFile(remoteFile, inputStream);
-                        inputStream.close();
-                        if (done) {
-                            System.out.println(remoteFile + " has been uploaded successfully");
-                        }
-                    } catch (IOException ex) {
+                    } catch (Exception ex) {
                         System.out.println("Oops! Something wrong happened");
                         ex.printStackTrace();
-                    } finally {
-                        try {
-                            if (fClient.isConnected()) {
-                                fClient.logout();
-                                fClient.disconnect();
-                                System.out.println("FTP Disconnected");
-                            }
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
-                        }
                     }
                     return ok(result);
                 } catch (Exception e) {
                     ObjectNode result = Json.newObject();
                     e.printStackTrace();
                     result.put("status", "error");
-                    result.put("message", "Προβλημα κατα την καταχωρηση");
+                    result.put("message", "Προβλημα κατα την σύνδεση ftp frankana");
                     return ok(result);
                 }
             }
@@ -166,10 +177,188 @@ public class AuditLogsController {
             ObjectNode result = Json.newObject();
             e.printStackTrace();
             result.put("status", "error");
-            result.put("message", "Προβλημα κατα την καταχωρηση");
+            result.put("message", "Προβλημα κατα την σύνδεση ftp frankana");
             return ok(result);
         }
     }
+
+
+
+    public Result ftpRetrieveFromFrankana(final Http.Request request) throws IOException {
+        try {
+            JsonNode json = request.body().asJson();
+            //JsonNode json = request.body().asJson();
+            System.out.println("uss "+json.findPath("user_id").asText());
+            if (json == null) {
+                return badRequest("Expecting Json data");
+            } else {
+                try {
+                    ObjectNode result = Json.newObject();
+
+
+                        // FileUtils.copyInputStreamToFile(stream, targetFile);
+
+                        try {
+
+
+
+                          //  BufferedReader br =new BufferedReader(new FileReader("ee2.txt"));
+                            BufferedReader reader = Files.newBufferedReader(Paths.get("ee2.txt"), StandardCharsets.UTF_16LE);
+
+                            // FileUtils.readFileToString(new File("ee2.txt"), Charset.forName("UTF-16LE"));
+                            String lineF = reader.readLine();
+                            while (lineF != null) {
+                                System.out.println(lineF);
+
+                                System.out.println(lineF);
+                                ByteBuffer byteBuffer = StandardCharsets.UTF_16LE.encode(lineF);
+                                String line = byteBuffer.toString();
+                                System.out.println(line);
+                                String[] splitLine = line.split("@@@");
+                                System.out.println(splitLine[0]);
+                                String[] first = splitLine[0].split("@");
+                                //System.out.println(splitLine[0]);
+                                // System.out.println("\n Code "+first[0]);
+
+                                String supplierSku = "";
+                                String qtyFrankana = "";
+                                String qtyFrankanaLabel = "";
+                                String frankanaApothiki2 = "";
+                                String frankanaApothiki3 = "";
+                                String frankanaApothiki5 = "";
+                                String typeProduct = "frankana";
+                                if (first[0].contains("/")) {// Frankana products
+
+                                    String splitLineStr = splitLine[1];
+                                    if (splitLine[1].substring(0, 1).equals("@")) {
+                                        splitLineStr = splitLineStr.replaceFirst("@", "");
+                                    }
+
+                                    String[] second = splitLineStr.split("@");
+                                    supplierSku = first[0];
+                                    System.out.println("supplierSku " + supplierSku);
+                                }
+
+                                lineF = reader.readLine();
+                            }
+
+
+                    } catch (Exception ex) {
+                        System.out.println("Oops! Something wrong happened");
+                        ex.printStackTrace();
+                    }
+                    return ok(result);
+                } catch (Exception e) {
+                    ObjectNode result = Json.newObject();
+                    e.printStackTrace();
+                    result.put("status", "error");
+                    result.put("message", "Προβλημα κατα την σύνδεση ftp frankana");
+                    return ok(result);
+                }
+            }
+        } catch (Exception e) {
+            ObjectNode result = Json.newObject();
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "Προβλημα κατα την σύνδεση ftp frankana");
+            return ok(result);
+        }
+    }
+
+
+    String decodeText(String input, String encoding) throws IOException {
+        return
+                new BufferedReader(
+                        new InputStreamReader(
+                                new ByteArrayInputStream(input.getBytes()),
+                                Charset.forName(encoding)))
+                        .readLine();
+    }
+
+    public static void transform(File source, String srcEncoding, File target, String tgtEncoding) throws IOException {
+        try (
+                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(source), srcEncoding));
+                BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(target), tgtEncoding));) {
+            char[] buffer = new char[1024];
+            int read;
+            while ((read = br.read(buffer)) != -1) {
+                System.out.println(read);
+                bw.write(buffer, 0, read);
+            }
+
+
+        }
+    }
+
+
+//    @SuppressWarnings({"Duplicates", "unchecked"})
+//    @BodyParser.Of(BodyParser.Json.class)
+//    public Result ftpRetrieveFromPath(final Http.Request request) throws IOException {
+//        try {
+//            JsonNode json = request.body().asJson();
+//            if (json == null) {
+//                return badRequest("Expecting Json data");
+//            } else {
+//                try {
+//                    ObjectNode result = Json.newObject();
+//                    FTPClient fClient = new FTPClient();
+//
+//
+//
+//
+//                    try {
+//                        fClient.connect("212.185.120.138", 22);
+//                     //   System.out.println(replyCode);
+//                        //int replyCode = fClient.getReplyCode();
+//                     //   System.out.println(replyCode);
+//                        boolean success = fClient.login("138181", "Um7vZ9q1");
+//                        if (!success) {
+//                            System.out.println("Could not login to the server");
+//                        } else {
+//                            System.out.println("You are now logged on!");
+//                        }
+//                        fClient.enterLocalPassiveMode();
+//                        fClient.setFileType(FTP.BINARY_FILE_TYPE);
+//                        File localFile = new File("/Oeffentlicher_Bereich/Bestandsabfrage/Frankana/frankana_lager.txt");
+//                        String remoteFile = "shared.txt";
+//                        InputStream inputStream = new FileInputStream(localFile);
+//                        System.out.println("Start uploading the file");
+//                        boolean done = fClient.storeFile(remoteFile, inputStream);
+//                        inputStream.close();
+//                        if (done) {
+//                            System.out.println(remoteFile + " has been uploaded successfully");
+//                        }
+//                    } catch (IOException ex) {
+//                        System.out.println("Oops! Something wrong happened");
+//                        ex.printStackTrace();
+//                    } finally {
+//                        try {
+//                            if (fClient.isConnected()) {
+//                                fClient.logout();
+//                                fClient.disconnect();
+//                                System.out.println("FTP Disconnected");
+//                            }
+//                        } catch (IOException ex) {
+//                            ex.printStackTrace();
+//                        }
+//                    }
+//                    return ok(result);
+//                } catch (Exception e) {
+//                    ObjectNode result = Json.newObject();
+//                    e.printStackTrace();
+//                    result.put("status", "error");
+//                    result.put("message", "Προβλημα κατα την καταχωρηση");
+//                    return ok(result);
+//                }
+//            }
+//        } catch (Exception e) {
+//            ObjectNode result = Json.newObject();
+//            e.printStackTrace();
+//            result.put("status", "error");
+//            result.put("message", "Προβλημα κατα την καταχωρηση");
+//            return ok(result);
+//        }
+//    }
 
 
     public Source<ByteString, CompletionStage<IOResult>> retrieveFromPath(String path) throws Exception {
@@ -408,15 +597,13 @@ public class AuditLogsController {
                                                 sHmpam.put("creationDate", j.getCreationDate());
 
 
-                                                if(j.getMethod().substring(0,12).equalsIgnoreCase("POST /update")){
+                                                if (j.getMethod().substring(0, 12).equalsIgnoreCase("POST /update")) {
                                                     sHmpam.put("method", "επεξεργασία");
-                                                }else if (j.getMethod().substring(0,9).equalsIgnoreCase("POST /add")){
+                                                } else if (j.getMethod().substring(0, 9).equalsIgnoreCase("POST /add")) {
                                                     sHmpam.put("method", "προσθήκη");
-                                                }else if  (j.getMethod().substring(0,12).equalsIgnoreCase("POST /create")){
+                                                } else if (j.getMethod().substring(0, 12).equalsIgnoreCase("POST /create")) {
                                                     sHmpam.put("method", "προσθήκη");
                                                 }
-
-
 
 
                                                 serversList.add(sHmpam);

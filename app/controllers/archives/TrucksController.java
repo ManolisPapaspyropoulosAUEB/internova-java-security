@@ -377,7 +377,6 @@ public class TrucksController extends Application {
                                         if (!start.equalsIgnoreCase("") && start != null) {
                                             sqlTrucks += " limit " + start + "," + limit;
                                         }
-                                        System.out.println(sqlTrucks);
                                         HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                         List<HashMap<String, Object>> serversList = new ArrayList<HashMap<String, Object>>();
                                         List<TrucksEntity> orgsList

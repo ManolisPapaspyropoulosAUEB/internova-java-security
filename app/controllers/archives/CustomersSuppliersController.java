@@ -8,6 +8,10 @@ import controllers.system.Application;
 import models.*;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
+import play.libs.ws.WSClient;
+import play.libs.ws.WSRequest;
+import play.libs.ws.WSRequestFilter;
+import play.libs.ws.WSResponse;
 import play.mvc.BodyParser;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -17,24 +21,28 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 
 public class CustomersSuppliersController extends Application {
 
+    private final WSClient ws;
     private JPAApi jpaApi;
     private DatabaseExecutionContext executionContext;
 
     @Inject
-    public CustomersSuppliersController(JPAApi jpaApi, DatabaseExecutionContext executionContext) {
+    public CustomersSuppliersController(JPAApi jpaApi, DatabaseExecutionContext executionContext, WSClient ws) {
         super(jpaApi, executionContext);
         this.jpaApi = jpaApi;
+        this.ws = ws;
         this.executionContext = executionContext;
     }
 
@@ -99,8 +107,6 @@ public class CustomersSuppliersController extends Application {
                                     if (internovaSellerId != null && internovaSellerId != 0) {
                                         add_result.put("internovaSellerName", entityManager.find(InternovaSellersEntity.class, warehousesEntity.getInternovaSellerId()).getName());
                                     }
-
-
                                     if (billingId != null && billingId != 0) {
                                         add_result.put("billingName", entityManager.find(BillingsEntity.class, warehousesEntity.getBillingId()).getName());
                                     }
@@ -279,7 +285,6 @@ public class CustomersSuppliersController extends Application {
     }
 
 
-
     @SuppressWarnings({"Duplicates", "unchecked"})
     public Result getRoadCostsBySuplier(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();
@@ -302,26 +307,23 @@ public class CustomersSuppliersController extends Application {
                                             String id = json.findPath("id").asText();
                                             String sqlNaulo = " select * from " +
                                                     " suppliers_roads_costs src" +
-                                                    " where src.customers_suppliers_id="+id;
+                                                    " where src.customers_suppliers_id=" + id;
                                             System.out.println(sqlNaulo);
                                             List<SuppliersRoadsCostsEntity> nauloList = entityManager.
-                                                    createNativeQuery(sqlNaulo,SuppliersRoadsCostsEntity.class).getResultList();
-
-
-
+                                                    createNativeQuery(sqlNaulo, SuppliersRoadsCostsEntity.class).getResultList();
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             List<HashMap<String, Object>> schedList = new ArrayList<HashMap<String, Object>>();
                                             for (SuppliersRoadsCostsEntity naulo : nauloList) {
                                                 HashMap<String, Object> spmap = new HashMap<String, Object>();
-                                                spmap.put("creationDate",naulo.getCreationDate());
-                                                spmap.put("cost",naulo.getCost());
-                                                spmap.put("fromCountry",naulo.getFromCountry());
-                                                spmap.put("fromCity",naulo.getFromCity());
-                                                spmap.put("fromCountry",naulo.getFromCountry());
-                                                spmap.put("toCity",naulo.getToCity());
-                                                spmap.put("toCountry",naulo.getToCountry());
-                                                spmap.put("id",naulo.getId());
-                                                spmap.put("nauloId",naulo.getId());
+                                                spmap.put("creationDate", naulo.getCreationDate());
+                                                spmap.put("cost", naulo.getCost());
+                                                spmap.put("fromCountry", naulo.getFromCountry());
+                                                spmap.put("fromCity", naulo.getFromCity());
+                                                spmap.put("fromCountry", naulo.getFromCountry());
+                                                spmap.put("toCity", naulo.getToCity());
+                                                spmap.put("toCountry", naulo.getToCountry());
+                                                spmap.put("id", naulo.getId());
+                                                spmap.put("nauloId", naulo.getId());
                                                 schedList.add(spmap);
                                             }
                                             //searchMeasureSearch
@@ -356,9 +358,6 @@ public class CustomersSuppliersController extends Application {
     }
 
 
-
-
-
     @SuppressWarnings({"Duplicates", "unchecked"})
     public Result getCustomersSuppliers(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();
@@ -378,7 +377,6 @@ public class CustomersSuppliersController extends Application {
                     CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
                                 return jpaApi.withTransaction(
                                         entityManager -> {
-                                            //placesSearchInput
                                             String orderCol = json.findPath("orderCol").asText();
                                             String descAsc = json.findPath("descAsc").asText();
                                             String id = json.findPath("id").asText();
@@ -434,26 +432,20 @@ public class CustomersSuppliersController extends Application {
                                             if (!afm.equalsIgnoreCase("") && city != null) {
                                                 sqlCustSupl += " and pos.afm like '%" + afm + "%'";
                                             }
-
                                             if (!country.equalsIgnoreCase("") && country != null) {
                                                 sqlCustSupl += " and pos.country like '%" + country + "%'";
                                             }
-
-                                            if (placesSearchInput != null && !placesSearchInput.equalsIgnoreCase("") ) {
+                                            if (placesSearchInput != null && !placesSearchInput.equalsIgnoreCase("")) {
                                                 sqlCustSupl += " and pos.id in " +
                                                         "(" +
                                                         "select customers_suppliers_id " +
                                                         "from suppliers_roads_costs src " +
-                                                        "where src.from_city like'%"+placesSearchInput+"%' or " +
-                                                        " src.from_country like '%"+placesSearchInput+"%' or " +
-                                                        " src.to_country like '%"+placesSearchInput+"%' or" +
-                                                        " src.to_city like '%"+placesSearchInput+"%' or " +
-                                                        " CONCAT(from_country, \" \", from_city,\" \",to_country,\" \",to_city) like '%"+placesSearchInput+"%' )";
+                                                        "where src.from_city like'%" + placesSearchInput + "%' or " +
+                                                        " src.from_country like '%" + placesSearchInput + "%' or " +
+                                                        " src.to_country like '%" + placesSearchInput + "%' or" +
+                                                        " src.to_city like '%" + placesSearchInput + "%' or " +
+                                                        " CONCAT(from_country, \" \", from_city,\" \",to_country,\" \",to_city) like '%" + placesSearchInput + "%' )";
                                             }
-
-
-                                            //placesSearchInput
-
                                             if (!email.equalsIgnoreCase("") && email != null) {
                                                 sqlCustSupl += " and pos.email like '%" + email + "%'";
                                             }
@@ -517,6 +509,11 @@ public class CustomersSuppliersController extends Application {
                                                 sHmpam.put("website", j.getWebsite());
                                                 sHmpam.put("comments", j.getComments());
                                                 sHmpam.put("customerType", j.getCustomerType());
+                                                if (j.getCustomerType().equalsIgnoreCase("Πελάτης & Προμηθευτής") || j.getCustomerType().equalsIgnoreCase("Προμηθευτής")) {
+                                                    sHmpam.put("rowHeight", 580);
+                                                } else {
+                                                    sHmpam.put("rowHeight", 580);
+                                                }
                                                 sHmpam.put("creationDate", j.getCreationDate());
                                                 sHmpam.put("telephone", j.getTelephone());
                                                 sHmpam.put("updateDate", j.getUpdateDate());
@@ -799,6 +796,57 @@ public class CustomersSuppliersController extends Application {
     }
 
 
+//    public Result viesvalidator(final Http.Request request) throws IOException {
+//        ObjectNode reqBody = Json.newObject();
+//        reqBody.put("VAT","999179561");
+//        reqBody.put("CountryCode","EL");
+//
+//        return ws.url("https://webservices.synergic.systems/viesvalidator/")
+//                .setBody(reqBody)
+//                .get()
+//                .thenApply(response -> ok("data" + response.asJson()));
+//    }
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    @BodyParser.Of(BodyParser.Json.class)
+    public Result viesvalidator(final Http.Request request) throws IOException {
+        JsonNode jsonNode = request.body().asJson();
+        if (jsonNode == null) {
+            return badRequest("Expecting Json data");
+        } else {
+            try {
+                String VAT = jsonNode.findPath("VAT").asText();
+                String CountryCode = jsonNode.findPath("CountryCode").asText();
+                if(VAT!=null && !VAT.equalsIgnoreCase("") && CountryCode!=null && !CountryCode.equalsIgnoreCase("")){
+                    ObjectNode finalResult = Json.newObject();
+                    ObjectNode reqBody = Json.newObject();
+                    reqBody.put("VAT", VAT);
+                    reqBody.put("CountryCode", CountryCode);
+                    CompletableFuture<WSResponse> wsFuture = (CompletableFuture) ws.url("https://webservices.synergic.systems/viesvalidator/")
+                            .setBody(reqBody)
+                            .get().thenApplyAsync(webServiceResponse -> {
+                                return webServiceResponse;
+                            });
+                    finalResult = (ObjectNode) wsFuture.get().asJson();
+                    return ok(finalResult);
+                }else{
+                    ObjectNode result = Json.newObject();
+                    result.put("status", "error");
+                    result.put("message", "VAT και CountryCode είναι υποχρεωτικά");
+                    return ok(result);
+                }
+            } catch (Exception e) {
+                ObjectNode result = Json.newObject();
+                e.printStackTrace();
+                result.put("status", "error");
+                result.put("message", "Προβλημα κατα την διαγραφή");
+                return ok(result);
+            }
+        }
+
+    }
+
+
     @SuppressWarnings({"Duplicates", "unchecked"})
     public Result getRoadCosts(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();
@@ -824,7 +872,10 @@ public class CustomersSuppliersController extends Application {
                                             String toCountry = json.findPath("toCountry").asText();
                                             String toCity = json.findPath("toCity").asText();
                                             String cost = json.findPath("cost").asText();
-                                            String sqlCustSupl = "select * from suppliers_roads_costs srcosts where 1=1  ";
+                                            String sqlCustSupl = "select * " +
+                                                    "from suppliers_roads_costs srcosts " +
+                                                    "where 1=1  " +
+                                                    "";
                                             if (customersSuppliersId != null && !customersSuppliersId.equalsIgnoreCase("") && !customersSuppliersId.equalsIgnoreCase("null")) {
                                                 sqlCustSupl += " and srcosts.customers_suppliers_id=" + customersSuppliersId;
                                             }

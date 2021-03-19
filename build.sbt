@@ -7,6 +7,8 @@ lazy val root = (project in file("."))
     libraryDependencies ++= Seq(
       guice,
       javaJpa,
+      ehcache,
+      javaWs,
       javaJdbc,
       javaCore,
       "mysql" % "mysql-connector-java" % "5.1.38",
