@@ -807,6 +807,7 @@ public class CustomersSuppliersController extends Application {
 //                .thenApply(response -> ok("data" + response.asJson()));
 //    }
 
+
     @SuppressWarnings({"Duplicates", "unchecked"})
     @BodyParser.Of(BodyParser.Json.class)
     public Result viesvalidator(final Http.Request request) throws IOException {
