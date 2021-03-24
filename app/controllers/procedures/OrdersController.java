@@ -387,14 +387,22 @@ public class OrdersController extends Application {
                                             } catch (Exception e) {
                                                 e.printStackTrace();
                                             }
-                                            if (j.getCustomerId() != null) {
+                                            if (j.getCustomerId() != null) {//
                                                 CustomersSuppliersEntity customersSuppliersEntity = entityManager.find(CustomersSuppliersEntity.class, j.getCustomerId());
                                                 sHmpam.put("customerBrandName", customersSuppliersEntity.getBrandName());
                                                 sHmpam.put("customerId", customersSuppliersEntity.getId());
                                                 sHmpam.put("customerTelephone", customersSuppliersEntity.getTelephone());
                                                 sHmpam.put("customerEmail", customersSuppliersEntity.getEmail());
-                                                sHmpam.put("billingName", entityManager.find(BillingsEntity.class, customersSuppliersEntity.getBillingId()).getName());
-                                                sHmpam.put("sellerName", entityManager.find(InternovaSellersEntity.class, customersSuppliersEntity.getInternovaSellerId()).getName());
+                                                if(customersSuppliersEntity.getBillingId()!=null){
+                                                    sHmpam.put("billingName", entityManager.find(BillingsEntity.class, customersSuppliersEntity.getBillingId()).getName());
+                                                }else{
+                                                    sHmpam.put("billingName", "-");
+                                                }
+                                                if(customersSuppliersEntity.getInternovaSellerId()!=null){
+                                                    sHmpam.put("sellerName", entityManager.find(InternovaSellersEntity.class, customersSuppliersEntity.getInternovaSellerId()).getName());
+                                                }else{
+                                                    sHmpam.put("sellerName","-");
+                                                }
                                             }
                                             DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd");
                                             if (j.getArrivalFactoryDay() != null) {
@@ -486,6 +494,7 @@ public class OrdersController extends Application {
                                                     HashMap<String, Object> osbpMap = new HashMap<String, Object>();
                                                     osbpMap.put("title", osbp.getTitle());
                                                     osbpMap.put("quantity", osbp.getQuantity());
+                                                    osbpMap.put("unitPrice", osbp.getUnitPrice());
                                                     osbpMap.put("stackingType", osbp.getStackingType());
                                                     osbpMap.put("ldm", osbp.getLdm());
                                                     osbpMap.put("oldQuantity", osbp.getQuantity());
@@ -502,6 +511,7 @@ public class OrdersController extends Application {
                                                     osbpMapS.put("stackingType", osbp.getStackingType());
                                                     osbpMapS.put("ldm", osbp.getLdm());
                                                     osbpMapS.put("quantity", osbp.getQuantity());
+                                                    osbpMapS.put("unitPrice", osbp.getUnitPrice());
                                                     osbpMapS.put("oldQuantity", osbp.getQuantity());
                                                     osbpMapS.put("packageTypeId", osbp.getPackageTypeId());
                                                     if(osbp.getPackageTypeId()!=null){
@@ -1346,6 +1356,7 @@ public class OrdersController extends Application {
                                             ((ObjectNode) itemsAfethriasNode).remove("selectedPackage");
                                             String stackingType = itemsAfethriasNode.findPath("stackingType").asText();
                                             Integer quantity = itemsAfethriasNode.findPath("quantity").asInt();
+                                            Double unitPrice = itemsAfethriasNode.findPath("unitPrice").asDouble();
                                             Integer packageTypeId = itemsAfethriasNode.findPath("packageTypeId").asInt();
                                             OrdersSelectionsByPointEntity selections = new OrdersSelectionsByPointEntity();
                                             selections.setOrderId(orderId);
@@ -1358,6 +1369,7 @@ public class OrdersController extends Application {
                                             selections.setType("Φόρτωση");
                                             selections.setStackingType(stackingType);
                                             selections.setQuantity(quantity);
+                                            selections.setUnitPrice(unitPrice);
                                             if (title.equalsIgnoreCase("")) {
                                                 add_result.put("status", "warning");
                                                 add_result.put("message", "Δεν έχετε επιλέξει συσκευασία " +

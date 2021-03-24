@@ -18,6 +18,7 @@ public class OrdersSelectionsByPointEntity {
     private String stackingType;
     private Long measureUnitId;
     private Double ldm;
+    private Double unitPrice;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -156,5 +157,15 @@ public class OrdersSelectionsByPointEntity {
 
     public void setLdm(Double ldm) {
         this.ldm = ldm;
+    }
+
+    @Basic
+    @Column(name = "unit_price")
+    public Double getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(Double unitPrice) {
+        this.unitPrice = unitPrice;
     }
 }

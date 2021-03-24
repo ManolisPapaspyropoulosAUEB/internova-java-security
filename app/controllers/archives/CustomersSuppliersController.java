@@ -823,7 +823,8 @@ public class CustomersSuppliersController extends Application {
                     ObjectNode reqBody = Json.newObject();
                     reqBody.put("VAT", VAT);
                     reqBody.put("CountryCode", CountryCode);
-                    CompletableFuture<WSResponse> wsFuture = (CompletableFuture) ws.url("https://webservices.synergic.systems/viesvalidator/")
+                    CompletableFuture<WSResponse> wsFuture = (CompletableFuture)
+                            ws.url("https://webservices.synergic.systems/viesvalidator/")
                             .setBody(reqBody)
                             .get().thenApplyAsync(webServiceResponse -> {
                                 return webServiceResponse;
