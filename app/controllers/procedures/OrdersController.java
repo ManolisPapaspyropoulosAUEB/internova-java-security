@@ -1,4 +1,5 @@
 package controllers.procedures;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -10,6 +11,7 @@ import play.libs.Json;
 import play.mvc.BodyParser;
 import play.mvc.Http;
 import play.mvc.Result;
+
 import javax.inject.Inject;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -58,15 +60,11 @@ public class OrdersController extends Application {
                                 ordersEntity.setBillingId(entityManager.find(OffersEntity.class, offerId).getBillingId());
                                 ordersEntity.setStatus("ΣΕ ΖΗΤΗΣΗ");
                                 entityManager.persist(ordersEntity);
-
-
                                 Iterator dataIterator = data.iterator();
                                 while (dataIterator.hasNext()) {
                                     JsonNode schedule = (JsonNode) dataIterator.next();
                                     Long offerScheduleId = schedule.findPath("offerScheduleId").asLong();
                                     OffersSchedulesEntity offersSchedulesEntity = entityManager.find(OffersSchedulesEntity.class, offerScheduleId);
-
-
                                     OrderSchedulesEntity orderSchedule = new OrderSchedulesEntity();
                                     orderSchedule.setCreationDate(new Date());
                                     orderSchedule.setFromAddress(offersSchedulesEntity.getFromAddress());
@@ -78,13 +76,10 @@ public class OrdersController extends Application {
                                     orderSchedule.setToCountry(offersSchedulesEntity.getToCountry());
                                     orderSchedule.setToPostalCode(offersSchedulesEntity.getToPostalCode());
                                     orderSchedule.setPrimarySchedule(schedule.findPath("primaryRecord").asInt());
-//                                    orderSchedule.setFactoryId((long) 0);
                                     orderSchedule.setOrderId(ordersEntity.getId());
                                     orderSchedule.setOfferId(offersSchedulesEntity.getOfferId());
                                     orderSchedule.setOfferScheduleId(offersSchedulesEntity.getId());
                                     entityManager.persist(orderSchedule);
-
-
                                     String offerScheduleWayPoints = " select * from offer_schedule_between_waypoints wayp where wayp.offer_id=" + offerId + " " +
                                             " and wayp.offer_schedule_id=" + offerScheduleId;
                                     List<OfferScheduleBetweenWaypointsEntity> offerWaypointsEntityList =
@@ -104,8 +99,6 @@ public class OrdersController extends Application {
                                         orderWaypointsEntity.setOfferScheduleBetweenWaypointId(offerWayp.getId());
                                         entityManager.persist(orderWaypointsEntity);
                                     }
-//
-                                    //pros8hkh kai tou telikou proorismou apo thn prosfora
                                     OrderWaypointsEntity orderWaypointsEntity = new OrderWaypointsEntity();
                                     orderWaypointsEntity.setCity(offersSchedulesEntity.getToCity());
                                     orderWaypointsEntity.setCountry(offersSchedulesEntity.getToCountry());
@@ -116,8 +109,6 @@ public class OrdersController extends Application {
                                     orderWaypointsEntity.setOfferScheduleBetweenWaypointId(null);
                                     orderWaypointsEntity.setNestedScheduleIndicator(0);
                                     entityManager.persist(orderWaypointsEntity);
-//                                    //end pros8hkh kai tou telikou proorismou apo thn prosfora
-
                                     String offerSchedulePackage = "select * from schedule_package_offer spo where spo.offer_id=" + offerId + " and spo.offer_schedule_id=" + offerScheduleId;
                                     List<SchedulePackageOfferEntity> schedulePackageOfferEntityList =
                                             entityManager.createNativeQuery(offerSchedulePackage, SchedulePackageOfferEntity.class).getResultList();
@@ -136,7 +127,6 @@ public class OrdersController extends Application {
                                         entityManager.persist(orderPackagesEntity);
                                     }
                                 }
-
                                 add_result.put("status", "success");
                                 add_result.put("id", ordersEntity.getId());
                                 add_result.put("message", "Η δημιουργία νέας παραγγελίας καταχωρήθηκε με επιτυχία");
@@ -249,11 +239,6 @@ public class OrdersController extends Application {
     }
 
 
-    private static String removeLastChar(String str) {
-        return str.substring(0, str.length() - 1);
-    }
-
-
     @SuppressWarnings({"Duplicates", "unchecked"})
     public Result getOrders(final Http.Request request) throws IOException,
             ExecutionException, InterruptedException {
@@ -273,7 +258,6 @@ public class OrdersController extends Application {
                 CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> { //
                             return jpaApi.withTransaction(
                                     entityManager -> {
-                                        //mainSchedule
                                         String orderCol = json.findPath("orderCol").asText();
                                         String descAsc = json.findPath("descAsc").asText();
                                         String id = json.findPath("id").asText();
@@ -393,15 +377,15 @@ public class OrdersController extends Application {
                                                 sHmpam.put("customerId", customersSuppliersEntity.getId());
                                                 sHmpam.put("customerTelephone", customersSuppliersEntity.getTelephone());
                                                 sHmpam.put("customerEmail", customersSuppliersEntity.getEmail());
-                                                if(customersSuppliersEntity.getBillingId()!=null){
+                                                if (customersSuppliersEntity.getBillingId() != null) {
                                                     sHmpam.put("billingName", entityManager.find(BillingsEntity.class, customersSuppliersEntity.getBillingId()).getName());
-                                                }else{
+                                                } else {
                                                     sHmpam.put("billingName", "-");
                                                 }
-                                                if(customersSuppliersEntity.getInternovaSellerId()!=null){
+                                                if (customersSuppliersEntity.getInternovaSellerId() != null) {
                                                     sHmpam.put("sellerName", entityManager.find(InternovaSellersEntity.class, customersSuppliersEntity.getInternovaSellerId()).getName());
-                                                }else{
-                                                    sHmpam.put("sellerName","-");
+                                                } else {
+                                                    sHmpam.put("sellerName", "-");
                                                 }
                                             }
                                             DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd");
@@ -430,33 +414,33 @@ public class OrdersController extends Application {
                                                 schedmap.put("fromCountry", os.getFromCountry());
                                                 schedmap.put("fromPostalCode", os.getFromPostalCode());
                                                 schedmap.put("truckLoadingCode", os.getTruckLoadingCode());
-                                                if(os.getTimeToArrive()!=null && !os.getTimeToArrive().equalsIgnoreCase("null")){
+                                                if (os.getTimeToArrive() != null && !os.getTimeToArrive().equalsIgnoreCase("null")) {
                                                     schedmap.put("timeToArrive", os.getTimeToArrive());
-                                                }else{
+                                                } else {
                                                     schedmap.put("timeToArrive", "");
                                                 }
                                                 schedmap.put("appointmentDay", os.getAppointmentDay());
                                                 if (os.getFactoryId() != null) {
                                                     FactoriesEntity factory = entityManager.find(FactoriesEntity.class, os.getFactoryId());
-                                                    schedmap.put("factory",entityManager.find(FactoriesEntity.class, os.getFactoryId()));
-                                                    schedmap.put("appointment",entityManager.find(FactoriesEntity.class, os.getFactoryId()).getAppointmentRequired());
+                                                    schedmap.put("factory", entityManager.find(FactoriesEntity.class, os.getFactoryId()));
+                                                    schedmap.put("appointment", entityManager.find(FactoriesEntity.class, os.getFactoryId()).getAppointmentRequired());
 
-                                                    if(os.getAppointmentDay()!=null){
+                                                    if (os.getAppointmentDay() != null) {
                                                         Date date2 = new Date();
                                                         int currentDate = Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(date2));
                                                         int appointmentDayMinusReq =
                                                                 Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(os.getAppointmentDay()))
-                                                                        -factory.getAppointmentDays();
-                                                        if(currentDate>appointmentDayMinusReq){
-                                                            schedmap.put("colorAppointmentDay",true);
-                                                        }else{
-                                                            schedmap.put("colorAppointmentDay",false);
+                                                                        - factory.getAppointmentDays();
+                                                        if (currentDate > appointmentDayMinusReq) {
+                                                            schedmap.put("colorAppointmentDay", true);
+                                                        } else {
+                                                            schedmap.put("colorAppointmentDay", false);
                                                         }
-                                                    }else{
-                                                        schedmap.put("colorAppointmentDay",false);
+                                                    } else {
+                                                        schedmap.put("colorAppointmentDay", false);
                                                     }
-                                                }else{
-                                                    schedmap.put("colorAppointmentDay",false);
+                                                } else {
+                                                    schedmap.put("colorAppointmentDay", false);
                                                 }
                                                 if (os.getFactoryId() != null) {
                                                     schedmap.put("fromAddress", entityManager.find(FactoriesEntity.class, (os.getFactoryId())).getAddress());
@@ -500,9 +484,9 @@ public class OrdersController extends Application {
                                                     osbpMap.put("oldQuantity", osbp.getQuantity());
                                                     osbpMap.put("packageTypeId", osbp.getPackageTypeId());
                                                     osbpMap.put("typePackage", osbp.getTypePackage());
-                                                    if(osbp.getPackageTypeId()!=null){
-                                                        osbpMap.put("packageType", entityManager.find(PackageTypeEntity.class,osbp.getPackageTypeId()).getType());
-                                                    }else{
+                                                    if (osbp.getPackageTypeId() != null) {
+                                                        osbpMap.put("packageType", entityManager.find(PackageTypeEntity.class, osbp.getPackageTypeId()).getType());
+                                                    } else {
                                                         osbpMap.put("packageType", "");
                                                     }
                                                     HashMap<String, Object> osbpMapS = new HashMap<String, Object>();
@@ -514,9 +498,9 @@ public class OrdersController extends Application {
                                                     osbpMapS.put("unitPrice", osbp.getUnitPrice());
                                                     osbpMapS.put("oldQuantity", osbp.getQuantity());
                                                     osbpMapS.put("packageTypeId", osbp.getPackageTypeId());
-                                                    if(osbp.getPackageTypeId()!=null){
-                                                        osbpMapS.put("packageType", entityManager.find(PackageTypeEntity.class,osbp.getPackageTypeId()).getType());
-                                                    }else{
+                                                    if (osbp.getPackageTypeId() != null) {
+                                                        osbpMapS.put("packageType", entityManager.find(PackageTypeEntity.class, osbp.getPackageTypeId()).getType());
+                                                    } else {
                                                         osbpMapS.put("packageType", "");
                                                     }
                                                     itemsPackagesAfethriasFinal.add(osbpMapS);
@@ -560,10 +544,10 @@ public class OrdersController extends Application {
                                                     HashMap<String, Object> distinctItem = new HashMap<String, Object>();
                                                     distinctItem.put("title", ops.getTitle());
                                                     distinctItem.put("distanceValues", odvList);
-                                                    if(odvList.size()>0){
+                                                    if (odvList.size() > 0) {
                                                         distinctItem.put("typePackage", odvList.get(0).get("typePackage").toString());
-                                                    }else{
-                                                        distinctItem.put("typePackage","");
+                                                    } else {
+                                                        distinctItem.put("typePackage", "");
                                                     }
 
                                                     ordPmap.put("distinctItem", distinctItem);
@@ -615,38 +599,38 @@ public class OrdersController extends Application {
                                                     waypmap.put("itemsPackagesFortwshsEndiamesouShmeiou", new ArrayList<HashMap<String, Object>>());
                                                     waypmap.put("itemsPackagesEkfortwshsEndiamesouShmeiou", new ArrayList<HashMap<String, Object>>());
                                                     waypmap.put("itemsPackagesEkfortwshsProorismou", new ArrayList<HashMap<String, Object>>());
-                                                    waypmap.put("truckLoadingCode",waypOb.getTruckLoadingCode());
+                                                    waypmap.put("truckLoadingCode", waypOb.getTruckLoadingCode());
                                                     if (waypOb.getFactoryId() != null) {
-                                                        waypmap.put("factory",entityManager.find(FactoriesEntity.class, waypOb.getFactoryId()));
+                                                        waypmap.put("factory", entityManager.find(FactoriesEntity.class, waypOb.getFactoryId()));
                                                     }
                                                     if (waypOb.getFactoryId() != null) {
                                                         FactoriesEntity factory = entityManager.find(FactoriesEntity.class, waypOb.getFactoryId());
-                                                        waypmap.put("factory",entityManager.find(FactoriesEntity.class, waypOb.getFactoryId()));
-                                                        waypmap.put("appointment",entityManager.find(FactoriesEntity.class, waypOb.getFactoryId()).getAppointmentRequired());
+                                                        waypmap.put("factory", entityManager.find(FactoriesEntity.class, waypOb.getFactoryId()));
+                                                        waypmap.put("appointment", entityManager.find(FactoriesEntity.class, waypOb.getFactoryId()).getAppointmentRequired());
 
-                                                        if(waypOb.getAppointmentDay()!=null){
+                                                        if (waypOb.getAppointmentDay() != null) {
                                                             Date date2 = new Date();
                                                             int currentDate = Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(date2));
                                                             int appointmentDayMinusReq =
                                                                     Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(waypOb.getAppointmentDay()))
-                                                                            -factory.getAppointmentDays();
-                                                            if(currentDate>appointmentDayMinusReq){
-                                                                waypmap.put("colorAppointmentDay",true);
-                                                            }else{
-                                                                waypmap.put("colorAppointmentDay",false);
+                                                                            - factory.getAppointmentDays();
+                                                            if (currentDate > appointmentDayMinusReq) {
+                                                                waypmap.put("colorAppointmentDay", true);
+                                                            } else {
+                                                                waypmap.put("colorAppointmentDay", false);
                                                             }
-                                                        }else{
-                                                            waypmap.put("colorAppointmentDay",false);
+                                                        } else {
+                                                            waypmap.put("colorAppointmentDay", false);
                                                         }
-                                                    }else{
-                                                        waypmap.put("colorAppointmentDay",false);
+                                                    } else {
+                                                        waypmap.put("colorAppointmentDay", false);
                                                     }
                                                     waypmap.put("city", waypOb.getCity());
                                                     waypmap.put("country", waypOb.getCountry());
                                                     waypmap.put("postalCode", waypOb.getPostalCode());
-                                                    if( waypOb.getTimeToArrive()!=null && !waypOb.getTimeToArrive().equalsIgnoreCase("null")){
+                                                    if (waypOb.getTimeToArrive() != null && !waypOb.getTimeToArrive().equalsIgnoreCase("null")) {
                                                         waypmap.put("timeToArrive", waypOb.getTimeToArrive());
-                                                    }else{
+                                                    } else {
                                                         waypmap.put("timeToArrive", "");
                                                     }
 //                                                    waypmap.put("appointment", waypOb.getAppointment());
@@ -656,7 +640,7 @@ public class OrdersController extends Application {
                                                         waypmap.put("brandName", entityManager.find(FactoriesEntity.class, (waypOb.getFactoryId())).getBrandName());
                                                         waypmap.put("latitude", entityManager.find(FactoriesEntity.class, (waypOb.getFactoryId())).getLattitude());
                                                         waypmap.put("longitude", entityManager.find(FactoriesEntity.class, (waypOb.getFactoryId())).getLongtitude());
-                                                        waypmap.put("appointment",entityManager.find(FactoriesEntity.class, waypOb.getFactoryId()).getAppointmentRequired());
+                                                        waypmap.put("appointment", entityManager.find(FactoriesEntity.class, waypOb.getFactoryId()).getAppointmentRequired());
 
                                                     } else {
                                                         waypmap.put("address", "Δεν έχει οριστεί σημείο φόρτωσης η εκφόρτωσης");
@@ -694,9 +678,9 @@ public class OrdersController extends Application {
                                                         osbpMap.put("ldm", endshmFort.getLdm());
                                                         osbpMap.put("packageTypeId", endshmFort.getPackageTypeId());
                                                         osbpMap.put("typePackage", endshmFort.getTypePackage());
-                                                        if(endshmFort.getPackageTypeId()!=null){
-                                                            osbpMap.put("packageType", entityManager.find(PackageTypeEntity.class,endshmFort.getPackageTypeId()).getType());
-                                                        }else{
+                                                        if (endshmFort.getPackageTypeId() != null) {
+                                                            osbpMap.put("packageType", entityManager.find(PackageTypeEntity.class, endshmFort.getPackageTypeId()).getType());
+                                                        } else {
                                                             osbpMap.put("packageType", "");
                                                         }
                                                         HashMap<String, Object> osbpMapS = new HashMap<String, Object>();
@@ -707,9 +691,9 @@ public class OrdersController extends Application {
                                                         osbpMapS.put("oldQuantity", endshmFort.getQuantity());
                                                         osbpMapS.put("ldm", endshmFort.getLdm());
                                                         osbpMapS.put("packageTypeId", endshmFort.getPackageTypeId());
-                                                        if(endshmFort.getPackageTypeId()!=null){
-                                                            osbpMapS.put("packageType", entityManager.find(PackageTypeEntity.class,endshmFort.getPackageTypeId()).getType());
-                                                        }else{
+                                                        if (endshmFort.getPackageTypeId() != null) {
+                                                            osbpMapS.put("packageType", entityManager.find(PackageTypeEntity.class, endshmFort.getPackageTypeId()).getType());
+                                                        } else {
                                                             osbpMapS.put("packageType", "");
                                                         }
                                                         itemsPackagesFortwshsEndiamesouShmeiouFinal.add(osbpMapS);
@@ -730,9 +714,9 @@ public class OrdersController extends Application {
                                                         osbpMap.put("oldQuantity", endshmFort.getQuantity());
                                                         osbpMap.put("packageTypeId", endshmFort.getPackageTypeId());
                                                         osbpMap.put("typePackage", endshmFort.getTypePackage());
-                                                        if(endshmFort.getPackageTypeId()!=null){
-                                                            osbpMap.put("packageType", entityManager.find(PackageTypeEntity.class,endshmFort.getPackageTypeId()).getType());
-                                                        }else{
+                                                        if (endshmFort.getPackageTypeId() != null) {
+                                                            osbpMap.put("packageType", entityManager.find(PackageTypeEntity.class, endshmFort.getPackageTypeId()).getType());
+                                                        } else {
                                                             osbpMap.put("packageType", "");
                                                         }
                                                         HashMap<String, Object> osbpMapS = new HashMap<String, Object>();
@@ -744,9 +728,9 @@ public class OrdersController extends Application {
                                                         osbpMapS.put("packageTypeId", endshmFort.getPackageTypeId());
                                                         osbpMapS.put("typePackage", endshmFort.getTypePackage());
 
-                                                        if(endshmFort.getPackageTypeId()!=null){
-                                                            osbpMapS.put("packageType", entityManager.find(PackageTypeEntity.class,endshmFort.getPackageTypeId()).getType());
-                                                        }else{
+                                                        if (endshmFort.getPackageTypeId() != null) {
+                                                            osbpMapS.put("packageType", entityManager.find(PackageTypeEntity.class, endshmFort.getPackageTypeId()).getType());
+                                                        } else {
                                                             osbpMapS.put("packageType", "");
                                                         }
                                                         itemsPackagesEkfortwshsEndiamesouShmeiouFinal.add(osbpMapS);
@@ -768,9 +752,9 @@ public class OrdersController extends Application {
                                                         osbpMap.put("ldm", endshmFort.getLdm());
                                                         osbpMap.put("packageTypeId", endshmFort.getPackageTypeId());
                                                         osbpMap.put("typePackage", endshmFort.getTypePackage());
-                                                        if(endshmFort.getPackageTypeId()!=null){
-                                                            osbpMap.put("packageType", entityManager.find(PackageTypeEntity.class,endshmFort.getPackageTypeId()).getType());
-                                                        }else{
+                                                        if (endshmFort.getPackageTypeId() != null) {
+                                                            osbpMap.put("packageType", entityManager.find(PackageTypeEntity.class, endshmFort.getPackageTypeId()).getType());
+                                                        } else {
                                                             osbpMap.put("packageType", "");
                                                         }
                                                         HashMap<String, Object> osbpMapS = new HashMap<String, Object>();
@@ -781,9 +765,9 @@ public class OrdersController extends Application {
                                                         osbpMapS.put("ldm", endshmFort.getLdm());
                                                         osbpMapS.put("packageTypeId", endshmFort.getPackageTypeId());
                                                         osbpMapS.put("typePackage", endshmFort.getTypePackage());
-                                                        if(endshmFort.getPackageTypeId()!=null){
-                                                            osbpMapS.put("packageType", entityManager.find(PackageTypeEntity.class,endshmFort.getPackageTypeId()).getType());
-                                                        }else{
+                                                        if (endshmFort.getPackageTypeId() != null) {
+                                                            osbpMapS.put("packageType", entityManager.find(PackageTypeEntity.class, endshmFort.getPackageTypeId()).getType());
+                                                        } else {
                                                             osbpMapS.put("packageType", "");
                                                         }
                                                         itemsEkfProorismouFinal.add(osbpMapS);
@@ -849,8 +833,6 @@ public class OrdersController extends Application {
     }
 
 
-
-
     @SuppressWarnings({"Duplicates", "unchecked"})
     public Result getAllOrdersNoPagination(final Http.Request request) throws IOException, ExecutionException, InterruptedException {
         ObjectNode result = Json.newObject();
@@ -878,8 +860,8 @@ public class OrdersController extends Application {
                                             sqlroles += " and b.customer_id  in " +
                                                     " ( select id from  customers_suppliers cs where cs.brand_name like '%" + customer + "%' )";
                                         }
-                                        if(id!=null && !id.equalsIgnoreCase("")){
-                                            sqlroles+=" and b.id like '%"+id+"%'";
+                                        if (id != null && !id.equalsIgnoreCase("")) {
+                                            sqlroles += " and b.id like '%" + id + "%'";
                                         }
                                         List<OrdersEntity> orgsList
                                                 = (List<OrdersEntity>) entityManager.createNativeQuery(
@@ -894,7 +876,7 @@ public class OrdersController extends Application {
                                                     entityManager.createNativeQuery(sqlOrdersSchedules, OrderSchedulesEntity.class).getResultList();
                                             sHmpam.put("mainSchedule", osList.get(0).getFromCountry() + " " + osList.get(0).getFromCity() + "  /  "
                                                     + osList.get(0).getToCountry() + " " + osList.get(0).getToCity());
-                                            CustomersSuppliersEntity cust = entityManager.find(CustomersSuppliersEntity.class,j.getCustomerId());
+                                            CustomersSuppliersEntity cust = entityManager.find(CustomersSuppliersEntity.class, j.getCustomerId());
                                             sHmpam.put("brandName", cust.getBrandName());
                                             sHmpam.put("creationDate", j.getCreationDate());
                                             sHmpam.put("updateDate", j.getUpdateDate());
@@ -923,8 +905,6 @@ public class OrdersController extends Application {
             }
         }
     }
-
-
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
@@ -1181,7 +1161,7 @@ public class OrdersController extends Application {
                                 ObjectNode add_result = Json.newObject();
 
                                 Long cveid = Long.valueOf(1);
-                                CoreVariablesEntity cve = entityManager.find(CoreVariablesEntity.class,cveid);
+                                CoreVariablesEntity cve = entityManager.find(CoreVariablesEntity.class, cveid);
 
                                 String user_id = json.findPath("user_id").asText();
                                 Long orderId = json.findPath("orderId").asLong();
@@ -1266,11 +1246,11 @@ public class OrdersController extends Application {
                                 if (sender != null && !sender.equalsIgnoreCase("null")) {
                                     ordersEntity.setSender(sender);
                                 }
-                                if(comments != null && !comments.equalsIgnoreCase("null")){
+                                if (comments != null && !comments.equalsIgnoreCase("null")) {
                                     ordersEntity.setComments(comments);
                                 }
 
-                                if(timologioCode != null && !timologioCode.equalsIgnoreCase("null")){
+                                if (timologioCode != null && !timologioCode.equalsIgnoreCase("null")) {
                                     ordersEntity.setTimologioCode(timologioCode);
                                 }
                                 ordersEntity.setStatus(status);
@@ -1296,7 +1276,7 @@ public class OrdersController extends Application {
                                         ordS.setAppointment(appointment);
                                         ordS.setTimeToArrive(timeToArrive);
                                         DateFormat myDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-                                        if(appointmentDay!=null && !appointmentDay.equalsIgnoreCase("")){
+                                        if (appointmentDay != null && !appointmentDay.equalsIgnoreCase("")) {
                                             try {
                                                 Date appointmentDayDate = myDateFormat.parse(appointmentDay);
                                                 ordS.setAppointmentDay(appointmentDayDate);
@@ -1304,7 +1284,7 @@ public class OrdersController extends Application {
                                                 e.printStackTrace();
                                             }
                                         }
-                                        if(truckLoadingCode!=null && !truckLoadingCode.equalsIgnoreCase("") && !truckLoadingCode.equalsIgnoreCase("null")){
+                                        if (truckLoadingCode != null && !truckLoadingCode.equalsIgnoreCase("") && !truckLoadingCode.equalsIgnoreCase("null")) {
                                             ordS.setTruckLoadingCode(truckLoadingCode);
                                         }
                                         JsonNode orderPackageScheduleList = schedule.findPath("orderPackageScheduleList");
@@ -1362,7 +1342,7 @@ public class OrdersController extends Application {
                                             selections.setOrderId(orderId);
                                             selections.setTitle(title);
                                             selections.setTypePackage(typePackage);
-                                            if(packageTypeId!=0){
+                                            if (packageTypeId != 0) {
                                                 selections.setPackageTypeId(packageTypeId);
                                             }
                                             selections.setOrderScheduleId(ordS.getId());
@@ -1376,7 +1356,7 @@ public class OrdersController extends Application {
                                                         "για φόρτωση στην αφετηρία " + ordS.getToCountry() + " " + ordS.getFromCity() + "," + ordS.getFromPostalCode());
                                                 return add_result;
                                             }
-                                            if (packageTypeId==0) {
+                                            if (packageTypeId == 0) {
                                                 add_result.put("status", "warning");
                                                 add_result.put("message", "Δεν έχετε επιλέξει Τύπος πρ/ντος " +
                                                         "για φόρτωση στην αφετηρία " + ordS.getToCountry() + " " + ordS.getFromCity() + "," + ordS.getFromPostalCode());
@@ -1388,11 +1368,11 @@ public class OrdersController extends Application {
                                                         "για φόρτωση στην αφετηρία " + ordS.getToCountry() + " " + ordS.getFromCity() + "," + ordS.getFromPostalCode());
                                                 return add_result;
                                             }
-                                            String sqlMu = "select * from measurement_unit mu where mu.title='"+title+"'";
-                                            List<MeasurementUnitEntity> muE = entityManager.createNativeQuery(sqlMu,MeasurementUnitEntity.class).getResultList();
-                                            MeasurementUnitEntity mue = entityManager.find(MeasurementUnitEntity.class,muE.get(0).getId());
+                                            String sqlMu = "select * from measurement_unit mu where mu.title='" + title + "'";
+                                            List<MeasurementUnitEntity> muE = entityManager.createNativeQuery(sqlMu, MeasurementUnitEntity.class).getResultList();
+                                            MeasurementUnitEntity mue = entityManager.find(MeasurementUnitEntity.class, muE.get(0).getId());
                                             Double ldm = 0.0;
-                                            ldm= calculateLdm(stackingType,mue,quantity,cve.getStackingFactor());
+                                            ldm = calculateLdm(stackingType, mue, quantity, cve.getStackingFactor());
                                             selections.setLdm(ldm);
                                             selections.setMeasureUnitId(muE.get(0).getId());
                                             entityManager.persist(selections);
@@ -1409,7 +1389,7 @@ public class OrdersController extends Application {
                                         orderWaypointsPackagesEntity.setAppointment(appointment);
                                         orderWaypointsPackagesEntity.setTimeToArrive(timeToArrive);
                                         DateFormat myDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-                                        if(appointmentDay!=null && !appointmentDay.equalsIgnoreCase("")){
+                                        if (appointmentDay != null && !appointmentDay.equalsIgnoreCase("")) {
                                             try {
                                                 Date appointmentDayDate = myDateFormat.parse(appointmentDay);
                                                 orderWaypointsPackagesEntity.setAppointmentDay(appointmentDayDate);
@@ -1417,7 +1397,7 @@ public class OrdersController extends Application {
                                                 e.printStackTrace();
                                             }
                                         }
-                                        if(truckLoadingCode!=null && !truckLoadingCode.equalsIgnoreCase("") && !truckLoadingCode.equalsIgnoreCase("null")){
+                                        if (truckLoadingCode != null && !truckLoadingCode.equalsIgnoreCase("") && !truckLoadingCode.equalsIgnoreCase("null")) {
                                             orderWaypointsPackagesEntity.setTruckLoadingCode(truckLoadingCode);
                                         }
                                         orderWaypointsPackagesEntity.setOrderId(orderId);
@@ -1453,7 +1433,7 @@ public class OrdersController extends Application {
                                             selections.setType("Φόρτωση");
                                             selections.setQuantity(quantity);
                                             selections.setStackingType(stackingType);
-                                            if(packageTypeId!=0){
+                                            if (packageTypeId != 0) {
                                                 selections.setPackageTypeId(packageTypeId);
                                             }
                                             if (title.equalsIgnoreCase("")) {
@@ -1463,7 +1443,7 @@ public class OrdersController extends Application {
                                                         + orderWaypointsPackagesEntity.getCity() + "," + orderWaypointsPackagesEntity.getPostalCode());
                                                 return add_result;
                                             }
-                                            if (packageTypeId==0) {
+                                            if (packageTypeId == 0) {
                                                 add_result.put("status", "warning");
                                                 add_result.put("message", "Δεν έχετε επιλέξει Τύπος πρ/ντος " +
                                                         "για φόρτωση στην αφετηρία " + orderWaypointsPackagesEntity.getCountry() + " " + orderWaypointsPackagesEntity.getCity()
@@ -1478,11 +1458,11 @@ public class OrdersController extends Application {
                                                 return add_result;
                                             }
 
-                                            String sqlMu = "select * from measurement_unit mu where mu.title='"+title+"'";
-                                            List<MeasurementUnitEntity> muE = entityManager.createNativeQuery(sqlMu,MeasurementUnitEntity.class).getResultList();
-                                            MeasurementUnitEntity mue = entityManager.find(MeasurementUnitEntity.class,muE.get(0).getId());
+                                            String sqlMu = "select * from measurement_unit mu where mu.title='" + title + "'";
+                                            List<MeasurementUnitEntity> muE = entityManager.createNativeQuery(sqlMu, MeasurementUnitEntity.class).getResultList();
+                                            MeasurementUnitEntity mue = entityManager.find(MeasurementUnitEntity.class, muE.get(0).getId());
                                             Double ldm = 0.0;
-                                            ldm= calculateLdm(stackingType,mue,quantity,cve.getStackingFactor());
+                                            ldm = calculateLdm(stackingType, mue, quantity, cve.getStackingFactor());
                                             selections.setLdm(ldm);
                                             selections.setMeasureUnitId(muE.get(0).getId());
                                             entityManager.persist(selections);
@@ -1506,7 +1486,7 @@ public class OrdersController extends Application {
                                             selections.setType("Εκφόρτωση");
                                             selections.setQuantity(quantity);
                                             selections.setStackingType(stackingType);
-                                            if(packageTypeId!=0){
+                                            if (packageTypeId != 0) {
                                                 selections.setPackageTypeId(packageTypeId);
                                             }
                                             if (title.equalsIgnoreCase("")) {
@@ -1516,7 +1496,7 @@ public class OrdersController extends Application {
                                                         + orderWaypointsPackagesEntity.getCity() + "," + orderWaypointsPackagesEntity.getPostalCode());
                                                 return add_result;
                                             }
-                                            if (packageTypeId==0) {
+                                            if (packageTypeId == 0) {
                                                 add_result.put("status", "warning");
                                                 add_result.put("message", "Δεν έχετε επιλέξει Τύπος πρ/ντος " +
                                                         "για φόρτωση στην αφετηρία " + orderWaypointsPackagesEntity.getCountry() + " " + orderWaypointsPackagesEntity.getCity()
@@ -1530,11 +1510,11 @@ public class OrdersController extends Application {
                                                         + "," + orderWaypointsPackagesEntity.getPostalCode());
                                                 return add_result;
                                             }
-                                            String sqlMu = "select * from measurement_unit mu where mu.title='"+title+"'";
-                                            List<MeasurementUnitEntity> muE = entityManager.createNativeQuery(sqlMu,MeasurementUnitEntity.class).getResultList();
-                                            MeasurementUnitEntity mue = entityManager.find(MeasurementUnitEntity.class,muE.get(0).getId());
+                                            String sqlMu = "select * from measurement_unit mu where mu.title='" + title + "'";
+                                            List<MeasurementUnitEntity> muE = entityManager.createNativeQuery(sqlMu, MeasurementUnitEntity.class).getResultList();
+                                            MeasurementUnitEntity mue = entityManager.find(MeasurementUnitEntity.class, muE.get(0).getId());
                                             Double ldm = 0.0;
-                                            ldm= calculateLdm(stackingType,mue,quantity,cve.getStackingFactor());
+                                            ldm = calculateLdm(stackingType, mue, quantity, cve.getStackingFactor());
                                             selections.setLdm(ldm);
                                             selections.setMeasureUnitId(muE.get(0).getId());
                                             entityManager.persist(selections);
@@ -1553,7 +1533,7 @@ public class OrdersController extends Application {
                                             selections.setOrderId(orderId);
                                             selections.setTypePackage(typePackage);
                                             selections.setTitle(title);
-                                            if(packageTypeId!=0){
+                                            if (packageTypeId != 0) {
                                                 selections.setPackageTypeId(packageTypeId);
                                             }
                                             selections.setOrderScheduleId(orderWaypointsPackagesEntity.getOrderScheduleId());
@@ -1568,7 +1548,7 @@ public class OrdersController extends Application {
                                                         + orderWaypointsPackagesEntity.getCity() + "," + orderWaypointsPackagesEntity.getPostalCode());
                                                 return add_result;
                                             }
-                                            if (packageTypeId==0) {
+                                            if (packageTypeId == 0) {
                                                 add_result.put("status", "warning");
                                                 add_result.put("message", "Δεν έχετε επιλέξει Τύπος πρ/ντος " +
                                                         "για φόρτωση στην αφετηρία " + orderWaypointsPackagesEntity.getCountry() + " " + orderWaypointsPackagesEntity.getCity() + "," + orderWaypointsPackagesEntity.getPostalCode());
@@ -1581,11 +1561,11 @@ public class OrdersController extends Application {
                                                 return add_result;
                                             }
 
-                                            String sqlMu = "select * from measurement_unit mu where mu.title='"+title+"'";
-                                            List<MeasurementUnitEntity> muE = entityManager.createNativeQuery(sqlMu,MeasurementUnitEntity.class).getResultList();
-                                            MeasurementUnitEntity mue = entityManager.find(MeasurementUnitEntity.class,muE.get(0).getId());
+                                            String sqlMu = "select * from measurement_unit mu where mu.title='" + title + "'";
+                                            List<MeasurementUnitEntity> muE = entityManager.createNativeQuery(sqlMu, MeasurementUnitEntity.class).getResultList();
+                                            MeasurementUnitEntity mue = entityManager.find(MeasurementUnitEntity.class, muE.get(0).getId());
                                             Double ldm = 0.0;
-                                            ldm= calculateLdm(stackingType,mue,quantity,cve.getStackingFactor());
+                                            ldm = calculateLdm(stackingType, mue, quantity, cve.getStackingFactor());
                                             selections.setLdm(ldm);
                                             selections.setMeasureUnitId(muE.get(0).getId());
                                             entityManager.persist(selections);
@@ -1602,7 +1582,7 @@ public class OrdersController extends Application {
                         },
                         executionContext);
                 result = (ObjectNode) addFuture.get();
-                return ok(result,request);
+                return ok(result, request);
             } catch (Exception e) {
                 ObjectNode result = Json.newObject();
                 e.printStackTrace();
@@ -1615,24 +1595,23 @@ public class OrdersController extends Application {
     }
 
 
-    private double calculateLdm(String stackingType,MeasurementUnitEntity mue,Integer quantity,Double stackingFactor){
-        Double ldm= 0.0;
+    private double calculateLdm(String stackingType, MeasurementUnitEntity mue, Integer quantity, Double stackingFactor) {
+        Double ldm = 0.0;
         DecimalFormat df = new DecimalFormat("###.#");
 
-        if(stackingType.equalsIgnoreCase("Μη Στοιβάσιμη")){
-            ldm =( (mue.getxIndex()*mue.getzIndex())/(2.4))*quantity;
-        }else{
-            if(quantity%2==1){//tote monos
-                Double unique =( (mue.getxIndex()*mue.getzIndex())/(2.4));
-                ldm=((((mue.getxIndex()*mue.getzIndex())/2.4))/stackingFactor)*(quantity-1)+unique;
-            }else{
-                ldm=((((mue.getxIndex()*mue.getzIndex())/2.4))/stackingFactor)*quantity;
+        if (stackingType.equalsIgnoreCase("Μη Στοιβάσιμη")) {
+            ldm = ((mue.getxIndex() * mue.getzIndex()) / (2.4)) * quantity;
+        } else {
+            if (quantity % 2 == 1) {//tote monos
+                Double unique = ((mue.getxIndex() * mue.getzIndex()) / (2.4));
+                ldm = ((((mue.getxIndex() * mue.getzIndex()) / 2.4)) / stackingFactor) * (quantity - 1) + unique;
+            } else {
+                ldm = ((((mue.getxIndex() * mue.getzIndex()) / 2.4)) / stackingFactor) * quantity;
             }
         }
-        ldm= Double.valueOf(df.format(ldm));
-        return  ldm;
+        ldm = Double.valueOf(df.format(ldm));
+        return ldm;
     }
-
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
@@ -1733,4 +1712,12 @@ public class OrdersController extends Application {
             }
         }
     }
+
+
+    private static String removeLastChar(String str) {
+        return str.substring(0, str.length() - 1);
+    }
+
+
+
 }

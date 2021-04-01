@@ -2,6 +2,8 @@ package controllers.coreData;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.nexmo.client.NexmoClientException;
+import controllers.MailerService;
 import controllers.execution_context.DatabaseExecutionContext;
 import controllers.system.Application;
 import models.BillingsEntity;
@@ -25,12 +27,14 @@ import java.util.concurrent.ExecutionException;
 
 public class BillingsController extends Application {
     private JPAApi jpaApi;
+    private MailerService ms;
     private DatabaseExecutionContext executionContext;
     @Inject
-    public BillingsController(JPAApi jpaApi, DatabaseExecutionContext executionContext) {
+    public BillingsController(MailerService ms, JPAApi jpaApi, DatabaseExecutionContext executionContext) {
         super(jpaApi,executionContext);
         this.jpaApi = jpaApi;
         this.executionContext = executionContext;
+        this.ms=ms;
     }
 
     @SuppressWarnings({"Duplicates", "unchecked"})
@@ -80,6 +84,10 @@ public class BillingsController extends Application {
             }
         }
     }
+
+
+
+
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})

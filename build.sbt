@@ -23,12 +23,9 @@ lazy val root = (project in file("."))
       "commons-net" % "commons-net" % "3.8.0",
       "com.springml" % "sftp.client" % "1.0.3",
       "com.lightbend.akka" %% "akka-stream-alpakka-ftp" % "2.0.2",
-      "com.typesafe.akka" %% "akka-stream" % "2.5.31"
-
-
-
-
-
+      "com.typesafe.akka" %% "akka-stream" % "2.5.31",
+      "com.typesafe.play" %% "play-mailer" % "8.0.1",
+      "com.typesafe.play" %% "play-mailer-guice" % "8.0.1"
     ),
 
 
@@ -37,7 +34,13 @@ lazy val root = (project in file("."))
     javacOptions ++= List("-Xlint:unchecked", "-Xlint:deprecation", "-Werror"),
     PlayKeys.externalizeResourcesExcludes += baseDirectory.value / "conf" / "META-INF" / "persistence.xml"
   )
+
 libraryDependencies += guice
+
+libraryDependencies += "com.nexmo" % "client" % "4.0.1"
+//Thanks for using https://jar-download.com
+
+
 
 
 
