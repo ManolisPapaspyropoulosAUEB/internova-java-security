@@ -184,7 +184,10 @@ POST        /deleteOrder                                     controllers.procedu
 
 #OrdersLoadingController
 POST        /getAvailablesOrders                             controllers.procedures.OrdersLoadingController.getAvailablesOrders(req: Request)
-POST        /getOrdersLoadings                             controllers.procedures.OrdersLoadingController.getOrdersLoadings(req: Request)
+POST        /getOrdersLoadings                               controllers.procedures.OrdersLoadingController.getOrdersLoadings(req: Request)
+POST        /getDromologioByOrder                            controllers.procedures.OrdersLoadingController.getDromologioByOrder(req: Request)
+POST        /getPackagesByDromologio                         controllers.procedures.OrdersLoadingController.getPackagesByDromologio(req: Request)
+POST        /saveOrderLoading                                controllers.procedures.OrdersLoadingController.saveOrderLoading(req: Request)
 
 
 
