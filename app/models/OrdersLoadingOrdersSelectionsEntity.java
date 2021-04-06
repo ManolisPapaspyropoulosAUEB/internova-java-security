@@ -1,6 +1,7 @@
 package models;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Objects;
 
@@ -13,6 +14,7 @@ public class OrdersLoadingOrdersSelectionsEntity {
     private String stage;
     private Date creationDate;
     private Date updateDate;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -75,6 +77,7 @@ public class OrdersLoadingOrdersSelectionsEntity {
         this.updateDate = updateDate;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -85,7 +88,7 @@ public class OrdersLoadingOrdersSelectionsEntity {
                 Objects.equals(orderId, that.orderId) &&
                 Objects.equals(stage, that.stage) &&
                 Objects.equals(creationDate, that.creationDate) &&
-                Objects.equals(updateDate, that.updateDate);
+                Objects.equals(updateDate, that.updateDate) ;
     }
 
     @Override

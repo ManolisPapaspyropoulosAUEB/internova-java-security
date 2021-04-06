@@ -1280,6 +1280,7 @@ public class OrdersController extends Application {
                                             try {
                                                 Date appointmentDayDate = myDateFormat.parse(appointmentDay);
                                                 ordS.setAppointmentDay(appointmentDayDate);
+                                                ordS.setAppointmentDayLoad(appointmentDayDate);
                                             } catch (ParseException e) {
                                                 e.printStackTrace();
                                             }
@@ -1393,6 +1394,8 @@ public class OrdersController extends Application {
                                             try {
                                                 Date appointmentDayDate = myDateFormat.parse(appointmentDay);
                                                 orderWaypointsPackagesEntity.setAppointmentDay(appointmentDayDate);
+                                                orderWaypointsPackagesEntity.setAppointmentDayLoad(appointmentDayDate);
+                                                //setAppointmentDayLoad
                                             } catch (ParseException e) {
                                                 e.printStackTrace();
                                             }
