@@ -22,6 +22,8 @@ public class OrdersLoadingEntity {
     private Long supplierTruckId;
     private Date creationDate;
     private Date updateDate;
+    private Double naulo;
+    private String comments;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -188,5 +190,25 @@ public class OrdersLoadingEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, status, fromCity, fromCountry, fromPostalCode, fromAddress, toCity, toCountry, toPostalCode, toAddress, creationDate, updateDate, supplierId, supplierTruckId);
+    }
+
+    @Basic
+    @Column(name = "naulo")
+    public Double getNaulo() {
+        return naulo;
+    }
+
+    public void setNaulo(Double naulo) {
+        this.naulo = naulo;
+    }
+
+    @Basic
+    @Column(name = "comments")
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
     }
 }

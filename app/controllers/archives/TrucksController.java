@@ -303,6 +303,7 @@ public class TrucksController extends Application {
                                         String suplierName = json.findPath("suplierName").asText();
                                         String description = json.findPath("description").asText();
                                         String typeTruck = json.findPath("typeTruck").asText();
+                                        String customerSupplierId = json.findPath("customerSupplierId").asText();
                                         Long suplierId = json.findPath("suplierId").asLong();
                                         String id = json.findPath("id").asText();
                                         String plateNumber = json.findPath("plateNumber").asText();
@@ -385,6 +386,7 @@ public class TrucksController extends Application {
                                         for (TrucksEntity j : orgsList) {
                                             HashMap<String, Object> sHmpam = new HashMap<String, Object>();
                                             sHmpam.put("id", j.getId());
+                                            sHmpam.put("truckId", j.getId());
                                             sHmpam.put("brandName", j.getBrandName());
                                             sHmpam.put("description", j.getDescription());
                                             sHmpam.put("plateNumber", j.getPlateNumber());

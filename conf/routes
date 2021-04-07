@@ -188,6 +188,7 @@ POST        /getOrdersLoadings                               controllers.procedu
 POST        /getDromologioByOrder                            controllers.procedures.OrdersLoadingController.getDromologioByOrder(req: Request)
 POST        /getPackagesByDromologio                         controllers.procedures.OrdersLoadingController.getPackagesByDromologio(req: Request)
 POST        /saveOrderLoading                                controllers.procedures.OrdersLoadingController.saveOrderLoading(req: Request)
+POST        /updateOrderLoading                              controllers.procedures.OrdersLoadingController.updateOrderLoading(req: Request)
 
 
 
