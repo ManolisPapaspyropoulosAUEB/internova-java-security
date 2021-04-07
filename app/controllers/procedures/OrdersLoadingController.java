@@ -1013,7 +1013,7 @@ public class OrdersLoadingController extends Application {
                                                 ObjectNode reqBody = Json.newObject();
                                                 reqBody.put("orderId", os.getOrderId());
                                                 CompletableFuture<WSResponse> wsFuture = (CompletableFuture)
-                                                        ws.url("http://localhost:9000/getAvailablesOrders")
+                                                        ws.url("http://144.91.80.190:9040/getAvailablesOrders")
                                                                 .post(reqBody).thenApplyAsync(webServiceResponse -> {
                                                             return webServiceResponse;
                                                         });
@@ -1039,7 +1039,7 @@ public class OrdersLoadingController extends Application {
                                                         ObjectNode dromRes = Json.newObject();
                                                         reqBodyDromWs.put("orderId", os.getOrderId());
                                                         CompletableFuture<WSResponse> wsFutureDrom = (CompletableFuture)
-                                                                ws.url("http://localhost:9000/getDromologioByOrder")
+                                                                ws.url("http://144.91.80.190:9040/getDromologioByOrder")
                                                                         .post(reqBodyDromWs).thenApplyAsync(webServiceResponse -> {
                                                                     return webServiceResponse;
                                                                 });
