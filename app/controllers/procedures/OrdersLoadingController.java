@@ -3,6 +3,7 @@ package controllers.procedures;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.typesafe.config.ConfigFactory;
 import controllers.execution_context.DatabaseExecutionContext;
 import controllers.system.Application;
 import models.*;
@@ -18,6 +19,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -94,16 +96,18 @@ public class OrdersLoadingController extends Application {
                                 String user_id = json.findPath("user_id").asText();
                                 Long customerSupplierId = json.findPath("customerSupplierId").asLong();
                                 Double naulo = json.findPath("naulo").asDouble();
-                                Long truckId = json.findPath("truckId").asLong();
+                                Long truckTrailerId = json.findPath("truckTrailerId").asLong();
                                 String commentsMaster = json.findPath("commentsMaster").asText();
                                 Long ordersLoadingId = json.findPath("ordersLoadingId").asLong();
+                                Long truckTractorId = json.findPath("truckTractorId").asLong(); // truckTractorId
 
                                 OrdersLoadingEntity ordersLoadingEntity = entityManager.find(OrdersLoadingEntity.class, ordersLoadingId);
                                 ordersLoadingEntity.setCreationDate(new Date());
                                 ordersLoadingEntity.setStatus("ΣΤΑΔΙΟ 1");
                                 ordersLoadingEntity.setSupplierId(customerSupplierId);
                                 ordersLoadingEntity.setNaulo(naulo);
-                                ordersLoadingEntity.setSupplierTruckId(truckId);
+                                ordersLoadingEntity.setSupplierTruckTrailerId(truckTrailerId);
+                                ordersLoadingEntity.setSupplierTruckTractorId(truckTractorId);
                                 ordersLoadingEntity.setComments(commentsMaster);
                                 System.out.println(commentsMaster);
                                 entityManager.merge(ordersLoadingEntity);
@@ -231,7 +235,8 @@ public class OrdersLoadingController extends Application {
                                 String user_id = json.findPath("user_id").asText();
                                 Long customerSupplierId = json.findPath("customerSupplierId").asLong();
                                 Double naulo = json.findPath("naulo").asDouble();
-                                Long truckId = json.findPath("truckId").asLong();
+                                Long truckTrailerId = json.findPath("truckTrailerId").asLong(); // truckTractorId
+                                Long truckTractorId = json.findPath("truckTractorId").asLong(); // truckTractorId
                                 String commentsMaster = json.findPath("commentsMaster").asText();
 
                                 OrdersLoadingEntity ordersLoadingEntity = new OrdersLoadingEntity();
@@ -239,9 +244,24 @@ public class OrdersLoadingController extends Application {
                                 ordersLoadingEntity.setStatus("ΣΤΑΔΙΟ 1");
                                 ordersLoadingEntity.setSupplierId(customerSupplierId);
                                 ordersLoadingEntity.setNaulo(naulo);
-                                ordersLoadingEntity.setSupplierTruckId(truckId);
+                                ordersLoadingEntity.setSupplierTruckTrailerId(truckTrailerId);
+                                ordersLoadingEntity.setSupplierTruckTractorId(truckTractorId);
                                 ordersLoadingEntity.setComments(commentsMaster);
                                 System.out.println(commentsMaster);
+
+
+                                String maxAasql = "select max(aa) " +
+                                        "from orders_loading t " ;
+
+                                Integer maxAa = (Integer) entityManager.
+                                        createNativeQuery(maxAasql).getSingleResult();
+                                if(maxAa==null){
+                                    ordersLoadingEntity.setAa(0);
+                                }else{
+                                    ordersLoadingEntity.setAa(maxAa+1);
+                                }
+
+
                                 entityManager.persist(ordersLoadingEntity);
 
                                 Iterator doneListIt = json.findPath("doneList").iterator();
@@ -324,6 +344,7 @@ public class OrdersLoadingController extends Application {
 
                                 add_result.put("status", "success");
                                 add_result.put("ordersLoadingId", ordersLoadingEntity.getId());
+                                add_result.put("aa", ordersLoadingEntity.getAa());
                                 add_result.put("message", "Η καταχωρηση πραγματοποίηθηκε με επιτυχία");
                                 //   add_result.put("DO_ID", billingsEntity.getId());
                                 add_result.put("system", "Φόρτωση");
@@ -448,6 +469,7 @@ public class OrdersLoadingController extends Application {
                                                 } else {
                                                     sHmpam.put("mainSchedule", "-");
                                                 }
+
                                                 String sqlSumPrice = "select  sum(osp.unit_price) from orders_selections_by_point osp where osp.order_id=" + j.getId();
                                                 Double summPrice = (Double) entityManager.createNativeQuery(sqlSumPrice).getSingleResult();
                                                 if (summPrice != null) {
@@ -466,7 +488,7 @@ public class OrdersLoadingController extends Application {
 
                                                 String sqlSumQuantity = "select  sum(osp.quantity) from orders_selections_by_point osp where osp.order_id=" + j.getId();
                                                 BigDecimal summQuantity = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantity).getSingleResult();
-                                                if (summLdm != null) {
+                                                if (summQuantity != null) {
                                                     sHmpam.put("summQuantity", summQuantity);
                                                 } else {
                                                     sHmpam.put("summQuantity", "0");
@@ -893,7 +915,7 @@ public class OrdersLoadingController extends Application {
                                             sHmpam.put("toPostalCode", j.getFromPostalCode());
                                             sHmpam.put("status", j.getStatus());
                                             sHmpam.put("supplierId", j.getSupplierId());
-                                            sHmpam.put("supplierTruckId", j.getSupplierTruckId());
+                                            sHmpam.put("truckTrailerId", j.getSupplierTruckTrailerId());
                                             sHmpam.put("creationDate", j.getCreationDate());
                                             sHmpam.put("updateDate", j.getUpdateDate());
 
@@ -946,12 +968,48 @@ public class OrdersLoadingController extends Application {
                                         String orderCol = json.findPath("orderCol").asText();
                                         String descAsc = json.findPath("descAsc").asText();
                                         String id = json.findPath("id").asText();
+                                        String supplierNameSearch = json.findPath("supplierNameSearch").asText();
+                                        String truckTrailerNameSearch = json.findPath("truckTrailerNameSearch").asText();
+                                        String truckTractorNameSearch = json.findPath("truckTractorNameSearch").asText();
+                                        String aa = json.findPath("aa").asText();
                                         String start = json.findPath("start").asText();
                                         String limit = json.findPath("limit").asText();
-                                        String sqlOrdLoads = "select * from orders_loading ord_load where 1=1 ";
+                                        String sqlOrdLoads = "select * from orders_loading ord_load   where 1=1 ";
                                         if (!id.equalsIgnoreCase("") && id != null) {
                                             sqlOrdLoads += " and ord_load.id =" + id;
                                         }
+
+                                        if(aa!=null && !aa.equalsIgnoreCase("")){
+                                            sqlOrdLoads+=" and  ord_load.aa like '%"+aa+"%' ";
+                                        }
+
+                                        if(truckTractorNameSearch!=null && !truckTractorNameSearch.equalsIgnoreCase("")){
+                                            sqlOrdLoads+=" and  ord_load.supplier_truck_tractor_id  in ( select t.id from trucks t  where t.brand_name   like '%"+truckTractorNameSearch+"%'   )";
+                                        }
+
+                                        if(truckTrailerNameSearch!=null && !truckTrailerNameSearch.equalsIgnoreCase("")){
+                                            sqlOrdLoads+=" and  ord_load.supplier_truck_tractor_id  in ( select t.id from trucks t  where t.brand_name   like '%"+truckTrailerNameSearch+"%'   )";
+                                        }
+
+                                        if(supplierNameSearch!=null && !supplierNameSearch.equalsIgnoreCase("")){
+                                            sqlOrdLoads+=" and ord_load.supplier_id in (  select cs.id   from customers_suppliers cs where cs.brand_name like '%"+supplierNameSearch+"%' ) ";
+                                        }
+
+
+                                        System.out.println(sqlOrdLoads);
+                                        System.out.println(sqlOrdLoads);
+                                        System.out.println(sqlOrdLoads);
+                                        System.out.println(sqlOrdLoads);
+                                        System.out.println(sqlOrdLoads);
+                                        System.out.println(sqlOrdLoads);
+                                        System.out.println(sqlOrdLoads);
+                                        System.out.println(sqlOrdLoads);
+                                        System.out.println(sqlOrdLoads);
+                                        System.out.println(sqlOrdLoads);
+                                        System.out.println(sqlOrdLoads);
+                                        System.out.println(sqlOrdLoads);
+
+
                                         List<OrdersLoadingEntity> ordersLoadingAllList
                                                 = (List<OrdersLoadingEntity>) entityManager.createNativeQuery(
                                                 sqlOrdLoads, OrdersLoadingEntity.class).getResultList();
@@ -970,10 +1028,12 @@ public class OrdersLoadingController extends Application {
                                                 sqlOrdLoads, OrdersLoadingEntity.class).getResultList();
                                         for (OrdersLoadingEntity j : ordersLoadingList) {
                                             HashMap<String, Object> sHmpam = new HashMap<String, Object>();
+
                                             sHmpam.put("id", j.getId());
                                             sHmpam.put("ordersLoadingId", j.getId());
                                             sHmpam.put("fromCountry", j.getFromCountry());
                                             sHmpam.put("fromCity", j.getFromCity());
+                                            sHmpam.put("aa", j.getAa());
                                             sHmpam.put("fromAddress", j.getFromAddress());
                                             sHmpam.put("fromPostalCode", j.getFromPostalCode());
                                             sHmpam.put("toCountry", j.getFromCountry());
@@ -989,20 +1049,52 @@ public class OrdersLoadingController extends Application {
                                                 sHmpam.put("supplierName","-");
                                             }
 
-                                            if(j.getSupplierTruckId()!=null){
-                                                TrucksEntity truck = entityManager.find(TrucksEntity.class,j.getSupplierTruckId());
-                                                sHmpam.put("truckName", truck.getBrandName());
+                                            if(j.getSupplierTruckTrailerId()!=null && j.getSupplierTruckTrailerId()!=0){
+                                                TrucksEntity truck = entityManager.find(TrucksEntity.class,j.getSupplierTruckTrailerId());
+                                                sHmpam.put("truckTrailerName", truck.getBrandName());
                                             }else{
-                                                sHmpam.put("truckName", "-");
+                                                sHmpam.put("truckTrailerName", "-");
                                             }
+                                            sHmpam.put("supplierTruckTrailerId", j.getSupplierTruckTrailerId());
+                                            sHmpam.put("truckTrailerId", j.getSupplierTruckTrailerId());
 
-                                            sHmpam.put("supplierTruckId", j.getSupplierTruckId());
+
+
+                                            if(j.getSupplierTruckTractorId()!=null && j.getSupplierTruckTractorId()!=0){
+                                                TrucksEntity truck = entityManager.find(TrucksEntity.class,j.getSupplierTruckTractorId());
+                                                sHmpam.put("truckTractorName", truck.getBrandName());
+                                            }else{
+                                                sHmpam.put("truckTractorName", "-");
+                                            }
+                                            sHmpam.put("supplierTruckTractorId", j.getSupplierTruckTractorId());
+                                            sHmpam.put("truckTractorId", j.getSupplierTruckTractorId());
+
+
                                             sHmpam.put("creationDate", j.getCreationDate());
                                             sHmpam.put("updateDate", j.getUpdateDate());
                                             sHmpam.put("customerSupplierId", j.getSupplierId());
                                             sHmpam.put("naulo", j.getNaulo());
-                                            sHmpam.put("truckId", j.getSupplierTruckId());
-                                            sHmpam.put("comments", j.getComments());
+
+                                            sHmpam.put("finalSummPrice", 0);
+                                            sHmpam.put("finalSummLdm", 0);
+                                            sHmpam.put("finalSummQuantity", 0);
+
+                                            Double finalSummPrice=0.0;
+                                            Double finalSummLdm=0.0;
+                                            Integer finalSummQuantity=0;
+
+                                            sHmpam.put("mainSchedule", j.getFromCountry() + " " +
+                                                    j.getFromCity() + "  ->  " +
+                                                    j.getToCountry() + " " +
+                                                    j.getToCity());
+
+
+
+
+
+
+
+
                                             String sqlOrdersDoneList = "select * from orders_loading_orders_selections olrs where olrs.order_loading_id=" + j.getId();
                                             List<OrdersLoadingOrdersSelectionsEntity> ordersLoadingOrdersSelectionsEntityList =
                                                     entityManager.createNativeQuery(sqlOrdersDoneList, OrdersLoadingOrdersSelectionsEntity.class).getResultList();
@@ -1013,7 +1105,7 @@ public class OrdersLoadingController extends Application {
                                                 ObjectNode reqBody = Json.newObject();
                                                 reqBody.put("orderId", os.getOrderId());
                                                 CompletableFuture<WSResponse> wsFuture = (CompletableFuture)
-                                                        ws.url("http://144.91.80.190:9040/getAvailablesOrders")
+                                                        ws.url(ConfigFactory.load().getString("ws_url")+"getAvailablesOrders")
                                                                 .post(reqBody).thenApplyAsync(webServiceResponse -> {
                                                             return webServiceResponse;
                                                         });
@@ -1035,11 +1127,45 @@ public class OrdersLoadingController extends Application {
                                                         doneMap.put("customerId", doneNode.findPath("customerId").asText());
                                                         doneMap.put("customer", doneNode.findPath("customer"));
                                                         doneMap.put("status", doneNode.findPath("status"));
+
+                                                        DecimalFormat df = new DecimalFormat("###.#");
+
+                                                        String sqlSumPrice = "select  sum(osp.unit_price) from orders_selections_by_point osp where osp.order_id=" + doneNode.findPath("orderId").asText();
+                                                        Double summPrice = (Double) entityManager.createNativeQuery(sqlSumPrice).getSingleResult();
+                                                        if (summPrice != null) {
+                                                            finalSummPrice=finalSummPrice+summPrice;
+                                                            sHmpam.put("finalSummPrice",df.format(finalSummPrice));
+                                                        } else {
+                                                            sHmpam.put("finalSummPrice", df.format(finalSummPrice));
+                                                        }
+
+                                                        String sqlSumLdm = "select  sum(osp.ldm) from orders_selections_by_point osp where osp.order_id=" +  doneNode.findPath("orderId").asText();
+                                                        Double summLdm = (Double) entityManager.createNativeQuery(sqlSumLdm).getSingleResult();
+                                                        if (summLdm != null) {
+                                                            finalSummLdm=finalSummLdm+summLdm;
+                                                            sHmpam.put("finalSummLdm", df.format(finalSummLdm) );
+                                                        } else {
+                                                            sHmpam.put("finalSummLdm", df.format(finalSummLdm));
+                                                        }
+
+                                                        String sqlSumQuantity = "select  sum(osp.quantity) from orders_selections_by_point osp where osp.order_id=" +  doneNode.findPath("orderId").asText();
+                                                        BigDecimal summQuantity = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantity).getSingleResult();
+                                                        if (summQuantity != null) {
+                                                            finalSummQuantity=finalSummQuantity+summQuantity.intValue();
+                                                            sHmpam.put("finalSummQuantity", finalSummQuantity);
+                                                        } else {
+                                                            sHmpam.put("finalSummQuantity", finalSummQuantity);
+                                                        }
+
+
+
+
+
                                                         ObjectNode reqBodyDromWs = Json.newObject();
                                                         ObjectNode dromRes = Json.newObject();
                                                         reqBodyDromWs.put("orderId", os.getOrderId());
                                                         CompletableFuture<WSResponse> wsFutureDrom = (CompletableFuture)
-                                                                ws.url("http://144.91.80.190:9040/getDromologioByOrder")
+                                                                ws.url(ConfigFactory.load().getString("ws_url")+"getDromologioByOrder")
                                                                         .post(reqBodyDromWs).thenApplyAsync(webServiceResponse -> {
                                                                     return webServiceResponse;
                                                                 });
@@ -1108,6 +1234,54 @@ public class OrdersLoadingController extends Application {
         }
 
     }
+
+
+
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    @BodyParser.Of(BodyParser.Json.class)
+    public Result deleteOrderLoading(final Http.Request request) throws IOException {
+        JsonNode json = request.body().asJson();
+        if (json == null) {
+            return badRequest("Expecting Json data");
+        } else {
+            try {
+                ObjectNode result = Json.newObject();
+                CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
+                            return jpaApi.withTransaction(entityManager -> {
+                                ObjectNode add_result = Json.newObject();
+                                Long id = json.findPath("id").asLong();
+                                Long user_id = json.findPath("user_id").asLong();
+
+                                OrdersLoadingEntity ordersLoadingEntity = entityManager.find(OrdersLoadingEntity.class,id);
+                                String sql = " select * from orders_loading_orders_selections ordl where ordl.order_loading_id="+id;
+                                List<OrdersLoadingOrdersSelectionsEntity> ordersLoadingOrdersSelectionsEntityList = entityManager.createNativeQuery(sql,OrdersLoadingOrdersSelectionsEntity.class).getResultList();
+                                for(OrdersLoadingOrdersSelectionsEntity ordls : ordersLoadingOrdersSelectionsEntityList){
+                                    entityManager.remove(ordls);
+                                }
+                                entityManager.remove(ordersLoadingEntity);
+                                add_result.put("status", "success");
+                                add_result.put("message", "Η Διαγραφή πραγματοποίηθηκε με επιτυχία");
+//                                add_result.put("DO_ID", billingsEntity.getId());
+                                add_result.put("system", "ΗΜΕΡΙΔΕΣ");
+                                add_result.put("user_id", user_id);
+
+                                return add_result;
+                            });
+                        },
+                        executionContext);
+                result = (ObjectNode) addFuture.get();
+                return ok(result,request);
+            } catch (Exception e) {
+                ObjectNode result = Json.newObject();
+                e.printStackTrace();
+                result.put("status", "error");
+                result.put("message", "Προβλημα κατα την καταχωρηση");
+                return ok(result);
+            }
+        }
+    }
+
 
 
     private static String removeLastChar(String str) {

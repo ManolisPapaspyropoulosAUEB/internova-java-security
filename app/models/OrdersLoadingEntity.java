@@ -19,11 +19,13 @@ public class OrdersLoadingEntity {
     private String toPostalCode;
     private String toAddress;
     private Long supplierId;
-    private Long supplierTruckId;
     private Date creationDate;
     private Date updateDate;
     private Double naulo;
     private String comments;
+    private Long supplierTruckTrailerId;
+    private Long supplierTruckTractorId;
+    private Integer aa;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -156,16 +158,6 @@ public class OrdersLoadingEntity {
         this.supplierId = supplierId;
     }
 
-    @Basic
-    @Column(name = "supplier_truck_id")
-    public Long getSupplierTruckId() {
-        return supplierTruckId;
-    }
-
-    public void setSupplierTruckId(Long supplierTruckId) {
-        this.supplierTruckId = supplierTruckId;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -183,13 +175,12 @@ public class OrdersLoadingEntity {
                 Objects.equals(toAddress, that.toAddress) &&
                 Objects.equals(creationDate, that.creationDate) &&
                 Objects.equals(updateDate, that.updateDate) &&
-                Objects.equals(supplierId, that.supplierId) &&
-                Objects.equals(supplierTruckId, that.supplierTruckId);
+                Objects.equals(supplierId, that.supplierId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, status, fromCity, fromCountry, fromPostalCode, fromAddress, toCity, toCountry, toPostalCode, toAddress, creationDate, updateDate, supplierId, supplierTruckId);
+        return Objects.hash(id, status, fromCity, fromCountry, fromPostalCode, fromAddress, toCity, toCountry, toPostalCode, toAddress, creationDate, updateDate, supplierId);
     }
 
     @Basic
@@ -210,5 +201,35 @@ public class OrdersLoadingEntity {
 
     public void setComments(String comments) {
         this.comments = comments;
+    }
+
+    @Basic
+    @Column(name = "supplier_truck_trailer_id")
+    public Long getSupplierTruckTrailerId() {
+        return supplierTruckTrailerId;
+    }
+
+    public void setSupplierTruckTrailerId(Long supplierTruckTrailerId) {
+        this.supplierTruckTrailerId = supplierTruckTrailerId;
+    }
+
+    @Basic
+    @Column(name = "supplier_truck_tractor_id")
+    public Long getSupplierTruckTractorId() {
+        return supplierTruckTractorId;
+    }
+
+    public void setSupplierTruckTractorId(Long supplierTruckTractorId) {
+        this.supplierTruckTractorId = supplierTruckTractorId;
+    }
+
+    @Basic
+    @Column(name = "aa")
+    public Integer getAa() {
+        return aa;
+    }
+
+    public void setAa(Integer aa) {
+        this.aa = aa;
     }
 }
