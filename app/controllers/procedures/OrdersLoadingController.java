@@ -189,7 +189,6 @@ public class OrdersLoadingController extends Application {
                                 ordersLoadingEntity.setSupplierTruckTrailerId(truckTrailerId);
                                 ordersLoadingEntity.setSupplierTruckTractorId(truckTractorId);
                                 ordersLoadingEntity.setComments(commentsMaster);
-                                System.out.println(commentsMaster);
                                 String maxAasql = "select max(aa) " +
                                         "from orders_loading t " ;
                                 Integer maxAa = (Integer) entityManager.
@@ -476,6 +475,10 @@ public class OrdersLoadingController extends Application {
                                                 sHmpam.put("appointmentDay", orderSchedulesEntityList.get(0).getAppointmentDayLoad());
                                                 sHmpam.put("appointment", orderSchedulesEntityList.get(0).getAppointment());
                                                 sHmpam.put("orderScheduleId", orderSchedulesEntityList.get(0).getId());
+                                                OrdersEntity ordersEntity = entityManager.find(OrdersEntity.class,json.findPath("orderId").asLong());
+                                                CustomersSuppliersEntity customersSuppliersEntity = entityManager.find(CustomersSuppliersEntity.class,ordersEntity.getCustomerId());
+                                                sHmpam.put("orderCustomerName", customersSuppliersEntity.getBrandName());
+
                                                 sHmpam.put("status", "success");
                                                 sHmpam.put("message", "success");
                                             } else {
@@ -488,6 +491,9 @@ public class OrdersLoadingController extends Application {
                                                 sHmpam.put("appointmentDay", orderSchedulesEntityList.get(0).getAppointmentDayLoad());
                                                 sHmpam.put("appointment", orderSchedulesEntityList.get(0).getAppointment());
                                                 sHmpam.put("orderScheduleId", orderSchedulesEntityList.get(0).getId());
+                                                OrdersEntity ordersEntity = entityManager.find(OrdersEntity.class,json.findPath("orderId").asLong());
+                                                CustomersSuppliersEntity customersSuppliersEntity = entityManager.find(CustomersSuppliersEntity.class,ordersEntity.getCustomerId());
+                                                sHmpam.put("orderCustomerName", customersSuppliersEntity.getBrandName());
                                                 sHmpam.put("brandName", "Δεν έχει οριστεί");
                                                 sHmpam.put("address", "Δεν έχει οριστεί");
                                             }
@@ -542,6 +548,9 @@ public class OrdersLoadingController extends Application {
                                                     owaypMap.put("waypointId", owayp.getId());
                                                     owaypMap.put("appointmentDay", owayp.getAppointmentDayLoad());
                                                     owaypMap.put("appointment", owayp.getAppointment());
+                                                    OrdersEntity ordersEntity = entityManager.find(OrdersEntity.class,json.findPath("orderId").asLong());
+                                                    CustomersSuppliersEntity customersSuppliersEntity = entityManager.find(CustomersSuppliersEntity.class,ordersEntity.getCustomerId());
+                                                    owaypMap.put("orderCustomerName", customersSuppliersEntity.getBrandName());
 
                                                     owaypMap.put("status", "success");
                                                     owaypMap.put("message", "success");
@@ -557,6 +566,9 @@ public class OrdersLoadingController extends Application {
                                                     owaypMap.put("waypointId", owayp.getId());
                                                     owaypMap.put("brandName", "Δεν έχει οριστεί");
                                                     owaypMap.put("address", "Δεν έχει οριστεί");
+                                                    OrdersEntity ordersEntity = entityManager.find(OrdersEntity.class,json.findPath("orderId").asLong());
+                                                    CustomersSuppliersEntity customersSuppliersEntity = entityManager.find(CustomersSuppliersEntity.class,ordersEntity.getCustomerId());
+                                                    owaypMap.put("orderCustomerName", customersSuppliersEntity.getBrandName());
                                                 }
                                                 if (owayp.getOfferScheduleBetweenWaypointId() != null) {
                                                     owaypMap.put("type", "Ενδιάμεσο Σημείο");
@@ -620,6 +632,9 @@ public class OrdersLoadingController extends Application {
                                                     osMap.put("appointmentDay", os.getAppointmentDayLoad());
                                                     osMap.put("appointment", os.getAppointment());
                                                     osMap.put("postalCode", entityManager.find(FactoriesEntity.class, os.getFactoryId()).getPostalCode());
+                                                    OrdersEntity ordersEntity = entityManager.find(OrdersEntity.class,json.findPath("orderId").asLong());
+                                                    CustomersSuppliersEntity customersSuppliersEntity = entityManager.find(CustomersSuppliersEntity.class,ordersEntity.getCustomerId());
+                                                    osMap.put("orderCustomerName", customersSuppliersEntity.getBrandName());
                                                     osMap.put("status", "success");
                                                     osMap.put("message", "success");
 
@@ -633,6 +648,9 @@ public class OrdersLoadingController extends Application {
                                                     osMap.put("orderId", os.getOrderId());
                                                     osMap.put("orderScheduleId", os.getId());
                                                     osMap.put("postalCode", os.getFromPostalCode());
+                                                    OrdersEntity ordersEntity = entityManager.find(OrdersEntity.class,json.findPath("orderId").asLong());
+                                                    CustomersSuppliersEntity customersSuppliersEntity = entityManager.find(CustomersSuppliersEntity.class,ordersEntity.getCustomerId());
+                                                    osMap.put("orderCustomerName", customersSuppliersEntity.getBrandName());
                                                     osMap.put("brandName", "Δεν έχει οριστεί");
                                                     osMap.put("address", "Δεν έχει οριστεί");
                                                 }
@@ -687,6 +705,9 @@ public class OrdersLoadingController extends Application {
                                                         owpeMap.put("appointment", owpe.getAppointment());
                                                         owpeMap.put("address", entityManager.find(FactoriesEntity.class, owpe.getFactoryId()).getAddress());
                                                         owpeMap.put("postalCode", entityManager.find(FactoriesEntity.class, owpe.getFactoryId()).getPostalCode());
+                                                        OrdersEntity ordersEntity = entityManager.find(OrdersEntity.class,json.findPath("orderId").asLong());
+                                                        CustomersSuppliersEntity customersSuppliersEntity = entityManager.find(CustomersSuppliersEntity.class,ordersEntity.getCustomerId());
+                                                        owpeMap.put("orderCustomerName", customersSuppliersEntity.getBrandName());
                                                         owpeMap.put("status", "success");
                                                         owpeMap.put("message", "success");
                                                     } else {
@@ -699,6 +720,9 @@ public class OrdersLoadingController extends Application {
                                                         owpeMap.put("appointmentDay", owpe.getAppointmentDayLoad());
                                                         owpeMap.put("appointment", owpe.getAppointment());
                                                         owpeMap.put("postalCode", owpe.getPostalCode());
+                                                        OrdersEntity ordersEntity = entityManager.find(OrdersEntity.class,json.findPath("orderId").asLong());
+                                                        CustomersSuppliersEntity customersSuppliersEntity = entityManager.find(CustomersSuppliersEntity.class,ordersEntity.getCustomerId());
+                                                        owpeMap.put("orderCustomerName", customersSuppliersEntity.getBrandName());
                                                         owpeMap.put("brandName", "Δεν έχει οριστεί");
                                                         owpeMap.put("address", "Δεν έχει οριστεί");
                                                     }
@@ -899,6 +923,10 @@ public class OrdersLoadingController extends Application {
                                         if (!start.equalsIgnoreCase("") && start != null) {
                                             sqlOrdLoads += " limit " + start + "," + limit;
                                         }
+
+
+                                        System.out.println(sqlOrdLoads);
+
                                         HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                         List<HashMap<String, Object>> serversList = new ArrayList<HashMap<String, Object>>();
                                         List<OrdersLoadingEntity> ordersLoadingList
@@ -1033,6 +1061,7 @@ public class OrdersLoadingController extends Application {
                                                             dromResNodeMap.put("orderScheduleId", dromResNode.findPath("orderScheduleId").asText());
                                                             dromResNodeMap.put("waypointId", dromResNode.findPath("waypointId").asText());
                                                             dromResNodeMap.put("brandName", dromResNode.findPath("brandName").asText());
+                                                            dromResNodeMap.put("orderCustomerName", dromResNode.findPath("orderCustomerName").asText());
                                                             dromResNodeMap.put("timelinetype", dromResNode.findPath("timelinetype").asText());
                                                             dromResNodeMap.put("address", dromResNode.findPath("address").asText());
                                                             dromResNodeMap.put("lattitude", dromResNode.findPath("lattitude").asDouble());
