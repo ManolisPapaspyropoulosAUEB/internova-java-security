@@ -129,9 +129,6 @@ public class DocumentsController extends Application {
                                                 sHmpam.put("userId", j.getUserId());
                                                 sHmpam.put("endDate", j.getEndDate());
                                                 sHmpam.put("uploadDate", j.getUploadDate());
-
-
-
                                                 if(j.getEndDate()!=null){
                                                     Date date2 = new Date();
                                                     int currentDate = Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(date2));
@@ -141,8 +138,6 @@ public class DocumentsController extends Application {
                                                         sHmpam.put("colorEndDate",true);
                                                         sHmpam.put("colorOrangeEndDate",false);
                                                         sHmpam.put("msg","Η ημερομηνία λήξης έχει παρέλθει");
-
-
                                                     }else if(endD<currentDate+10){
                                                         sHmpam.put("colorEndDate",false);
                                                         sHmpam.put("colorOrangeEndDate",true);
@@ -152,13 +147,7 @@ public class DocumentsController extends Application {
                                                     sHmpam.put("colorEndDate",false);
                                                     sHmpam.put("colorOrangeEndDate",false);
                                                     sHmpam.put("msg","");
-
-
                                                 }
-
-
-
-
                                                 serversList.add(sHmpam);
                                             }
                                             returnList_future.put("data", serversList);
