@@ -137,13 +137,23 @@ public class DocumentsController extends Application {
                                                     int currentDate = Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(date2));
                                                     int endD =
                                                             Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(j.getEndDate()));
-                                                    if(currentDate>endD){
+                                                    if(endD<currentDate){
                                                         sHmpam.put("colorEndDate",true);
-                                                    }else{
+                                                        sHmpam.put("colorOrangeEndDate",false);
+                                                        sHmpam.put("msg","Η ημερομηνία λήξης έχει παρέλθει");
+
+
+                                                    }else if(endD<currentDate+10){
                                                         sHmpam.put("colorEndDate",false);
+                                                        sHmpam.put("colorOrangeEndDate",true);
+                                                        sHmpam.put("msg","Σε λιγότερες από 10 μέρες λήγει");
                                                     }
                                                 }else{
                                                     sHmpam.put("colorEndDate",false);
+                                                    sHmpam.put("colorOrangeEndDate",false);
+                                                    sHmpam.put("msg","");
+
+
                                                 }
 
 

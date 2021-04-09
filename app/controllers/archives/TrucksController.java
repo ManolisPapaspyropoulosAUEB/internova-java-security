@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execution_context.DatabaseExecutionContext;
 import controllers.system.Application;
-import models.CustomersSuppliersEntity;
-import models.SuppliersTrucksEntity;
-import models.TruckTypeEntity;
-import models.TrucksEntity;
+import models.*;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
 import play.mvc.BodyParser;
@@ -306,7 +303,7 @@ public class TrucksController extends Application {
                                         String suplierName = json.findPath("suplierName").asText();
                                         String description = json.findPath("description").asText();
                                         String typeTruck = json.findPath("typeTruck").asText();
-                                        String customerSupplierId = json.findPath("customerSupplierId").asText();
+                                        Boolean notificationFilter = json.findPath("notificationFilter").asBoolean();
                                         Long suplierId = json.findPath("suplierId").asLong();
                                         String id = json.findPath("id").asText();
                                         String plateNumber = json.findPath("plateNumber").asText();
@@ -315,6 +312,13 @@ public class TrucksController extends Application {
                                         String start = json.findPath("start").asText();
                                         String limit = json.findPath("limit").asText();
                                         String sqlTrucks = "select * from trucks truck where 1=1 ";
+                                        if(notificationFilter==true){
+                                            sqlTrucks+="and truck.id in ( select DISTINCT d.sub_folder_id\n" +
+                                                    "from documents d\n" +
+                                                    "where d.system='trucks'\n" +
+                                                    "and d.sub_folder_id in (select id from trucks) \n" +
+                                                    "and d.end_date is not null AND d.end_date<DATE_ADD(sysdate(), INTERVAL 10 DAY) )";
+                                        }
                                         if (!brandName.equalsIgnoreCase("") && brandName != null) {
                                             sqlTrucks += " and truck.brand_name like '%" + brandName + "%'";
                                         }
@@ -391,6 +395,12 @@ public class TrucksController extends Application {
                                             sHmpam.put("id", j.getId());
                                             sHmpam.put("truckId", j.getId());
                                             sHmpam.put("brandName", j.getBrandName());
+                                            if(j.getTypeTruckId()!=0){
+                                                sHmpam.put("brandNameConcatLdm", j.getBrandName().concat( " / Type: ").concat(entityManager.find(TruckTypeEntity.class,j.getTypeTruckId()).getType()).concat(" / LDM: ").concat(j.getLdm().toString()));
+                                            }else{
+                                                sHmpam.put("brandNameConcatLdm", j.getBrandName().concat(" /Type: - ").concat(" / LDM: ").concat(j.getLdm().toString()));
+
+                                            }
                                             sHmpam.put("description", j.getDescription());
                                             sHmpam.put("ldm", j.getLdm());
                                             sHmpam.put("plateNumber", j.getPlateNumber());
@@ -414,6 +424,17 @@ public class TrucksController extends Application {
                                                 sHmpam.put("suplierName","");
                                             }
                                             serversList.add(sHmpam);
+                                        }
+                                        String sqlNotification = "select * \n" +
+                                                "from documents d\n" +
+                                                "where d.system='trucks'\n" +
+                                                "and d.sub_folder_id in (select id from trucks) \n" +
+                                                "and d.end_date is not null AND d.end_date<DATE_ADD(sysdate(), INTERVAL 10 DAY)";
+                                        List<DocumentsEntity> documentsEntitiesList = entityManager.createNativeQuery(sqlNotification,DocumentsEntity.class).getResultList();
+                                        if(documentsEntitiesList.size()>0){
+                                            returnList_future.put("notificationExist", true);
+                                        }else{
+                                            returnList_future.put("notificationExist", false);
                                         }
                                         returnList_future.put("data", serversList);
                                         returnList_future.put("total", rolesListAll.size());

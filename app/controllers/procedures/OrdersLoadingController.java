@@ -394,13 +394,27 @@ public class OrdersLoadingController extends Application {
                                                 } else {
                                                     sHmpam.put("summLdm", "0.0");
                                                 }
-                                                String sqlSumQuantity = "select  sum(osp.quantity) from orders_selections_by_point osp where osp.order_id=" + j.getId();
+                                                String sqlSumQuantity = "select  sum(osp.quantity) from orders_selections_by_point osp where osp.order_id=" + j.getId() +" and osp.type_package!='Βάσει βάρους επί καθαρού (kg)' and osp.type_package!='Βάσει βάρους επί μικτού (kg)'";
                                                 BigDecimal summQuantity = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantity).getSingleResult();
                                                 if (summQuantity != null) {
                                                     sHmpam.put("summQuantity", summQuantity);
                                                 } else {
                                                     sHmpam.put("summQuantity", "0");
                                                 }
+
+
+                                                String sqlSumQuantityKg = "select  sum(osp.quantity) from orders_selections_by_point osp where osp.order_id=" + j.getId()+ " and ( osp.type_package='Βάσει βάρους επί καθαρού (kg)' or osp.type_package='Βάσει βάρους επί μικτού (kg)' ) ";
+                                                BigDecimal summQuantityKg = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantityKg).getSingleResult();
+                                                if (summQuantityKg != null) {
+                                                    sHmpam.put("summQuantityKg", summQuantityKg);
+                                                } else {
+                                                    sHmpam.put("summQuantityKg", "0");
+                                                }
+
+
+
+
+
                                                 serversList.add(sHmpam);
                                             }
                                             returnList_future.put("data", serversList);
@@ -461,20 +475,22 @@ public class OrdersLoadingController extends Application {
                                             Double finalSummPrice = 0.0;
                                             Double finalSummLdm = 0.0;
                                             Integer finalSummQuantity = 0;
+                                            Integer finalSummQuantityKg = 0;
                                             DecimalFormat df;
                                             String sqlSumPrice = "";
                                             Double summPrice ;
                                             String sqlSumLdm ;
                                             Double summLdm;
                                             String sqlSumQuantity;
+                                            String sqlSumQuantityKg;
                                             BigDecimal summQuantity;
+                                            BigDecimal summQuantityKg;
                                             String sqlPackages;
                                             List<OrdersSelectionsByPointEntity> ordersSelectionsByPointEntityList;
                                             List<HashMap<String, Object>> packagesFortwshs ;
                                             List<HashMap<String, Object>> packagesEkfortwshs;
                                             List<HashMap<String, Object>> allPackages;
                                             String sql = "select * from order_schedules ords where ords.order_id=" + orderId  +" order by ords.appointment_day_load asc";
-
                                             orderSchedulesEntityList = entityManager.createNativeQuery(sql, OrderSchedulesEntity.class).getResultList();
                                             for (OrderSchedulesEntity os : orderSchedulesEntityList) {
                                                 HashMap<String, Object> osMap = new HashMap<String, Object>();
@@ -515,6 +531,7 @@ public class OrdersLoadingController extends Application {
                                                 finalSummPrice = 0.0;
                                                 finalSummLdm = 0.0;
                                                 finalSummQuantity = 0;
+                                                finalSummQuantityKg = 0;
 
                                                 df = new DecimalFormat("###.#");
                                                 sqlSumPrice = "select  sum(osbp.unit_price) from orders_selections_by_point osbp where osbp.order_schedule_id=" + os.getId() + " and osbp.order_waypoint_id is null";
@@ -533,7 +550,8 @@ public class OrdersLoadingController extends Application {
                                                 } else {
                                                     osMap.put("finalSummLdm", df.format(finalSummLdm));
                                                 }
-                                                sqlSumQuantity = "select  sum(osbp.quantity) from orders_selections_by_point osbp where osbp.order_schedule_id=" + os.getId() + " and osbp.order_waypoint_id is null";
+
+                                                sqlSumQuantity = "select  sum(osbp.quantity) from orders_selections_by_point osbp where osbp.order_schedule_id=" + os.getId() + " and osbp.type_package!='Βάσει βάρους επί καθαρού (kg)' and osbp.type_package!='Βάσει βάρους επί μικτού (kg)'  and osbp.order_waypoint_id is null";
                                                 summQuantity = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantity).getSingleResult();
                                                 if (summQuantity != null) {
                                                     finalSummQuantity = finalSummQuantity + summQuantity.intValue();
@@ -543,6 +561,16 @@ public class OrdersLoadingController extends Application {
                                                 }
 
 
+                                                sqlSumQuantityKg = "select  sum(osbp.quantity) from orders_selections_by_point osbp where osbp.order_schedule_id=" + os.getId() + " and ( osbp.type_package='Βάσει βάρους επί καθαρού (kg)' or osbp.type_package='Βάσει βάρους επί μικτού (kg)' )  and osbp.order_waypoint_id is null";
+
+                                                System.out.println(sqlSumQuantityKg);
+                                                summQuantityKg = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantityKg).getSingleResult();
+                                                if (summQuantityKg != null) {
+                                                    finalSummQuantityKg = finalSummQuantityKg + summQuantityKg.intValue();
+                                                    osMap.put("finalSummQuantityKg", finalSummQuantityKg);
+                                                } else {
+                                                    osMap.put("finalSummQuantityKg", finalSummQuantityKg);
+                                                }
 
                                                 sqlPackages = "select * from orders_selections_by_point osbp where osbp.order_schedule_id=" + os.getId() + " and osbp.order_waypoint_id is null";
                                                 ordersSelectionsByPointEntityList = entityManager.createNativeQuery(sqlPackages, OrdersSelectionsByPointEntity.class).getResultList();
@@ -550,9 +578,6 @@ public class OrdersLoadingController extends Application {
                                                 packagesEkfortwshs = new ArrayList<HashMap<String, Object>>();
                                                 allPackages = new ArrayList<HashMap<String, Object>>();
                                                 for (OrdersSelectionsByPointEntity osafet : ordersSelectionsByPointEntityList) {
-
-
-
                                                     HashMap<String, Object> osafetmap = new HashMap<String, Object>();
                                                     osafetmap.put("id", osafet.getId());
                                                     osafetmap.put("orderId", osafet.getOrderId());
@@ -634,6 +659,7 @@ public class OrdersLoadingController extends Application {
                                                     finalSummPrice = 0.0;
                                                     finalSummLdm = 0.0;
                                                     finalSummQuantity = 0;
+                                                    finalSummQuantityKg = 0;
 
 
                                                     df = new DecimalFormat("###.#");
@@ -653,7 +679,7 @@ public class OrdersLoadingController extends Application {
                                                     } else {
                                                         owpeMap.put("finalSummLdm", df.format(finalSummLdm));
                                                     }
-                                                    sqlSumQuantity = "select  sum(osbp.quantity) from orders_selections_by_point osbp where osbp.order_schedule_id=" + owpe.getOrderScheduleId() + " and osbp.order_waypoint_id =" + owpe.getId();
+                                                    sqlSumQuantity = "select  sum(osbp.quantity) from orders_selections_by_point osbp where osbp.order_schedule_id=" + owpe.getOrderScheduleId() + " and osbp.type_package!='Βάσει βάρους επί καθαρού (kg)' and  osbp.type_package!='Βάσει βάρους επί μικτού (kg)' "+ " and osbp.order_waypoint_id =" + owpe.getId();
                                                     summQuantity = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantity).getSingleResult();
                                                     if (summQuantity != null) {
                                                         finalSummQuantity = finalSummQuantity + summQuantity.intValue();
@@ -662,6 +688,17 @@ public class OrdersLoadingController extends Application {
                                                         owpeMap.put("finalSummQuantity", finalSummQuantity);
                                                     }
 
+
+                                                    sqlSumQuantityKg = "select  sum(osbp.quantity) from orders_selections_by_point osbp where osbp.order_schedule_id=" + owpe.getOrderScheduleId() + "  and ( osbp.type_package='Βάσει βάρους επί καθαρού (kg)' or osbp.type_package='Βάσει βάρους επί μικτού (kg)' )  "+ " and osbp.order_waypoint_id =" + owpe.getId();
+                                                    summQuantityKg = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantityKg).getSingleResult();
+                                                    if (summQuantityKg != null) {
+                                                        finalSummQuantityKg = finalSummQuantityKg + summQuantityKg.intValue();
+                                                        owpeMap.put("finalSummQuantityKg", finalSummQuantityKg);
+                                                    } else {
+                                                        owpeMap.put("finalSummQuantityKg", finalSummQuantityKg);
+                                                    }
+                                                    System.out.println(sqlSumQuantityKg);
+                                                    System.out.println("finalSummQuantityKg>>>>>>>>:"+finalSummQuantityKg);
 
 
 
@@ -672,10 +709,6 @@ public class OrdersLoadingController extends Application {
                                                     packagesEkfortwshs = new ArrayList<HashMap<String, Object>>();
                                                     allPackages = new ArrayList<HashMap<String, Object>>();
                                                     for (OrdersSelectionsByPointEntity osafet : ordersSelectionsByPointEntityList) {
-
-
-
-
                                                         HashMap<String, Object> osafetmap = new HashMap<String, Object>();
                                                         osafetmap.put("id", osafet.getId());
                                                         osafetmap.put("orderId", osafet.getOrderId());
@@ -836,12 +869,10 @@ public class OrdersLoadingController extends Application {
                                         if (aa != null && !aa.equalsIgnoreCase("")) {
                                             sqlOrdLoads += " and  ord_load.aa like '%" + aa + "%' ";
                                         }
-
                                         if(idOrderSearch!=null && !idOrderSearch.equalsIgnoreCase("")){
                                             sqlOrdLoads += " and  ord_load.id in  (select olds.order_loading_id from orders_loading_orders_selections olds " +
                                                     "  where olds.order_id like '%"+idOrderSearch+"%' )";
                                         }
-
                                         if (truckTractorNameSearch != null && !truckTractorNameSearch.equalsIgnoreCase("")) {
                                             sqlOrdLoads += " and  ord_load.supplier_truck_tractor_id " + " in ( select t.id from trucks t  where t.brand_name   like '%" + truckTractorNameSearch + "%'   )";
                                         }
@@ -862,10 +893,7 @@ public class OrdersLoadingController extends Application {
                                         if (!start.equalsIgnoreCase("") && start != null) {
                                             sqlOrdLoads += " limit " + start + "," + limit;
                                         }
-
-
                                         System.out.println(sqlOrdLoads);
-
                                         HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                         List<HashMap<String, Object>> serversList = new ArrayList<HashMap<String, Object>>();
                                         List<OrdersLoadingEntity> ordersLoadingList
@@ -893,7 +921,6 @@ public class OrdersLoadingController extends Application {
                                             } else {
                                                 sHmpam.put("supplierName", "-");
                                             }
-                                            //
                                             if (j.getSupplierTruckTrailerId() != null && j.getSupplierTruckTrailerId() != 0) {
                                                 TrucksEntity truck = entityManager.find(TrucksEntity.class, j.getSupplierTruckTrailerId());
                                                 sHmpam.put("truckTrailerName", truck.getBrandName());
@@ -919,9 +946,11 @@ public class OrdersLoadingController extends Application {
                                             sHmpam.put("finalSummPrice", 0);
                                             sHmpam.put("finalSummLdm", 0);
                                             sHmpam.put("finalSummQuantity", 0);
+                                            sHmpam.put("finalSummQuantityKg", 0);
                                             Double finalSummPrice = 0.0;
                                             Double finalSummLdm = 0.0;
                                             Integer finalSummQuantity = 0;
+                                            Integer finalSummQuantityKg = 0;
                                             sHmpam.put("mainSchedule", j.getFromCountry() + " " +
                                                     j.getFromCity() + "  ->  " +
                                                     j.getToCountry() + " " +
@@ -961,6 +990,7 @@ public class OrdersLoadingController extends Application {
                                                         doneMap.put("creationDate", doneNode.findPath("creationDate").asText());
                                                         doneMap.put("summPrice", doneNode.findPath("summPrice").asText());
                                                         doneMap.put("summQuantity", doneNode.findPath("summQuantity").asText());
+                                                        doneMap.put("summQuantityKg", doneNode.findPath("summQuantityKg").asText());
                                                         doneMap.put("summLdm", doneNode.findPath("summLdm").asText());
                                                         doneMap.put("showDromologioIndicator", false);
                                                         doneMap.put("customerId", doneNode.findPath("customerId").asText());
@@ -983,7 +1013,7 @@ public class OrdersLoadingController extends Application {
                                                         } else {
                                                             sHmpam.put("finalSummLdm", df.format(finalSummLdm));
                                                         }
-                                                        String sqlSumQuantity = "select  sum(osp.quantity) from orders_selections_by_point osp where osp.order_id=" + doneNode.findPath("orderId").asText();
+                                                        String sqlSumQuantity = "select  sum(osp.quantity) from orders_selections_by_point osp where osp.order_id=" + doneNode.findPath("orderId").asText()+ " and osp.type_package!='Βάσει βάρους επί καθαρού (kg)' and osp.type_package!='Βάσει βάρους επί μικτού (kg)' ";
                                                         BigDecimal summQuantity = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantity).getSingleResult();
                                                         if (summQuantity != null) {
                                                             finalSummQuantity = finalSummQuantity + summQuantity.intValue();
@@ -991,6 +1021,20 @@ public class OrdersLoadingController extends Application {
                                                         } else {
                                                             sHmpam.put("finalSummQuantity", finalSummQuantity);
                                                         }
+
+
+
+                                                        String sqlSumQuantityKg = "select  sum(osbp.quantity) from orders_selections_by_point osbp where osbp.order_schedule_id=" +  doneNode.findPath("orderId").asText() + "  and ( osbp.type_package='Βάσει βάρους επί καθαρού (kg)' or osbp.type_package='Βάσει βάρους επί μικτού (kg)' ) ";
+                                                        BigDecimal summQuantityKg = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantityKg).getSingleResult();
+                                                        if (summQuantityKg != null) {
+                                                            finalSummQuantityKg = finalSummQuantityKg + summQuantityKg.intValue();
+                                                            sHmpam.put("finalSummQuantityKg", finalSummQuantityKg);
+                                                        } else {
+                                                            sHmpam.put("finalSummQuantityKg", finalSummQuantityKg);
+                                                        }
+
+
+
                                                         ObjectNode reqBodyDromWs = Json.newObject();
                                                         ObjectNode dromRes = Json.newObject();
                                                         reqBodyDromWs.put("orderId", os.getOrderId());
@@ -1024,11 +1068,10 @@ public class OrdersLoadingController extends Application {
                                                             dromResNodeMap.put("allPackages", dromResNode.findPath("allPackages"));
                                                             dromResNodeMap.put("packagesFortwshs", dromResNode.findPath("packagesFortwshs"));
                                                             dromResNodeMap.put("packagesEkfortwshs", dromResNode.findPath("packagesEkfortwshs"));
-
                                                             dromResNodeMap.put("finalSummPrice", dromResNode.findPath("finalSummPrice"));
                                                             dromResNodeMap.put("finalSummLdm", dromResNode.findPath("finalSummLdm"));
                                                             dromResNodeMap.put("finalSummQuantity", dromResNode.findPath("finalSummQuantity"));
-
+                                                            dromResNodeMap.put("finalSummQuantityKg", dromResNode.findPath("finalSummQuantityKg"));
                                                             dromResNodeMap.put("showPackagesIndicator", false);
                                                             dromResNodeMap.put("showDromologioIndicator", false);
                                                             dromResNodeMap.put("includedToDromologio", true);
