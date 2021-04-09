@@ -16,6 +16,7 @@ public class TrucksEntity {
     private Date creationDate;
     private Date udpateDate;
     private String trailerTrackor;
+    private Double ldm;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -115,5 +116,15 @@ public class TrucksEntity {
 
     public void setTrailerTrackor(String trailerTrackor) {
         this.trailerTrackor = trailerTrackor;
+    }
+
+    @Basic
+    @Column(name = "ldm")
+    public Double getLdm() {
+        return ldm;
+    }
+
+    public void setLdm(Double ldm) {
+        this.ldm = ldm;
     }
 }

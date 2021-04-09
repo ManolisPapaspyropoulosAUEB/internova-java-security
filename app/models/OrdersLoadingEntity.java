@@ -26,6 +26,7 @@ public class OrdersLoadingEntity {
     private Long supplierTruckTrailerId;
     private Long supplierTruckTractorId;
     private Integer aa;
+    private Double truckTrailerLdm;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -231,5 +232,15 @@ public class OrdersLoadingEntity {
 
     public void setAa(Integer aa) {
         this.aa = aa;
+    }
+
+    @Basic
+    @Column(name = "truck_trailer_ldm")
+    public Double getTruckTrailerLdm() {
+        return truckTrailerLdm;
+    }
+
+    public void setTruckTrailerLdm(Double truckTrailerLdm) {
+        this.truckTrailerLdm = truckTrailerLdm;
     }
 }

@@ -56,6 +56,7 @@ public class TrucksController extends Application {
                                     String plateNumber = json.findPath("plateNumber").asText();
                                     String description = json.findPath("description").asText();
                                     String trailerTrackor = json.findPath("trailerTrackor").asText();
+                                    Double ldm = json.findPath("ldm").asDouble();
                                     Long typeTruckId = json.findPath("typeTruckId").asLong();
                                     Long user_id = json.findPath("user_id").asLong();
                                     Long suplierId = json.findPath("suplierId").asLong();
@@ -65,6 +66,7 @@ public class TrucksController extends Application {
                                     truck.setPlateNumber(plateNumber);
                                     truck.setDescription(description);
                                     truck.setTypeTruckId(typeTruckId);
+                                    truck.setLdm(ldm);
                                     truck.setCreationDate(new Date());
                                     truck.setTrailerTrackor(trailerTrackor);
                                     entityManager.persist(truck);
@@ -123,6 +125,7 @@ public class TrucksController extends Application {
                                     String description = json.findPath("description").asText();
                                     Long typeTruckId = json.findPath("typeTruckId").asLong();
                                     Long user_id = json.findPath("user_id").asLong();
+                                    Double ldm = json.findPath("ldm").asDouble();
                                     Long id = json.findPath("id").asLong();
                                     Long suplierId = json.findPath("suplierId").asLong();
                                     String trailerTrackor = json.findPath("trailerTrackor").asText();
@@ -130,7 +133,7 @@ public class TrucksController extends Application {
                                     truck.setBrandName(brandName);
                                     truck.setPlateNumber(plateNumber);
                                     truck.setDescription(description);
-                                 //   truck.setTypeTruckId(typeTruckId);
+                                    truck.setLdm(ldm);
                                     truck.setUdpateDate(new Date());
                                     truck.setTrailerTrackor(trailerTrackor);
                                     if(trailerTrackor.equalsIgnoreCase("trailer")){
@@ -389,6 +392,7 @@ public class TrucksController extends Application {
                                             sHmpam.put("truckId", j.getId());
                                             sHmpam.put("brandName", j.getBrandName());
                                             sHmpam.put("description", j.getDescription());
+                                            sHmpam.put("ldm", j.getLdm());
                                             sHmpam.put("plateNumber", j.getPlateNumber());
                                             sHmpam.put("trailerTrackor", j.getTrailerTrackor());
                                             sHmpam.put("creationDate", j.getCreationDate());
