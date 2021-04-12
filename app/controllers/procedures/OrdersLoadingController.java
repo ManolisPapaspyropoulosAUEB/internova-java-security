@@ -563,7 +563,7 @@ public class OrdersLoadingController extends Application {
 
                                                 sqlSumQuantityKg = "select  sum(osbp.quantity) from orders_selections_by_point osbp where osbp.order_schedule_id=" + os.getId() + " and ( osbp.type_package='Βάσει βάρους επί καθαρού (kg)' or osbp.type_package='Βάσει βάρους επί μικτού (kg)' )  and osbp.order_waypoint_id is null";
 
-                                                System.out.println(sqlSumQuantityKg);
+
                                                 summQuantityKg = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantityKg).getSingleResult();
                                                 if (summQuantityKg != null) {
                                                     finalSummQuantityKg = finalSummQuantityKg + summQuantityKg.intValue();
@@ -697,8 +697,8 @@ public class OrdersLoadingController extends Application {
                                                     } else {
                                                         owpeMap.put("finalSummQuantityKg", finalSummQuantityKg);
                                                     }
-                                                    System.out.println(sqlSumQuantityKg);
-                                                    System.out.println("finalSummQuantityKg>>>>>>>>:"+finalSummQuantityKg);
+
+
 
 
 
@@ -893,7 +893,7 @@ public class OrdersLoadingController extends Application {
                                         if (!start.equalsIgnoreCase("") && start != null) {
                                             sqlOrdLoads += " limit " + start + "," + limit;
                                         }
-                                        System.out.println(sqlOrdLoads);
+
                                         HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                         List<HashMap<String, Object>> serversList = new ArrayList<HashMap<String, Object>>();
                                         List<OrdersLoadingEntity> ordersLoadingList

@@ -994,7 +994,6 @@ public class OrdersController extends Application {
                                 Long orderId = json.findPath("orderId").asLong();
                                 String city = json.findPath("city").asText();
                                 String unloadingLoadingCode = json.findPath("unloadingLoadingCode").asText();
-                                //
                                 String country = json.findPath("country").asText();
                                 String telephone = json.findPath("telephone").asText();
                                 String email = json.findPath("email").asText();
@@ -1171,7 +1170,6 @@ public class OrdersController extends Application {
                                 String truckTemprature = json.findPath("truckTemprature").asText();
                                 String sender = json.findPath("sender").asText();
                                 String timologioCode = json.findPath("timologioCode").asText();
-                                //
                                 String status = json.findPath("status").asText();
                                 String comments = json.findPath("comments").asText();
                                 String sqlPackagesByPoints =
@@ -1259,7 +1257,8 @@ public class OrdersController extends Application {
                                 Iterator fintIt = finalTimeline.iterator();
                                 while (fintIt.hasNext()) {
                                     JsonNode schedule = Json.toJson(fintIt.next());
-                                    String factoryId = schedule.findPath("factoryId").asText();
+                                    ((ObjectNode) schedule).remove("factory");
+                                    String factoryId = schedule.findPath("factoryId").asText();//
                                     String timeToArrive = schedule.findPath("timeToArrive").asText();
                                     Integer appointment = schedule.findPath("appointment").asInt();
                                     String appointmentDay = schedule.findPath("appointmentDay").asText();

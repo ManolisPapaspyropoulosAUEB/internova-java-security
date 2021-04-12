@@ -583,16 +583,13 @@ public class FactoriesController extends Application {
                                     String manager = json.findPath("manager").asText();
                                     String country = json.findPath("country").asText();
                                     String factoryType = json.findPath("factoryType").asText();
-
+                                    boolean appointmentRequired = json.findPath("appointmentRequired").asBoolean();//appointmentRequired
                                     postalCode = postalCode.replaceAll("\\s+","");
-
-                                    //
                                     String comments = json.findPath("comments").asText();
                                     Double longtitude = json.findPath("longitude").asDouble();
                                     Double lattitude = json.findPath("latitude").asDouble();
                                     String schedule = json.findPath("schedule").asText();
                                     String site = json.findPath("site").asText();//appointmentRequired
-                                    boolean appointmentRequired = json.findPath("appointmentRequired").asBoolean();//appointmentRequired
                                     String coordinates = json.findPath("coordinates").asText();
                                     String unloadingLoadingCode = json.findPath("unloadingLoadingCode").asText();
                                     Integer appointmentDays = json.findPath("appointmentDays").asInt();
