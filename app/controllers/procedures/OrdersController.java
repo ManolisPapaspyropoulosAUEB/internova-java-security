@@ -1574,6 +1574,7 @@ public class OrdersController extends Application {
                                         }
                                     }
                                 }
+
                                 add_result.put("status", "success");
                                 add_result.put("user_id", user_id);
                                 add_result.put("DO_ID", ordersEntity.getId());
