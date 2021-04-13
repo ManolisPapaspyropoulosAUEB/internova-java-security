@@ -551,6 +551,7 @@ public class CustomersSuppliersController extends Application {
     }
 
 
+
     @SuppressWarnings({"Duplicates", "unchecked"})
     public Result getAllCustomersSuppliersNoPagination(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();

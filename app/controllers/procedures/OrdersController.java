@@ -1259,12 +1259,6 @@ public class OrdersController extends Application {
                                     JsonNode schedule = Json.toJson(fintIt.next());
                                     ((ObjectNode) schedule).remove("factory");
                                     String factoryId = schedule.findPath("factoryId").asText();//
-                                    System.out.println(factoryId+">>>>>>>>>>>>>>>>>>>>>>-----------factoryId----------<<<<<<<<<<<<<<<<<<<<");
-                                    System.out.println(factoryId+">>>>>>>>>>>>>>>>>>>>>>-----------factoryId----------<<<<<<<<<<<<<<<<<<<<");
-                                    System.out.println(factoryId+">>>>>>>>>>>>>>>>>>>>>>-----------factoryId----------<<<<<<<<<<<<<<<<<<<<");
-                                    System.out.println(factoryId+">>>>>>>>>>>>>>>>>>>>>>-----------factoryId----------<<<<<<<<<<<<<<<<<<<<");
-                                    System.out.println(factoryId+">>>>>>>>>>>>>>>>>>>>>>-----------factoryId----------<<<<<<<<<<<<<<<<<<<<");
-                                    System.out.println(factoryId+">>>>>>>>>>>>>>>>>>>>>>-----------factoryId----------<<<<<<<<<<<<<<<<<<<<");
                                     String timeToArrive = schedule.findPath("timeToArrive").asText();
                                     Integer appointment = schedule.findPath("appointment").asInt();
                                     String appointmentDay = schedule.findPath("appointmentDay").asText();
