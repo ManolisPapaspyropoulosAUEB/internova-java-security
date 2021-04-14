@@ -425,6 +425,7 @@ public class FactoriesController extends Application {
                                             String orderCol = json.findPath("orderCol").asText();
                                             String descAsc = json.findPath("descAsc").asText();
                                             String factoryId = json.findPath("factoryId").asText();
+                                            String suplierId = json.findPath("suplierId").asText();
                                             String address = json.findPath("address").asText();
                                             String brandName = json.findPath("brandName").asText();
                                             String city = json.findPath("city").asText();
@@ -442,6 +443,19 @@ public class FactoriesController extends Application {
                                             }
                                             if(!factoryId.equalsIgnoreCase("") && factoryId!=null){
                                                 sqlWarehouses+=" and pos.id like '%"+factoryId+"%'";
+                                            }
+                                            if(!suplierId.equalsIgnoreCase("") && suplierId!=null){
+                                                sqlWarehouses+=" and " +
+                                                        " pos.id in " +
+                                                        " (" +
+                                                        " select factory_id " +
+                                                        " from order_schedules os " +
+                                                        " where os.order_id in (select id from orders ord where ord.customer_id="+suplierId+") " +
+                                                        " union " +
+                                                        " select factory_id " +
+                                                        " from order_waypoints wp " +
+                                                        " where wp.order_id in (select id from orders ord where ord.customer_id="+suplierId+") " +
+                                                        " )";
                                             }
                                             if(!factoryId.equalsIgnoreCase("") && factoryId!=null){
                                                 sqlWarehouses+=" and pos.id like '%"+factoryId+"%'";

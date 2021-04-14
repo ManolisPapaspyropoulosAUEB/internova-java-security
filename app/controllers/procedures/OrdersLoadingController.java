@@ -70,7 +70,8 @@ public class OrdersLoadingController extends Application {
                                 ordersLoadingEntity.setComments(commentsMaster);
                                 entityManager.merge(ordersLoadingEntity);
                                 String sql = "select * from orders_loading_orders_selections olds where  olds.order_loading_id=" + ordersLoadingId;
-                                List<OrdersLoadingOrdersSelectionsEntity> ordersLoadingEntityList = entityManager.createNativeQuery(sql, OrdersLoadingOrdersSelectionsEntity.class).getResultList();
+                                List<OrdersLoadingOrdersSelectionsEntity> ordersLoadingEntityList =
+                                        entityManager.createNativeQuery(sql, OrdersLoadingOrdersSelectionsEntity.class).getResultList();
                                 for (OrdersLoadingOrdersSelectionsEntity ols : ordersLoadingEntityList) {
                                     entityManager.remove(ols);
                                 }
@@ -79,7 +80,9 @@ public class OrdersLoadingController extends Application {
                                 while (doneListIt.hasNext()) {
                                     JsonNode orderNode = (JsonNode) doneListIt.next();
                                     if (counter == 0) {
-                                        String sqlOrderMasterSchedule = "select * from order_schedules os where os.order_id=" + orderNode.findPath("orderId").asLong() +
+                                        String sqlOrderMasterSchedule = "select * " +
+                                                        "from order_schedules os " +
+                                                "where os.order_id=" + orderNode.findPath("orderId").asLong() +
                                                 " and os.primary_schedule=1";
                                         List<OrderSchedulesEntity> orderSchedulesEntityList = entityManager.createNativeQuery(sqlOrderMasterSchedule, OrderSchedulesEntity.class).getResultList();
                                         ordersLoadingEntity.setFromCity(orderSchedulesEntityList.get(0).getFromCity());
@@ -112,7 +115,7 @@ public class OrdersLoadingController extends Application {
                                                 if (appointmentDay != null && !appointmentDay.equalsIgnoreCase("")) {
                                                     try {
                                                         Date appointmentDayDate = myDateFormat.parse(appointmentDay);
-                                                        orderSchedulesEntity.setAppointmentDayLoad(appointmentDayDate);
+                                                        orderSchedulesEntity.setAppointmentDay(appointmentDayDate);
                                                     } catch (ParseException e) {
                                                         e.printStackTrace();
                                                     }
@@ -128,7 +131,7 @@ public class OrdersLoadingController extends Application {
                                                 if (appointmentDay != null && !appointmentDay.equalsIgnoreCase("")) {
                                                     try {
                                                         Date appointmentDayDate = myDateFormat.parse(appointmentDay);
-                                                        orderWaypointsEntity.setAppointmentDayLoad(appointmentDayDate);
+                                                        orderWaypointsEntity.setAppointmentDay(appointmentDayDate);
                                                     } catch (ParseException e) {
                                                         e.printStackTrace();
                                                     }
@@ -236,7 +239,7 @@ public class OrdersLoadingController extends Application {
                                                 if (appointmentDay != null && !appointmentDay.equalsIgnoreCase("")) {
                                                     try {
                                                         Date appointmentDayDate = myDateFormat.parse(appointmentDay);
-                                                        orderSchedulesEntity.setAppointmentDayLoad(appointmentDayDate);
+                                                        orderSchedulesEntity.setAppointmentDay(appointmentDayDate);
                                                     } catch (ParseException e) {
                                                         e.printStackTrace();
                                                     }
@@ -252,7 +255,7 @@ public class OrdersLoadingController extends Application {
                                                 if (appointmentDay != null && !appointmentDay.equalsIgnoreCase("")) {
                                                     try {
                                                         Date appointmentDayDate = myDateFormat.parse(appointmentDay);
-                                                        orderWaypointsEntity.setAppointmentDayLoad(appointmentDayDate);
+                                                        orderWaypointsEntity.setAppointmentDay(appointmentDayDate);
                                                     } catch (ParseException e) {
                                                         e.printStackTrace();
                                                     }
@@ -503,7 +506,7 @@ public class OrdersLoadingController extends Application {
                                                     osMap.put("address", entityManager.find(FactoriesEntity.class, os.getFactoryId()).getAddress());
                                                     osMap.put("orderId", os.getOrderId());
                                                     osMap.put("orderScheduleId", os.getId());
-                                                    osMap.put("appointmentDay", os.getAppointmentDayLoad());
+                                                    osMap.put("appointmentDay", os.getAppointmentDay());
                                                     osMap.put("appointment", os.getAppointment());
                                                     osMap.put("postalCode", entityManager.find(FactoriesEntity.class, os.getFactoryId()).getPostalCode());
                                                     OrdersEntity ordersEntity = entityManager.find(OrdersEntity.class, json.findPath("orderId").asLong());
@@ -517,7 +520,7 @@ public class OrdersLoadingController extends Application {
                                                     osMap.put("message", "Δεν έχει οριστεί εργοστάσιο ή αποθήκη ");
                                                     osMap.put("city", os.getFromCity());
                                                     osMap.put("country", os.getFromCountry());
-                                                    osMap.put("appointmentDay", os.getAppointmentDayLoad());
+                                                    osMap.put("appointmentDay", os.getAppointmentDay());
                                                     osMap.put("appointment", os.getAppointment());
                                                     osMap.put("orderId", os.getOrderId());
                                                     osMap.put("orderScheduleId", os.getId());
@@ -619,7 +622,7 @@ public class OrdersLoadingController extends Application {
                                                         owpeMap.put("country", entityManager.find(FactoriesEntity.class, owpe.getFactoryId()).getCountry());
                                                         owpeMap.put("orderId", owpe.getOrderId());
                                                         owpeMap.put("waypointId", owpe.getId());
-                                                        owpeMap.put("appointmentDay", owpe.getAppointmentDayLoad());
+                                                        owpeMap.put("appointmentDay", owpe.getAppointmentDay());
                                                         owpeMap.put("appointment", owpe.getAppointment());
                                                         owpeMap.put("address", entityManager.find(FactoriesEntity.class, owpe.getFactoryId()).getAddress());
                                                         owpeMap.put("postalCode", entityManager.find(FactoriesEntity.class, owpe.getFactoryId()).getPostalCode());
@@ -635,7 +638,7 @@ public class OrdersLoadingController extends Application {
                                                         owpeMap.put("orderId", owpe.getOrderId());
                                                         owpeMap.put("waypointId", owpe.getId());
                                                         owpeMap.put("country", owpe.getCountry());
-                                                        owpeMap.put("appointmentDay", owpe.getAppointmentDayLoad());
+                                                        owpeMap.put("appointmentDay", owpe.getAppointmentDay());
                                                         owpeMap.put("appointment", owpe.getAppointment());
                                                         owpeMap.put("postalCode", owpe.getPostalCode());
                                                         OrdersEntity ordersEntity = entityManager.find(OrdersEntity.class, json.findPath("orderId").asLong());

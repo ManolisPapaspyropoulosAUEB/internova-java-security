@@ -324,6 +324,7 @@ public class OffersController extends Application {
                                             String offerDate = json.findPath("offerDate").asText();
                                             String aa = json.findPath("aa").asText();
                                             String customer = json.findPath("customer").asText();
+                                            String suplierId = json.findPath("suplierId").asText();
                                             String status = json.findPath("status").asText();
                                             String from = json.findPath("from").asText();
                                             String to = json.findPath("to").asText();
@@ -335,6 +336,12 @@ public class OffersController extends Application {
                                             if (!id.equalsIgnoreCase("") && id != null) {
                                                 sqlCustSupl += " and offer.id =" + id + "";
                                             }
+
+                                            if(suplierId!=null && !suplierId.equalsIgnoreCase("")){
+                                                sqlCustSupl += " and  offer.customer_id="+suplierId;
+                                            }
+
+
                                             if (!customer.equalsIgnoreCase("") && customer != null) {
                                                 sqlCustSupl += " and offer.customer_id  in " +
                                                         " ( select id from  customers_suppliers cs where cs.brand_name like '%" + customer + "%' )";
