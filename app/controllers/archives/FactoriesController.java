@@ -181,14 +181,40 @@ public class FactoriesController extends Application {
                                             String limit = json.findPath("limit").asText();
                                             String sqlFactFinal="";
                                             String sqlFact1= "" +
-                                                    " select pos.* " +
-                                                    " from factories pos  " +
-                                                    " where id in ( select factory_id from orders ord where ord.customer_id= "+customerId+")" ;
-                                            String sqlFact2= " select * " +
-                                                    "from factories pos  " +
-                                                    "where id in ( select factory_id from orders ord where ord.customer_id!= "+customerId+")" ;
+                                                    "select * from factories pos \n" +
+                                                    "where pos.id in \n" +
+                                                    "(\n" +
+                                                    "\n" +
+                                                    "select factory_id \n" +
+                                                    "from order_schedules os \n" +
+                                                    "where os.order_id in (select ord.id from orders ord where ord.customer_id="+customerId+")\n" +
+                                                    "\n" +
+                                                    "union\n" +
+                                                    "\n" +
+                                                    "select factory_id \n" +
+                                                    "from order_waypoints ow \n" +
+                                                    "where ow.order_id in (select ord.id from orders ord where ord.customer_id="+customerId+")\n" +
+                                                    "\n" +
+                                                    ")\n" ;
+                                            String sqlFact2= "select * from factories pos \n" +
+                                                    "where pos.id in \n" +
+                                                    "(\n" +
+                                                    "\n" +
+                                                    "select factory_id \n" +
+                                                    "from order_schedules os \n" +
+                                                    "where os.order_id in (select ord.id from orders ord where ord.customer_id!="+customerId+")\n" +
+                                                    "\n" +
+                                                    "union\n" +
+                                                    "\n" +
+                                                    "select factory_id \n" +
+                                                    "from order_waypoints ow \n" +
+                                                    "where ow.order_id in (select ord.id from orders ord where ord.customer_id!="+customerId+")\n" +
+                                                    "\n" +
+                                                    ") " ;
                                             String sqlFact3= " select * " +
                                                     "from factories pos where 1=1 ";
+
+
                                             if(typeCategory.equalsIgnoreCase("1")){
                                                 sqlFactFinal=sqlFact1;
                                             }else if (typeCategory.equalsIgnoreCase("2")){
@@ -205,7 +231,6 @@ public class FactoriesController extends Application {
                                             if(!factoryId.equalsIgnoreCase("") && factoryId!=null && !factoryId.equalsIgnoreCase("null")){
                                                 sqlFactFinal+=" and pos.id like '%"+factoryId+"%'";
                                             }
-
                                             if(!postalCode.equalsIgnoreCase("") && postalCode!=null  && !postalCode.equalsIgnoreCase("null")){
                                                 sqlFactFinal+=" and pos.postal_code like '%"+postalCode+"%'";
                                             }
@@ -460,7 +485,6 @@ public class FactoriesController extends Application {
                                             if(!factoryId.equalsIgnoreCase("") && factoryId!=null){
                                                 sqlWarehouses+=" and pos.id like '%"+factoryId+"%'";
                                             }
-
                                             if(!address.equalsIgnoreCase("") && address!=null){
                                                 sqlWarehouses+=" and pos.address like '%"+address+"%'";
                                             }
@@ -502,8 +526,6 @@ public class FactoriesController extends Application {
                                             if (!start.equalsIgnoreCase("") && start != null) {
                                                 sqlWarehouses += " limit " + start + "," + limit;
                                             }
-                                            System.out.println(sqlWarehouses);
-
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             List<HashMap<String, Object>> filalist = new ArrayList<HashMap<String, Object>>();
                                             List<FactoriesEntity> warehousesEntityList

@@ -195,9 +195,17 @@ public class TrucksController extends Application {
                                     String sql = "select * from suppliers_trucks st where st.truck_id="+id;
                                     List<SuppliersTrucksEntity> stlist = entityManager.createNativeQuery(sql,SuppliersTrucksEntity.class).getResultList();
 
+                                    String sqlLoadings = "select * from orders_loading st where st.supplier_truck_trailer_id="+id +" or  st.supplier_truck_tractor_id= "+id ;
+                                    List<OrdersLoadingEntity> ordersLoadingEntityList = entityManager.createNativeQuery(sqlLoadings,OrdersLoadingEntity.class).getResultList();
+
                                     if(stlist.size()>0){
                                         update_result.put("status", "error");
-                                        update_result.put("message", "Βρέθηκε συνδεδεμένη εγγραφή");
+                                        update_result.put("message", "Βρέθηκε συνδεδεμένη εγγραφή με προμηθευτή");
+                                        return update_result;
+                                    }
+                                    if(ordersLoadingEntityList.size()>0){
+                                        update_result.put("status", "error");
+                                        update_result.put("message", "Βρέθηκε συνδεδεμένη εγγραφή σε Φορτώσεις");
                                         return update_result;
                                     }
                                     entityManager.remove(truck);
@@ -396,9 +404,9 @@ public class TrucksController extends Application {
                                             sHmpam.put("truckId", j.getId());
                                             sHmpam.put("brandName", j.getBrandName());
                                             if(j.getTypeTruckId()!=0){
-                                                sHmpam.put("brandNameConcatLdm", j.getBrandName().concat( " / Type: ").concat(entityManager.find(TruckTypeEntity.class,j.getTypeTruckId()).getType()).concat(" / LDM: ").concat(j.getLdm().toString()));
+                                                sHmpam.put("brandNameConcatLdm",j.getPlateNumber() +"/ Title: "+ j.getBrandName().concat( " / Type: ").concat(entityManager.find(TruckTypeEntity.class,j.getTypeTruckId()).getType()).concat(" / LDM: ").concat(j.getLdm().toString()));
                                             }else{
-                                                sHmpam.put("brandNameConcatLdm", j.getBrandName().concat(" /Type: - ").concat(" / LDM: ").concat(j.getLdm().toString()));
+                                                sHmpam.put("brandNameConcatLdm", j.getPlateNumber() +"/ Title: "+j.getBrandName().concat(" /Type: - ").concat(" / LDM: ").concat(j.getLdm().toString()));
 
                                             }
                                             sHmpam.put("description", j.getDescription());
