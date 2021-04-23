@@ -1,4 +1,5 @@
 package controllers.documents;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -11,6 +12,7 @@ import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.libs.Files.TemporaryFile;
+
 import javax.inject.Inject;
 import java.io.*;
 import java.nio.file.Paths;
@@ -19,19 +21,23 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
+
 public class DocumentsController extends Application {
     private JPAApi jpaApi;
     private DatabaseExecutionContext executionContext;
+
     @Inject
     public DocumentsController(JPAApi jpaApi, DatabaseExecutionContext executionContext) {
-        super(jpaApi,  executionContext);
+        super(jpaApi, executionContext);
         this.jpaApi = jpaApi;
         this.executionContext = executionContext;
     }
 
     final static String uploadPath = ConfigFactory.load().getString("uploads_dir");
+
     @SuppressWarnings("Duplicates")
     public Result uploadFile(final Http.Request request) {
         ObjectNode result = Json.newObject();
@@ -56,14 +62,28 @@ public class DocumentsController extends Application {
                 String originalFileName = fileNameArr[0];
                 String fileName_random = fileNameArr[0] + "_" + rand.nextInt(1000);
                 String fullPath = id + "/" + fileName_random;
-                File uploadsDir = new File(ConfigFactory.load().getString("uploads_dir") + "/"+system+"/"+ id);
+                File uploadsDir = new File(ConfigFactory.load().getString("uploads_dir") + "/" + system + "/" + id);
                 if (!uploadsDir.exists()) {
                     uploadsDir.mkdirs();
                 }
-                file.copyTo(Paths.get(uploadPath + system + "/"+id+"/" + fileName_random + "." + extension), true);
+                file.copyTo(Paths.get(uploadPath + system + "/" + id + "/" + fileName_random + "." + extension), true);
                 CompletableFuture<JsonNode> newDbEntryFile = CompletableFuture.supplyAsync(() -> {
                             return jpaApi.withTransaction(entityManager -> {
                                 ObjectNode result_future = Json.newObject();
+
+                                /** remove old fro system ordersLoadings **/
+                                if (system.equalsIgnoreCase("ordersLoadings")) {
+                                    String SQL = "select d from DocumentsEntity d where d.system='ordersLoadings' and d.subFolderId=" + id;
+                                    List<DocumentsEntity> docList = entityManager.createQuery(SQL, DocumentsEntity.class).getResultList();
+                                    for (DocumentsEntity d : docList) {
+                                        File dest = new File(uploadPath.concat(d.getFullPath()));
+                                        dest.delete();
+                                        entityManager.remove(d);
+                                    }
+                                }
+                                /** remove old fro system ordersLoadings **/
+
+
                                 DocumentsEntity newDoc = new DocumentsEntity();
                                 newDoc.setName(fileName_random);
                                 newDoc.setOriginalFilename(originalFileName);
@@ -71,8 +91,11 @@ public class DocumentsController extends Application {
                                 newDoc.setUploadDate(new Date());
                                 newDoc.setSubFolderId(Long.valueOf(id));
                                 newDoc.setSystem(system);
-                                newDoc.setFullPath(system+"/"+fullPath+"."+extension);
+                                newDoc.setFullPath(system + "/" + fullPath + "." + extension);
                                 entityManager.persist(newDoc);
+
+                                /*remove old fro system */
+
                                 result_future.put("docId", newDoc.getId());
                                 result_future.put("status", "success");
                                 result_future.put("message", "Το έγγραφο ανέβηκε με επιτυχία!");
@@ -103,7 +126,7 @@ public class DocumentsController extends Application {
             } else {
                 System.out.println(json.findPath("userId"));
                 if ((json.findPath("system").asText() == null || json.findPath("system").asText().equalsIgnoreCase(""))
-                || (json.findPath("subFolderId").asText() == null || json.findPath("subFolderId").asText().equalsIgnoreCase(""))) {
+                        || (json.findPath("subFolderId").asText() == null || json.findPath("subFolderId").asText().equalsIgnoreCase(""))) {
                     result.put("status", "error");
                     result.put("message", "Δεν εχετε αποστειλει εγκυρα δεδομενα.");
                     return ok(result);
@@ -120,33 +143,33 @@ public class DocumentsController extends Application {
                                             String subFolderId = json.findPath("subFolderId").asText();
                                             List<DocumentsEntity> orgsList
                                                     = (List<DocumentsEntity>) entityManager.createNativeQuery(
-                                                    "select * from documents d where d.sub_folder_id=" + subFolderId +" and d.system="+"'"+system+"'", DocumentsEntity.class).getResultList();
+                                                    "select * from documents d where d.sub_folder_id=" + subFolderId + " and d.system=" + "'" + system + "'", DocumentsEntity.class).getResultList();
                                             for (DocumentsEntity j : orgsList) {
                                                 HashMap<String, Object> sHmpam = new HashMap<String, Object>();
                                                 sHmpam.put("id", j.getId());
                                                 sHmpam.put("name", j.getName());
-                                                sHmpam.put("originalFilename", j.getOriginalFilename()+"."+j.getExtension());
+                                                sHmpam.put("originalFilename", j.getOriginalFilename() + "." + j.getExtension());
                                                 sHmpam.put("userId", j.getUserId());
                                                 sHmpam.put("endDate", j.getEndDate());
                                                 sHmpam.put("uploadDate", j.getUploadDate());
-                                                if(j.getEndDate()!=null){
+                                                if (j.getEndDate() != null) {
                                                     Date date2 = new Date();
                                                     int currentDate = Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(date2));
                                                     int endD =
                                                             Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(j.getEndDate()));
-                                                    if(endD<currentDate){
-                                                        sHmpam.put("colorEndDate",true);
-                                                        sHmpam.put("colorOrangeEndDate",false);
-                                                        sHmpam.put("msg","Η ημερομηνία λήξης έχει παρέλθει");
-                                                    }else if(endD<currentDate+10){
-                                                        sHmpam.put("colorEndDate",false);
-                                                        sHmpam.put("colorOrangeEndDate",true);
-                                                        sHmpam.put("msg","Σε λιγότερες από 10 μέρες λήγει");
+                                                    if (endD < currentDate) {
+                                                        sHmpam.put("colorEndDate", true);
+                                                        sHmpam.put("colorOrangeEndDate", false);
+                                                        sHmpam.put("msg", "Η ημερομηνία λήξης έχει παρέλθει");
+                                                    } else if (endD < currentDate + 10) {
+                                                        sHmpam.put("colorEndDate", false);
+                                                        sHmpam.put("colorOrangeEndDate", true);
+                                                        sHmpam.put("msg", "Σε λιγότερες από 10 μέρες λήγει");
                                                     }
-                                                }else{
-                                                    sHmpam.put("colorEndDate",false);
-                                                    sHmpam.put("colorOrangeEndDate",false);
-                                                    sHmpam.put("msg","");
+                                                } else {
+                                                    sHmpam.put("colorEndDate", false);
+                                                    sHmpam.put("colorOrangeEndDate", false);
+                                                    sHmpam.put("msg", "");
                                                 }
                                                 serversList.add(sHmpam);
                                             }
@@ -190,7 +213,7 @@ public class DocumentsController extends Application {
                                 entityManager -> {
                                     ObjectNode res = Json.newObject();
                                     Integer id = json.findPath("id").asInt();
-                                    DocumentsEntity doc = entityManager.find(DocumentsEntity.class,id);
+                                    DocumentsEntity doc = entityManager.find(DocumentsEntity.class, id);
                                     File dest = new File(uploadPath.concat(doc.getFullPath()));
                                     dest.delete();
                                     entityManager.remove(doc);
@@ -211,7 +234,6 @@ public class DocumentsController extends Application {
     }
 
 
-
     @SuppressWarnings({"Duplicates", "unchecked"})
     public Result updateAttatchment(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();
@@ -224,10 +246,10 @@ public class DocumentsController extends Application {
                                     ObjectNode res = Json.newObject();
                                     Integer id = json.findPath("id").asInt();
                                     String endDate = json.findPath("endDate").asText();
-                                    DocumentsEntity doc = entityManager.find(DocumentsEntity.class,id);
+                                    DocumentsEntity doc = entityManager.find(DocumentsEntity.class, id);
 
                                     DateFormat myDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                                    if(endDate!=null && !endDate.equalsIgnoreCase("")){
+                                    if (endDate != null && !endDate.equalsIgnoreCase("")) {
                                         try {
                                             Date endDayDate = myDateFormat.parse(endDate);
                                             doc.setEndDate(endDayDate);
@@ -263,7 +285,7 @@ public class DocumentsController extends Application {
                         return jpaApi.withTransaction(
                                 entityManager -> {
                                     String id = json.findPath("id").asText();
-                                    String sql ="select * from documents d where d.id=" + id;
+                                    String sql = "select * from documents d where d.id=" + id;
                                     List<DocumentsEntity> docsList
                                             = (List<DocumentsEntity>) entityManager.createNativeQuery(
                                             sql, DocumentsEntity.class).getResultList();
@@ -296,7 +318,7 @@ public class DocumentsController extends Application {
                         return jpaApi.withTransaction(
                                 entityManager -> {
 
-                                    String sql ="select * from documents d where d.id=" + json.findPath("id").asText();
+                                    String sql = "select * from documents d where d.id=" + json.findPath("id").asText();
                                     List<DocumentsEntity> docsList
                                             = (List<DocumentsEntity>) entityManager.createNativeQuery(
                                             sql, DocumentsEntity.class).getResultList();

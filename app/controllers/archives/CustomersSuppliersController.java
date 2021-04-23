@@ -420,9 +420,9 @@ public class CustomersSuppliersController extends Application {
                                             if (!customersSupliersTypes.equalsIgnoreCase("") && customersSupliersTypes != null && !customersSupliersTypes.equalsIgnoreCase("null")) {
                                                 sqlCustSupl += " and pos.customer_type = '" + customersSupliersTypes + "'";
                                             }
-                                            if (supplier == true) {
-                                                sqlCustSupl += " and pos.customer_type in ('Προμηθευτής','Πελάτης & Προμηθευτής') and pos.id in (select o.customer_id from orders o )";
-                                            }
+//                                            if (supplier == true) {
+//                                                sqlCustSupl += " and pos.customer_type in ('Προμηθευτής','Πελάτης & Προμηθευτής') and pos.id in (select o.customer_id from orders o )";
+//                                            }
                                             if (!brandName.equalsIgnoreCase("") && brandName != null) {
                                                 sqlCustSupl += " and pos.brand_name like '%" + brandName + "%'";
                                             }
@@ -519,12 +519,11 @@ public class CustomersSuppliersController extends Application {
                                                 sHmpam.put("creationDate", j.getCreationDate());
                                                 sHmpam.put("telephone", j.getTelephone());
                                                 sHmpam.put("updateDate", j.getUpdateDate());
-                                                if(supplier){
-                                                    String sqlFirstOrder = "select * from orders o where o.customer_id = "+j.getId();
-                                                    List<OrdersEntity> ordersEntityList = entityManager.createNativeQuery(sqlFirstOrder,OrdersEntity.class).getResultList();
-                                                    sHmpam.put("orderId", ordersEntityList.get(0));
-                                                    sHmpam.put("brandName", ordersEntityList.get(0).getId()+"/"+j.getBrandName());
-                                                }
+//                                                if(supplier){
+//                                                    String sqlFirstOrder = "select * from orders o where o.customer_id = "+j.getId();
+//                                                    List<OrdersEntity> ordersEntityList = entityManager.createNativeQuery(sqlFirstOrder,OrdersEntity.class).getResultList();
+//                                                    sHmpam.put("orderId", ordersEntityList.get(0));
+//                                                }
                                                 filalist.add(sHmpam);
                                                 index++;
                                             }

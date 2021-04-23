@@ -27,6 +27,8 @@ public class OrdersLoadingEntity {
     private Long supplierTruckTractorId;
     private Integer aa;
     private Double truckTrailerLdm;
+    private String arithmosTimologiou;
+    private Byte timologioIndicator;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -242,5 +244,25 @@ public class OrdersLoadingEntity {
 
     public void setTruckTrailerLdm(Double truckTrailerLdm) {
         this.truckTrailerLdm = truckTrailerLdm;
+    }
+
+    @Basic
+    @Column(name = "arithmos_timologiou")
+    public String getArithmosTimologiou() {
+        return arithmosTimologiou;
+    }
+
+    public void setArithmosTimologiou(String arithmosTimologiou) {
+        this.arithmosTimologiou = arithmosTimologiou;
+    }
+
+    @Basic
+    @Column(name = "timologio_indicator")
+    public Byte getTimologioIndicator() {
+        return timologioIndicator;
+    }
+
+    public void setTimologioIndicator(Byte timologioIndicator) {
+        this.timologioIndicator = timologioIndicator;
     }
 }
