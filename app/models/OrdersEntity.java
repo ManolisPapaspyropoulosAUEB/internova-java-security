@@ -27,6 +27,8 @@ public class OrdersEntity {
     private String grossWeight;
     private String netWeight;
     private String timologioCode;
+    private Byte crmIndicator;
+    private String crmNumber;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -244,5 +246,25 @@ public class OrdersEntity {
 
     public void setTimologioCode(String timologioCode) {
         this.timologioCode = timologioCode;
+    }
+
+    @Basic
+    @Column(name = "crm_indicator")
+    public Byte getCrmIndicator() {
+        return crmIndicator;
+    }
+
+    public void setCrmIndicator(Byte crmIndicator) {
+        this.crmIndicator = crmIndicator;
+    }
+
+    @Basic
+    @Column(name = "crm_number")
+    public String getCrmNumber() {
+        return crmNumber;
+    }
+
+    public void setCrmNumber(String crmNumber) {
+        this.crmNumber = crmNumber;
     }
 }

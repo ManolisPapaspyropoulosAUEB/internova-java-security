@@ -81,6 +81,15 @@ public class DocumentsController extends Application {
                                         entityManager.remove(d);
                                     }
                                 }
+                                if (system.equalsIgnoreCase("ordersLoadings-order")) {
+                                    String SQL = "select d from DocumentsEntity d where d.system='ordersLoadings-order' and d.subFolderId=" + id;
+                                    List<DocumentsEntity> docList = entityManager.createQuery(SQL, DocumentsEntity.class).getResultList();
+                                    for (DocumentsEntity d : docList) {
+                                        File dest = new File(uploadPath.concat(d.getFullPath()));
+                                        dest.delete();
+                                        entityManager.remove(d);
+                                    }
+                                }
                                 /** remove old fro system ordersLoadings **/
 
 

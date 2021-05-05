@@ -73,6 +73,8 @@ public class OrdersLoadingController extends Application {
                                 ordersLoadingEntity.setStatus(status);
                                 ordersLoadingEntity.setSupplierId(customerSupplierId);
                                 ordersLoadingEntity.setNaulo(naulo);
+                                ordersLoadingEntity.setArithmosTimologiou(arithmosTimologiou);
+
                                 if(timologioIndicator){
                                     ordersLoadingEntity.setTimologioIndicator((byte) 1);
                                 }else{
@@ -96,13 +98,26 @@ public class OrdersLoadingController extends Application {
 
                                 while (doneListIt.hasNext()) {
                                     JsonNode orderNode = (JsonNode) doneListIt.next();
+                                    Iterator dromologioParIter = orderNode.findPath("dromologioParaggelias").iterator();
+                                    ((ObjectNode)orderNode).remove("dromologioParaggelias");
+                                    String statusOrder = orderNode.findPath("status").asText();
+                                    String crmNumber = orderNode.findPath("crmNumber").asText();
+                                    String crmIndicator = orderNode.findPath("crmIndicator").asText();
+
                                     OrdersEntity order = entityManager.find(OrdersEntity.class,orderNode.findPath("orderId").asLong());
-                                    order.setStatus("ΠΡΟΣ ΕΚΤΕΛΕΣΗ");
+                                    order.setStatus(statusOrder);
+                                    order.setStatus(statusOrder);
+                                    order.setCrmNumber(crmNumber);
+                                    if(crmIndicator.equalsIgnoreCase("true")){
+                                        order.setCrmIndicator((byte) 1);
+                                    }else{
+                                        order.setCrmIndicator((byte) 0);
+                                    }
+
                                     OrdersLoadingOrdersSelectionsEntity ordersLoadingOrdersSelectionsEntity = new OrdersLoadingOrdersSelectionsEntity();
                                     ordersLoadingOrdersSelectionsEntity.setCreationDate(new Date());
                                     ordersLoadingOrdersSelectionsEntity.setOrderId(orderNode.findPath("orderId").asLong());
                                     ordersLoadingOrdersSelectionsEntity.setOrderLoadingId(ordersLoadingEntity.getId());
-                                    Iterator dromologioParIter = orderNode.findPath("dromologioParaggelias").iterator();
                                     while (dromologioParIter.hasNext()) {
                                         JsonNode dromologioParNode = (JsonNode) dromologioParIter.next();
                                         finalDromologioParaggelias.add(dromologioParNode);
@@ -146,7 +161,7 @@ public class OrdersLoadingController extends Application {
                                 while (doneListIt.hasNext()) {
                                     JsonNode orderNode = (JsonNode) doneListIt.next();
                                     OrdersEntity order = entityManager.find(OrdersEntity.class,orderNode.findPath("orderId").asLong());
-                                    order.setStatus("ΠΡΟΣ ΕΚΤΕΛΕΣΗ");
+
                                     OrdersLoadingOrdersSelectionsEntity ordersLoadingOrdersSelectionsEntity = new OrdersLoadingOrdersSelectionsEntity();
                                     ordersLoadingOrdersSelectionsEntity.setCreationDate(new Date());
                                     ordersLoadingOrdersSelectionsEntity.setOrderId(orderNode.findPath("orderId").asLong());
@@ -310,8 +325,16 @@ public class OrdersLoadingController extends Application {
                                     Iterator dromologioParIter = orderNode.findPath("dromologioParaggelias").iterator();
                                     ((ObjectNode)orderNode).remove("dromologioParaggelias");
                                     String statusOrder = orderNode.findPath("status").asText();
+                                    String crmNumber = orderNode.findPath("crmNumber").asText();
+                                    String crmIndicator = orderNode.findPath("crmIndicator").asText();
                                     OrdersEntity order = entityManager.find(OrdersEntity.class,orderNode.findPath("orderId").asLong());
                                     order.setStatus(statusOrder);
+                                    order.setCrmNumber(crmNumber);
+                                    if(crmIndicator.equalsIgnoreCase("true")){
+                                        order.setCrmIndicator((byte) 1);
+                                    }else{
+                                        order.setCrmIndicator((byte) 0);
+                                    }
                                     OrdersLoadingOrdersSelectionsEntity ordersLoadingOrdersSelectionsEntity = new OrdersLoadingOrdersSelectionsEntity();
                                     ordersLoadingOrdersSelectionsEntity.setCreationDate(new Date());
                                     ordersLoadingOrdersSelectionsEntity.setOrderId(orderNode.findPath("orderId").asLong());
@@ -558,7 +581,32 @@ public class OrdersLoadingController extends Application {
                                             for (OrdersEntity j : ordersEntityList) {
                                                 HashMap<String, Object> sHmpam = new HashMap<String, Object>();
                                                 List<HashMap<String, Object>> dromologioParaggelias = new ArrayList<HashMap<String, Object>>();
+
+                                                String sqlPack="select * from orders_selections_by_point osp where osp.order_id= "+j.getId();
+                                                List<OrdersSelectionsByPointEntity> ordersPackages = entityManager.createNativeQuery(sqlPack,OrdersSelectionsByPointEntity.class).getResultList();
+                                                List<String> typePack = new ArrayList<String>();
+                                                for(OrdersSelectionsByPointEntity op :ordersPackages){
+                                                    typePack.add( entityManager.find(PackageTypeEntity.class, op.getPackageTypeId()).getType() );
+                                                }
+                                                sHmpam.put("typePack", typePack);
+                                                if(typePack.size()>0){
+                                                    sHmpam.put("firstTypePack", typePack.get(0));
+                                                }else{
+                                                    sHmpam.put("firstTypePack","-");
+                                                }
                                                 sHmpam.put("orderId", j.getId());
+                                                if(j.getCrmNumber()!=null && !j.getCrmNumber().equalsIgnoreCase("null")){
+                                                    sHmpam.put("crmNumber", j.getCrmNumber());
+
+                                                }else{
+                                                    sHmpam.put("crmNumber", "");
+
+                                                }
+                                                if(j.getCrmIndicator()==1){
+                                                    sHmpam.put("crmIndicator",true);
+                                                }else{
+                                                    sHmpam.put("crmIndicator",false);
+                                                }
                                                 sHmpam.put("customerId", j.getCustomerId());
                                                 sHmpam.put("customer", entityManager.find(CustomersSuppliersEntity.class, j.getCustomerId()));
                                                 sHmpam.put("status", j.getStatus());
@@ -639,12 +687,12 @@ public class OrdersLoadingController extends Application {
                                                     sHmpam.put("summQuantityKg", "0");
                                                 }
 
-                                                String sqlSumQuantityKgNet = "select  sum(osp.quantity) from orders_selections_by_point osp where osp.order_id=" + j.getId() + " and ( osp.type_package='Βάσει βάρους επί μικτού (kg)' ) ";
-                                                BigDecimal SumQuantityKgNet = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantityKgNet).getSingleResult();
-                                                if (SumQuantityKgNet != null) {
-                                                    sHmpam.put("sqlSumQuantityKgNet", SumQuantityKgNet);
+                                                String sqlsummQuantityKgNet = "select  sum(osp.quantity) from orders_selections_by_point osp where osp.order_id=" + j.getId() + " and ( osp.type_package='Βάσει βάρους επί μικτού (kg)' ) ";
+                                                BigDecimal summQuantityKgNet = (BigDecimal) entityManager.createNativeQuery(sqlsummQuantityKgNet).getSingleResult();
+                                                if (summQuantityKgNet != null) {
+                                                    sHmpam.put("summQuantityKgNet", summQuantityKgNet);
                                                 } else {
-                                                    sHmpam.put("sqlSumQuantityKgNet", "0");
+                                                    sHmpam.put("summQuantityKgNet", "0");
                                                 }
 
 
@@ -718,7 +766,7 @@ public class OrdersLoadingController extends Application {
                                             Double summLdm;
                                             String sqlSumQuantity;
                                             String sqlSumQuantityKg;
-                                            String sqlSumQuantityKgNet;
+                                            String sqlsummQuantityKgNet;
                                             BigDecimal summQuantity;
                                             BigDecimal summQuantityKg;
                                             BigDecimal summQuantityKgNet;
@@ -765,6 +813,7 @@ public class OrdersLoadingController extends Application {
                                                     osMap.put("brandName", "Δεν έχει οριστεί");
                                                     osMap.put("address", "Δεν έχει οριστεί");
                                                 }
+
                                                 finalSummPrice = 0.0;
                                                 finalSummLdm = 0.0;
                                                 finalSummQuantity = 0;
@@ -809,8 +858,8 @@ public class OrdersLoadingController extends Application {
                                                 }
 
 
-                                                sqlSumQuantityKgNet = "select  sum(osbp.quantity) from orders_selections_by_point osbp where osbp.order_schedule_id=" + os.getId() + " and ( osbp.type_package='Βάσει βάρους επί μικτού (kg)' )  and osbp.order_waypoint_id is null";
-                                                summQuantityKgNet = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantityKgNet).getSingleResult();
+                                                sqlsummQuantityKgNet = "select  sum(osbp.quantity) from orders_selections_by_point osbp where osbp.order_schedule_id=" + os.getId() + " and ( osbp.type_package='Βάσει βάρους επί μικτού (kg)' )  and osbp.order_waypoint_id is null";
+                                                summQuantityKgNet = (BigDecimal) entityManager.createNativeQuery(sqlsummQuantityKgNet).getSingleResult();
                                                 if (summQuantityKgNet != null) {
                                                     finalSummQuantityKgNet = finalSummQuantityKgNet + summQuantityKgNet.intValue();
                                                     osMap.put("finalSummQuantityKgNet", finalSummQuantityKgNet);
@@ -833,6 +882,7 @@ public class OrdersLoadingController extends Application {
                                                     osafetmap.put("type", osafet.getType());
                                                     osafetmap.put("quantity", osafet.getQuantity());
                                                     osafetmap.put("typePackage", osafet.getTypePackage());
+
                                                     osafetmap.put("packageType", entityManager.find(PackageTypeEntity.class,osafet.getPackageTypeId()).getType());
                                                     osafetmap.put("stackingType", osafet.getStackingType());
                                                     osafetmap.put("ldm", osafet.getLdm());
@@ -948,8 +998,8 @@ public class OrdersLoadingController extends Application {
                                                     }
 
 
-                                                    sqlSumQuantityKgNet = "select  sum(osbp.quantity) from orders_selections_by_point osbp where osbp.order_schedule_id=" + owpe.getOrderScheduleId() + "  and (  osbp.type_package='Βάσει βάρους επί μικτού (kg)' )  " + " and osbp.order_waypoint_id =" + owpe.getId();
-                                                    summQuantityKgNet = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantityKgNet).getSingleResult();
+                                                    sqlsummQuantityKgNet = "select  sum(osbp.quantity) from orders_selections_by_point osbp where osbp.order_schedule_id=" + owpe.getOrderScheduleId() + "  and (  osbp.type_package='Βάσει βάρους επί μικτού (kg)' )  " + " and osbp.order_waypoint_id =" + owpe.getId();
+                                                    summQuantityKgNet = (BigDecimal) entityManager.createNativeQuery(sqlsummQuantityKgNet).getSingleResult();
                                                     if (summQuantityKgNet != null) {
                                                         finalSummQuantityKgNet = finalSummQuantityKgNet + summQuantityKgNet.intValue();
                                                         owpeMap.put("finalSummQuantityKgNet", finalSummQuantityKgNet);
@@ -1308,17 +1358,22 @@ public class OrdersLoadingController extends Application {
                                                         doneMap.put("appointmentDays", doneNode.findPath("appointmentDays").asText());
                                                         doneMap.put("fromCountry", doneNode.findPath("fromCountry").asText());
                                                         doneMap.put("fromCity", doneNode.findPath("fromCity").asText());
+                                                        doneMap.put("typePack", doneNode.findPath("typePack"));
+                                                        doneMap.put("firstTypePack", doneNode.findPath("firstTypePack").asText());
                                                         if(doneNode.findPath("truckTemprature").asText().equalsIgnoreCase("null")){
                                                             doneMap.put("truckTemprature", "-");
                                                         }else{
                                                             doneMap.put("truckTemprature", doneNode.findPath("truckTemprature").asText());
                                                         }
+                                                        doneMap.put("crmIndicator", doneNode.findPath("crmIndicator").asBoolean());
+                                                        doneMap.put("crmNumber", doneNode.findPath("crmNumber").asText());
                                                         doneMap.put("orderId", doneNode.findPath("orderId").asText());
                                                         doneMap.put("type", doneNode.findPath("type").asText());
                                                         doneMap.put("creationDate", doneNode.findPath("creationDate").asText());
                                                         doneMap.put("summPrice", doneNode.findPath("summPrice").asText());
                                                         doneMap.put("summQuantity", doneNode.findPath("summQuantity").asText());
                                                         doneMap.put("summQuantityKg", doneNode.findPath("summQuantityKg").asText());
+                                                        doneMap.put("summQuantityKgNet", doneNode.findPath("summQuantityKgNet").asText());
                                                         doneMap.put("summLdm", doneNode.findPath("summLdm").asText());
                                                         doneMap.put("showDromologioIndicator", false);
                                                         doneMap.put("customerId", doneNode.findPath("customerId").asText());
@@ -1359,8 +1414,8 @@ public class OrdersLoadingController extends Application {
                                                             sHmpam.put("finalSummQuantityKg", finalSummQuantityKg);
                                                         }
 
-                                                        String sqlSumQuantityKgNet = "select  sum(osbp.quantity) from orders_selections_by_point osbp where osbp.order_id=" + doneNode.findPath("orderId").asText() + "  and ( osbp.type_package='Βάσει βάρους επί μικτού (kg)' ) ";
-                                                        BigDecimal summQuantityKgNet = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantityKgNet).getSingleResult();
+                                                        String sqlsummQuantityKgNet = "select  sum(osbp.quantity) from orders_selections_by_point osbp where osbp.order_id=" + doneNode.findPath("orderId").asText() + "  and ( osbp.type_package='Βάσει βάρους επί μικτού (kg)' ) ";
+                                                        BigDecimal summQuantityKgNet = (BigDecimal) entityManager.createNativeQuery(sqlsummQuantityKgNet).getSingleResult();
                                                         if (summQuantityKgNet != null) {
                                                             finalSummQuantityKgNet = finalSummQuantityKgNet + summQuantityKgNet.intValue();
                                                             sHmpam.put("finalSummQuantityKgNet", finalSummQuantityKgNet);
