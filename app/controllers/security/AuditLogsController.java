@@ -464,7 +464,6 @@ public class AuditLogsController {
             } else {
                 try {
                     ObjectNode result = Json.newObject();
-
                     CompletableFuture<JsonNode> updateFuture = CompletableFuture.supplyAsync(() -> {
                                 return jpaApi.withTransaction(entityManager -> {
                                     ObjectNode result_update = Json.newObject();

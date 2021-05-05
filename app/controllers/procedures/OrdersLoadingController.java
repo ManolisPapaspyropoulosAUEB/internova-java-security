@@ -307,13 +307,15 @@ public class OrdersLoadingController extends Application {
                                 List<JsonNode> finalDromologioParaggelias = new ArrayList<JsonNode>();
                                 while (doneListIt.hasNext()) {
                                     JsonNode orderNode = (JsonNode) doneListIt.next();
+                                    Iterator dromologioParIter = orderNode.findPath("dromologioParaggelias").iterator();
+                                    ((ObjectNode)orderNode).remove("dromologioParaggelias");
+                                    String statusOrder = orderNode.findPath("status").asText();
                                     OrdersEntity order = entityManager.find(OrdersEntity.class,orderNode.findPath("orderId").asLong());
-                                    order.setStatus("ΠΡΟΣ ΕΚΤΕΛΕΣΗ");
+                                    order.setStatus(statusOrder);
                                     OrdersLoadingOrdersSelectionsEntity ordersLoadingOrdersSelectionsEntity = new OrdersLoadingOrdersSelectionsEntity();
                                     ordersLoadingOrdersSelectionsEntity.setCreationDate(new Date());
                                     ordersLoadingOrdersSelectionsEntity.setOrderId(orderNode.findPath("orderId").asLong());
                                     ordersLoadingOrdersSelectionsEntity.setOrderLoadingId(ordersLoadingEntity.getId());
-                                    Iterator dromologioParIter = orderNode.findPath("dromologioParaggelias").iterator();
                                     while (dromologioParIter.hasNext()) {
                                         JsonNode dromologioParNode = (JsonNode) dromologioParIter.next();
                                         finalDromologioParaggelias.add(dromologioParNode);
@@ -449,7 +451,6 @@ public class OrdersLoadingController extends Application {
                                     if(suppliersRoadsCostsEntityList.size()>0){
                                         suppliersRoadsCostsEntityList.get(0).setCost(naulo);
                                         entityManager.merge(suppliersRoadsCostsEntityList.get(0));
-                                        System.out.println("case 1");
                                     }else{
                                         SuppliersRoadsCostsEntity suppliersRoadsCostsEntity = new SuppliersRoadsCostsEntity();
                                         suppliersRoadsCostsEntity.setFromCity(fromCity);
@@ -459,7 +460,6 @@ public class OrdersLoadingController extends Application {
                                         suppliersRoadsCostsEntity.setCustomersSuppliersId(customerSupplierId);
                                         suppliersRoadsCostsEntity.setCost(naulo);
                                         entityManager.persist(suppliersRoadsCostsEntity);
-                                        System.out.println("case 2");
                                     }
                                     add_result.put("status", "success");
                                     add_result.put("message", "Η ενημέρωση πραγματοποίηθηκε με επιτυχία");
@@ -623,19 +623,32 @@ public class OrdersLoadingController extends Application {
                                                     sHmpam.put("summLdm", "0.0");
                                                 }
                                                 String sqlSumQuantity = "select  sum(osp.quantity) from orders_selections_by_point osp where osp.order_id=" + j.getId() + " and osp.type_package!='Βάσει βάρους επί καθαρού (kg)' and osp.type_package!='Βάσει βάρους επί μικτού (kg)'";
+
+
                                                 BigDecimal summQuantity = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantity).getSingleResult();
                                                 if (summQuantity != null) {
                                                     sHmpam.put("summQuantity", summQuantity);
                                                 } else {
                                                     sHmpam.put("summQuantity", "0");
                                                 }
-                                                String sqlSumQuantityKg = "select  sum(osp.quantity) from orders_selections_by_point osp where osp.order_id=" + j.getId() + " and ( osp.type_package='Βάσει βάρους επί καθαρού (kg)' or osp.type_package='Βάσει βάρους επί μικτού (kg)' ) ";
+                                                String sqlSumQuantityKg = "select  sum(osp.quantity) from orders_selections_by_point osp where osp.order_id=" + j.getId() + " and ( osp.type_package='Βάσει βάρους επί καθαρού (kg)' ) ";
                                                 BigDecimal summQuantityKg = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantityKg).getSingleResult();
                                                 if (summQuantityKg != null) {
                                                     sHmpam.put("summQuantityKg", summQuantityKg);
                                                 } else {
                                                     sHmpam.put("summQuantityKg", "0");
                                                 }
+
+                                                String sqlSumQuantityKgNet = "select  sum(osp.quantity) from orders_selections_by_point osp where osp.order_id=" + j.getId() + " and ( osp.type_package='Βάσει βάρους επί μικτού (kg)' ) ";
+                                                BigDecimal SumQuantityKgNet = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantityKgNet).getSingleResult();
+                                                if (SumQuantityKgNet != null) {
+                                                    sHmpam.put("sqlSumQuantityKgNet", SumQuantityKgNet);
+                                                } else {
+                                                    sHmpam.put("sqlSumQuantityKgNet", "0");
+                                                }
+
+
+
                                                 serversList.add(sHmpam);
                                             }
                                             returnList_future.put("data", serversList);
@@ -697,6 +710,7 @@ public class OrdersLoadingController extends Application {
                                             Double finalSummLdm = 0.0;
                                             Integer finalSummQuantity = 0;
                                             Integer finalSummQuantityKg = 0;
+                                            Integer finalSummQuantityKgNet=0;
                                             DecimalFormat df;
                                             String sqlSumPrice = "";
                                             Double summPrice;
@@ -704,8 +718,10 @@ public class OrdersLoadingController extends Application {
                                             Double summLdm;
                                             String sqlSumQuantity;
                                             String sqlSumQuantityKg;
+                                            String sqlSumQuantityKgNet;
                                             BigDecimal summQuantity;
                                             BigDecimal summQuantityKg;
+                                            BigDecimal summQuantityKgNet;
                                             String sqlPackages;
                                             List<OrdersSelectionsByPointEntity> ordersSelectionsByPointEntityList;
                                             List<HashMap<String, Object>> packagesFortwshs;
@@ -753,6 +769,7 @@ public class OrdersLoadingController extends Application {
                                                 finalSummLdm = 0.0;
                                                 finalSummQuantity = 0;
                                                 finalSummQuantityKg = 0;
+                                                finalSummQuantityKgNet = 0;
 
                                                 df = new DecimalFormat("###.#");
                                                 sqlSumPrice = "select  sum(osbp.unit_price) from orders_selections_by_point osbp where osbp.order_schedule_id=" + os.getId() + " and osbp.order_waypoint_id is null";
@@ -780,13 +797,25 @@ public class OrdersLoadingController extends Application {
                                                 } else {
                                                     osMap.put("finalSummQuantity", finalSummQuantity);
                                                 }
-                                                sqlSumQuantityKg = "select  sum(osbp.quantity) from orders_selections_by_point osbp where osbp.order_schedule_id=" + os.getId() + " and ( osbp.type_package='Βάσει βάρους επί καθαρού (kg)' or osbp.type_package='Βάσει βάρους επί μικτού (kg)' )  and osbp.order_waypoint_id is null";
+                                                sqlSumQuantityKg = "select  sum(osbp.quantity) from orders_selections_by_point osbp where osbp.order_schedule_id=" + os.getId() + " and ( osbp.type_package='Βάσει βάρους επί καθαρού (kg)' )  and osbp.order_waypoint_id is null";
+
+
                                                 summQuantityKg = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantityKg).getSingleResult();
                                                 if (summQuantityKg != null) {
                                                     finalSummQuantityKg = finalSummQuantityKg + summQuantityKg.intValue();
                                                     osMap.put("finalSummQuantityKg", finalSummQuantityKg);
                                                 } else {
                                                     osMap.put("finalSummQuantityKg", finalSummQuantityKg);
+                                                }
+
+
+                                                sqlSumQuantityKgNet = "select  sum(osbp.quantity) from orders_selections_by_point osbp where osbp.order_schedule_id=" + os.getId() + " and ( osbp.type_package='Βάσει βάρους επί μικτού (kg)' )  and osbp.order_waypoint_id is null";
+                                                summQuantityKgNet = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantityKgNet).getSingleResult();
+                                                if (summQuantityKgNet != null) {
+                                                    finalSummQuantityKgNet = finalSummQuantityKgNet + summQuantityKgNet.intValue();
+                                                    osMap.put("finalSummQuantityKgNet", finalSummQuantityKgNet);
+                                                } else {
+                                                    osMap.put("finalSummQuantityKgNet", finalSummQuantityKgNet);
                                                 }
 
                                                 sqlPackages = "select * from orders_selections_by_point osbp where osbp.order_schedule_id=" + os.getId() + " and osbp.order_waypoint_id is null";
@@ -804,6 +833,7 @@ public class OrdersLoadingController extends Application {
                                                     osafetmap.put("type", osafet.getType());
                                                     osafetmap.put("quantity", osafet.getQuantity());
                                                     osafetmap.put("typePackage", osafet.getTypePackage());
+                                                    osafetmap.put("packageType", entityManager.find(PackageTypeEntity.class,osafet.getPackageTypeId()).getType());
                                                     osafetmap.put("stackingType", osafet.getStackingType());
                                                     osafetmap.put("ldm", osafet.getLdm());
                                                     if (osafet.getUnitPrice() != null) {
@@ -908,7 +938,7 @@ public class OrdersLoadingController extends Application {
                                                     }
 
 
-                                                    sqlSumQuantityKg = "select  sum(osbp.quantity) from orders_selections_by_point osbp where osbp.order_schedule_id=" + owpe.getOrderScheduleId() + "  and ( osbp.type_package='Βάσει βάρους επί καθαρού (kg)' or osbp.type_package='Βάσει βάρους επί μικτού (kg)' )  " + " and osbp.order_waypoint_id =" + owpe.getId();
+                                                    sqlSumQuantityKg = "select  sum(osbp.quantity) from orders_selections_by_point osbp where osbp.order_schedule_id=" + owpe.getOrderScheduleId() + "  and ( osbp.type_package='Βάσει βάρους επί καθαρού (kg)' )  " + " and osbp.order_waypoint_id =" + owpe.getId();
                                                     summQuantityKg = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantityKg).getSingleResult();
                                                     if (summQuantityKg != null) {
                                                         finalSummQuantityKg = finalSummQuantityKg + summQuantityKg.intValue();
@@ -916,6 +946,19 @@ public class OrdersLoadingController extends Application {
                                                     } else {
                                                         owpeMap.put("finalSummQuantityKg", finalSummQuantityKg);
                                                     }
+
+
+                                                    sqlSumQuantityKgNet = "select  sum(osbp.quantity) from orders_selections_by_point osbp where osbp.order_schedule_id=" + owpe.getOrderScheduleId() + "  and (  osbp.type_package='Βάσει βάρους επί μικτού (kg)' )  " + " and osbp.order_waypoint_id =" + owpe.getId();
+                                                    summQuantityKgNet = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantityKgNet).getSingleResult();
+                                                    if (summQuantityKgNet != null) {
+                                                        finalSummQuantityKgNet = finalSummQuantityKgNet + summQuantityKgNet.intValue();
+                                                        owpeMap.put("finalSummQuantityKgNet", finalSummQuantityKgNet);
+                                                    } else {
+                                                        owpeMap.put("finalSummQuantityKgNet", finalSummQuantityKgNet);
+                                                    }
+
+
+
                                                     sqlPackages = "select * from orders_selections_by_point osbp " +
                                                             "where osbp.order_schedule_id=" + owpe.getOrderScheduleId()
                                                             + " and osbp.order_waypoint_id =" + owpe.getId();
@@ -933,6 +976,7 @@ public class OrdersLoadingController extends Application {
                                                         osafetmap.put("type", osafet.getType());
                                                         osafetmap.put("quantity", osafet.getQuantity());
                                                         osafetmap.put("typePackage", osafet.getTypePackage());
+                                                        osafetmap.put("packageType", entityManager.find(PackageTypeEntity.class,osafet.getPackageTypeId()).getType());
                                                         osafetmap.put("stackingType", osafet.getStackingType());
                                                         osafetmap.put("ldm", osafet.getLdm());
                                                         if (osafet.getUnitPrice() != null) {
@@ -1018,7 +1062,6 @@ public class OrdersLoadingController extends Application {
                                                     " and src.to_city='" + toCity.trim() + "'" +
                                                     " and src.to_country='" + toCountry.trim() + "'";
 
-                                            System.out.println(sqlOrdLoads);
                                             List<HashMap<String, Object>> serversList = new ArrayList<HashMap<String, Object>>();
                                             List<SuppliersRoadsCostsEntity> suppliersRoadsCostsEntityList
                                                     = (List<SuppliersRoadsCostsEntity>) entityManager.createNativeQuery(
@@ -1168,7 +1211,6 @@ public class OrdersLoadingController extends Application {
                                             }
 
                                             String sqlExtraSups = "select * from order_loading_extra_suppliers els where els.order_loading_id="+j.getId();
-                                            System.out.println("sqlExtraSups>>>>> "+sqlExtraSups+"<<<<<<<<sqlExtraSups");
                                             List<OrderLoadingExtraSuppliersEntity> orderLoadingExtraSuppliersEntityList =
                                                     entityManager.createNativeQuery(sqlExtraSups,OrderLoadingExtraSuppliersEntity.class).getResultList();
                                             List<HashMap<String, Object>> extrasups = new ArrayList<HashMap<String, Object>>();
@@ -1219,10 +1261,12 @@ public class OrdersLoadingController extends Application {
                                             sHmpam.put("finalSummLdm", 0);
                                             sHmpam.put("finalSummQuantity", 0);
                                             sHmpam.put("finalSummQuantityKg", 0);
+                                            sHmpam.put("finalSummQuantityKgNet", 0);
                                             Double finalSummPrice = 0.0;
                                             Double finalSummLdm = 0.0;
                                             Integer finalSummQuantity = 0;
                                             Integer finalSummQuantityKg = 0;
+                                            Integer finalSummQuantityKgNet=0;
                                             sHmpam.put("mainSchedule", j.getFromCountry() + " " +
                                                     j.getFromCity() + "  ->  " +
                                                     j.getToCountry() + " " +
@@ -1306,7 +1350,7 @@ public class OrdersLoadingController extends Application {
                                                             sHmpam.put("finalSummQuantity", finalSummQuantity);
                                                         }
 
-                                                        String sqlSumQuantityKg = "select  sum(osbp.quantity) from orders_selections_by_point osbp where osbp.order_schedule_id=" + doneNode.findPath("orderId").asText() + "  and ( osbp.type_package='Βάσει βάρους επί καθαρού (kg)' or osbp.type_package='Βάσει βάρους επί μικτού (kg)' ) ";
+                                                        String sqlSumQuantityKg = "select  sum(osbp.quantity) from orders_selections_by_point osbp where osbp.order_id=" + doneNode.findPath("orderId").asText() + "  and ( osbp.type_package='Βάσει βάρους επί καθαρού (kg)' ) ";
                                                         BigDecimal summQuantityKg = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantityKg).getSingleResult();
                                                         if (summQuantityKg != null) {
                                                             finalSummQuantityKg = finalSummQuantityKg + summQuantityKg.intValue();
@@ -1314,6 +1358,17 @@ public class OrdersLoadingController extends Application {
                                                         } else {
                                                             sHmpam.put("finalSummQuantityKg", finalSummQuantityKg);
                                                         }
+
+                                                        String sqlSumQuantityKgNet = "select  sum(osbp.quantity) from orders_selections_by_point osbp where osbp.order_id=" + doneNode.findPath("orderId").asText() + "  and ( osbp.type_package='Βάσει βάρους επί μικτού (kg)' ) ";
+                                                        BigDecimal summQuantityKgNet = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantityKgNet).getSingleResult();
+                                                        if (summQuantityKgNet != null) {
+                                                            finalSummQuantityKgNet = finalSummQuantityKgNet + summQuantityKgNet.intValue();
+                                                            sHmpam.put("finalSummQuantityKgNet", finalSummQuantityKgNet);
+                                                        } else {
+                                                            sHmpam.put("finalSummQuantityKgNet", finalSummQuantityKgNet);
+                                                        }
+
+
                                                         ObjectNode reqBodyDromWs = Json.newObject();
                                                         ObjectNode dromRes = Json.newObject();
                                                         reqBodyDromWs.put("orderId", os.getOrderId());
@@ -1352,6 +1407,7 @@ public class OrdersLoadingController extends Application {
                                                             dromResNodeMap.put("finalSummLdm", dromResNode.findPath("finalSummLdm"));
                                                             dromResNodeMap.put("finalSummQuantity", dromResNode.findPath("finalSummQuantity"));
                                                             dromResNodeMap.put("finalSummQuantityKg", dromResNode.findPath("finalSummQuantityKg"));
+                                                            dromResNodeMap.put("finalSummQuantityKgNet", dromResNode.findPath("finalSummQuantityKgNet"));
                                                             dromResNodeMap.put("showPackagesIndicator", false);
                                                             dromResNodeMap.put("showDromologioIndicator", false);
                                                             dromResNodeMap.put("includedToDromologio", true);
