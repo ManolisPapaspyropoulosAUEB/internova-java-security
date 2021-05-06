@@ -59,6 +59,7 @@ public class OrdersController extends Application {
                                 ordersEntity.setAa("1");
                                 ordersEntity.setBillingId(entityManager.find(OffersEntity.class, offerId).getBillingId());
                                 ordersEntity.setStatus("ΣΕ ΖΗΤΗΣΗ");
+                                ordersEntity.setCrmIndicator((byte) 0);
                                 entityManager.persist(ordersEntity);
                                 Iterator dataIterator = data.iterator();
                                 while (dataIterator.hasNext()) {
