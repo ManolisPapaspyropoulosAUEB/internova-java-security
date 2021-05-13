@@ -81,6 +81,9 @@ public class DocumentsController extends Application {
                                         entityManager.remove(d);
                                     }
                                 }
+                                /** remove old fro system ordersLoadings-order **/
+
+                                /** remove old fro system ordersLoadings **/
                                 if (system.equalsIgnoreCase("ordersLoadings-order")) {
                                     String SQL = "select d from DocumentsEntity d where d.system='ordersLoadings-order' and d.subFolderId=" + id;
                                     List<DocumentsEntity> docList = entityManager.createQuery(SQL, DocumentsEntity.class).getResultList();
@@ -90,7 +93,7 @@ public class DocumentsController extends Application {
                                         entityManager.remove(d);
                                     }
                                 }
-                                /** remove old fro system ordersLoadings **/
+                                /** remove old fro system ordersLoadings-order **/
 
 
                                 DocumentsEntity newDoc = new DocumentsEntity();
