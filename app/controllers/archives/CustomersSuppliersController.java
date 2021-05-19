@@ -857,6 +857,92 @@ public class CustomersSuppliersController extends Application {
     }
 
 
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    public Result getRoadCostsHistoryBySuppCountryCity(final Http.Request request) throws IOException {
+        ObjectNode result = Json.newObject();
+        try {
+            JsonNode json = request.body().asJson();
+            if (json == null) {
+                return badRequest("Expecting Json data");
+            } else {
+                if (json == null) {
+                    result.put("status", "error");
+                    result.put("message", "Δεν εχετε αποστειλει εγκυρα δεδομενα.");
+                    return ok(result);
+                } else {
+                    ObjectMapper ow = new ObjectMapper();
+                    HashMap<String, Object> returnList = new HashMap<String, Object>();
+                    String jsonResult = "";
+                    CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
+                                return jpaApi.withTransaction(
+                                        entityManager -> {
+                                            String customersSuppliersId = json.findPath("customersSuppliersId").asText();
+                                            String fromCountry = json.findPath("fromCountry").asText();
+                                            String fromCity = json.findPath("fromCity").asText();
+                                            String toCountry = json.findPath("toCountry").asText();
+                                            String toCity = json.findPath("toCity").asText();
+                                            String cost = json.findPath("cost").asText();
+                                            String sqlCustSupl =" select * from suppliers_roads_costs sr \n" +
+                                                    " where \n" +
+                                                    " sr.from_country= '"+fromCountry+"' \n" +
+                                                    " and sr.from_city='"+fromCity+"' \n" +
+                                                    " and  sr.to_city='"+toCity+"' \n" +
+                                                    " and sr.to_country='"+toCountry+"' and customers_suppliers_id="+customersSuppliersId+" \n" +
+                                                    " group by cost ";
+
+                                            System.out.println(sqlCustSupl);
+
+                                            HashMap<String, Object> returnList_future = new HashMap<String, Object>();
+                                            List<HashMap<String, Object>> filalist = new ArrayList<HashMap<String, Object>>();
+                                            List<SuppliersRoadsCostsEntity> scostsList
+                                                    = (List<SuppliersRoadsCostsEntity>) entityManager.createNativeQuery(
+                                                    sqlCustSupl, SuppliersRoadsCostsEntity.class).getResultList();
+                                            for (SuppliersRoadsCostsEntity j : scostsList) {
+                                                HashMap<String, Object> sHmpam = new HashMap<String, Object>();
+                                                sHmpam.put("id", j.getId());
+                                                sHmpam.put("customersSuppliersId", j.getCustomersSuppliersId());
+                                                sHmpam.put("fromCountry", j.getFromCountry());
+                                                sHmpam.put("fromCity", j.getFromCity());
+                                                sHmpam.put("toCountry", j.getToCountry());
+                                                sHmpam.put("toCity", j.getToCity());
+                                                sHmpam.put("cost", j.getCost());
+                                                sHmpam.put("creationDate", j.getCreationDate());
+                                                sHmpam.put("updateDate", j.getUpdateDate());
+                                                filalist.add(sHmpam);
+                                            }
+                                            returnList_future.put("data", filalist);
+                                            returnList_future.put("status", "success");
+                                            returnList_future.put("message", "success");
+                                            return returnList_future;
+                                        });
+                            },
+                            executionContext);
+                    returnList = getFuture.get();
+                    DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                    ow.setDateFormat(myDateFormat);
+                    try {
+                        jsonResult = ow.writeValueAsString(returnList);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        result.put("status", "error");
+                        result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων ");
+                        return ok(result);
+                    }
+                    return ok(jsonResult);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων");
+            return ok(result);
+        }
+    }
+
+
+
+
     @SuppressWarnings({"Duplicates", "unchecked"})
     public Result getRoadCosts(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();
@@ -882,10 +968,20 @@ public class CustomersSuppliersController extends Application {
                                             String toCountry = json.findPath("toCountry").asText();
                                             String toCity = json.findPath("toCity").asText();
                                             String cost = json.findPath("cost").asText();
-                                            String sqlCustSupl = "select * " +
-                                                    "from suppliers_roads_costs srcosts " +
-                                                    "where 1=1  " +
-                                                    "";
+                                            String sqlCustSupl = " \n" +
+                                                    " select * \n" +
+                                                    " from suppliers_roads_costs srcosts\n" +
+                                                    " where 1=1\n" +
+                                                    " and srcosts.cost=\n" +
+                                                    " (select max(s.cost)\n" +
+                                                    " from suppliers_roads_costs s\n" +
+                                                    " where s.customers_suppliers_id=srcosts.customers_suppliers_id \n" +
+                                                    " and s.from_city=srcosts.from_city\n" +
+                                                    " and s.from_country=srcosts.from_country\n" +
+                                                    " and s.to_city=srcosts.to_city\n" +
+                                                    " and s.to_country=srcosts.to_country\n" +
+                                                    " \n" +
+                                                    " ) ";
                                             if (customersSuppliersId != null && !customersSuppliersId.equalsIgnoreCase("") && !customersSuppliersId.equalsIgnoreCase("null")) {
                                                 sqlCustSupl += " and srcosts.customers_suppliers_id=" + customersSuppliersId;
                                             }
@@ -904,6 +1000,7 @@ public class CustomersSuppliersController extends Application {
                                             if (cost != null && !cost.equalsIgnoreCase("") && !cost.equalsIgnoreCase("null")) {
                                                 sqlCustSupl += " and srcosts.cost like '%" + cost + "%'";
                                             }
+                                            sqlCustSupl += "  group by srcosts.cost ";
                                             sqlCustSupl += " order by creation_date desc";
 
                                             System.out.println(sqlCustSupl);
