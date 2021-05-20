@@ -353,11 +353,14 @@ public class OrdersLoadingController extends Application {
                                     while (dromologioParIter.hasNext()) {
                                         JsonNode dromologioParNode = (JsonNode) dromologioParIter.next();
                                         finalDromologioParaggelias.add(dromologioParNode);
+
+
+
                                         if (dromologioParNode.findPath("type").asText().equalsIgnoreCase("Αφετηρία")) {
-                                            if (!dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("") &&
-                                                    !dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("Invalid date")) {
-                                                OrderSchedulesEntity orderSchedulesEntity = entityManager.find(OrderSchedulesEntity.class,
-                                                        dromologioParNode.findPath("orderScheduleId").asLong());
+                                            OrderSchedulesEntity orderSchedulesEntity = entityManager.find(OrderSchedulesEntity.class, dromologioParNode.findPath("orderScheduleId").asLong());
+                                            Integer position = dromologioParNode.findPath("position").asInt();
+                                            orderSchedulesEntity.setPosition(position);
+                                            if (!dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("") && !dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("Invalid date")) {
                                                 String appointmentDay = dromologioParNode.findPath("appointmentDay").asText();
                                                 DateFormat myDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                                                 if (appointmentDay != null && !appointmentDay.equalsIgnoreCase("")) {
@@ -369,11 +372,12 @@ public class OrdersLoadingController extends Application {
                                                     }
                                                 }
                                             }
+                                            entityManager.merge(orderSchedulesEntity);
                                         } else {
-                                            if (!dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("") &&
-                                                    !dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("Invalid date")) {
-                                                OrderWaypointsEntity orderWaypointsEntity = entityManager.find(OrderWaypointsEntity.class,
-                                                        dromologioParNode.findPath("waypointId").asLong());
+                                            OrderWaypointsEntity orderWaypointsEntity = entityManager.find(OrderWaypointsEntity.class, dromologioParNode.findPath("waypointId").asLong());
+                                            Integer position = dromologioParNode.findPath("position").asInt();
+                                            orderWaypointsEntity.setPosition(position);
+                                            if (!dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("") && !dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("Invalid date")) {
                                                 String appointmentDay = dromologioParNode.findPath("appointmentDay").asText();
                                                 DateFormat myDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                                                 if (appointmentDay != null && !appointmentDay.equalsIgnoreCase("")) {
@@ -385,6 +389,7 @@ public class OrdersLoadingController extends Application {
                                                     }
                                                 }
                                             }
+                                            entityManager.merge(orderWaypointsEntity);
                                         }
                                     }
                                     entityManager.persist(ordersLoadingOrdersSelectionsEntity);
@@ -403,8 +408,27 @@ public class OrdersLoadingController extends Application {
                                     }
                                 }
 
+
+                                JsonNode dromNodeStart = finalDromologioParaggelias.get(0);
+                                JsonNode dromNodeEnd = finalDromologioParaggelias.get(finalDromologioParaggelias.size() - 1);
+                                String fromCountry = dromNodeStart.findPath("country").asText();
+                                String  toCountry = dromNodeEnd.findPath("country").asText();
+
+
+                                if(fromCountry.trim().equalsIgnoreCase("Ελλάδα") && toCountry.equalsIgnoreCase("Ελλάδα")){
+                                    ordersLoadingEntity.setType("PR");
+                                }
+                                if(fromCountry.trim().equalsIgnoreCase("Ελλάδα") && !toCountry.trim().equalsIgnoreCase("Ελλάδα")){
+                                    ordersLoadingEntity.setType("EX");
+                                }
+                                if(!fromCountry.trim().equalsIgnoreCase("Ελλάδα") && toCountry.trim().equalsIgnoreCase("Ελλάδα")){
+                                    ordersLoadingEntity.setType("IM");
+                                }
+                                entityManager.merge(ordersLoadingEntity);
+
                                 ObjectNode wsResult = Json.newObject();
                                 reqBody.set("finalDromologioParaggelias", ow.valueToTree(finalDromologioParaggelias));
+                                reqBody.put("idOrderLoading", ordersLoadingEntity.getId());
                                 CompletableFuture<WSResponse> wsFuture = (CompletableFuture)
                                         ws.url(ConfigFactory.load().getString("ws_url") + "updateOrAddSuplierRoadCost")
                                                 .post(reqBody).thenApplyAsync(webServiceResponse -> {
@@ -454,14 +478,18 @@ public class OrdersLoadingController extends Application {
                                 return jpaApi.withTransaction(entityManager -> {
                                     ObjectNode add_result = Json.newObject();
 
+
                                     if (json.findPath("finalDromologioParaggelias").size() == 0) {
                                         add_result.put("status", "error");
                                         add_result.put("message", "Δεν βρέθηκε τελικό δρομολόγιο");
                                         return add_result;
                                     }
 
+
                                     Long customerSupplierId = json.findPath("customerSupplierId").asLong();
                                     Double naulo = json.findPath("naulo").asDouble();
+
+
                                     String fromCity = "";
                                     String fromCountry = "";
                                     String toCity = "";
@@ -472,6 +500,10 @@ public class OrdersLoadingController extends Application {
                                     fromCountry = dromNodeStart.findPath("country").asText();
                                     toCity = dromNodeEnd.findPath("city").asText();
                                     toCountry = dromNodeEnd.findPath("country").asText();
+
+
+
+
                                     SuppliersRoadsCostsEntity suppliersRoadsCostsEntity = new SuppliersRoadsCostsEntity();
                                     suppliersRoadsCostsEntity.setFromCity(fromCity);
                                     suppliersRoadsCostsEntity.setFromCountry(fromCountry);
@@ -480,7 +512,11 @@ public class OrdersLoadingController extends Application {
                                     suppliersRoadsCostsEntity.setToCountry(toCountry);
                                     suppliersRoadsCostsEntity.setCustomersSuppliersId(customerSupplierId);
                                     suppliersRoadsCostsEntity.setCost(naulo);
+
                                     entityManager.persist(suppliersRoadsCostsEntity);
+
+
+
                                     add_result.put("status", "success");
                                     add_result.put("message", "Η ενημέρωση πραγματοποίηθηκε με επιτυχία");
                                     return add_result;
@@ -785,7 +821,8 @@ public class OrdersLoadingController extends Application {
                                             List<HashMap<String, Object>> packagesFortwshs;
                                             List<HashMap<String, Object>> packagesEkfortwshs;
                                             List<HashMap<String, Object>> allPackages;
-                                            String sql = "select * from order_schedules ords where ords.order_id=" + orderId + " order by ords.appointment_day asc";
+                                            String sql = "select * from order_schedules ords where ords.order_id="
+                                                    + orderId ;
                                             orderSchedulesEntityList = entityManager.createNativeQuery(sql, OrderSchedulesEntity.class).getResultList();
                                             for (OrderSchedulesEntity os : orderSchedulesEntityList) {
                                                 HashMap<String, Object> osMap = new HashMap<String, Object>();
@@ -799,6 +836,7 @@ public class OrdersLoadingController extends Application {
                                                     osMap.put("orderId", os.getOrderId());
                                                     osMap.put("orderScheduleId", os.getId());
                                                     osMap.put("appointmentDay", os.getAppointmentDay());
+                                                    osMap.put("position", os.getPosition());
                                                     osMap.put("appointment", os.getAppointment());
                                                     osMap.put("postalCode", entityManager.find(FactoriesEntity.class, os.getFactoryId()).getPostalCode());
                                                     OrdersEntity ordersEntity = entityManager.find(OrdersEntity.class, json.findPath("orderId").asLong());
@@ -813,6 +851,7 @@ public class OrdersLoadingController extends Application {
                                                     osMap.put("city", os.getFromCity());
                                                     osMap.put("country", os.getFromCountry());
                                                     osMap.put("appointmentDay", os.getAppointmentDay());
+                                                    osMap.put("position", os.getPosition());
                                                     osMap.put("appointment", os.getAppointment());
                                                     osMap.put("orderId", os.getOrderId());
                                                     osMap.put("orderScheduleId", os.getId());
@@ -915,7 +954,8 @@ public class OrdersLoadingController extends Application {
                                                 osMap.put("timelinetype", "Αφετηρία");
                                                 osMap.put("nestedScheduleIndicator", 0);
                                                 finalList.add(osMap);
-                                                String sqlWp1 = "select * from order_waypoints ow where ow.order_id=" + orderId + " and ow.order_schedule_id=" + os.getId() + " order by ow.appointment_day asc";
+                                                String sqlWp1 = "select * from order_waypoints ow where ow.order_id=" + orderId
+                                                        + " and ow.order_schedule_id=" + os.getId() ;
                                                 List<OrderWaypointsEntity> orderWaypointsEntityList1 = entityManager.createNativeQuery(sqlWp1, OrderWaypointsEntity.class).getResultList();
                                                 for (OrderWaypointsEntity owpe : orderWaypointsEntityList1) {
                                                     HashMap<String, Object> owpeMap = new HashMap<String, Object>();
@@ -928,6 +968,7 @@ public class OrdersLoadingController extends Application {
                                                         owpeMap.put("orderId", owpe.getOrderId());
                                                         owpeMap.put("waypointId", owpe.getId());
                                                         owpeMap.put("appointmentDay", owpe.getAppointmentDay());
+                                                        owpeMap.put("position", owpe.getPosition());
                                                         owpeMap.put("appointment", owpe.getAppointment());
                                                         owpeMap.put("address", entityManager.find(FactoriesEntity.class, owpe.getFactoryId()).getAddress());
                                                         owpeMap.put("postalCode", entityManager.find(FactoriesEntity.class, owpe.getFactoryId()).getPostalCode());
@@ -944,6 +985,7 @@ public class OrdersLoadingController extends Application {
                                                         owpeMap.put("waypointId", owpe.getId());
                                                         owpeMap.put("country", owpe.getCountry());
                                                         owpeMap.put("appointmentDay", owpe.getAppointmentDay());
+                                                        owpeMap.put("position", owpe.getPosition());
                                                         owpeMap.put("appointment", owpe.getAppointment());
                                                         owpeMap.put("postalCode", owpe.getPostalCode());
                                                         OrdersEntity ordersEntity = entityManager.find(OrdersEntity.class, json.findPath("orderId").asLong());
@@ -1262,9 +1304,13 @@ public class OrdersLoadingController extends Application {
                                             HashMap<String, Object> sHmpam = new HashMap<String, Object>();
                                             sHmpam.put("id", j.getId());
                                             sHmpam.put("ordersLoadingId", j.getId());
+                                            sHmpam.put("type", j.getType());
                                             sHmpam.put("fromCountry", j.getFromCountry());
                                             sHmpam.put("fromCity", j.getFromCity());
-                                            sHmpam.put("aa", j.getAa());
+
+                                            System.out.println();
+
+                                            sHmpam.put("aa", formatAaOrderLoad(j.getCreationDate().toString(),j.getAa().toString(),j.getType()));
                                             sHmpam.put("fromAddress", j.getFromAddress());
                                             sHmpam.put("fromPostalCode", j.getFromPostalCode());
                                             sHmpam.put("toCountry", j.getFromCountry());
@@ -1349,14 +1395,7 @@ public class OrdersLoadingController extends Application {
                                                     j.getToCountry() + " " +
                                                     j.getToCity());
                                             String sqlOrdersDoneList =
-                                                    " select * from orders_loading_orders_selections olrs where olrs.order_loading_id=" + j.getId() +
-                                                            " order by " +
-                                                            " (" +
-                                                            " select  min(os.appointment_day)\n" +
-                                                            " from order_schedules os\n" +
-                                                            " where os.order_id = olrs.order_id\n" +
-                                                            " and os.appointment_day is not null\n" +
-                                                            " ) asc";
+                                                    " select * from orders_loading_orders_selections olrs where olrs.order_loading_id=" + j.getId();
                                             List<OrdersLoadingOrdersSelectionsEntity> ordersLoadingOrdersSelectionsEntityList =
                                                     entityManager.createNativeQuery(sqlOrdersDoneList, OrdersLoadingOrdersSelectionsEntity.class).getResultList();
                                             List<HashMap<String, Object>> doneList = new ArrayList<HashMap<String, Object>>();
@@ -1476,6 +1515,7 @@ public class OrdersLoadingController extends Application {
                                                             dromResNodeMap.put("orderCustomerName", dromResNode.findPath("orderCustomerName").asText());
                                                             dromResNodeMap.put("timelinetype", dromResNode.findPath("timelinetype").asText());
                                                             dromResNodeMap.put("nestedScheduleIndicator", dromResNode.findPath("nestedScheduleIndicator").asText());
+                                                            dromResNodeMap.put("position", dromResNode.findPath("position").asInt());
                                                             dromResNodeMap.put("address", dromResNode.findPath("address").asText());
                                                             dromResNodeMap.put("lattitude", dromResNode.findPath("lattitude").asDouble());
                                                             dromResNodeMap.put("city", dromResNode.findPath("city").asText());
@@ -1578,4 +1618,30 @@ public class OrdersLoadingController extends Application {
     private static String removeLastChar(String str) {
         return str.substring(0, str.length() - 1);
     }
+
+    private static String formatAaOrderLoad(String date,String aa,String type) {
+        String year=date.substring(0,4);
+        String month=date.substring(5,7);
+
+        if(aa.length()==1){
+            aa="000"+aa;
+        }
+        if(aa.length()==2){
+            aa="00"+aa;
+        }
+        if(aa.length()==3){
+            aa="0"+aa;
+        }
+        if(aa.length()==4){
+            aa=aa;
+        }
+        String myDate=type+ month+year+aa;
+
+        System.out.println(myDate);
+
+        return myDate;
+
+    }
+
+
 }

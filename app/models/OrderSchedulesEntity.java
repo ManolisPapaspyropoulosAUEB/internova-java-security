@@ -30,6 +30,7 @@ public class OrderSchedulesEntity {
     private Integer appointment;
     private String truckLoadingCode;
     private Date appointmentDayLoad;
+    private Integer position;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -276,5 +277,15 @@ public class OrderSchedulesEntity {
 
     public void setAppointmentDayLoad(Date appointmentDayLoad) {
         this.appointmentDayLoad = appointmentDayLoad;
+    }
+
+    @Basic
+    @Column(name = "position")
+    public Integer getPosition() {
+        return position;
+    }
+
+    public void setPosition(Integer position) {
+        this.position = position;
     }
 }

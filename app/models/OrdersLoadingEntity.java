@@ -29,6 +29,7 @@ public class OrdersLoadingEntity {
     private Double truckTrailerLdm;
     private String arithmosTimologiou;
     private Byte timologioIndicator;
+    private String type;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -264,5 +265,15 @@ public class OrdersLoadingEntity {
 
     public void setTimologioIndicator(Byte timologioIndicator) {
         this.timologioIndicator = timologioIndicator;
+    }
+
+    @Basic
+    @Column(name = "type")
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
