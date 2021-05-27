@@ -10,6 +10,7 @@ public class OrderLoadingExtraSuppliersEntity {
     private Long supplierId;
     private Long orderLoadingId;
     private Double naulo;
+    private Byte extraSupTimologioIndicator;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,6 +53,16 @@ public class OrderLoadingExtraSuppliersEntity {
         this.naulo = naulo;
     }
 
+    @Basic
+    @Column(name = "extra_sup_timologio_indicator")
+    public Byte getExtraSupTimologioIndicator() {
+        return extraSupTimologioIndicator;
+    }
+
+    public void setExtraSupTimologioIndicator(Byte extraSupTimologioIndicator) {
+        this.extraSupTimologioIndicator = extraSupTimologioIndicator;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -60,11 +71,12 @@ public class OrderLoadingExtraSuppliersEntity {
         return id == that.id &&
                 Objects.equals(supplierId, that.supplierId) &&
                 Objects.equals(orderLoadingId, that.orderLoadingId) &&
-                Objects.equals(naulo, that.naulo);
+                Objects.equals(naulo, that.naulo) &&
+                Objects.equals(extraSupTimologioIndicator, that.extraSupTimologioIndicator);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, supplierId, orderLoadingId, naulo);
+        return Objects.hash(id, supplierId, orderLoadingId, naulo, extraSupTimologioIndicator);
     }
 }

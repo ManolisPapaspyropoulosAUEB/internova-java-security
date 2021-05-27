@@ -12,6 +12,7 @@ import play.libs.Json;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSResponse;
 
+import java.math.BigInteger;
 import java.util.concurrent.CompletableFuture;
 
 import play.mvc.BodyParser;
@@ -215,6 +216,11 @@ public class OrdersLoadingController extends Application {
                                             !extraSupNode.findPath("supplierId").asText().equalsIgnoreCase("")) {
                                         OrderLoadingExtraSuppliersEntity orderEtraSup = new OrderLoadingExtraSuppliersEntity();
                                         orderEtraSup.setNaulo(extraSupNode.findPath("naulo").asDouble());
+                                        if (extraSupNode.findPath("extraSupTimologioIndicator").asBoolean()) {
+                                            orderEtraSup.setExtraSupTimologioIndicator((byte) 1);
+                                        } else {
+                                            orderEtraSup.setExtraSupTimologioIndicator((byte) 0);
+                                        }
                                         orderEtraSup.setSupplierId(extraSupNode.findPath("supplierId").asLong());
                                         orderEtraSup.setOrderLoadingId(ordersLoadingEntity.getId());
                                         entityManager.persist(orderEtraSup);
@@ -350,12 +356,13 @@ public class OrdersLoadingController extends Application {
                                     ordersLoadingOrdersSelectionsEntity.setCreationDate(new Date());
                                     ordersLoadingOrdersSelectionsEntity.setOrderId(orderNode.findPath("orderId").asLong());
                                     ordersLoadingOrdersSelectionsEntity.setOrderLoadingId(ordersLoadingEntity.getId());
+
+
+                                    int stepCount=0;
+                                    Date temporaryVariableDate = null;
                                     while (dromologioParIter.hasNext()) {
                                         JsonNode dromologioParNode = (JsonNode) dromologioParIter.next();
                                         finalDromologioParaggelias.add(dromologioParNode);
-
-
-
                                         if (dromologioParNode.findPath("type").asText().equalsIgnoreCase("Αφετηρία")) {
                                             OrderSchedulesEntity orderSchedulesEntity = entityManager.find(OrderSchedulesEntity.class, dromologioParNode.findPath("orderScheduleId").asLong());
                                             Integer position = dromologioParNode.findPath("position").asInt();
@@ -367,6 +374,11 @@ public class OrdersLoadingController extends Application {
                                                     try {
                                                         Date appointmentDayDate = myDateFormat.parse(appointmentDay);
                                                         orderSchedulesEntity.setAppointmentDay(appointmentDayDate);
+                                                            if(temporaryVariableDate!=null && appointmentDayDate.compareTo(temporaryVariableDate)==-1){
+                                                                orderSchedulesEntity.setAppointmentDay(temporaryVariableDate);
+                                                                temporaryVariableDate=appointmentDayDate;
+                                                            }
+                                                        temporaryVariableDate=appointmentDayDate;
                                                     } catch (ParseException e) {
                                                         e.printStackTrace();
                                                     }
@@ -384,6 +396,11 @@ public class OrdersLoadingController extends Application {
                                                     try {
                                                         Date appointmentDayDate = myDateFormat.parse(appointmentDay);
                                                         orderWaypointsEntity.setAppointmentDay(appointmentDayDate);
+                                                            if(temporaryVariableDate!=null && appointmentDayDate.compareTo(temporaryVariableDate)==-1){
+                                                                orderWaypointsEntity.setAppointmentDay(temporaryVariableDate);
+                                                                temporaryVariableDate=appointmentDayDate;
+                                                            }
+                                                        temporaryVariableDate=appointmentDayDate;
                                                     } catch (ParseException e) {
                                                         e.printStackTrace();
                                                     }
@@ -391,6 +408,7 @@ public class OrdersLoadingController extends Application {
                                             }
                                             entityManager.merge(orderWaypointsEntity);
                                         }
+                                        stepCount++;
                                     }
                                     entityManager.persist(ordersLoadingOrdersSelectionsEntity);
                                 }
@@ -401,6 +419,13 @@ public class OrdersLoadingController extends Application {
                                             !extraSupNode.findPath("supplierId").asText().equalsIgnoreCase("null") &&
                                             !extraSupNode.findPath("supplierId").asText().equalsIgnoreCase("")) {
                                         OrderLoadingExtraSuppliersEntity orderEtraSup = new OrderLoadingExtraSuppliersEntity();
+
+                                        if (extraSupNode.findPath("extraSupTimologioIndicator").asBoolean()) {
+                                            orderEtraSup.setExtraSupTimologioIndicator((byte) 1);
+                                        } else {
+                                            orderEtraSup.setExtraSupTimologioIndicator((byte) 0);
+                                        }
+
                                         orderEtraSup.setNaulo(extraSupNode.findPath("naulo").asDouble());
                                         orderEtraSup.setSupplierId(extraSupNode.findPath("supplierId").asLong());
                                         orderEtraSup.setOrderLoadingId(ordersLoadingId);
@@ -739,6 +764,15 @@ public class OrdersLoadingController extends Application {
                                                     sHmpam.put("summQuantityKgNet", summQuantityKgNet);
                                                 } else {
                                                     sHmpam.put("summQuantityKgNet", "0");
+                                                }
+
+
+                                                String attatchmentsCountSql = "select  count(*) from documents docs where docs.system='orders' and  docs.sub_folder_id="+j.getId();
+                                                BigInteger attatchmentsCount = (BigInteger) entityManager.createNativeQuery(attatchmentsCountSql).getSingleResult();
+                                                if (attatchmentsCount != null) {
+                                                    sHmpam.put("attatchmentsCount", attatchmentsCount);
+                                                } else {
+                                                    sHmpam.put("attatchmentsCount", "0");
                                                 }
 
 
@@ -1307,9 +1341,6 @@ public class OrdersLoadingController extends Application {
                                             sHmpam.put("type", j.getType());
                                             sHmpam.put("fromCountry", j.getFromCountry());
                                             sHmpam.put("fromCity", j.getFromCity());
-
-                                            System.out.println();
-
                                             sHmpam.put("aa", formatAaOrderLoad(j.getCreationDate().toString(),j.getAa().toString(),j.getType()));
                                             sHmpam.put("fromAddress", j.getFromAddress());
                                             sHmpam.put("fromPostalCode", j.getFromPostalCode());
@@ -1344,6 +1375,21 @@ public class OrdersLoadingController extends Application {
                                                 CustomersSuppliersEntity customersSuppliersEntity = entityManager.find(CustomersSuppliersEntity.class, plexs.getSupplierId());
                                                 plexsmap.put("brandName", customersSuppliersEntity.getBrandName());
                                                 plexsmap.put("random_id", plexs.getId());
+                                                if (plexs.getExtraSupTimologioIndicator() == 1) {
+                                                    plexsmap.put("extraSupTimologioIndicator", true);
+                                                } else {
+                                                    plexsmap.put("extraSupTimologioIndicator", false);
+                                                }
+
+
+                                                String attatchmentsCountSql = "select  count(*) from documents docs where docs.system='customersSuppliers' and  docs.sub_folder_id="+plexs.getSupplierId();
+                                                BigInteger attatchmentsCount = (BigInteger) entityManager.createNativeQuery(attatchmentsCountSql).getSingleResult();
+                                                if (attatchmentsCount != null) {
+                                                    plexsmap.put("attatchmentsCount", attatchmentsCount);
+                                                } else {
+                                                    plexsmap.put("attatchmentsCount", "0");
+                                                }
+
                                                 extrasups.add(plexsmap);
                                             }
                                             sHmpam.put("extrasups", extrasups);
@@ -1435,6 +1481,7 @@ public class OrdersLoadingController extends Application {
                                                         doneMap.put("crmNumber", doneNode.findPath("crmNumber").asText());
                                                         doneMap.put("orderId", doneNode.findPath("orderId").asText());
                                                         doneMap.put("type", doneNode.findPath("type").asText());
+                                                        doneMap.put("attatchmentsCount", doneNode.findPath("attatchmentsCount").asText());
                                                         doneMap.put("creationDate", doneNode.findPath("creationDate").asText());
                                                         doneMap.put("summPriceNested", doneNode.findPath("summPriceNested").asText());
                                                         doneMap.put("summMasterSchedule", doneNode.findPath("summMasterSchedule").asText());
@@ -1636,9 +1683,6 @@ public class OrdersLoadingController extends Application {
             aa=aa;
         }
         String myDate=type+ month+year+aa;
-
-        System.out.println(myDate);
-
         return myDate;
 
     }
