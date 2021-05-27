@@ -287,9 +287,12 @@ public class OrdersLoadingController extends Application {
                                 Long truckTractorId = json.findPath("truckTractorId").asLong(); // truckTractorId
                                 boolean timologioIndicator = json.findPath("timologioIndicator").asBoolean(); // truckTractorId
                                 String arithmosTimologiou = json.findPath("arithmosTimologiou").asText();
-
                                 String status = json.findPath("statusOrderLoading").asText();
-                                // extrasups:this.extrasups,
+
+                                JsonNode doneDromologia = json.findPath("doneDromologia");
+                                ((ObjectNode) json).remove("doneDromologia");
+
+
                                 reqBody.put("customerSupplierId", customerSupplierId);
                                 reqBody.put("naulo", naulo);
                                 OrdersLoadingEntity ordersLoadingEntity = entityManager.find(OrdersLoadingEntity.class, ordersLoadingId);
@@ -336,8 +339,8 @@ public class OrdersLoadingController extends Application {
                                     String crmIndicator = orderNode.findPath("crmIndicator").asText();
                                     Long customerId = orderNode.findPath("customerId").asLong();
                                     Long billingId = orderNode.findPath("customer").findPath("billingId").asLong();
-                                    CustomersSuppliersEntity customersSuppliersEntity = entityManager.find(CustomersSuppliersEntity.class,customerId);
-                                    if(billingId!=null && billingId!=0){
+                                    CustomersSuppliersEntity customersSuppliersEntity = entityManager.find(CustomersSuppliersEntity.class, customerId);
+                                    if (billingId != null && billingId != 0) {
                                         customersSuppliersEntity.setBillingId(billingId);
                                         customersSuppliersEntity.setId(customerId);
                                         entityManager.merge(customersSuppliersEntity);
@@ -358,8 +361,6 @@ public class OrdersLoadingController extends Application {
                                     ordersLoadingOrdersSelectionsEntity.setOrderLoadingId(ordersLoadingEntity.getId());
 
 
-                                    int stepCount=0;
-                                    Date temporaryVariableDate = null;
                                     while (dromologioParIter.hasNext()) {
                                         JsonNode dromologioParNode = (JsonNode) dromologioParIter.next();
                                         finalDromologioParaggelias.add(dromologioParNode);
@@ -374,15 +375,12 @@ public class OrdersLoadingController extends Application {
                                                     try {
                                                         Date appointmentDayDate = myDateFormat.parse(appointmentDay);
                                                         orderSchedulesEntity.setAppointmentDay(appointmentDayDate);
-                                                            if(temporaryVariableDate!=null && appointmentDayDate.compareTo(temporaryVariableDate)==-1){
-                                                                orderSchedulesEntity.setAppointmentDay(temporaryVariableDate);
-                                                                temporaryVariableDate=appointmentDayDate;
-                                                            }
-                                                        temporaryVariableDate=appointmentDayDate;
                                                     } catch (ParseException e) {
                                                         e.printStackTrace();
                                                     }
                                                 }
+                                            }else{
+                                                orderSchedulesEntity.setAppointmentDay(new Date());
                                             }
                                             entityManager.merge(orderSchedulesEntity);
                                         } else {
@@ -395,21 +393,19 @@ public class OrdersLoadingController extends Application {
                                                 if (appointmentDay != null && !appointmentDay.equalsIgnoreCase("")) {
                                                     try {
                                                         Date appointmentDayDate = myDateFormat.parse(appointmentDay);
+
                                                         orderWaypointsEntity.setAppointmentDay(appointmentDayDate);
-                                                            if(temporaryVariableDate!=null && appointmentDayDate.compareTo(temporaryVariableDate)==-1){
-                                                                orderWaypointsEntity.setAppointmentDay(temporaryVariableDate);
-                                                                temporaryVariableDate=appointmentDayDate;
-                                                            }
-                                                        temporaryVariableDate=appointmentDayDate;
                                                     } catch (ParseException e) {
                                                         e.printStackTrace();
                                                     }
                                                 }
+                                            }else{
+                                                orderWaypointsEntity.setAppointmentDay(new Date());
                                             }
                                             entityManager.merge(orderWaypointsEntity);
                                         }
-                                        stepCount++;
                                     }
+
                                     entityManager.persist(ordersLoadingOrdersSelectionsEntity);
                                 }
                                 Iterator extrasups = json.findPath("extrasups").iterator();
@@ -437,16 +433,16 @@ public class OrdersLoadingController extends Application {
                                 JsonNode dromNodeStart = finalDromologioParaggelias.get(0);
                                 JsonNode dromNodeEnd = finalDromologioParaggelias.get(finalDromologioParaggelias.size() - 1);
                                 String fromCountry = dromNodeStart.findPath("country").asText();
-                                String  toCountry = dromNodeEnd.findPath("country").asText();
+                                String toCountry = dromNodeEnd.findPath("country").asText();
 
 
-                                if(fromCountry.trim().equalsIgnoreCase("Ελλάδα") && toCountry.equalsIgnoreCase("Ελλάδα")){
+                                if (fromCountry.trim().equalsIgnoreCase("Ελλάδα") && toCountry.equalsIgnoreCase("Ελλάδα")) {
                                     ordersLoadingEntity.setType("PR");
                                 }
-                                if(fromCountry.trim().equalsIgnoreCase("Ελλάδα") && !toCountry.trim().equalsIgnoreCase("Ελλάδα")){
+                                if (fromCountry.trim().equalsIgnoreCase("Ελλάδα") && !toCountry.trim().equalsIgnoreCase("Ελλάδα")) {
                                     ordersLoadingEntity.setType("EX");
                                 }
-                                if(!fromCountry.trim().equalsIgnoreCase("Ελλάδα") && toCountry.trim().equalsIgnoreCase("Ελλάδα")){
+                                if (!fromCountry.trim().equalsIgnoreCase("Ελλάδα") && toCountry.trim().equalsIgnoreCase("Ελλάδα")) {
                                     ordersLoadingEntity.setType("IM");
                                 }
                                 entityManager.merge(ordersLoadingEntity);
@@ -465,6 +461,42 @@ public class OrdersLoadingController extends Application {
                                     e.printStackTrace();
                                 } catch (ExecutionException e) {
                                     e.printStackTrace();
+                                }
+
+                                Date appointmentDayDate = null;
+                                for (int i = 0; i < doneDromologia.size(); i++) {
+                                    JsonNode stationNode = doneDromologia.get(i);
+                                    if (!stationNode.findPath("appointmentDay2").asText().equalsIgnoreCase("")
+                                            && !stationNode.findPath("appointmentDay2").asText().equalsIgnoreCase("Invalid date")) {
+                                        String appointmentDay = stationNode.findPath("appointmentDay2").asText();
+                                        DateFormat myDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                                        if (appointmentDay != null && !appointmentDay.equalsIgnoreCase("")) {
+                                            try {
+                                                if (i == 0) {
+                                                    appointmentDayDate = myDateFormat.parse(appointmentDay);
+                                                } else {
+                                                    if (stationNode.findPath("type").asText().equalsIgnoreCase("Αφετηρία")) {
+                                                        OrderSchedulesEntity orderSchedulesEntity =
+                                                                entityManager.find(OrderSchedulesEntity.class, stationNode.findPath("orderScheduleId").asLong());
+                                                        if (orderSchedulesEntity.getAppointmentDay().compareTo(appointmentDayDate) == -1) {
+                                                            orderSchedulesEntity.setAppointmentDay(appointmentDayDate);
+                                                            entityManager.merge(orderSchedulesEntity);
+                                                        }
+                                                        appointmentDayDate = myDateFormat.parse(appointmentDay);
+                                                    } else {
+                                                        OrderWaypointsEntity orderWaypointsEntity = entityManager.find(OrderWaypointsEntity.class, stationNode.findPath("waypointId").asLong());
+                                                        if (orderWaypointsEntity.getAppointmentDay().compareTo(appointmentDayDate) == -1) {
+                                                            orderWaypointsEntity.setAppointmentDay(appointmentDayDate);
+                                                            entityManager.merge(orderWaypointsEntity);
+                                                        }
+                                                        appointmentDayDate = myDateFormat.parse(appointmentDay);
+                                                    }
+                                                }
+                                            } catch (ParseException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    }
                                 }
                                 add_result.put("status", "success");
                                 add_result.put("ordersLoadingId", ordersLoadingEntity.getId());
@@ -527,8 +559,6 @@ public class OrdersLoadingController extends Application {
                                     toCountry = dromNodeEnd.findPath("country").asText();
 
 
-
-
                                     SuppliersRoadsCostsEntity suppliersRoadsCostsEntity = new SuppliersRoadsCostsEntity();
                                     suppliersRoadsCostsEntity.setFromCity(fromCity);
                                     suppliersRoadsCostsEntity.setFromCountry(fromCountry);
@@ -539,7 +569,6 @@ public class OrdersLoadingController extends Application {
                                     suppliersRoadsCostsEntity.setCost(naulo);
 
                                     entityManager.persist(suppliersRoadsCostsEntity);
-
 
 
                                     add_result.put("status", "success");
@@ -667,9 +696,9 @@ public class OrdersLoadingController extends Application {
                                                 }
                                                 sHmpam.put("customerId", j.getCustomerId());
                                                 sHmpam.put("customer", entityManager.find(CustomersSuppliersEntity.class, j.getCustomerId()));
-                                                if(entityManager.find(CustomersSuppliersEntity.class, j.getCustomerId()).getBillingId()!=null){
+                                                if (entityManager.find(CustomersSuppliersEntity.class, j.getCustomerId()).getBillingId() != null) {
                                                     sHmpam.put("customerBilling", entityManager.find(BillingsEntity.class, entityManager.find(CustomersSuppliersEntity.class, j.getCustomerId()).getBillingId()).getName());
-                                                }else{
+                                                } else {
                                                     sHmpam.put("customerBilling", "-");
                                                 }
                                                 sHmpam.put("status", j.getStatus());
@@ -721,12 +750,12 @@ public class OrdersLoadingController extends Application {
                                                 String sqlMasterSchedule = "select  * from orders_selections_by_point osp where osp.order_id=" + j.getId() + " and  osp.order_waypoint_id is null limit 1";
                                                 Double summMasterSchedule = 0.0;
                                                 List<OrdersSelectionsByPointEntity> ordersSelectionsByPointEntityList = entityManager.createNativeQuery(sqlMasterSchedule, OrdersSelectionsByPointEntity.class).getResultList();
-                                                if (ordersSelectionsByPointEntityList.size()>0) {
+                                                if (ordersSelectionsByPointEntityList.size() > 0) {
                                                     sHmpam.put("summMasterSchedule", ordersSelectionsByPointEntityList.get(0).getUnitPrice());
                                                     String sqlSumPrice = "select  sum(osp.unit_price) from orders_selections_by_point osp where osp.order_id=" + j.getId();
                                                     Double summPrice = (Double) entityManager.createNativeQuery(sqlSumPrice).getSingleResult();
                                                     if (summPrice != null) {
-                                                        sHmpam.put("summPriceNested", summPrice- ordersSelectionsByPointEntityList.get(0).getUnitPrice());
+                                                        sHmpam.put("summPriceNested", summPrice - ordersSelectionsByPointEntityList.get(0).getUnitPrice());
                                                     } else {
                                                         sHmpam.put("summPriceNested", "0.0");
                                                     }
@@ -767,7 +796,7 @@ public class OrdersLoadingController extends Application {
                                                 }
 
 
-                                                String attatchmentsCountSql = "select  count(*) from documents docs where docs.system='orders' and  docs.sub_folder_id="+j.getId();
+                                                String attatchmentsCountSql = "select  count(*) from documents docs where docs.system='orders' and  docs.sub_folder_id=" + j.getId();
                                                 BigInteger attatchmentsCount = (BigInteger) entityManager.createNativeQuery(attatchmentsCountSql).getSingleResult();
                                                 if (attatchmentsCount != null) {
                                                     sHmpam.put("attatchmentsCount", attatchmentsCount);
@@ -856,7 +885,7 @@ public class OrdersLoadingController extends Application {
                                             List<HashMap<String, Object>> packagesEkfortwshs;
                                             List<HashMap<String, Object>> allPackages;
                                             String sql = "select * from order_schedules ords where ords.order_id="
-                                                    + orderId ;
+                                                    + orderId;
                                             orderSchedulesEntityList = entityManager.createNativeQuery(sql, OrderSchedulesEntity.class).getResultList();
                                             for (OrderSchedulesEntity os : orderSchedulesEntityList) {
                                                 HashMap<String, Object> osMap = new HashMap<String, Object>();
@@ -989,7 +1018,7 @@ public class OrdersLoadingController extends Application {
                                                 osMap.put("nestedScheduleIndicator", 0);
                                                 finalList.add(osMap);
                                                 String sqlWp1 = "select * from order_waypoints ow where ow.order_id=" + orderId
-                                                        + " and ow.order_schedule_id=" + os.getId() ;
+                                                        + " and ow.order_schedule_id=" + os.getId();
                                                 List<OrderWaypointsEntity> orderWaypointsEntityList1 = entityManager.createNativeQuery(sqlWp1, OrderWaypointsEntity.class).getResultList();
                                                 for (OrderWaypointsEntity owpe : orderWaypointsEntityList1) {
                                                     HashMap<String, Object> owpeMap = new HashMap<String, Object>();
@@ -1202,7 +1231,7 @@ public class OrdersLoadingController extends Application {
                                                     = (List<SuppliersRoadsCostsEntity>) entityManager.createNativeQuery(
                                                     sqlOrdLoads, SuppliersRoadsCostsEntity.class).getResultList();
 
-                                            if(suppliersRoadsCostsEntityList.size()>0){
+                                            if (suppliersRoadsCostsEntityList.size() > 0) {
                                                 HashMap<String, Object> sHmpam = new HashMap<String, Object>();
                                                 sHmpam.put("id", suppliersRoadsCostsEntityList.get(0).getId());
                                                 sHmpam.put("cost", suppliersRoadsCostsEntityList.get(0).getCost());
@@ -1341,7 +1370,7 @@ public class OrdersLoadingController extends Application {
                                             sHmpam.put("type", j.getType());
                                             sHmpam.put("fromCountry", j.getFromCountry());
                                             sHmpam.put("fromCity", j.getFromCity());
-                                            sHmpam.put("aa", formatAaOrderLoad(j.getCreationDate().toString(),j.getAa().toString(),j.getType()));
+                                            sHmpam.put("aa", formatAaOrderLoad(j.getCreationDate().toString(), j.getAa().toString(), j.getType()));
                                             sHmpam.put("fromAddress", j.getFromAddress());
                                             sHmpam.put("fromPostalCode", j.getFromPostalCode());
                                             sHmpam.put("toCountry", j.getFromCountry());
@@ -1382,7 +1411,7 @@ public class OrdersLoadingController extends Application {
                                                 }
 
 
-                                                String attatchmentsCountSql = "select  count(*) from documents docs where docs.system='customersSuppliers' and  docs.sub_folder_id="+plexs.getSupplierId();
+                                                String attatchmentsCountSql = "select  count(*) from documents docs where docs.system='customersSuppliers' and  docs.sub_folder_id=" + plexs.getSupplierId();
                                                 BigInteger attatchmentsCount = (BigInteger) entityManager.createNativeQuery(attatchmentsCountSql).getSingleResult();
                                                 if (attatchmentsCount != null) {
                                                     plexsmap.put("attatchmentsCount", attatchmentsCount);
@@ -1666,23 +1695,23 @@ public class OrdersLoadingController extends Application {
         return str.substring(0, str.length() - 1);
     }
 
-    private static String formatAaOrderLoad(String date,String aa,String type) {
-        String year=date.substring(0,4);
-        String month=date.substring(5,7);
+    private static String formatAaOrderLoad(String date, String aa, String type) {
+        String year = date.substring(0, 4);
+        String month = date.substring(5, 7);
 
-        if(aa.length()==1){
-            aa="000"+aa;
+        if (aa.length() == 1) {
+            aa = "000" + aa;
         }
-        if(aa.length()==2){
-            aa="00"+aa;
+        if (aa.length() == 2) {
+            aa = "00" + aa;
         }
-        if(aa.length()==3){
-            aa="0"+aa;
+        if (aa.length() == 3) {
+            aa = "0" + aa;
         }
-        if(aa.length()==4){
-            aa=aa;
+        if (aa.length() == 4) {
+            aa = aa;
         }
-        String myDate=type+ month+year+aa;
+        String myDate = type + month + year + aa;
         return myDate;
 
     }
