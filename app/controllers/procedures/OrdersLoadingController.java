@@ -55,7 +55,11 @@ public class OrdersLoadingController extends Application {
                 ObjectNode result = Json.newObject();
                 CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
                             return jpaApi.withTransaction(entityManager -> {
+
                                 ObjectNode add_result = Json.newObject();
+                                JsonNode doneDromologia = json.findPath("doneDromologia");
+                                ((ObjectNode) json).remove("doneDromologia");
+
                                 ObjectMapper ow = new ObjectMapper();
                                 ObjectNode reqBody = Json.newObject();
                                 String user_id = json.findPath("user_id").asText();
@@ -67,6 +71,8 @@ public class OrdersLoadingController extends Application {
                                 String status = json.findPath("statusOrderLoading").asText();
                                 boolean timologioIndicator = json.findPath("timologioIndicator").asBoolean(); // truckTractorId
                                 String arithmosTimologiou = json.findPath("arithmosTimologiou").asText();
+
+
 
                                 reqBody.put("customerSupplierId", customerSupplierId);
                                 reqBody.put("naulo", naulo);
@@ -227,6 +233,23 @@ public class OrdersLoadingController extends Application {
                                     }
                                 }
 
+                                JsonNode dromNodeStart = finalDromologioParaggelias.get(0);
+                                JsonNode dromNodeEnd = finalDromologioParaggelias.get(finalDromologioParaggelias.size() - 1);
+                                String fromCountry = dromNodeStart.findPath("country").asText();
+                                String toCountry = dromNodeEnd.findPath("country").asText();
+
+
+                                if (fromCountry.trim().equalsIgnoreCase("Ελλάδα") && toCountry.equalsIgnoreCase("Ελλάδα")) {
+                                    ordersLoadingEntity.setType("PR");
+                                }
+                                if (fromCountry.trim().equalsIgnoreCase("Ελλάδα") && !toCountry.trim().equalsIgnoreCase("Ελλάδα")) {
+                                    ordersLoadingEntity.setType("EX");
+                                }
+                                if (!fromCountry.trim().equalsIgnoreCase("Ελλάδα") && toCountry.trim().equalsIgnoreCase("Ελλάδα")) {
+                                    ordersLoadingEntity.setType("IM");
+                                }
+                                entityManager.merge(ordersLoadingEntity);
+
 
                                 ObjectNode wsResult = Json.newObject();
                                 reqBody.set("finalDromologioParaggelias", ow.valueToTree(finalDromologioParaggelias));
@@ -242,6 +265,46 @@ public class OrdersLoadingController extends Application {
                                 } catch (ExecutionException e) {
                                     e.printStackTrace();
                                 }
+
+
+
+                                Date appointmentDayDate = null;
+                                for (int i = 0; i < doneDromologia.size(); i++) {
+                                    JsonNode stationNode = doneDromologia.get(i);
+                                    if (!stationNode.findPath("appointmentDay2").asText().equalsIgnoreCase("")
+                                            && !stationNode.findPath("appointmentDay2").asText().equalsIgnoreCase("Invalid date")) {
+                                        String appointmentDay = stationNode.findPath("appointmentDay2").asText();
+                                        DateFormat myDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                                        if (appointmentDay != null && !appointmentDay.equalsIgnoreCase("")) {
+                                            try {
+                                                if (i == 0) {
+                                                    appointmentDayDate = myDateFormat.parse(appointmentDay);
+                                                } else {
+                                                    if (stationNode.findPath("type").asText().equalsIgnoreCase("Αφετηρία")) {
+                                                        OrderSchedulesEntity orderSchedulesEntity =
+                                                                entityManager.find(OrderSchedulesEntity.class, stationNode.findPath("orderScheduleId").asLong());
+                                                        if (orderSchedulesEntity.getAppointmentDay().compareTo(appointmentDayDate) == -1) {
+                                                            orderSchedulesEntity.setAppointmentDay(appointmentDayDate);
+                                                            entityManager.merge(orderSchedulesEntity);
+                                                        }
+                                                        appointmentDayDate = myDateFormat.parse(appointmentDay);
+                                                    } else {
+                                                        OrderWaypointsEntity orderWaypointsEntity = entityManager.find(OrderWaypointsEntity.class, stationNode.findPath("waypointId").asLong());
+                                                        if (orderWaypointsEntity.getAppointmentDay().compareTo(appointmentDayDate) == -1) {
+                                                            orderWaypointsEntity.setAppointmentDay(appointmentDayDate);
+                                                            entityManager.merge(orderWaypointsEntity);
+                                                        }
+                                                        appointmentDayDate = myDateFormat.parse(appointmentDay);
+                                                    }
+                                                }
+                                            } catch (ParseException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    }
+                                }
+
+
                                 add_result.put("status", "success");
                                 add_result.put("ordersLoadingId", ordersLoadingEntity.getId());
                                 add_result.put("aa", ordersLoadingEntity.getAa());
