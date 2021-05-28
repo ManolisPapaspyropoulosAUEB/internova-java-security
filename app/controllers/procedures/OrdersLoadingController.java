@@ -1460,8 +1460,11 @@ public class OrdersLoadingController extends Application {
                                             List<OrderLoadingExtraSuppliersEntity> orderLoadingExtraSuppliersEntityList =
                                                     entityManager.createNativeQuery(sqlExtraSups, OrderLoadingExtraSuppliersEntity.class).getResultList();
                                             List<HashMap<String, Object>> extrasups = new ArrayList<HashMap<String, Object>>();
+
+                                            Double naulaPromhtheytwn = 0.0;
                                             for (OrderLoadingExtraSuppliersEntity plexs : orderLoadingExtraSuppliersEntityList) {
                                                 HashMap<String, Object> plexsmap = new HashMap<String, Object>();
+                                                naulaPromhtheytwn=naulaPromhtheytwn+plexs.getNaulo();
                                                 plexsmap.put("naulo", plexs.getNaulo());
                                                 plexsmap.put("supplierId", plexs.getSupplierId());
                                                 CustomersSuppliersEntity customersSuppliersEntity = entityManager.find(CustomersSuppliersEntity.class, plexs.getSupplierId());
@@ -1518,6 +1521,10 @@ public class OrdersLoadingController extends Application {
                                             sHmpam.put("updateDate", j.getUpdateDate());
                                             sHmpam.put("customerSupplierId", j.getSupplierId());
                                             sHmpam.put("naulo", j.getNaulo());
+                                            sHmpam.put("sumNaula", j.getNaulo()+naulaPromhtheytwn);
+
+                                            //naulaPromhtheytwn
+
                                             sHmpam.put("finalSummPrice", 0);
                                             sHmpam.put("finalSummLdm", 0);
                                             sHmpam.put("finalSummQuantity", 0);
