@@ -3,23 +3,33 @@ package controllers.procedures;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.mysql.jdbc.Connection;
 import com.typesafe.config.ConfigFactory;
+import controllers.BaseJasperReport;
 import controllers.execution_context.DatabaseExecutionContext;
 import controllers.system.Application;
 import models.*;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.util.JRLoader;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.springframework.util.ResourceUtils;
+import play.api.db.Database;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
+import play.mvc.BodyParser;
 import play.mvc.Http;
 import play.mvc.Result;
 
 import javax.inject.Inject;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.sql.DriverManager;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -32,12 +42,14 @@ public class ProceduresPrintController extends Application {
 
     private JPAApi jpaApi;
     private DatabaseExecutionContext executionContext;
+    private Database db;
 
 
     @Inject
-    public ProceduresPrintController(JPAApi jpaApi, DatabaseExecutionContext executionContext) {
+    public ProceduresPrintController( Database db , JPAApi jpaApi, DatabaseExecutionContext executionContext) {
         super(jpaApi,  executionContext);
         this.jpaApi = jpaApi;
+        this.db = db;
         this.executionContext = executionContext;
     }
 
@@ -153,6 +165,54 @@ public class ProceduresPrintController extends Application {
     }
 
 
+
+    public String exportReport(String reportFormat) throws FileNotFoundException, JRException {
+        String path = "C:\\Users\\basan\\Desktop\\Report";
+        List employees=null;
+        //load file and compile it
+        File file = ResourceUtils.getFile("classpath:employees.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(employees);
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("createdBy", "Java Techie");
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+        if (reportFormat.equalsIgnoreCase("html")) {
+            JasperExportManager.exportReportToHtmlFile(jasperPrint, path + "\\employees.html");
+        }
+        if (reportFormat.equalsIgnoreCase("pdf")) {
+            JasperExportManager.exportReportToPdfFile(jasperPrint, path + "\\employees.pdf");
+        }
+
+        return "report generated in path : " + path;
+    }
+
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    public Result exportOrderLoadingJasper(final Http.Request request) throws IOException {
+            try {
+                Result result;
+                CompletableFuture<Result> addFuture = CompletableFuture.supplyAsync(() -> {
+                            return jpaApi.withTransaction(entityManager -> {
+                                ObjectNode add_result = Json.newObject();
+                                ObjectNode reportParams = Json.newObject();
+                                reportParams.put("createdBy","test param");
+                                ByteArrayInputStream  export = (ByteArrayInputStream) BaseJasperReport.generatePDF("test", reportParams);
+                                add_result.put("status", "success");
+                                add_result.put("message", "Η καταχωρηση πραγματοποίηθηκε με επιτυχία");
+                                return ok(export).as("application/pdf; charset=UTF-8");
+                            });
+                        },
+                        executionContext);
+                result =  addFuture.get();
+                return result;
+            } catch (Exception e) {
+                ObjectNode result = Json.newObject();
+                e.printStackTrace();
+                result.put("status", "error");
+                result.put("message", "Προβλημα κατα την καταχωρηση");
+                return ok(result);
+            }
+    }
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})

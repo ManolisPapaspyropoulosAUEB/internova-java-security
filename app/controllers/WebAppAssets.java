@@ -7,6 +7,7 @@ import views.html.index;
 import java.io.File;
 
 public class WebAppAssets extends Controller {
+
     public Result at(String path, String filePath) {
         System.out.println("path "+path);
         System.out.println("filePath "+filePath);

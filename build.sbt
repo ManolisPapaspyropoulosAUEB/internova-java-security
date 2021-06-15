@@ -16,11 +16,13 @@ lazy val root = (project in file("."))
       javaWs % "test",
       "org.apache.poi" % "poi" % "3.17",
       "org.apache.poi" % "poi-ooxml" % "3.17",
-      "org.awaitility" % "awaitility" % "4.0.1" % "test",
-      "org.assertj" % "assertj-core" % "3.14.0" % "test",
       "org.apache.pdfbox" % "pdfbox" % "2.0.1",
-      "org.mockito" % "mockito-core" % "3.1.0" % "test",
+      "commons-validator" % "commons-validator" % "1.6",
       "commons-net" % "commons-net" % "3.8.0",
+      "com.lowagie" % "itext" % "2.1.7",
+      "net.sf.jasperreports" % "jasperreports" % "6.16.0",
+
+
       "com.springml" % "sftp.client" % "1.0.3",
       "com.lightbend.akka" %% "akka-stream-alpakka-ftp" % "2.0.2",
       "com.typesafe.akka" %% "akka-stream" % "2.5.31",

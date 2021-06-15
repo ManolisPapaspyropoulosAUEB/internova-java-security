@@ -804,16 +804,7 @@ public class CustomersSuppliersController extends Application {
     }
 
 
-//    public Result viesvalidator(final Http.Request request) throws IOException {
-//        ObjectNode reqBody = Json.newObject();
-//        reqBody.put("VAT","999179561");
-//        reqBody.put("CountryCode","EL");
-//
-//        return ws.url("https://webservices.synergic.systems/viesvalidator/")
-//                .setBody(reqBody)
-//                .get()
-//                .thenApply(response -> ok("data" + response.asJson()));
-//    }
+
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
