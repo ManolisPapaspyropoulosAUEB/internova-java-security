@@ -1430,7 +1430,7 @@ public class OrdersLoadingController extends Application {
                                             sHmpam.put("aa", formatAaOrderLoad(j.getCreationDate().toString(), j.getAa().toString(), j.getType()));
                                             sHmpam.put("fromAddress", j.getFromAddress());
                                             sHmpam.put("fromPostalCode", j.getFromPostalCode());
-                                            sHmpam.put("toCountry", j.getFromCountry());
+                                            sHmpam.put("toCountry", j.getToCountry());
                                             sHmpam.put("comments", j.getComments());
                                             sHmpam.put("toCity", j.getFromCity());
                                             sHmpam.put("toAddress", j.getFromAddress());

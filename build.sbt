@@ -21,14 +21,14 @@ lazy val root = (project in file("."))
       "commons-net" % "commons-net" % "3.8.0",
       "com.lowagie" % "itext" % "2.1.7",
       "net.sf.jasperreports" % "jasperreports" % "6.16.0",
-
-
+      "javax.activation" % "activation" % "1.1.1",
       "com.springml" % "sftp.client" % "1.0.3",
       "com.lightbend.akka" %% "akka-stream-alpakka-ftp" % "2.0.2",
       "com.typesafe.akka" %% "akka-stream" % "2.5.31",
       "com.typesafe.play" %% "play-mailer" % "8.0.1",
       "com.typesafe.play" %% "play-mailer-guice" % "8.0.1"
     ),
+
 
 
     Test / testOptions += Tests.Argument(TestFrameworks.JUnit, "-a", "-v"),

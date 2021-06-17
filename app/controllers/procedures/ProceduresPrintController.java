@@ -3,7 +3,6 @@ package controllers.procedures;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.mysql.jdbc.Connection;
 import com.typesafe.config.ConfigFactory;
 import controllers.BaseJasperReport;
 import controllers.execution_context.DatabaseExecutionContext;
@@ -11,11 +10,6 @@ import controllers.system.Application;
 import models.*;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.engine.util.JRLoader;
-import net.sf.jasperreports.export.SimpleExporterInput;
-import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
-import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -23,13 +17,11 @@ import org.springframework.util.ResourceUtils;
 import play.api.db.Database;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
-import play.mvc.BodyParser;
 import play.mvc.Http;
 import play.mvc.Result;
 
 import javax.inject.Inject;
 import java.io.*;
-import java.sql.DriverManager;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -46,22 +38,12 @@ public class ProceduresPrintController extends Application {
 
 
     @Inject
-    public ProceduresPrintController( Database db , JPAApi jpaApi, DatabaseExecutionContext executionContext) {
-        super(jpaApi,  executionContext);
+    public ProceduresPrintController(Database db, JPAApi jpaApi, DatabaseExecutionContext executionContext) {
+        super(jpaApi, executionContext);
         this.jpaApi = jpaApi;
         this.db = db;
         this.executionContext = executionContext;
     }
-
-
-
-
-
-
-
-
-
-
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
@@ -85,7 +67,7 @@ public class ProceduresPrintController extends Application {
                                             ObjectNode resultNode = Json.newObject();
                                             String random_id = json.findPath("random_id").asText();
                                             Random rand = new Random();
-                                            String filename =  ConfigFactory.load().getString("uploads_reports")+"offers" + random_id + ".xls";
+                                            String filename = ConfigFactory.load().getString("uploads_reports") + "offers" + random_id + ".xls";
                                             HSSFWorkbook workbook = new HSSFWorkbook();
                                             HSSFSheet sheet = workbook.createSheet("FirstSheet");
                                             HSSFRow rowhead = sheet.createRow((short) 0);
@@ -106,22 +88,22 @@ public class ProceduresPrintController extends Application {
                                                 HSSFRow row = sheet.createRow((short) i + 1);
                                                 row.createCell((short) 0).setCellValue(offersEntityList.get(i).getId());
                                                 row.createCell((short) 1).setCellValue(offersEntityList.get(i).getAa());
-                                                row.createCell((short) 2).setCellValue( entityManager.find(CustomersSuppliersEntity.class,offersEntityList.get(i).getCustomerId()).getBrandName());
+                                                row.createCell((short) 2).setCellValue(entityManager.find(CustomersSuppliersEntity.class, offersEntityList.get(i).getCustomerId()).getBrandName());
                                                 row.createCell((short) 3).setCellValue(offersEntityList.get(i).getStatus());
                                                 row.createCell((short) 4).setCellValue(offersEntityList.get(i).getFromAddress());
                                                 row.createCell((short) 5).setCellValue(offersEntityList.get(i).getToAddress());
 
-                                                if(offersEntityList.get(i).getSellerId()!=null){
-                                                    row.createCell((short) 6).setCellValue(entityManager.find(InternovaSellersEntity.class,offersEntityList.get(i).getSellerId()).getName());
+                                                if (offersEntityList.get(i).getSellerId() != null) {
+                                                    row.createCell((short) 6).setCellValue(entityManager.find(InternovaSellersEntity.class, offersEntityList.get(i).getSellerId()).getName());
 
-                                                }else{
+                                                } else {
                                                     row.createCell((short) 6).setCellValue(entityManager.find(InternovaSellersEntity.class, customersSuppliersEntity.getInternovaSellerId()).getName());
 
                                                 }
-                                                if(offersEntityList.get(i).getBillingId()!=null){
-                                                    row.createCell((short) 7).setCellValue(entityManager.find(BillingsEntity.class,offersEntityList.get(i).getBillingId()).getName());
+                                                if (offersEntityList.get(i).getBillingId() != null) {
+                                                    row.createCell((short) 7).setCellValue(entityManager.find(BillingsEntity.class, offersEntityList.get(i).getBillingId()).getName());
 
-                                                }else{
+                                                } else {
                                                     row.createCell((short) 7).setCellValue(entityManager.find(BillingsEntity.class, customersSuppliersEntity.getBillingId()).getName());
                                                 }
                                                 DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd");
@@ -131,7 +113,6 @@ public class ProceduresPrintController extends Application {
                                             for (int col = 0; col < 8; col++) {
                                                 sheet.autoSizeColumn(col);
                                             }
-
 
 
                                             FileOutputStream fileOut = null;
@@ -165,10 +146,9 @@ public class ProceduresPrintController extends Application {
     }
 
 
-
     public String exportReport(String reportFormat) throws FileNotFoundException, JRException {
         String path = "C:\\Users\\basan\\Desktop\\Report";
-        List employees=null;
+        List employees = null;
         //load file and compile it
         File file = ResourceUtils.getFile("classpath:employees.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
@@ -187,31 +167,51 @@ public class ProceduresPrintController extends Application {
     }
 
 
+
+    public ByteArrayInputStream generateOrderLoadingReport(String orderLoadingId) throws FileNotFoundException, JRException {
+        ObjectNode reportParams = Json.newObject();
+        reportParams.put("order_loading_id", orderLoadingId);
+        ByteArrayInputStream export = (ByteArrayInputStream)
+                BaseJasperReport.generatePDF("orders_loadings/anathesh_el", reportParams);
+
+        return export;
+    }
+
+
     @SuppressWarnings({"Duplicates", "unchecked"})
     public Result exportOrderLoadingJasper(final Http.Request request) throws IOException {
-            try {
-                Result result;
-                CompletableFuture<Result> addFuture = CompletableFuture.supplyAsync(() -> {
-                            return jpaApi.withTransaction(entityManager -> {
-                                ObjectNode add_result = Json.newObject();
-                                ObjectNode reportParams = Json.newObject();
-                                reportParams.put("createdBy","test param");
-                                ByteArrayInputStream  export = (ByteArrayInputStream) BaseJasperReport.generatePDF("test", reportParams);
+        try {
+            Result result;
+            String order_loading_id = request.queryString("order_loading_id").get();
+            CompletableFuture<Result> addFuture = CompletableFuture.supplyAsync(() -> {
+                        return jpaApi.withTransaction(entityManager -> {
+                            ObjectNode add_result = Json.newObject();
+                            try {
+                                ByteArrayInputStream  export=  generateOrderLoadingReport(order_loading_id);
                                 add_result.put("status", "success");
                                 add_result.put("message", "Η καταχωρηση πραγματοποίηθηκε με επιτυχία");
                                 return ok(export).as("application/pdf; charset=UTF-8");
-                            });
-                        },
-                        executionContext);
-                result =  addFuture.get();
-                return result;
-            } catch (Exception e) {
-                ObjectNode result = Json.newObject();
-                e.printStackTrace();
-                result.put("status", "error");
-                result.put("message", "Προβλημα κατα την καταχωρηση");
-                return ok(result);
-            }
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+
+                            } catch (JRException e) {
+                                e.printStackTrace();
+                            }
+                            add_result.put("status", "error");
+                            add_result.put("message", "Προβλημα κατα την καταχωρηση");
+                            return ok(add_result);
+                        });
+                    },
+                    executionContext);
+            result = addFuture.get();
+            return result;
+        } catch (Exception e) {
+            ObjectNode result = Json.newObject();
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "Προβλημα κατα την καταχωρηση");
+            return ok(result);
+        }
     }
 
 
@@ -236,7 +236,7 @@ public class ProceduresPrintController extends Application {
                                             ObjectNode resultNode = Json.newObject();
                                             String random_id = json.findPath("random_id").asText();
                                             Random rand = new Random();
-                                            String filename =  ConfigFactory.load().getString("uploads_reports")+"orders" + random_id + ".xls";
+                                            String filename = ConfigFactory.load().getString("uploads_reports") + "orders" + random_id + ".xls";
                                             HSSFWorkbook workbook = new HSSFWorkbook();
                                             HSSFSheet sheet = workbook.createSheet("FirstSheet");
                                             HSSFRow rowhead = sheet.createRow((short) 0);
@@ -254,7 +254,7 @@ public class ProceduresPrintController extends Application {
                                                 HSSFRow row = sheet.createRow((short) i + 1);
                                                 row.createCell((short) 0).setCellValue(ordersEntityList.get(i).getId());
                                                 row.createCell((short) 1).setCellValue(ordersEntityList.get(i).getOfferId());
-                                                row.createCell((short) 2).setCellValue( entityManager.find(CustomersSuppliersEntity.class,ordersEntityList.get(i).getCustomerId()).getBrandName());
+                                                row.createCell((short) 2).setCellValue(entityManager.find(CustomersSuppliersEntity.class, ordersEntityList.get(i).getCustomerId()).getBrandName());
                                                 row.createCell((short) 3).setCellValue(ordersEntityList.get(i).getStatus());
                                                 String sqlOrdersSchedules = "select * from order_schedules ord_s where ord_s.order_id=" + ordersEntityList.get(i).getId()
                                                         + " and ord_s.primary_schedule=1 ";
@@ -270,7 +270,6 @@ public class ProceduresPrintController extends Application {
                                             for (int col = 0; col < 6; col++) {
                                                 sheet.autoSizeColumn(col);
                                             }
-
 
 
                                             FileOutputStream fileOut = null;
@@ -304,12 +303,6 @@ public class ProceduresPrintController extends Application {
     }
 
 
-
-
-
-
-
-
     @SuppressWarnings({"Duplicates", "unchecked"})
     public Result exportScheduleAsXlsx(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();
@@ -331,7 +324,7 @@ public class ProceduresPrintController extends Application {
                                             ObjectNode resultNode = Json.newObject();
                                             String random_id = json.findPath("random_id").asText();
                                             Random rand = new Random();
-                                            String filename =  ConfigFactory.load().getString("uploads_reports")+"schedules" + random_id + ".xls";
+                                            String filename = ConfigFactory.load().getString("uploads_reports") + "schedules" + random_id + ".xls";
                                             HSSFWorkbook workbook = new HSSFWorkbook();
                                             HSSFSheet sheet = workbook.createSheet("FirstSheet");
                                             HSSFRow rowhead = sheet.createRow((short) 0);
@@ -361,7 +354,7 @@ public class ProceduresPrintController extends Application {
                                                     " mu.comments," +
                                                     " sp.from_unit," +
                                                     " sp.to_unit," +
-                                                    " sp.unit_price"+
+                                                    " sp.unit_price" +
                                                     " from schedule s " +
                                                     " left join  schedule_packages sp on (sp.schedule_id = s.id) " +
                                                     " left join measurement_unit mu on (mu.id=sp.measurement_unit_id) " +
@@ -421,10 +414,6 @@ public class ProceduresPrintController extends Application {
             return ok(result);
         }
     }
-
-
-
-
 
 
 }

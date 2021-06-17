@@ -209,9 +209,7 @@ public class BillingsController extends Application {
                     ObjectMapper ow = new ObjectMapper();
                     HashMap<String, Object> returnList = new HashMap<String, Object>();
                     String jsonResult = "";
-                    CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
-                                return jpaApi.withTransaction(
-                                        entityManager -> {
+                    CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> { return jpaApi.withTransaction(entityManager -> {
 
                                             //roleDescSearchInput
                                             String orderCol = json.findPath("orderCol").asText();

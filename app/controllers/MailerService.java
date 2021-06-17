@@ -8,12 +8,19 @@ import com.nexmo.client.NexmoClientException;
 import com.nexmo.client.sms.SmsSubmissionResponse;
 import com.nexmo.client.sms.SmsSubmissionResponseMessage;
 import com.nexmo.client.sms.messages.TextMessage;
-import org.apache.commons.mail.EmailAttachment;
-import org.apache.commons.mail.EmailException;
-import org.apache.commons.mail.SimpleEmail;
+import com.typesafe.config.ConfigFactory;
+import controllers.execution_context.DatabaseExecutionContext;
+import controllers.procedures.ProceduresPrintController;
+import models.BillingsEntity;
+import net.sf.jasperreports.engine.JRException;
+import org.apache.commons.mail.*;
+import play.api.db.Database;
+import play.db.jpa.JPAApi;
 import play.libs.Json;
 import play.libs.mailer.Email;
 import play.libs.mailer.MailerClient;
+import play.libs.ws.WSClient;
+import play.libs.ws.WSResponse;
 import play.mvc.BodyParser;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -21,9 +28,11 @@ import play.mvc.Result;
 import javax.activation.CommandMap;
 import javax.activation.MailcapCommandMap;
 import javax.inject.Inject;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.util.Date;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
@@ -31,12 +40,21 @@ import static play.mvc.Results.ok;
 public class MailerService {
     @Inject
     MailerClient mailerClient;
+    private DatabaseExecutionContext executionContext;
+    private JPAApi jpaApi;
+    private final WSClient ws;
+    private Database db;
 
 
 
     @Inject
-    public MailerService(MailerClient mailer)
+    public MailerService(JPAApi jpaApi,MailerClient mailer, DatabaseExecutionContext executionContext,WSClient ws)
     {
+        this.ws = ws;
+        this.db = db;
+        this.jpaApi = jpaApi;
+        this.executionContext = executionContext;
+
         this.mailerClient = mailer;
         MailcapCommandMap mc = (MailcapCommandMap) MailcapCommandMap.getDefaultCommandMap();
         mc.addMailcap("text/html;; x-java-content-handler=com.sun.mail.handlers.text_html");
@@ -48,41 +66,7 @@ public class MailerService {
     }
 
 
-    public void sendEmail() {
 
-
-
-        Email email = new Email()
-                .setSubject("Simple email")
-                .setFrom("manolis.papaspyropoulos@gmail.com")
-                .addTo("manolis.papaspyropoulos@gmail.com").setBodyText("A text message");
-        mailerClient.send(email);
-
-
-    }
-
-//    public void sendEmail() {
-//        String cid = "1234";
-//        Email email = new Email()
-//                .setSubject("EMAIL offer")
-//                .setFrom("manolis.papaspyropoulos@gmail.com")
-//                .addTo("manolis.papaspyropoulos@gmail.com")
-//                .addTo("mpapaspyropoulos@synergic.gr")
-//                //.addTo("maria_kukou@hotmail.com")
-//                // adds attachment
-//                // .addAttachment("attachment.pdf", new File("/some/path/attachment.pdf"))
-//                // .addAttachment("data.txt", "data".getBytes(), "text/plain", "Simple data", EmailAttachment.INLINE)
-//                .addAttachment("wd.html", new File("D:\\developm\\wd.html"), cid)
-//                .setBodyText("A text message")
-//                .setBodyHtml("<html><body><p>An <b>html</b> message with cid <img src=\"cid:" + cid + "\"></p></body></html>");
-//        mailerClient.send(email);
-//    }
-
-
-    public static void sendEmail2() throws EmailException {
-
-
-    }
 
 
     public void sendSms() throws IOException, NexmoClientException {
@@ -113,13 +97,40 @@ public class MailerService {
             try {
                 ObjectNode result = Json.newObject();
                 CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
-                    ObjectNode add_result = Json.newObject();
-                    sendEmail();
-                    System.out.println("hey");
-                    add_result.put("status", "success");
-                    add_result.put("message", "success");
-                    return add_result;
-                });
+                            return jpaApi.withTransaction(entityManager -> {
+                                ObjectNode add_result = Json.newObject();
+                                String subject = json.findPath("subject").asText();
+                                String from = json.findPath("from").asText();
+                                String to = json.findPath("to").asText();
+                                String bodyText = json.findPath("bodyText").asText();
+                                String orderLoadingId = json.findPath("orderLoadingId").asText();
+                                Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+                                Email email = new Email()
+                                        .setSubject(subject)
+                                        .setFrom(from)
+                                        .addTo(to).setBodyText(bodyText);
+                                if(orderLoadingId!=null && !orderLoadingId.equalsIgnoreCase("") && !orderLoadingId.equalsIgnoreCase("null")){
+                                    ProceduresPrintController proceduresPrintController =
+                                            new ProceduresPrintController(db, jpaApi, executionContext);
+                                    try {
+                                        email.addAttachment("ΑΝΑΘΕΣΗ.pdf",
+                                                readStream(proceduresPrintController.
+                                                        generateOrderLoadingReport(orderLoadingId)),
+                                                "application/pdf", "ΑΝΑΘΕΣΗ",
+                                                EmailAttachment.INLINE);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    } catch (JRException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                mailerClient.send(email);
+                                add_result.put("status", "success");
+                                add_result.put("message", "Το email αποστάλθηκε με επυτιχία!");
+                                return add_result;
+                            });
+                        },
+                        executionContext);
                 result = (ObjectNode) addFuture.get();
                 return ok(result);
             } catch (Exception e) {
@@ -131,7 +142,14 @@ public class MailerService {
             }
         }
     }
-//
+
+
+    public byte[] readStream(ByteArrayInputStream bais) throws IOException {
+        byte[] array = new byte[bais.available()];
+        bais.read(array);
+
+        return array;
+    }
 
 
 }

@@ -32,8 +32,10 @@ public class BaseJasperReport  {
                     ConfigFactory.load().getString("db.default.user"),
                     ConfigFactory.load().getString("db.default.password")
             );
-            File compiledFile = new File(  ConfigFactory.load().getString("jasper_reports")+reportDefFile+".jasper");
-            String subDir = "jasper/test".split("/")[0];
+            File compiledFile = new File(  ConfigFactory.load().getString("report_path")+reportDefFile+".jasper");
+            String subDir = reportDefFile.split("/")[0];
+
+
             reportParams.put("SUBREPORT_DIR", reportPath + subDir + "/");
             if (!compiledFile.exists()){
                 throw new JRRuntimeException("File main_report.jasper not found.");
