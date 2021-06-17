@@ -13,6 +13,7 @@ public class BillingsEntity {
     private String description;
     private Date creationDate;
     private Date updateDate;
+    private String email;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -80,5 +81,15 @@ public class BillingsEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, description, creationDate, updateDate);
+    }
+
+    @Basic
+    @Column(name = "email")
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

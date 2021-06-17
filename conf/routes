@@ -183,9 +183,10 @@ POST        /getDistinctPckagesStartPoint                    controllers.procedu
 POST        /updateOrderFactory                              controllers.procedures.OrdersController.updateOrderFactory(req: Request)
 POST        /deleteOrder                                     controllers.procedures.OrdersController.deleteOrder(req: Request)
 
-#OrdersLoadingController
+#OrdersLoadingController getOrdersLoadingsViewOnly
 POST        /getAvailablesOrders                             controllers.procedures.OrdersLoadingController.getAvailablesOrders(req: Request)
 POST        /getOrdersLoadings                               controllers.procedures.OrdersLoadingController.getOrdersLoadings(req: Request)
+POST        /getOrdersLoadingsViewOnly                       controllers.procedures.OrdersLoadingController.getOrdersLoadingsViewOnly(req: Request)
 POST        /getDromologioByOrder                            controllers.procedures.OrdersLoadingController.getDromologioByOrder(req: Request)
 POST        /getNauloBySuplierAndSchedule                    controllers.procedures.OrdersLoadingController.getNauloBySuplierAndSchedule(req: Request)
 POST        /saveOrderLoading                                controllers.procedures.OrdersLoadingController.saveOrderLoading(req: Request)

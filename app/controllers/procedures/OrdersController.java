@@ -57,6 +57,8 @@ public class OrdersController extends Application {
                                 ordersEntity.setOfferId(offerId);
                                 ordersEntity.setSellerId(entityManager.find(OffersEntity.class, offerId).getSellerId());
                                 ordersEntity.setAa("1");
+                                ordersEntity.setNetWeight(0.0);
+                                ordersEntity.setGrossWeight(0.0);
                                 ordersEntity.setBillingId(entityManager.find(OffersEntity.class, offerId).getBillingId());
                                 ordersEntity.setStatus("ΣΕ ΖΗΤΗΣΗ");
                                 ordersEntity.setCrmIndicator((byte) 0);
@@ -71,11 +73,11 @@ public class OrdersController extends Application {
                                     orderSchedule.setFromAddress(offersSchedulesEntity.getFromAddress());
                                     orderSchedule.setFromCity(offersSchedulesEntity.getFromCity());
                                     orderSchedule.setFromCountry(offersSchedulesEntity.getFromCountry());
-                                    orderSchedule.setFromPostalCode(offersSchedulesEntity.getFromPostalCode());
+                                    orderSchedule.setFromPostalCode(offersSchedulesEntity.getFromPostalCode().replaceAll(" ", ""));
                                     orderSchedule.setToAddress(offersSchedulesEntity.getToAddress());
                                     orderSchedule.setToCity(offersSchedulesEntity.getToCity());
                                     orderSchedule.setToCountry(offersSchedulesEntity.getToCountry());
-                                    orderSchedule.setToPostalCode(offersSchedulesEntity.getToPostalCode());
+                                    orderSchedule.setToPostalCode(offersSchedulesEntity.getToPostalCode().replaceAll(" ", ""));
                                     orderSchedule.setPrimarySchedule(schedule.findPath("primaryRecord").asInt());
                                     orderSchedule.setOrderId(ordersEntity.getId());
                                     orderSchedule.setOfferId(offersSchedulesEntity.getOfferId());
@@ -92,7 +94,7 @@ public class OrdersController extends Application {
                                         orderWaypointsEntity.setNestedScheduleIndicator(offerWayp.getNestedScheduleIndicator());
                                         orderWaypointsEntity.setCountry(offerWayp.getCountry());
                                         if (offerWayp.getPostalCode() != null) {
-                                            orderWaypointsEntity.setPostalCode(offerWayp.getPostalCode());
+                                            orderWaypointsEntity.setPostalCode(offerWayp.getPostalCode().replaceAll(" ", ""));
                                         }
                                         orderWaypointsEntity.setOrderId(ordersEntity.getId());
                                         orderWaypointsEntity.setCreationDate(new Date());
@@ -103,7 +105,7 @@ public class OrdersController extends Application {
                                     OrderWaypointsEntity orderWaypointsEntity = new OrderWaypointsEntity();
                                     orderWaypointsEntity.setCity(offersSchedulesEntity.getToCity());
                                     orderWaypointsEntity.setCountry(offersSchedulesEntity.getToCountry());
-                                    orderWaypointsEntity.setPostalCode(offersSchedulesEntity.getToPostalCode());
+                                    orderWaypointsEntity.setPostalCode(offersSchedulesEntity.getToPostalCode().replaceAll(" ", ""));
                                     orderWaypointsEntity.setCreationDate(new Date());
                                     orderWaypointsEntity.setOrderId(ordersEntity.getId());
                                     orderWaypointsEntity.setOrderScheduleId(orderSchedule.getId());
@@ -945,7 +947,7 @@ public class OrdersController extends Application {
                                     warehousesEntity.setCountry(country);
                                     warehousesEntity.setEmail(email);
                                     warehousesEntity.setCity(city);
-                                    warehousesEntity.setPostalCode(postalCode);
+                                    warehousesEntity.setPostalCode(postalCode.replaceAll(" ", ""));
                                     warehousesEntity.setRegion(region);
                                     warehousesEntity.setLongitude(Double.valueOf(longtitude));
                                     warehousesEntity.setLatitude(Double.valueOf(lattitude));
@@ -1016,7 +1018,7 @@ public class OrdersController extends Application {
                                     factory.setCountry(country);
                                     factory.setEmail(email);
                                     factory.setCity(city);
-                                    factory.setPostalCode(postalCode);
+                                    factory.setPostalCode(postalCode.replaceAll(" ", ""));
                                     factory.setRegion(region);
                                     factory.setLongtitude(Double.valueOf(longitude));
                                     factory.setLattitude(Double.valueOf(latitude));
@@ -1166,13 +1168,15 @@ public class OrdersController extends Application {
                                 String user_id = json.findPath("user_id").asText();
                                 Long orderId = json.findPath("orderId").asLong();
                                 String generalInstructions = json.findPath("generalInstructions").asText();
-                                String netWeight = json.findPath("netWeight").asText();
-                                String grossWeight = json.findPath("grossWeight").asText();
+                                Double netWeight = json.findPath("netWeight").asDouble();
+                                Double grossWeight = json.findPath("grossWeight").asDouble();
                                 String truckTemprature = json.findPath("truckTemprature").asText();
                                 String sender = json.findPath("sender").asText();
                                 String timologioCode = json.findPath("timologioCode").asText();
                                 String status = json.findPath("status").asText();
-                                String comments = json.findPath("comments").asText();
+                                String comments = json.findPath("orders_comments").asText();//      orders_comments: this.comments,
+
+                                System.out.println(json);
                                 String sqlPackagesByPoints =
                                         "select * " +
                                                 "from orders_selections_by_point " +
@@ -1231,11 +1235,11 @@ public class OrdersController extends Application {
                                     ordersEntity.setGeneralInstructions(generalInstructions);
                                 }
 
-                                if (netWeight != null && !netWeight.equalsIgnoreCase("null")) {
+                                if (netWeight != null) {
                                     ordersEntity.setNetWeight(netWeight);
                                 }
 
-                                if (grossWeight != null && !grossWeight.equalsIgnoreCase("null")) {
+                                if (grossWeight != null) {
                                     ordersEntity.setGrossWeight(grossWeight);
                                 }
 
@@ -1245,6 +1249,7 @@ public class OrdersController extends Application {
                                 if (sender != null && !sender.equalsIgnoreCase("null")) {
                                     ordersEntity.setSender(sender);
                                 }
+                                System.out.println(comments);
                                 if (comments != null && !comments.equalsIgnoreCase("null")) {
                                     ordersEntity.setComments(comments);
                                 }
@@ -1373,7 +1378,7 @@ public class OrdersController extends Application {
                                             List<MeasurementUnitEntity> muE = entityManager.createNativeQuery(sqlMu, MeasurementUnitEntity.class).getResultList();
                                             MeasurementUnitEntity mue = entityManager.find(MeasurementUnitEntity.class, muE.get(0).getId());
                                             Double ldm = 0.0;
-                                            ldm = calculateLdm(stackingType, mue, quantity, cve.getStackingFactor());
+                                            ldm = calculateLdm(stackingType, mue, quantity, mue.getStackingFactor());
                                             selections.setLdm(ldm);
                                             selections.setMeasureUnitId(muE.get(0).getId());
                                             entityManager.persist(selections);
@@ -1406,7 +1411,7 @@ public class OrdersController extends Application {
                                         orderWaypointsPackagesEntity.setOrderId(orderId);
                                         orderWaypointsPackagesEntity.setCity(schedule.findPath("city").asText());
                                         orderWaypointsPackagesEntity.setCountry(schedule.findPath("country").asText());
-                                        orderWaypointsPackagesEntity.setPostalCode(schedule.findPath("postalCode").asText());
+                                        orderWaypointsPackagesEntity.setPostalCode(schedule.findPath("postalCode").asText().replaceAll(" ", ""));
                                         orderWaypointsPackagesEntity.setOrderScheduleId(schedule.findPath("orderScheduleId").asLong());
                                         orderWaypointsPackagesEntity.setNestedScheduleIndicator(schedule.findPath("nestedScheduleIndicator").asInt());
                                         if (offerScheduleBetweenWaypointId != null && !offerScheduleBetweenWaypointId.equalsIgnoreCase("")
@@ -1465,7 +1470,7 @@ public class OrdersController extends Application {
                                             List<MeasurementUnitEntity> muE = entityManager.createNativeQuery(sqlMu, MeasurementUnitEntity.class).getResultList();
                                             MeasurementUnitEntity mue = entityManager.find(MeasurementUnitEntity.class, muE.get(0).getId());
                                             Double ldm = 0.0;
-                                            ldm = calculateLdm(stackingType, mue, quantity, cve.getStackingFactor());
+                                            ldm = calculateLdm(stackingType, mue, quantity, mue.getStackingFactor());
                                             selections.setLdm(ldm);
                                             selections.setMeasureUnitId(muE.get(0).getId());
                                             entityManager.persist(selections);
@@ -1517,7 +1522,7 @@ public class OrdersController extends Application {
                                             List<MeasurementUnitEntity> muE = entityManager.createNativeQuery(sqlMu, MeasurementUnitEntity.class).getResultList();
                                             MeasurementUnitEntity mue = entityManager.find(MeasurementUnitEntity.class, muE.get(0).getId());
                                             Double ldm = 0.0;
-                                            ldm = calculateLdm(stackingType, mue, quantity, cve.getStackingFactor());
+                                            ldm = calculateLdm(stackingType, mue, quantity, mue.getStackingFactor());
                                             selections.setLdm(ldm);
                                             selections.setMeasureUnitId(muE.get(0).getId());
                                             entityManager.persist(selections);
@@ -1568,7 +1573,7 @@ public class OrdersController extends Application {
                                             List<MeasurementUnitEntity> muE = entityManager.createNativeQuery(sqlMu, MeasurementUnitEntity.class).getResultList();
                                             MeasurementUnitEntity mue = entityManager.find(MeasurementUnitEntity.class, muE.get(0).getId());
                                             Double ldm = 0.0;
-                                            ldm = calculateLdm(stackingType, mue, quantity, cve.getStackingFactor());
+                                            ldm = calculateLdm(stackingType, mue, quantity, mue.getStackingFactor());
                                             selections.setLdm(ldm);
                                             selections.setMeasureUnitId(muE.get(0).getId());
                                             entityManager.persist(selections);

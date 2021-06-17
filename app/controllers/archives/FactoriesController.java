@@ -630,7 +630,7 @@ public class FactoriesController extends Application {
                                     String unloadingLoadingCode = json.findPath("unloadingLoadingCode").asText();
                                     Integer appointmentDays = json.findPath("appointmentDays").asInt();
                                     FactoriesEntity factoriesEntity = new FactoriesEntity();
-                                    factoriesEntity.setAddress(address);
+                                    factoriesEntity.setAddress(address.replaceAll("\\s",""));
                                     factoriesEntity.setBrandName(brandName);
                                     factoriesEntity.setCity(city);
                                     factoriesEntity.setEmail(email);

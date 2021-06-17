@@ -17,6 +17,7 @@ public class MeasurementUnitEntity {
     private Date creationDate;
     private Date updateDate;
     private Double volume;
+    private Double stackingFactor;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -127,5 +128,15 @@ public class MeasurementUnitEntity {
 
     public void setVolume(Double volume) {
         this.volume = volume;
+    }
+
+    @Basic
+    @Column(name = "stacking_factor")
+    public Double getStackingFactor() {
+        return stackingFactor;
+    }
+
+    public void setStackingFactor(Double stackingFactor) {
+        this.stackingFactor = stackingFactor;
     }
 }

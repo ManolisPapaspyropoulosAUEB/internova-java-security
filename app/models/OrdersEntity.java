@@ -24,8 +24,8 @@ public class OrdersEntity {
     private Date updateDate;
     private Date creationDate;
     private String sender;
-    private String grossWeight;
-    private String netWeight;
+    private Double grossWeight;
+    private Double netWeight;
     private String timologioCode;
     private Byte crmIndicator;
     private String crmNumber;
@@ -220,21 +220,21 @@ public class OrdersEntity {
 
     @Basic
     @Column(name = "gross_weight")
-    public String getGrossWeight() {
+    public Double getGrossWeight() {
         return grossWeight;
     }
 
-    public void setGrossWeight(String grossWeight) {
+    public void setGrossWeight(Double grossWeight) {
         this.grossWeight = grossWeight;
     }
 
     @Basic
     @Column(name = "net_weight")
-    public String getNetWeight() {
+    public Double getNetWeight() {
         return netWeight;
     }
 
-    public void setNetWeight(String netWeight) {
+    public void setNetWeight(Double netWeight) {
         this.netWeight = netWeight;
     }
 

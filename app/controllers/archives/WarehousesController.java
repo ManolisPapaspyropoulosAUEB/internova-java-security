@@ -69,7 +69,7 @@ public class WarehousesController extends Application {
                                     warehousesEntity.setCreationDate(new Date());
                                     warehousesEntity.setEmail(email);
                                     warehousesEntity.setManager(manager);
-                                    warehousesEntity.setPostalCode(postalCode);
+                                    warehousesEntity.setPostalCode(postalCode.replaceAll(" ", ""));
                                     warehousesEntity.setRegion(region);
                                     warehousesEntity.setTelephone(telephone);
                                     warehousesEntity.setUnloadingLoadingCode(unloadingLoadingCode);
@@ -147,7 +147,7 @@ public class WarehousesController extends Application {
                                     warehousesEntity.setEmail(email);
                                     warehousesEntity.setManager(manager);
                                     warehousesEntity.setUnloadingLoadingCode(unloadingLoadingCode);
-                                    warehousesEntity.setPostalCode(postalCode);
+                                    warehousesEntity.setPostalCode(postalCode.replaceAll(" ", ""));
                                     warehousesEntity.setRegion(region);
                                     warehousesEntity.setTelephone(telephone);
                                     warehousesEntity.setComments(comments);

@@ -78,6 +78,7 @@ public class CustomersSuppliersController extends Application {
                                     String job = json.findPath("job").asText();
                                     Long internovaSellerId = json.findPath("internovaSellerId").asLong();
 
+
                                     CustomersSuppliersEntity warehousesEntity = new CustomersSuppliersEntity();
                                     warehousesEntity.setAddress(address);
                                     warehousesEntity.setBrandName(brandName);

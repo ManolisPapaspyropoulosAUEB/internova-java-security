@@ -73,14 +73,14 @@ public class ScheduleController extends Application {
                                 ScheduleEntity scheduleEntity = new ScheduleEntity();
                                 scheduleEntity.setFromAddress(fromAddress);
                                 scheduleEntity.setFromCity(fromCity);
-                                scheduleEntity.setFromPostalCode(fromPostalCode);
+                                scheduleEntity.setFromPostalCode(fromPostalCode.replaceAll(" ", ""));
                                 scheduleEntity.setFromRegion(fromRegion);
                                 scheduleEntity.setFromCountry(fromCountry);
                                 scheduleEntity.setFromLongtitude(fromLongtitude);
                                 scheduleEntity.setFromLattitude(fromLattitude);
                                 scheduleEntity.setToAddress(toAddress);
                                 scheduleEntity.setToCity(toCity);
-                                scheduleEntity.setToPostalCode(toPostalCode);
+                                scheduleEntity.setToPostalCode(toPostalCode.replaceAll(" ", ""));
                                 scheduleEntity.setToRegion(toRegion);
                                 scheduleEntity.setToCountry(toCountry);
                                 scheduleEntity.setToLattitude(toLattitude);
@@ -148,14 +148,14 @@ public class ScheduleController extends Application {
 
                                 scheduleEntity.setFromAddress(fromAddress);
                                 scheduleEntity.setFromCity(fromCity);
-                                scheduleEntity.setFromPostalCode(fromPostalCode);
+                                scheduleEntity.setFromPostalCode(fromPostalCode.replaceAll(" ", ""));
                                 scheduleEntity.setFromRegion(fromRegion);
                                 scheduleEntity.setFromCountry(fromCountry);
                                 scheduleEntity.setFromLongtitude(fromLongtitude);
                                 scheduleEntity.setFromLattitude(fromLattitude);
                                 scheduleEntity.setToAddress(toAddress);
                                 scheduleEntity.setToCity(toCity);
-                                scheduleEntity.setToPostalCode(toPostalCode);
+                                scheduleEntity.setToPostalCode(toPostalCode.replaceAll(" ", ""));
                                 scheduleEntity.setToRegion(toRegion);
                                 scheduleEntity.setToCountry(toCountry);
                                 scheduleEntity.setToLattitude(toLattitude);

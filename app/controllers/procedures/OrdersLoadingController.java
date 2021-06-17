@@ -732,6 +732,8 @@ public class OrdersLoadingController extends Application {
                                                     sHmpam.put("customerBilling", "-");
                                                 }
                                                 sHmpam.put("status", j.getStatus());
+                                                sHmpam.put("grossWeight", j.getGrossWeight());
+                                                sHmpam.put("netWeight", j.getNetWeight());
                                                 sHmpam.put("showDromologioIndicator", false);
                                                 sHmpam.put("type", j.getType());
                                                 sHmpam.put("creationDate", j.getCreationDate());
@@ -839,6 +841,11 @@ public class OrdersLoadingController extends Application {
                                                 } else {
                                                     sHmpam.put("attatchmentsCount", "0");
                                                 }
+
+
+
+
+
                                                 serversList.add(sHmpam);
                                             }
                                             returnList_future.put("data", serversList);
@@ -1324,6 +1331,194 @@ public class OrdersLoadingController extends Application {
         }
     }
 
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    public Result getOrdersLoadingsViewOnly(final Http.Request request) throws IOException, ExecutionException, InterruptedException {
+        ObjectNode result = Json.newObject();
+        JsonNode json = request.body().asJson();
+        if (json == null) {
+            return badRequest("Expecting Json data");
+        } else {
+            if (json == null) {
+                result.put("status", "error");
+                result.put("message", "Δεν εχετε αποστειλει εγκυρα δεδομενα.");
+                return ok(result);
+            } else {
+                ObjectMapper ow = new ObjectMapper();
+                HashMap<String, Object> returnList = new HashMap<String, Object>();
+                String jsonResult = "";
+                CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
+                            return jpaApi.withTransaction(
+                                    entityManager -> {
+                                        String orderCol = json.findPath("orderCol").asText();
+                                        String descAsc = json.findPath("descAsc").asText();
+                                        String id = json.findPath("id").asText();
+                                        String idOrderSearch = json.findPath("idOrderSearch").asText();
+                                        String supplierNameSearch = json.findPath("supplierNameSearch").asText();
+                                        String truckTrailerNameSearch = json.findPath("truckTrailerNameSearch").asText();
+                                        String truckTractorNameSearch = json.findPath("truckTractorNameSearch").asText();
+                                        String aa = json.findPath("aa").asText();
+                                        String start = json.findPath("start").asText();
+                                        String limit = json.findPath("limit").asText();
+                                        String sqlOrdLoads = "select * from orders_loading ord_load   where 1=1 ";
+                                        if (!id.equalsIgnoreCase("") && id != null) {
+                                            sqlOrdLoads += " and ord_load.id =" + id;
+                                        }
+                                        if (aa != null && !aa.equalsIgnoreCase("")) {
+                                            sqlOrdLoads += " and  ord_load.aa like '%" + aa + "%' ";
+                                        }
+                                        if (idOrderSearch != null && !idOrderSearch.equalsIgnoreCase("")) {
+                                            sqlOrdLoads += " and  ord_load.id in " +
+                                                    " (select olds.order_loading_id from orders_loading_orders_selections olds " +
+                                                    "  where olds.order_id like '%" + idOrderSearch + "%' ) " +
+                                                    " or " +
+                                                    " ord_load.id " +
+                                                    " in  " +
+                                                    " ( " +
+                                                    " select " +
+                                                    " olds.order_loading_id " +
+                                                    " from orders_loading_orders_selections olds " +
+                                                    " where olds.order_id " +
+                                                    " in ( " +
+                                                    " select id from orders where customer_id in " +
+                                                    " ( " +
+                                                    " select id from customers_suppliers where brand_name like '%" + idOrderSearch + "%'" +
+                                                    " ) " +
+                                                    " )" +
+                                                    " )";
+                                        }
+                                        if (truckTractorNameSearch != null && !truckTractorNameSearch.equalsIgnoreCase("")) {
+                                            sqlOrdLoads += " and  ord_load.supplier_truck_tractor_id " + " in ( select t.id from trucks t  where t.brand_name   like '%" + truckTractorNameSearch + "%'   )";
+                                        }
+                                        if (truckTrailerNameSearch != null && !truckTrailerNameSearch.equalsIgnoreCase("")) {
+                                            sqlOrdLoads += " and  ord_load.supplier_truck_tractor_id  in ( select t.id from trucks t  where t.brand_name   like '%" + truckTrailerNameSearch + "%'   )";
+                                        }
+                                        if (supplierNameSearch != null && !supplierNameSearch.equalsIgnoreCase("")) {
+                                            sqlOrdLoads += " and ord_load.supplier_id in (  select cs.id   from customers_suppliers cs where cs.brand_name like '%" + supplierNameSearch + "%' ) ";
+                                        }
+                                        List<OrdersLoadingEntity> ordersLoadingAllList
+                                                = (List<OrdersLoadingEntity>) entityManager.createNativeQuery(
+                                                sqlOrdLoads, OrdersLoadingEntity.class).getResultList();
+                                        if (!orderCol.equalsIgnoreCase("") && orderCol != null) { //ordersSums
+                                            if (orderCol.equalsIgnoreCase("supplier")) {
+                                                sqlOrdLoads += " order by (select cs.brand_name from customers_suppliers cs where cs.id=ord_load.supplier_id) " + descAsc;
+                                            } else if (orderCol.equalsIgnoreCase("truckTrailer")) {
+                                                sqlOrdLoads += " order by (select tr.brand_name from trucks tr where tr.id=ord_load.supplier_truck_trailer_id) " + descAsc;
+                                            } else if (orderCol.equalsIgnoreCase("truckTractor")) {
+                                                sqlOrdLoads += " order by (select tr.brand_name from trucks tr where tr.id=ord_load.supplier_truck_tractor_id) " + descAsc;
+                                            } else if (orderCol.equalsIgnoreCase("ordersSums")) {
+                                                sqlOrdLoads += " order by (select sum(ldm) from " +
+                                                        " orders_selections_by_point osbp " +
+                                                        " where osbp.order_id in" +
+                                                        " (select olos.order_id " +
+                                                        " from orders_loading_orders_selections olos " +
+                                                        " where olos.order_loading_id=ord_load.id " +
+                                                        " )) " + descAsc;
+                                            } else {
+                                                sqlOrdLoads += " order by creation_date " + descAsc;
+                                            }
+                                        } else {
+                                            sqlOrdLoads += " order by creation_date desc";
+                                        }
+                                        if (!start.equalsIgnoreCase("") && start != null) {
+                                            sqlOrdLoads += " limit " + start + "," + limit;
+                                        }
+                                        HashMap<String, Object> returnList_future = new HashMap<String, Object>();
+                                        List<HashMap<String, Object>> serversList = new ArrayList<HashMap<String, Object>>();
+                                        List<OrdersLoadingEntity> ordersLoadingList
+                                                = (List<OrdersLoadingEntity>) entityManager.createNativeQuery(
+                                                sqlOrdLoads, OrdersLoadingEntity.class).getResultList();
+                                        for (OrdersLoadingEntity j : ordersLoadingList) {
+                                            HashMap<String, Object> sHmpam = new HashMap<String, Object>();
+                                            sHmpam.put("id", j.getId());
+                                            sHmpam.put("ordersLoadingId", j.getId());
+                                            sHmpam.put("type", j.getType());
+                                            sHmpam.put("fromCountry", j.getFromCountry());
+                                            sHmpam.put("fromCity", j.getFromCity());
+                                            sHmpam.put("aa", formatAaOrderLoad(j.getCreationDate().toString(), j.getAa().toString(), j.getType()));
+                                            sHmpam.put("fromAddress", j.getFromAddress());
+                                            sHmpam.put("fromPostalCode", j.getFromPostalCode());
+                                            sHmpam.put("toCountry", j.getToCountry());
+                                            sHmpam.put("comments", j.getComments());
+                                            sHmpam.put("toCity", j.getFromCity());
+                                            sHmpam.put("toAddress", j.getFromAddress());
+                                            sHmpam.put("toPostalCode", j.getFromPostalCode());
+                                            sHmpam.put("statusOrderLoading", j.getStatus());
+                                            sHmpam.put("supplierId", j.getSupplierId());
+                                            if (j.getArithmosTimologiou() != null) {
+
+                                                sHmpam.put("arithmosTimologiou", j.getArithmosTimologiou());
+                                            } else {
+                                                sHmpam.put("arithmosTimologiou", "-");
+                                            }
+
+                                            if (j.getTimologioIndicator() == 1) {
+                                                sHmpam.put("timologioIndicator", true);
+                                            } else {
+                                                sHmpam.put("timologioIndicator", false);
+                                            }
+
+
+                                            if (j.getSupplierId() != null) {
+                                                CustomersSuppliersEntity cust = entityManager.find(CustomersSuppliersEntity.class, j.getSupplierId());
+                                                sHmpam.put("supplierName", cust.getBrandName());
+                                            } else {
+                                                sHmpam.put("supplierName", "-");
+                                            }
+                                            if (j.getSupplierTruckTrailerId() != null && j.getSupplierTruckTrailerId() != 0) {
+                                                TrucksEntity truck = entityManager.find(TrucksEntity.class, j.getSupplierTruckTrailerId());
+                                                sHmpam.put("truckTrailerName", truck.getBrandName());
+                                                sHmpam.put("truckTrailerPlateNumber", truck.getPlateNumber());
+                                                sHmpam.put("truckTrailerLdm", truck.getLdm());
+                                            } else {
+                                                sHmpam.put("truckTrailerName", "-");
+                                                sHmpam.put("truckTrailerPlateNumber", "-");
+                                                sHmpam.put("truckTrailerLdm", 0);
+                                            }
+                                            sHmpam.put("supplierTruckTrailerId", j.getSupplierTruckTrailerId());
+                                            sHmpam.put("truckTrailerId", j.getSupplierTruckTrailerId());
+                                            if (j.getSupplierTruckTractorId() != null && j.getSupplierTruckTractorId() != 0) {
+                                                TrucksEntity truck = entityManager.find(TrucksEntity.class, j.getSupplierTruckTractorId());
+                                                sHmpam.put("truckTractorName", truck.getBrandName());
+                                                sHmpam.put("truckTractorPlateNumber", truck.getPlateNumber());
+                                            } else {
+                                                sHmpam.put("truckTractorName", "-");
+                                                sHmpam.put("truckTractorPlateNumber", "-");
+                                            }
+                                            sHmpam.put("supplierTruckTractorId", j.getSupplierTruckTractorId());
+                                            sHmpam.put("truckTractorId", j.getSupplierTruckTractorId());
+                                            sHmpam.put("creationDate", j.getCreationDate());
+                                            sHmpam.put("updateDate", j.getUpdateDate());
+                                            sHmpam.put("customerSupplierId", j.getSupplierId());
+                                            sHmpam.put("naulo", j.getNaulo());
+                                            serversList.add(sHmpam);
+                                        }
+                                        returnList_future.put("data", serversList);
+                                        returnList_future.put("total", ordersLoadingAllList.size());
+                                        returnList_future.put("status", "success");
+                                        returnList_future.put("message", "success");
+                                        return returnList_future;
+                                    });
+                        },
+                        executionContext);
+                returnList = getFuture.get();
+                DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                ow.setDateFormat(myDateFormat);
+                try {
+                    jsonResult = ow.writeValueAsString(returnList);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    result.put("status", "error");
+                    result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων ");
+                    return ok(result);
+                }
+                return ok(jsonResult);
+            }
+        }
+    }
+
+
+
     @SuppressWarnings({"Duplicates", "unchecked"})
     public Result getOrdersLoadings(final Http.Request request) throws IOException, ExecutionException, InterruptedException {
         ObjectNode result = Json.newObject();
@@ -1422,7 +1617,13 @@ public class OrdersLoadingController extends Application {
                                                 sqlOrdLoads, OrdersLoadingEntity.class).getResultList();
                                         for (OrdersLoadingEntity j : ordersLoadingList) {
                                             HashMap<String, Object> sHmpam = new HashMap<String, Object>();
+                                            String sqlSumGross ="select sum(ord.gross_weight) from orders ord where ord.id in (select os.order_id from orders_loading_orders_selections os where os.order_loading_id = "+j.getId()+"  )";
+                                            Double summGross = (Double) entityManager.createNativeQuery(sqlSumGross).getSingleResult();
+                                            String sqlSumNet ="select sum(ord.net_weight) from orders ord where ord.id in (select os.order_id from orders_loading_orders_selections os where os.order_loading_id = "+j.getId()+"  )";
+                                            Double summNet = (Double) entityManager.createNativeQuery(sqlSumNet).getSingleResult();
                                             sHmpam.put("id", j.getId());
+                                            sHmpam.put("summGross", summGross);
+                                            sHmpam.put("summNet", summNet);
                                             sHmpam.put("ordersLoadingId", j.getId());
                                             sHmpam.put("type", j.getType());
                                             sHmpam.put("fromCountry", j.getFromCountry());
@@ -1558,6 +1759,8 @@ public class OrdersLoadingController extends Application {
                                                         doneMap.put("mainSchedule", doneNode.findPath("mainSchedule").asText());
                                                         doneMap.put("fromAddressLabel", doneNode.findPath("fromAddressLabel").asText());
                                                         doneMap.put("fromAppointmentDay", doneNode.findPath("fromAppointmentDay").asText());
+                                                        doneMap.put("grossWeight", doneNode.findPath("grossWeight").asText());
+                                                        doneMap.put("netWeight", doneNode.findPath("netWeight").asText());
                                                         doneMap.put("fromAppointment", doneNode.findPath("fromAppointment").asText());
                                                         doneMap.put("appointmentRequired", doneNode.findPath("appointmentRequired").asText());
                                                         doneMap.put("appointmentDays", doneNode.findPath("appointmentDays").asText());

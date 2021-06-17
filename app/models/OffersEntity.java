@@ -1,5 +1,6 @@
 package models;
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Objects;
 
@@ -33,6 +34,7 @@ public class OffersEntity {
     private Long factoryId;
     private Long warehouseId;
     private String declineReasons;
+    private Date acceptOfferDate;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -336,5 +338,15 @@ public class OffersEntity {
 
     public void setDeclineReasons(String declineReasons) {
         this.declineReasons = declineReasons;
+    }
+
+    @Basic
+    @Column(name = "accept_offer_date")
+    public Date getAcceptOfferDate() {
+        return acceptOfferDate;
+    }
+
+    public void setAcceptOfferDate(Date acceptOfferDate) {
+        this.acceptOfferDate = acceptOfferDate;
     }
 }

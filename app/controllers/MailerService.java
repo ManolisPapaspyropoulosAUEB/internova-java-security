@@ -108,7 +108,7 @@ public class MailerService {
                                 Email email = new Email()
                                         .setSubject(subject)
                                         .setFrom(from)
-                                        .addTo(to).setBodyText(bodyText);
+                                        .addTo(to).addCc("manolis.papaspyropoulos@gmail.com").setBodyText(bodyText);
                                 if(orderLoadingId!=null && !orderLoadingId.equalsIgnoreCase("") && !orderLoadingId.equalsIgnoreCase("null")){
                                     ProceduresPrintController proceduresPrintController =
                                             new ProceduresPrintController(db, jpaApi, executionContext);

@@ -50,6 +50,7 @@ public class ΜeasuremenUnitController  extends Application {
                                 Double xIndex = json.findPath("xIndex").asDouble();
                                 Double yIndex = json.findPath("yIndex").asDouble();
                                 Double volume = json.findPath("volume").asDouble();
+                                Double stackingFactor = json.findPath("stackingFactor").asDouble();
                                 Integer ftlIndicator = json.findPath("ftlIndicator").asInt();
                                 String sqlUnique = "select * from measurement_unit mu where mu.title=" + "'" + title + "'";
                                 List<MeasurementUnitEntity> measurementUnitEntityList = entityManager.createNativeQuery(sqlUnique, MeasurementUnitEntity.class).getResultList();
@@ -64,6 +65,7 @@ public class ΜeasuremenUnitController  extends Application {
                                 measurementUnitEntity.setComments(comments);
                                 measurementUnitEntity.setzIndex(zIndex);
                                 measurementUnitEntity.setxIndex(xIndex);
+                                measurementUnitEntity.setStackingFactor(stackingFactor);
                                 measurementUnitEntity.setyIndex(yIndex);
                                 measurementUnitEntity.setVolume(volume);
                                 entityManager.persist(measurementUnitEntity);
@@ -107,7 +109,9 @@ public class ΜeasuremenUnitController  extends Application {
                                 String comments = json.findPath("comments").asText();
                                 Double zIndex = json.findPath("zIndex").asDouble();
                                 Double xIndex = json.findPath("xIndex").asDouble();
+                                Double stackingFactor = json.findPath("stackingFactor").asDouble();
                                 Double yIndex = json.findPath("yIndex").asDouble();
+
                                 Double volume = json.findPath("volume").asDouble();
                                 String sqlUnique = "select * from measurement_unit mu where mu.title=" + "'" + title + "' and mu.id!=" + id;
                                 List<MeasurementUnitEntity> measurementUnitEntityList = entityManager.createNativeQuery(sqlUnique, MeasurementUnitEntity.class).getResultList();
@@ -120,6 +124,7 @@ public class ΜeasuremenUnitController  extends Application {
                                 measurementUnitEntity.setUpdateDate(new Date());
                                 measurementUnitEntity.setTitle(title);
                                 measurementUnitEntity.setComments(comments);
+                                measurementUnitEntity.setStackingFactor(stackingFactor);
                                 measurementUnitEntity.setzIndex(zIndex);
                                 measurementUnitEntity.setxIndex(xIndex);
                                 measurementUnitEntity.setyIndex(yIndex);
@@ -162,7 +167,7 @@ public class ΜeasuremenUnitController  extends Application {
                                 //todo: tsekare an uparxei stis prosfores
                                 // String existSql = "select * from ";
                                 add_result.put("status", "error");
-                                add_result.put("message", "Βρεθηκαν συνδεδεμενες εγγραφες");
+                                add_result.put("message", "Προσωρινά αυτό το service δεν είναι διαθέσιμο");
 
 
                                 //                                update_result.put("DO_ID", measurementUnitEntity.getId());
@@ -209,6 +214,7 @@ public class ΜeasuremenUnitController  extends Application {
                                             String descAsc = json.findPath("descAsc").asText();
                                             String title = json.findPath("title").asText();
                                             String zIndex = json.findPath("zIndex").asText();
+                                            String stackingFactor = json.findPath("stackingFactor").asText();
                                             String exceptFullTrackedLoad = json.findPath("exceptFullTrackedLoad").asText();
                                             String yIndex = json.findPath("yIndex").asText();
                                             String xIndex = json.findPath("xIndex").asText();
@@ -223,6 +229,9 @@ public class ΜeasuremenUnitController  extends Application {
                                             }
                                             if (!xIndex.equalsIgnoreCase("") && xIndex != null) {
                                                 sqlMeasures += " and m.x_index like '%" + xIndex + "%'";
+                                            }
+                                            if (!stackingFactor.equalsIgnoreCase("") && stackingFactor != null) {
+                                                sqlMeasures += " and m.stacking_factor like '%" + stackingFactor + "%'";
                                             }
                                             if (!zIndex.equalsIgnoreCase("") && zIndex != null) {
                                                 sqlMeasures += " and m.z_index like '%" + zIndex + "%'";
@@ -267,6 +276,7 @@ public class ΜeasuremenUnitController  extends Application {
                                                 sHmpam.put("id", j.getId());
                                                 sHmpam.put("comments", j.getComments());
                                                 sHmpam.put("title", j.getTitle());
+                                                sHmpam.put("stackingFactor", j.getStackingFactor());
                                                 sHmpam.put("zIndex", j.getzIndex());
                                                 sHmpam.put("yIndex", j.getyIndex());
                                                 sHmpam.put("xIndex", j.getxIndex());

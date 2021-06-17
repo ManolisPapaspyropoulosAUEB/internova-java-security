@@ -1,4 +1,5 @@
 package controllers.coreData;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -14,6 +15,7 @@ import play.libs.Json;
 import play.mvc.BodyParser;
 import play.mvc.Http;
 import play.mvc.Result;
+
 import javax.inject.Inject;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -29,12 +31,13 @@ public class BillingsController extends Application {
     private JPAApi jpaApi;
     private MailerService ms;
     private DatabaseExecutionContext executionContext;
+
     @Inject
     public BillingsController(MailerService ms, JPAApi jpaApi, DatabaseExecutionContext executionContext) {
-        super(jpaApi,executionContext);
+        super(jpaApi, executionContext);
         this.jpaApi = jpaApi;
         this.executionContext = executionContext;
-        this.ms=ms;
+        this.ms = ms;
     }
 
     @SuppressWarnings({"Duplicates", "unchecked"})
@@ -51,6 +54,7 @@ public class BillingsController extends Application {
                                 ObjectNode add_result = Json.newObject();
                                 String name = json.findPath("name").asText();
                                 String user_id = json.findPath("user_id").asText();
+                                String email = json.findPath("email").asText();
                                 String description = json.findPath("description").asText();
                                 String sqlUnique = "select * from billings b where b.name=" + "'" + name + "'";
                                 List<BillingsEntity> billingsEntityList = entityManager.createNativeQuery(sqlUnique, BillingsEntity.class).getResultList();
@@ -62,6 +66,7 @@ public class BillingsController extends Application {
                                 BillingsEntity billingsEntity = new BillingsEntity();
                                 billingsEntity.setCreationDate(new Date());
                                 billingsEntity.setName(name);
+                                billingsEntity.setEmail(email);
                                 billingsEntity.setDescription(description);
                                 entityManager.persist(billingsEntity);
                                 add_result.put("status", "success");
@@ -74,7 +79,7 @@ public class BillingsController extends Application {
                         },
                         executionContext);
                 result = (ObjectNode) addFuture.get();
-                return ok(result,request);
+                return ok(result, request);
             } catch (Exception e) {
                 ObjectNode result = Json.newObject();
                 e.printStackTrace();
@@ -84,10 +89,6 @@ public class BillingsController extends Application {
             }
         }
     }
-
-
-
-
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
@@ -104,6 +105,7 @@ public class BillingsController extends Application {
                                 ObjectNode add_result = Json.newObject();
                                 Long id = json.findPath("id").asLong();
                                 String name = json.findPath("name").asText();
+                                String email = json.findPath("email").asText();
                                 String user_id = json.findPath("user_id").asText();
                                 String description = json.findPath("description").asText();
                                 String sqlUnique = "select * from billings b where b.name=" + "'" + name + "'  and b.id!=" + id;
@@ -115,6 +117,7 @@ public class BillingsController extends Application {
                                 }
                                 BillingsEntity billingsEntity = entityManager.find(BillingsEntity.class, id);
                                 billingsEntity.setUpdateDate(new Date());
+                                billingsEntity.setEmail(email);
                                 billingsEntity.setName(name);
                                 billingsEntity.setDescription(description);
                                 entityManager.persist(billingsEntity);
@@ -128,7 +131,7 @@ public class BillingsController extends Application {
                         },
                         executionContext);
                 result = (ObjectNode) addFuture.get();
-                return ok(result,request);
+                return ok(result, request);
             } catch (Exception e) {
                 ObjectNode result = Json.newObject();
                 e.printStackTrace();
@@ -182,7 +185,7 @@ public class BillingsController extends Application {
                         },
                         executionContext);
                 result = (ObjectNode) addFuture.get();
-                return ok(result,request);
+                return ok(result, request);
             } catch (Exception e) {
                 ObjectNode result = Json.newObject();
                 e.printStackTrace();
@@ -197,91 +200,97 @@ public class BillingsController extends Application {
     @SuppressWarnings({"Duplicates", "unchecked"})
     public Result getBillings(final Http.Request request) throws IOException, ExecutionException, InterruptedException {
         ObjectNode result = Json.newObject();
-            JsonNode json = request.body().asJson();
+        JsonNode json = request.body().asJson();
+        if (json == null) {
+            return badRequest("Expecting Json data");
+        } else {
             if (json == null) {
-                return badRequest("Expecting Json data");
+                result.put("status", "error");
+                result.put("message", "Δεν εχετε αποστειλει εγκυρα δεδομενα.");
+                return ok(result);
             } else {
-                if (json == null) {
+                ObjectMapper ow = new ObjectMapper();
+                HashMap<String, Object> returnList = new HashMap<String, Object>();
+                String jsonResult = "";
+                CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
+                            return jpaApi.withTransaction(entityManager -> {
+
+                                //roleDescSearchInput
+                                String orderCol = json.findPath("orderCol").asText();
+                                String descAsc = json.findPath("descAsc").asText();
+                                String billingName = json.findPath("billingName").asText();
+                                String email = json.findPath("email").asText();
+                                String billingDescription = json.findPath("billingDescription").asText();
+                                String creationDate = json.findPath("creationDate").asText();
+                                String start = json.findPath("start").asText();
+                                String limit = json.findPath("limit").asText();
+                                String sqlroles = "select * from billings b where 1=1 ";
+                                if (!billingName.equalsIgnoreCase("") && billingName != null) {
+                                    sqlroles += " and b.name like '%" + billingName + "%'";
+                                }
+                                if (!billingDescription.equalsIgnoreCase("") && billingDescription != null) {
+                                    sqlroles += " and b.description like '%" + billingDescription + "%'";
+                                }
+                                if (!email.equalsIgnoreCase("") && email != null) {
+                                    sqlroles += " and b.email like '%" + email + "%'";
+                                }
+                                if (!creationDate.equalsIgnoreCase("") && creationDate != null) {
+                                    sqlroles += " and SUBSTRING( b.creation_date, 1, 10)  = '" + creationDate + "'";
+                                }
+                                List<BillingsEntity> rolesListAll
+                                        = (List<BillingsEntity>) entityManager.createNativeQuery(
+                                        sqlroles, BillingsEntity.class).getResultList();
+
+                                if (!orderCol.equalsIgnoreCase("") && orderCol != null) {
+                                    sqlroles += " order by " + orderCol + " " + descAsc;
+                                } else {
+                                    sqlroles += " order by creation_date desc";
+                                }
+
+
+                                if (!start.equalsIgnoreCase("") && start != null) {
+                                    sqlroles += " limit " + start + "," + limit;
+                                }
+                                System.out.println(sqlroles);
+                                HashMap<String, Object> returnList_future = new HashMap<String, Object>();
+                                List<HashMap<String, Object>> serversList = new ArrayList<HashMap<String, Object>>();
+                                List<BillingsEntity> orgsList
+                                        = (List<BillingsEntity>) entityManager.createNativeQuery(
+                                        sqlroles, BillingsEntity.class).getResultList();
+                                for (BillingsEntity j : orgsList) {
+                                    HashMap<String, Object> sHmpam = new HashMap<String, Object>();
+                                    sHmpam.put("billingId", j.getId());
+                                    sHmpam.put("email", j.getEmail());
+                                    sHmpam.put("billingName", j.getName());
+                                    sHmpam.put("name", j.getName());
+                                    sHmpam.put("description", j.getDescription());
+                                    sHmpam.put("creationDate", j.getCreationDate());
+                                    sHmpam.put("updateDate", j.getUpdateDate());
+                                    sHmpam.put("id", j.getId());
+                                    serversList.add(sHmpam);
+                                }
+                                returnList_future.put("data", serversList);
+                                returnList_future.put("total", rolesListAll.size());
+                                returnList_future.put("status", "success");
+                                returnList_future.put("message", "success");
+                                return returnList_future;
+                            });
+                        },
+                        executionContext);
+                returnList = getFuture.get();
+                DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                ow.setDateFormat(myDateFormat);
+                try {
+                    jsonResult = ow.writeValueAsString(returnList);
+                } catch (Exception e) {
+                    e.printStackTrace();
                     result.put("status", "error");
-                    result.put("message", "Δεν εχετε αποστειλει εγκυρα δεδομενα.");
+                    result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων ");
                     return ok(result);
-                } else {
-                    ObjectMapper ow = new ObjectMapper();
-                    HashMap<String, Object> returnList = new HashMap<String, Object>();
-                    String jsonResult = "";
-                    CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> { return jpaApi.withTransaction(entityManager -> {
-
-                                            //roleDescSearchInput
-                                            String orderCol = json.findPath("orderCol").asText();
-                                            String descAsc = json.findPath("descAsc").asText();
-                                            String billingName = json.findPath("billingName").asText();
-                                            String billingDescription = json.findPath("billingDescription").asText();
-                                            String creationDate = json.findPath("creationDate").asText();
-                                            String start = json.findPath("start").asText();
-                                            String limit = json.findPath("limit").asText();
-                                            String sqlroles = "select * from billings b where 1=1 ";
-                                            if (!billingName.equalsIgnoreCase("") && billingName != null) {
-                                                sqlroles += " and b.name like '%" + billingName + "%'";
-                                            }
-                                            if (!billingDescription.equalsIgnoreCase("") && billingDescription != null) {
-                                                sqlroles += " and b.description like '%" + billingDescription + "%'";
-                                            }
-                                            if (!creationDate.equalsIgnoreCase("") && creationDate != null) {
-                                                sqlroles += " and SUBSTRING( b.creation_date, 1, 10)  = '" + creationDate + "'";
-                                            }
-                                            List<BillingsEntity> rolesListAll
-                                                    = (List<BillingsEntity>) entityManager.createNativeQuery(
-                                                    sqlroles, BillingsEntity.class).getResultList();
-
-                                            if (!orderCol.equalsIgnoreCase("") && orderCol != null) {
-                                                sqlroles += " order by " + orderCol + " " + descAsc;
-                                            } else {
-                                                sqlroles += " order by creation_date desc";
-                                            }
-
-
-                                            if (!start.equalsIgnoreCase("") && start != null) {
-                                                sqlroles += " limit " + start + "," + limit;
-                                            }
-                                            System.out.println(sqlroles);
-                                            HashMap<String, Object> returnList_future = new HashMap<String, Object>();
-                                            List<HashMap<String, Object>> serversList = new ArrayList<HashMap<String, Object>>();
-                                            List<BillingsEntity> orgsList
-                                                    = (List<BillingsEntity>) entityManager.createNativeQuery(
-                                                    sqlroles, BillingsEntity.class).getResultList();
-                                            for (BillingsEntity j : orgsList) {
-                                                HashMap<String, Object> sHmpam = new HashMap<String, Object>();
-                                                sHmpam.put("billingId", j.getId());
-                                                sHmpam.put("billingName", j.getName());
-                                                sHmpam.put("name", j.getName());
-                                                sHmpam.put("description", j.getDescription());
-                                                sHmpam.put("creationDate", j.getCreationDate());
-                                                sHmpam.put("updateDate", j.getUpdateDate());
-                                                sHmpam.put("id", j.getId());
-                                                serversList.add(sHmpam);
-                                            }
-                                            returnList_future.put("data", serversList);
-                                            returnList_future.put("total", rolesListAll.size());
-                                            returnList_future.put("status", "success");
-                                            returnList_future.put("message", "success");
-                                            return returnList_future;
-                                        });
-                            },
-                            executionContext);
-                    returnList = getFuture.get();
-                    DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd");
-                    ow.setDateFormat(myDateFormat);
-                    try {
-                        jsonResult = ow.writeValueAsString(returnList);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        result.put("status", "error");
-                        result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων ");
-                        return ok(result);
-                    }
-                    return ok(jsonResult);
                 }
+                return ok(jsonResult);
             }
+        }
 
     }
 
