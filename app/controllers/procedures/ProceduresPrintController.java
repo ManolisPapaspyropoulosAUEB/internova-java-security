@@ -46,6 +46,58 @@ public class ProceduresPrintController extends Application {
     }
 
 
+
+    public ByteArrayInputStream generateOfferReport(String offerSchedulesIds,String offerId) throws FileNotFoundException, JRException {
+        offerSchedulesIds=" id in "+offerSchedulesIds;
+        ObjectNode reportParams = Json.newObject();
+        reportParams.put("offerSchedulesIds", offerSchedulesIds);
+        reportParams.put("offerId", offerId);
+        ByteArrayInputStream export = (ByteArrayInputStream)
+                BaseJasperReport.generatePDF("selected_schedules_offer/main", reportParams);
+
+        return export;
+    }
+
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    public Result exportSelectedSchedulesOffersJasper(final Http.Request request) throws IOException {
+        try {
+            Result result;
+            String offerSchedulesIds = request.queryString("offerSchedulesIds").get();
+            String offerId = request.queryString("offerId").get();
+
+            CompletableFuture<Result> addFuture = CompletableFuture.supplyAsync(() -> {
+                        return jpaApi.withTransaction(entityManager -> {
+                            ObjectNode add_result = Json.newObject();
+                            try {
+                                ByteArrayInputStream  export=  generateOfferReport(offerSchedulesIds,offerId);
+                                add_result.put("status", "success");
+                                add_result.put("message", "Η καταχωρηση πραγματοποίηθηκε με επιτυχία");
+                                return ok(export).as("application/pdf; charset=UTF-8");
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+
+                            } catch (JRException e) {
+                                e.printStackTrace();
+                            }
+                            add_result.put("status", "error");
+                            add_result.put("message", "Προβλημα κατα την καταχωρηση");
+                            return ok(add_result);
+                        });
+                    },
+                    executionContext);
+            result = addFuture.get();
+            return result;
+        } catch (Exception e) {
+            ObjectNode result = Json.newObject();
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "Προβλημα κατα την καταχωρηση");
+            return ok(result);
+        }
+    }
+
+
     @SuppressWarnings({"Duplicates", "unchecked"})
     public Result exportOffersAsXls(final Http.Request request) throws IOException {
         ObjectNode result = Json.newObject();

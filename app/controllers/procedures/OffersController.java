@@ -436,6 +436,7 @@ public class OffersController extends Application {
                                                 }
                                                 sHmpam.put("id", j.getId());
                                                 sHmpam.put("acceptOfferDate", j.getAcceptOfferDate());
+                                                sHmpam.put("sendOfferDate", j.getSendOfferDate());
                                                 sHmpam.put("customerId", j.getCustomerId());
                                                 sHmpam.put("aa", j.getAa());
                                                 if (j.getCustomerId() != null) {
@@ -970,10 +971,11 @@ public class OffersController extends Application {
                                 offersEntity.setSellerId(internovaSeller.findPath("sellerId").asLong());
                                 offersEntity.setBillingId(billing.findPath("billingId").asLong());
                                 offersEntity.setComments(json.findPath("offers_comments").asText());
-                                offersEntity.setStatus(json.findPath("status").asText());
-                                if(json.findPath("status").asText().equalsIgnoreCase("ΑΠΟΔΟΧΗ")){
+                                System.out.println(json.findPath("status").asText().equalsIgnoreCase("ΑΠΟΔΟΧΗ") && !offersEntity.getStatus().equalsIgnoreCase("ΑΠΟΔΟΧΗ"));
+                                if(json.findPath("status").asText().equalsIgnoreCase("ΑΠΟΔΟΧΗ") && !offersEntity.getStatus().equalsIgnoreCase("ΑΠΟΔΟΧΗ")){
                                     offersEntity.setAcceptOfferDate(new Date());
                                 }
+                                offersEntity.setStatus(json.findPath("status").asText());
                                 offersEntity.setDeclineReasons(json.findPath("declineReasons").asText());
                                 offersEntity.setUpdateDate(new Date());
                                 offersEntity.setCustomerId(custommer.findPath("customerSupplierId").asLong());

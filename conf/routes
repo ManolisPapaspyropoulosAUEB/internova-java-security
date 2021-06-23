@@ -206,6 +206,7 @@ POST        /exportOffersAsXls                               controllers.procedu
 POST        /exportOrdersAsXls                               controllers.procedures.ProceduresPrintController.exportOrdersAsXls(req: Request)
 POST        /exportScheduleAsXlsx                            controllers.procedures.ProceduresPrintController.exportScheduleAsXlsx(req: Request)
 GET         /exportOrderLoadingJasper                        controllers.procedures.ProceduresPrintController.exportOrderLoadingJasper(req: Request)
+GET         /exportSelectedSchedulesOffersJasper             controllers.procedures.ProceduresPrintController.exportSelectedSchedulesOffersJasper(req: Request)
 
 
 

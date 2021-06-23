@@ -1332,6 +1332,7 @@ public class OrdersLoadingController extends Application {
     }
 
 
+
     @SuppressWarnings({"Duplicates", "unchecked"})
     public Result getOrdersLoadingsViewOnly(final Http.Request request) throws IOException, ExecutionException, InterruptedException {
         ObjectNode result = Json.newObject();
@@ -1391,7 +1392,7 @@ public class OrdersLoadingController extends Application {
                                             sqlOrdLoads += " and  ord_load.supplier_truck_tractor_id " + " in ( select t.id from trucks t  where t.brand_name   like '%" + truckTractorNameSearch + "%'   )";
                                         }
                                         if (truckTrailerNameSearch != null && !truckTrailerNameSearch.equalsIgnoreCase("")) {
-                                            sqlOrdLoads += " and  ord_load.supplier_truck_tractor_id  in ( select t.id from trucks t  where t.brand_name   like '%" + truckTrailerNameSearch + "%'   )";
+                                            sqlOrdLoads += " and  ord_load.supplier_truck_trailer_id  in ( select t.id from trucks t  where t.brand_name   like '%" + truckTrailerNameSearch + "%'   )";
                                         }
                                         if (supplierNameSearch != null && !supplierNameSearch.equalsIgnoreCase("")) {
                                             sqlOrdLoads += " and ord_load.supplier_id in (  select cs.id   from customers_suppliers cs where cs.brand_name like '%" + supplierNameSearch + "%' ) ";
@@ -1428,9 +1429,18 @@ public class OrdersLoadingController extends Application {
                                         List<OrdersLoadingEntity> ordersLoadingList
                                                 = (List<OrdersLoadingEntity>) entityManager.createNativeQuery(
                                                 sqlOrdLoads, OrdersLoadingEntity.class).getResultList();
+
+
+                                        System.out.println(sqlOrdLoads);
                                         for (OrdersLoadingEntity j : ordersLoadingList) {
                                             HashMap<String, Object> sHmpam = new HashMap<String, Object>();
+                                            String sqlSumGross ="select sum(ord.gross_weight) from orders ord where ord.id in (select os.order_id from orders_loading_orders_selections os where os.order_loading_id = "+j.getId()+"  )";
+                                            Double summGross = (Double) entityManager.createNativeQuery(sqlSumGross).getSingleResult();
+                                            String sqlSumNet ="select sum(ord.net_weight) from orders ord where ord.id in (select os.order_id from orders_loading_orders_selections os where os.order_loading_id = "+j.getId()+"  )";
+                                            Double summNet = (Double) entityManager.createNativeQuery(sqlSumNet).getSingleResult();
                                             sHmpam.put("id", j.getId());
+                                            sHmpam.put("summGross", summGross);
+                                            sHmpam.put("summNet", summNet);
                                             sHmpam.put("ordersLoadingId", j.getId());
                                             sHmpam.put("type", j.getType());
                                             sHmpam.put("fromCountry", j.getFromCountry());
@@ -1458,6 +1468,38 @@ public class OrdersLoadingController extends Application {
                                                 sHmpam.put("timologioIndicator", false);
                                             }
 
+                                            String sqlExtraSups = "select * from order_loading_extra_suppliers els where els.order_loading_id=" + j.getId();
+                                            List<OrderLoadingExtraSuppliersEntity> orderLoadingExtraSuppliersEntityList =
+                                                    entityManager.createNativeQuery(sqlExtraSups, OrderLoadingExtraSuppliersEntity.class).getResultList();
+                                            List<HashMap<String, Object>> extrasups = new ArrayList<HashMap<String, Object>>();
+
+                                            Double naulaPromhtheytwn = 0.0;
+                                            for (OrderLoadingExtraSuppliersEntity plexs : orderLoadingExtraSuppliersEntityList) {
+                                                HashMap<String, Object> plexsmap = new HashMap<String, Object>();
+                                                naulaPromhtheytwn=naulaPromhtheytwn+plexs.getNaulo();
+                                                plexsmap.put("naulo", plexs.getNaulo());
+                                                plexsmap.put("supplierId", plexs.getSupplierId());
+                                                CustomersSuppliersEntity customersSuppliersEntity = entityManager.find(CustomersSuppliersEntity.class, plexs.getSupplierId());
+                                                plexsmap.put("brandName", customersSuppliersEntity.getBrandName());
+                                                plexsmap.put("random_id", plexs.getId());
+                                                if (plexs.getExtraSupTimologioIndicator() == 1) {
+                                                    plexsmap.put("extraSupTimologioIndicator", true);
+                                                } else {
+                                                    plexsmap.put("extraSupTimologioIndicator", false);
+                                                }
+
+
+                                                String attatchmentsCountSql = "select  count(*) from documents docs where docs.system='customersSuppliers' and  docs.sub_folder_id=" + plexs.getSupplierId();
+                                                BigInteger attatchmentsCount = (BigInteger) entityManager.createNativeQuery(attatchmentsCountSql).getSingleResult();
+                                                if (attatchmentsCount != null) {
+                                                    plexsmap.put("attatchmentsCount", attatchmentsCount);
+                                                } else {
+                                                    plexsmap.put("attatchmentsCount", "0");
+                                                }
+
+                                                extrasups.add(plexsmap);
+                                            }
+                                            sHmpam.put("extrasups", extrasups);
 
                                             if (j.getSupplierId() != null) {
                                                 CustomersSuppliersEntity cust = entityManager.find(CustomersSuppliersEntity.class, j.getSupplierId());
@@ -1491,6 +1533,30 @@ public class OrdersLoadingController extends Application {
                                             sHmpam.put("updateDate", j.getUpdateDate());
                                             sHmpam.put("customerSupplierId", j.getSupplierId());
                                             sHmpam.put("naulo", j.getNaulo());
+                                            sHmpam.put("sumNaula", j.getNaulo()+naulaPromhtheytwn);
+
+                                            //naulaPromhtheytwn
+
+                                            sHmpam.put("finalSummPrice", 0);
+                                            sHmpam.put("finalSummLdm", 0);
+                                            sHmpam.put("finalSummQuantity", 0);
+                                            sHmpam.put("finalSummQuantityKg", 0);
+                                            sHmpam.put("finalSummQuantityKgNet", 0);
+                                            Double finalSummPrice = 0.0;
+                                            Double finalSummLdm = 0.0;
+                                            Integer finalSummQuantity = 0;
+                                            Integer finalSummQuantityKg = 0;
+                                            Integer finalSummQuantityKgNet = 0;
+                                            sHmpam.put("mainSchedule", j.getFromCountry() + " " +
+                                                    j.getFromCity() + "  ->  " +
+                                                    j.getToCountry() + " " +
+                                                    j.getToCity());
+                                            String sqlOrdersDoneList =
+                                                    " select * from orders_loading_orders_selections olrs where olrs.order_loading_id=" + j.getId();
+                                            List<OrdersLoadingOrdersSelectionsEntity> ordersLoadingOrdersSelectionsEntityList =
+                                                    entityManager.createNativeQuery(sqlOrdersDoneList, OrdersLoadingOrdersSelectionsEntity.class).getResultList();
+                                            List<HashMap<String, Object>> doneList = new ArrayList<HashMap<String, Object>>();
+
                                             serversList.add(sHmpam);
                                         }
                                         returnList_future.put("data", serversList);
@@ -1516,6 +1582,8 @@ public class OrdersLoadingController extends Application {
             }
         }
     }
+
+
 
 
 
@@ -1578,7 +1646,7 @@ public class OrdersLoadingController extends Application {
                                             sqlOrdLoads += " and  ord_load.supplier_truck_tractor_id " + " in ( select t.id from trucks t  where t.brand_name   like '%" + truckTractorNameSearch + "%'   )";
                                         }
                                         if (truckTrailerNameSearch != null && !truckTrailerNameSearch.equalsIgnoreCase("")) {
-                                            sqlOrdLoads += " and  ord_load.supplier_truck_tractor_id  in ( select t.id from trucks t  where t.brand_name   like '%" + truckTrailerNameSearch + "%'   )";
+                                            sqlOrdLoads += " and  ord_load.supplier_truck_trailer_id  in ( select t.id from trucks t  where t.brand_name   like '%" + truckTrailerNameSearch + "%'   )";
                                         }
                                         if (supplierNameSearch != null && !supplierNameSearch.equalsIgnoreCase("")) {
                                             sqlOrdLoads += " and ord_load.supplier_id in (  select cs.id   from customers_suppliers cs where cs.brand_name like '%" + supplierNameSearch + "%' ) ";

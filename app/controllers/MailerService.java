@@ -12,6 +12,7 @@ import com.typesafe.config.ConfigFactory;
 import controllers.execution_context.DatabaseExecutionContext;
 import controllers.procedures.ProceduresPrintController;
 import models.BillingsEntity;
+import models.OffersEntity;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.commons.mail.*;
 import play.api.db.Database;
@@ -104,6 +105,8 @@ public class MailerService {
                                 String to = json.findPath("to").asText();
                                 String bodyText = json.findPath("bodyText").asText();
                                 String orderLoadingId = json.findPath("orderLoadingId").asText();
+                                String offerSchedulesIds = json.findPath("offerSchedulesIds").asText();
+                                String offerId = json.findPath("offerId").asText();
                                 Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
                                 Email email = new Email()
                                         .setSubject(subject)
@@ -113,20 +116,44 @@ public class MailerService {
                                     ProceduresPrintController proceduresPrintController =
                                             new ProceduresPrintController(db, jpaApi, executionContext);
                                     try {
-                                        email.addAttachment("ΑΝΑΘΕΣΗ.pdf",
+                                        email.addAttachment("OderLoad.pdf",
                                                 readStream(proceduresPrintController.
                                                         generateOrderLoadingReport(orderLoadingId)),
-                                                "application/pdf", "ΑΝΑΘΕΣΗ",
+                                                "application/pdf", "OderLoad",
                                                 EmailAttachment.INLINE);
                                     } catch (IOException e) {
                                         e.printStackTrace();
                                     } catch (JRException e) {
                                         e.printStackTrace();
                                     }
+                                    mailerClient.send(email);
+                                    add_result.put("status", "success");
+                                    add_result.put("message", "Το email αποστάλθηκε με επυτιχία!");
+                                    return add_result;
+                                }else if(offerSchedulesIds!=null && !offerSchedulesIds.equalsIgnoreCase("") && !offerSchedulesIds.equalsIgnoreCase("null")){
+                                    OffersEntity offersEntity = entityManager.find(OffersEntity.class,Long.valueOf(offerId));
+                                    entityManager.merge(offersEntity);
+                                    offersEntity.setSendOfferDate(new Date());
+                                    ProceduresPrintController proceduresPrintController =
+                                            new ProceduresPrintController(db, jpaApi, executionContext);
+                                    try {
+                                        email.addAttachment("Offer.pdf",
+                                                readStream(proceduresPrintController.
+                                                        generateOfferReport(offerSchedulesIds,offerId)),
+                                                "application/pdf", "Offer",
+                                                EmailAttachment.INLINE);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    } catch (JRException e) {
+                                        e.printStackTrace();
+                                    }
+                                    mailerClient.send(email);
+                                    add_result.put("status", "success");
+                                    add_result.put("message", "Το email αποστάλθηκε με επυτιχία!");
+                                    return add_result;
                                 }
-                                mailerClient.send(email);
-                                add_result.put("status", "success");
-                                add_result.put("message", "Το email αποστάλθηκε με επυτιχία!");
+                                add_result.put("status", "error");
+                                add_result.put("message", "Δεν έχετε αποστείλει σωστά δεδομένα");
                                 return add_result;
                             });
                         },
