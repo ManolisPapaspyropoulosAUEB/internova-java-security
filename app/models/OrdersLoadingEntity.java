@@ -30,6 +30,7 @@ public class OrdersLoadingEntity {
     private String arithmosTimologiou;
     private Byte timologioIndicator;
     private String type;
+    private String displayAa;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -275,5 +276,15 @@ public class OrdersLoadingEntity {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    @Basic
+    @Column(name = "display_aa")
+    public String getDisplayAa() {
+        return displayAa;
+    }
+
+    public void setDisplayAa(String displayAa) {
+        this.displayAa = displayAa;
     }
 }

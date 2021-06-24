@@ -58,6 +58,8 @@ public class OrdersLoadingController extends Application {
                 CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
                             return jpaApi.withTransaction(entityManager -> {
                                 ObjectNode add_result = Json.newObject();
+                                DateFormat myDateFormater = new SimpleDateFormat("yyyy-MM-dd");
+
                                 JsonNode doneDromologia = json.findPath("doneDromologia");
                                 ((ObjectNode) json).remove("doneDromologia");
                                 ObjectMapper ow = new ObjectMapper();
@@ -88,15 +90,7 @@ public class OrdersLoadingController extends Application {
                                 ordersLoadingEntity.setSupplierTruckTrailerId(truckTrailerId);
                                 ordersLoadingEntity.setSupplierTruckTractorId(truckTractorId);
                                 ordersLoadingEntity.setComments(commentsMaster);
-                                String maxAasql = "select max(aa) " +
-                                        "from orders_loading t ";
-                                Integer maxAa = (Integer) entityManager.
-                                        createNativeQuery(maxAasql).getSingleResult();
-                                if (maxAa == null) {
-                                    ordersLoadingEntity.setAa(0);
-                                } else {
-                                    ordersLoadingEntity.setAa(maxAa + 1);
-                                }
+
                                 entityManager.persist(ordersLoadingEntity);
                                 Iterator doneListIt = json.findPath("doneList").iterator();
                                 List<JsonNode> finalDromologioParaggelias = new ArrayList<JsonNode>();
@@ -232,14 +226,49 @@ public class OrdersLoadingController extends Application {
                                 JsonNode dromNodeEnd = finalDromologioParaggelias.get(finalDromologioParaggelias.size() - 1);
                                 String fromCountry = dromNodeStart.findPath("country").asText();
                                 String toCountry = dromNodeEnd.findPath("country").asText();
+
+                                String maxAasql = "select max(aa) " +
+                                        "from orders_loading t ";
+                                Integer maxAa = (Integer) entityManager.
+                                        createNativeQuery(maxAasql).getSingleResult();
+
+
+                                String strDate = myDateFormater.format(new Date());
                                 if (fromCountry.trim().equalsIgnoreCase("Ελλάδα") && toCountry.equalsIgnoreCase("Ελλάδα")) {
                                     ordersLoadingEntity.setType("PR");
+                                    if (maxAa == null) {
+                                        ordersLoadingEntity.setAa(0);
+                                    } else {
+                                        ordersLoadingEntity.setAa(maxAa + 1);
+                                        ordersLoadingEntity.setDisplayAa( formatAaOrderLoad(strDate, String.valueOf((maxAa + 1)), "PR"));
+                                    }
                                 }
                                 if (fromCountry.trim().equalsIgnoreCase("Ελλάδα") && !toCountry.trim().equalsIgnoreCase("Ελλάδα")) {
                                     ordersLoadingEntity.setType("EX");
+                                    if (maxAa == null) {
+                                        ordersLoadingEntity.setAa(0);
+                                    } else {
+                                        ordersLoadingEntity.setAa(maxAa + 1);
+                                        ordersLoadingEntity.setDisplayAa( formatAaOrderLoad(strDate, String.valueOf((maxAa + 1)), "EX"));
+                                    }
                                 }
                                 if (!fromCountry.trim().equalsIgnoreCase("Ελλάδα") && toCountry.trim().equalsIgnoreCase("Ελλάδα")) {
                                     ordersLoadingEntity.setType("IM");
+                                    if (maxAa == null) {
+                                        ordersLoadingEntity.setAa(0);
+                                    } else {
+                                        ordersLoadingEntity.setAa(maxAa + 1);
+                                        ordersLoadingEntity.setDisplayAa( formatAaOrderLoad(strDate, String.valueOf((maxAa + 1)), "IM"));
+                                    }
+                                }
+                                if (!fromCountry.trim().equalsIgnoreCase("Ελλάδα") && !toCountry.trim().equalsIgnoreCase("Ελλάδα")) {
+                                    ordersLoadingEntity.setType("PR");
+                                    if (maxAa == null) {
+                                        ordersLoadingEntity.setAa(0);
+                                    } else {
+                                        ordersLoadingEntity.setAa(maxAa + 1);
+                                        ordersLoadingEntity.setDisplayAa( formatAaOrderLoad(strDate, String.valueOf((maxAa + 1)), "IM"));
+                                    }
                                 }
                                 entityManager.merge(ordersLoadingEntity);
                                 ObjectNode wsResult = Json.newObject();
@@ -295,7 +324,7 @@ public class OrdersLoadingController extends Application {
 
                                 add_result.put("status", "success");
                                 add_result.put("ordersLoadingId", ordersLoadingEntity.getId());
-                                add_result.put("aa", ordersLoadingEntity.getAa());
+                                add_result.put("aa", ordersLoadingEntity.getDisplayAa());
                                 add_result.put("message", "Η καταχωρηση πραγματοποίηθηκε με επιτυχία");
                                 add_result.put("system", "Φόρτωση");
                                 add_result.put("user_id", user_id);
@@ -1366,7 +1395,7 @@ public class OrdersLoadingController extends Application {
                                             sqlOrdLoads += " and ord_load.id =" + id;
                                         }
                                         if (aa != null && !aa.equalsIgnoreCase("")) {
-                                            sqlOrdLoads += " and  ord_load.aa like '%" + aa + "%' ";
+                                            sqlOrdLoads += " and  ord_load.display_aa like '%" + aa + "%' ";
                                         }
                                         if (idOrderSearch != null && !idOrderSearch.equalsIgnoreCase("")) {
                                             sqlOrdLoads += " and  ord_load.id in " +
@@ -1445,7 +1474,7 @@ public class OrdersLoadingController extends Application {
                                             sHmpam.put("type", j.getType());
                                             sHmpam.put("fromCountry", j.getFromCountry());
                                             sHmpam.put("fromCity", j.getFromCity());
-                                            sHmpam.put("aa", formatAaOrderLoad(j.getCreationDate().toString(), j.getAa().toString(), j.getType()));
+                                            sHmpam.put("aa", j.getDisplayAa());
                                             sHmpam.put("fromAddress", j.getFromAddress());
                                             sHmpam.put("fromPostalCode", j.getFromPostalCode());
                                             sHmpam.put("toCountry", j.getToCountry());
@@ -1620,7 +1649,7 @@ public class OrdersLoadingController extends Application {
                                             sqlOrdLoads += " and ord_load.id =" + id;
                                         }
                                         if (aa != null && !aa.equalsIgnoreCase("")) {
-                                            sqlOrdLoads += " and  ord_load.aa like '%" + aa + "%' ";
+                                            sqlOrdLoads += " and  ord_load.display_aa like '%" + aa + "%' ";
                                         }
                                         if (idOrderSearch != null && !idOrderSearch.equalsIgnoreCase("")) {
                                             sqlOrdLoads += " and  ord_load.id in " +
@@ -1696,7 +1725,7 @@ public class OrdersLoadingController extends Application {
                                             sHmpam.put("type", j.getType());
                                             sHmpam.put("fromCountry", j.getFromCountry());
                                             sHmpam.put("fromCity", j.getFromCity());
-                                            sHmpam.put("aa", formatAaOrderLoad(j.getCreationDate().toString(), j.getAa().toString(), j.getType()));
+                                            sHmpam.put("aa", j.getDisplayAa());
                                             sHmpam.put("fromAddress", j.getFromAddress());
                                             sHmpam.put("fromPostalCode", j.getFromPostalCode());
                                             sHmpam.put("toCountry", j.getToCountry());
