@@ -220,13 +220,27 @@ public class ProceduresPrintController extends Application {
 
 
 
-    public ByteArrayInputStream generateOrderLoadingReport(String orderLoadingId) throws FileNotFoundException, JRException {
+    public ByteArrayInputStream generateOrderLoadingReport (String orderLoadingId,String user,String lng,String company) throws FileNotFoundException, JRException {
         ObjectNode reportParams = Json.newObject();
         reportParams.put("order_loading_id", orderLoadingId);
-        ByteArrayInputStream export = (ByteArrayInputStream)
-                BaseJasperReport.generatePDF("orders_loadings/anathesh_el", reportParams);
+        reportParams.put("user", user);
 
-        return export;
+        if(lng.equalsIgnoreCase("el") && company.equalsIgnoreCase("internova")){
+            ByteArrayInputStream export = (ByteArrayInputStream) BaseJasperReport.generatePDF("anathesh/main", reportParams);
+            return export;
+        }else if(lng.equalsIgnoreCase("en") && company.equalsIgnoreCase("internova")){
+            ByteArrayInputStream export = (ByteArrayInputStream) BaseJasperReport.generatePDF("anathesh_eng/main", reportParams);
+            return export;
+        }else if(lng.equalsIgnoreCase("el") && company.equalsIgnoreCase("nova")){
+            ByteArrayInputStream export = (ByteArrayInputStream) BaseJasperReport.generatePDF("anathesh_nova/main", reportParams);
+            return export;
+        }else if (lng.equalsIgnoreCase("en") && company.equalsIgnoreCase("nova")){
+            ByteArrayInputStream export = (ByteArrayInputStream) BaseJasperReport.generatePDF("anathesh_nova_eng/main", reportParams);
+            return export;
+        }else{
+            ByteArrayInputStream export = (ByteArrayInputStream) BaseJasperReport.generatePDF("anathesh/main", reportParams);
+            return export;
+        }
     }
 
 
@@ -235,11 +249,17 @@ public class ProceduresPrintController extends Application {
         try {
             Result result;
             String order_loading_id = request.queryString("order_loading_id").get();
+            String userId = request.queryString("userId").get();
+            String lng = request.queryString("lng").get();
+            String company = request.queryString("company").get();
             CompletableFuture<Result> addFuture = CompletableFuture.supplyAsync(() -> {
                         return jpaApi.withTransaction(entityManager -> {
+
+                            UsersEntity user = entityManager.find(UsersEntity.class,Long.valueOf(userId));
+
                             ObjectNode add_result = Json.newObject();
                             try {
-                                ByteArrayInputStream  export=  generateOrderLoadingReport(order_loading_id);
+                                ByteArrayInputStream  export=  generateOrderLoadingReport(order_loading_id,user.getFirstname()+" "+user.getLastname(),lng,company);
                                 add_result.put("status", "success");
                                 add_result.put("message", "Η καταχωρηση πραγματοποίηθηκε με επιτυχία");
                                 return ok(export).as("application/pdf; charset=UTF-8");

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="naulo" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="a5c1a116-ec22-4ea0-92e2-24a08bb5bf8c">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="internova_db"/>
+	<parameter name="order_loading_id" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[select
+	ol.naulo,
+	ol.comments
+	from orders_loading ol
+
+	where ol.id=$P{order_loading_id}]]>
+	</queryString>
+	<field name="naulo" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.name" value="naulo"/>
+		<property name="com.jaspersoft.studio.field.label" value="naulo"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="orders_loading"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="comments" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="comments"/>
+		<property name="com.jaspersoft.studio.field.label" value="comments"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="orders_loading"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="210" splitType="Stretch">
+			<frame>
+				<reportElement x="0" y="0" width="534" height="210" uuid="25737eb9-e287-46b3-ac61-b7990c7b4429"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+				</box>
+				<textField>
+					<reportElement x="0" y="20" width="290" height="14" uuid="1e35eb68-c7c4-4d8c-be14-87d58ec95d90">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Ναύλο Μεταφοράς ="+$F{naulo} +" (€) "]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="34" width="290" height="14" uuid="d8859de7-d084-4bf4-914c-4ca0b972b942">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["(Ναύλο Προμηθευτή)"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="70" width="534" height="140" uuid="47f3f3b9-2d67-4fe6-805f-db3d136a0dec"/>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["ΣΗΜΕΙΩΣΕΙΣ : " +($F{comments}!=null && $F{comments}!="-"?$F{comments}:"-")]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

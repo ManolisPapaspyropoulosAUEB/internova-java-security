@@ -403,12 +403,14 @@ public class TrucksController extends Application {
                                             sHmpam.put("id", j.getId());
                                             sHmpam.put("truckId", j.getId());
                                             sHmpam.put("brandName", j.getBrandName());
-                                            if(j.getTypeTruckId()!=0){
-                                                sHmpam.put("brandNameConcatLdm",j.getPlateNumber() +"/ Title: "+ j.getBrandName().concat( " / Type: ").concat(entityManager.find(TruckTypeEntity.class,j.getTypeTruckId()).getType()).concat(" / LDM: ").concat(j.getLdm().toString()));
-                                            }else{
-                                                sHmpam.put("brandNameConcatLdm", j.getPlateNumber() +"/ Title: "+j.getBrandName().concat(" /Type: - ").concat(" / LDM: ").concat(j.getLdm().toString()));
+                                            sHmpam.put("brandNameConcatLdm", j.getPlateNumber());
 
-                                            }
+//                                            if(j.getTypeTruckId()!=0){
+//                                                sHmpam.put("brandNameConcatLdm",j.getPlateNumber() +"/ Title: "+ j.getBrandName().concat( " / Type: ").concat(entityManager.find(TruckTypeEntity.class,j.getTypeTruckId()).getType()).concat(" / LDM: ").concat(j.getLdm().toString()));
+//                                            }else{
+//                                                sHmpam.put("brandNameConcatLdm", j.getPlateNumber() +"/ Title: "+j.getBrandName().concat(" /Type: - ").concat(" / LDM: ").concat(j.getLdm().toString()));
+//
+//                                            }
                                             sHmpam.put("description", j.getDescription());
                                             sHmpam.put("ldm", j.getLdm());
                                             sHmpam.put("plateNumber", j.getPlateNumber());

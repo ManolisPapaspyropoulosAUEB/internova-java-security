@@ -76,20 +76,14 @@ public class OffersController extends Application {
                                             String sqlCustSupl = "select * from offers offer where 1=1 ";
                                             String id = json.findPath("id").asText();
                                             String customer = json.findPath("customer").asText();
-
-
-
                                             if (!customer.equalsIgnoreCase("") && customer != null) {
                                                 sqlCustSupl += " and offer.customer_id  in " +
                                                         " ( select id from  customers_suppliers cs where cs.brand_name like '%" + customer + "%' )";
                                             }
-
                                             if(id!=null && !id.equalsIgnoreCase("")){
                                                 sqlCustSupl+=" and offer.id like '%"+id+"%'";
                                             }
-
                                             sqlCustSupl+=" order by offer.creation_date desc";
-
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             List<HashMap<String, Object>> filalist = new ArrayList<HashMap<String, Object>>();
                                             List<OffersEntity> offersEntityList
@@ -201,7 +195,6 @@ public class OffersController extends Application {
                     CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
                                 return jpaApi.withTransaction(
                                         entityManager -> {
-
                                             String orderCol = json.findPath("orderCol").asText();
                                             String descAsc = json.findPath("descAsc").asText();
                                             String id = json.findPath("offersScheduleId").asText();
@@ -209,7 +202,6 @@ public class OffersController extends Application {
                                             String measureuUitPrice = json.findPath("measureuUitPrice").asText();
                                             String measureTo = json.findPath("measureTo").asText();
                                             String measureFrom = json.findPath("measureFrom").asText();
-                                            String offer_schedule_id = json.findPath("offer_schedule_id").asText();
                                             String start = json.findPath("start").asText();
                                             String limit = json.findPath("limit").asText();
                                             String sql = "select * from schedule_package_offer sp where 1=1 ";
@@ -251,16 +243,16 @@ public class OffersController extends Application {
                                                     sql, SchedulePackageOfferEntity.class).getResultList();
                                             for (SchedulePackageOfferEntity sp : scheduleEntityList) {
                                                 HashMap<String, Object> spmap = new HashMap<String, Object>();
+                                                MeasurementUnitEntity measurementUnit = entityManager.find(MeasurementUnitEntity.class, sp.getMeasureUnitId());
+                                                spmap.put("measurementUnit_id", measurementUnit.getId());
+                                                spmap.put("measurementUnit_title", measurementUnit.getTitle());
+                                                spmap.put("measurementUnit", measurementUnit);
+                                                spmap.put("measurementUnitId", sp.getMeasureUnitId());
                                                 spmap.put("from", sp.getFromUnit().toString());
                                                 spmap.put("to", sp.getToUnit().toString());
                                                 spmap.put("offersScheduleId", sp.getOfferScheduleId());
                                                 spmap.put("shdulesPackageId", sp.getId());
                                                 spmap.put("id", sp.getId());
-                                                spmap.put("measurementUnitId", sp.getMeasureUnitId());
-                                                MeasurementUnitEntity measurementUnit = entityManager.find(MeasurementUnitEntity.class, sp.getMeasureUnitId());
-                                                spmap.put("measurementUnit_id", measurementUnit.getId());
-                                                spmap.put("measurementUnit_title", measurementUnit.getTitle());
-                                                spmap.put("measurementUnit", measurementUnit);
                                                 spmap.put("unitPrice", sp.getUnitPrice().toString());
                                                 spmap.put("updateDate", sp.getUpdateDate());
                                                 spmap.put("creationDate", sp.getCreationDate());
@@ -336,17 +328,13 @@ public class OffersController extends Application {
                                             if (!id.equalsIgnoreCase("") && id != null) {
                                                 sqlCustSupl += " and offer.id =" + id + "";
                                             }
-
                                             if(suplierId!=null && !suplierId.equalsIgnoreCase("")){
                                                 sqlCustSupl += " and  offer.customer_id="+suplierId;
                                             }
-
-
                                             if (!customer.equalsIgnoreCase("") && customer != null) {
                                                 sqlCustSupl += " and offer.customer_id  in " +
                                                         " ( select id from  customers_suppliers cs where cs.brand_name like '%" + customer + "%' )";
                                             }
-
                                             if (!status.equalsIgnoreCase("") && status != null) {
                                                 sqlCustSupl += " and offer.status like '%" + status + "%'";
                                             }
@@ -384,9 +372,6 @@ public class OffersController extends Application {
                                                                 " cs.internova_seller_id in " +
                                                                 " (select id from  internova_sellers isell where isell.name like '%" + seller + "%' )";
                                             }
-
-
-
                                             if (!from.equalsIgnoreCase("") && from != null) {
                                                 sqlCustSupl += " and offer.from_address like '%" + from + "%'";
                                             }

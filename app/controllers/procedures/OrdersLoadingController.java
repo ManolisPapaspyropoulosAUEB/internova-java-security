@@ -968,6 +968,8 @@ public class OrdersLoadingController extends Application {
                                                     osMap.put("address", entityManager.find(FactoriesEntity.class, os.getFactoryId()).getAddress());
                                                     osMap.put("orderId", os.getOrderId());
                                                     osMap.put("orderScheduleId", os.getId());
+                                                    osMap.put("unloadingLoadingCode", entityManager.find(FactoriesEntity.class, os.getFactoryId()).getUnloadingLoadingCode());
+                                                    osMap.put("truckLoadingCode",os.getTruckLoadingCode());
                                                     osMap.put("appointmentDay", os.getAppointmentDay());
                                                     osMap.put("position", os.getPosition());
                                                     osMap.put("appointment", os.getAppointment());
@@ -983,6 +985,8 @@ public class OrdersLoadingController extends Application {
                                                     osMap.put("message", "Δεν έχει οριστεί εργοστάσιο ή αποθήκη ");
                                                     osMap.put("city", os.getFromCity());
                                                     osMap.put("country", os.getFromCountry());
+                                                    osMap.put("unloadingLoadingCode", "");
+                                                    osMap.put("truckLoadingCode","");
                                                     osMap.put("appointmentDay", os.getAppointmentDay());
                                                     osMap.put("position", os.getPosition());
                                                     osMap.put("appointment", os.getAppointment());
@@ -1107,6 +1111,8 @@ public class OrdersLoadingController extends Application {
                                                         owpeMap.put("brandName", entityManager.find(FactoriesEntity.class, owpe.getFactoryId()).getBrandName());
                                                         owpeMap.put("city", entityManager.find(FactoriesEntity.class, owpe.getFactoryId()).getCity());
                                                         owpeMap.put("country", entityManager.find(FactoriesEntity.class, owpe.getFactoryId()).getCountry());
+                                                        owpeMap.put("unloadingLoadingCode", entityManager.find(FactoriesEntity.class, owpe.getFactoryId()).getUnloadingLoadingCode());
+                                                        owpeMap.put("truckLoadingCode",owpe.getTruckLoadingCode());
                                                         owpeMap.put("orderId", owpe.getOrderId());
                                                         owpeMap.put("waypointId", owpe.getId());
                                                         owpeMap.put("appointmentDay", owpe.getAppointmentDay());
@@ -1124,6 +1130,8 @@ public class OrdersLoadingController extends Application {
                                                         owpeMap.put("message", "Δεν έχει οριστεί εργοστάσιο ή αποθήκη ");
                                                         owpeMap.put("city", owpe.getCity());
                                                         owpeMap.put("orderId", owpe.getOrderId());
+                                                        owpeMap.put("unloadingLoadingCode", "");
+                                                        owpeMap.put("truckLoadingCode","");
                                                         owpeMap.put("waypointId", owpe.getId());
                                                         owpeMap.put("country", owpe.getCountry());
                                                         owpeMap.put("appointmentDay", owpe.getAppointmentDay());
@@ -1637,6 +1645,7 @@ public class OrdersLoadingController extends Application {
                                         String orderCol = json.findPath("orderCol").asText();
                                         String descAsc = json.findPath("descAsc").asText();
                                         String id = json.findPath("id").asText();
+                                        String statusSearch = json.findPath("statusSearch").asText();
                                         String idOrderSearch = json.findPath("idOrderSearch").asText();
                                         String supplierNameSearch = json.findPath("supplierNameSearch").asText();
                                         String truckTrailerNameSearch = json.findPath("truckTrailerNameSearch").asText();
@@ -1650,6 +1659,9 @@ public class OrdersLoadingController extends Application {
                                         }
                                         if (aa != null && !aa.equalsIgnoreCase("")) {
                                             sqlOrdLoads += " and  ord_load.display_aa like '%" + aa + "%' ";
+                                        }
+                                        if (statusSearch != null && !statusSearch.equalsIgnoreCase("") && !statusSearch.equalsIgnoreCase("null")) {
+                                            sqlOrdLoads += " and  ord_load.status = '" + statusSearch + "' ";
                                         }
                                         if (idOrderSearch != null && !idOrderSearch.equalsIgnoreCase("")) {
                                             sqlOrdLoads += " and  ord_load.id in " +
@@ -1951,6 +1963,8 @@ public class OrdersLoadingController extends Application {
                                                             dromResNodeMap.put("country", dromResNode.findPath("country").asText());
                                                             dromResNodeMap.put("orderScheduleId", dromResNode.findPath("orderScheduleId").asText());
                                                             dromResNodeMap.put("waypointId", dromResNode.findPath("waypointId").asText());
+                                                            dromResNodeMap.put("unloadingLoadingCode", dromResNode.findPath("unloadingLoadingCode").asText());
+                                                            dromResNodeMap.put("truckLoadingCode", dromResNode.findPath("truckLoadingCode").asText());
                                                             dromResNodeMap.put("brandName", dromResNode.findPath("brandName").asText());
                                                             dromResNodeMap.put("orderCustomerName", dromResNode.findPath("orderCustomerName").asText());
                                                             dromResNodeMap.put("timelinetype", dromResNode.findPath("timelinetype").asText());
@@ -2189,6 +2203,7 @@ public class OrdersLoadingController extends Application {
                                                 asbmap.put("assignmentId", ab.getAssignmentId());
                                                 asbmap.put("billingId", ab.getBillingId());
                                                 asbmap.put("billingName", billingsEntity.getName());
+                                                asbmap.put("billingEmail", billingsEntity.getEmail());
                                                 asbmap.put("naulo", ab.getNaulo());
                                                 assignmentsBillList.add(asbmap);
                                             }

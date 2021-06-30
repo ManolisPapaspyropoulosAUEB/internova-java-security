@@ -13,6 +13,7 @@ import controllers.execution_context.DatabaseExecutionContext;
 import controllers.procedures.ProceduresPrintController;
 import models.BillingsEntity;
 import models.OffersEntity;
+import models.UsersEntity;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.commons.mail.*;
 import play.api.db.Database;
@@ -101,24 +102,31 @@ public class MailerService {
                             return jpaApi.withTransaction(entityManager -> {
                                 ObjectNode add_result = Json.newObject();
                                 String subject = json.findPath("subject").asText();
+                                String userId = json.findPath("userId").asText();
+                                String lng = json.findPath("languagePdf").asText();
+                                String company = json.findPath("companyPdf").asText();
                                 String from = json.findPath("from").asText();
                                 String to = json.findPath("to").asText();
                                 String bodyText = json.findPath("bodyText").asText();
                                 String orderLoadingId = json.findPath("orderLoadingId").asText();
                                 String offerSchedulesIds = json.findPath("offerSchedulesIds").asText();
                                 String offerId = json.findPath("offerId").asText();
+
                                 Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
                                 Email email = new Email()
                                         .setSubject(subject)
                                         .setFrom(from)
                                         .addTo(to).addCc("manolis.papaspyropoulos@gmail.com").setBodyText(bodyText);
                                 if(orderLoadingId!=null && !orderLoadingId.equalsIgnoreCase("") && !orderLoadingId.equalsIgnoreCase("null")){
+
+                                    UsersEntity user = entityManager.find(UsersEntity.class,Long.valueOf(userId));
+
                                     ProceduresPrintController proceduresPrintController =
                                             new ProceduresPrintController(db, jpaApi, executionContext);
                                     try {
                                         email.addAttachment("OderLoad.pdf",
                                                 readStream(proceduresPrintController.
-                                                        generateOrderLoadingReport(orderLoadingId)),
+                                                        generateOrderLoadingReport(orderLoadingId,user.getFirstname()+" "+user.getLastname(),lng,company)),
                                                 "application/pdf", "OderLoad",
                                                 EmailAttachment.INLINE);
                                     } catch (IOException e) {
