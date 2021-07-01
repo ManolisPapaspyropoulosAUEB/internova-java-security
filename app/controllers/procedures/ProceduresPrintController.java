@@ -224,23 +224,21 @@ public class ProceduresPrintController extends Application {
         ObjectNode reportParams = Json.newObject();
         reportParams.put("order_loading_id", orderLoadingId);
         reportParams.put("user", user);
-
+        ByteArrayInputStream export=null;
         if(lng.equalsIgnoreCase("el") && company.equalsIgnoreCase("internova")){
-            ByteArrayInputStream export = (ByteArrayInputStream) BaseJasperReport.generatePDF("anathesh/main", reportParams);
+             export = (ByteArrayInputStream) BaseJasperReport.generatePDF("anathesh/main", reportParams);
             return export;
         }else if(lng.equalsIgnoreCase("en") && company.equalsIgnoreCase("internova")){
-            ByteArrayInputStream export = (ByteArrayInputStream) BaseJasperReport.generatePDF("anathesh_eng/main", reportParams);
+             export = (ByteArrayInputStream) BaseJasperReport.generatePDF("anathesh_eng/main", reportParams);
             return export;
         }else if(lng.equalsIgnoreCase("el") && company.equalsIgnoreCase("nova")){
-            ByteArrayInputStream export = (ByteArrayInputStream) BaseJasperReport.generatePDF("anathesh_nova/main", reportParams);
+             export = (ByteArrayInputStream) BaseJasperReport.generatePDF("anathesh_nova/main", reportParams);
             return export;
         }else if (lng.equalsIgnoreCase("en") && company.equalsIgnoreCase("nova")){
-            ByteArrayInputStream export = (ByteArrayInputStream) BaseJasperReport.generatePDF("anathesh_nova_eng/main", reportParams);
-            return export;
-        }else{
-            ByteArrayInputStream export = (ByteArrayInputStream) BaseJasperReport.generatePDF("anathesh/main", reportParams);
+             export = (ByteArrayInputStream) BaseJasperReport.generatePDF("anathesh_nova_eng/main", reportParams);
             return export;
         }
+        return export;
     }
 
 

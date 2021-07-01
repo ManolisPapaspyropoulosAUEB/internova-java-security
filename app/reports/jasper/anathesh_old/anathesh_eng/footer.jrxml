@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="footer" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="79650319-c9f2-47af-a853-bd8ba97bf264">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="internova_db"/>
+	<parameter name="user" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[select 1 from dual]]>
+	</queryString>
+	<field name="1" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="1"/>
+		<property name="com.jaspersoft.studio.field.label" value="1"/>
+	</field>
+	<group name="1">
+		<groupExpression><![CDATA[$F{1}]]></groupExpression>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="160" splitType="Prevent">
+			<textField textAdjust="StretchHeight">
+				<reportElement stretchType="ElementGroupHeight" isPrintRepeatedValues="false" x="0" y="100" width="555" height="60" isPrintInFirstWholeBand="true" uuid="f95fdde7-17e1-40a3-b003-61d7fb1520bf">
+					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+				</reportElement>
+				<box topPadding="10"/>
+				<textElement verticalAlignment="Top" markup="html">
+					<font fontName="ArialPdf" size="7" isBold="false"/>
+					<paragraph leftIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA["<div><strong>Transport Contract</strong></div> <div>1. This shipment order is binding without counter-confirmation. Orders from InterNova , are made solely on the basis of these General Terms and Conditions. They also apply to all future business relations, even if they are not expressly agreed upon again. Only the most recent version of the Terms and Conditions is effect. Counter-confirmations of the Contractor with reference to terms and conditions are hereby rejected. Deviations from these General Terms and Conditions are only valid if they are confirmed in writing by interNova. These General Terms and Conditions remain in effect, even if individual parts should for whatever reason not in effect.</div> <div>2. The Contractor is required to have a valid carrier's liability insurance with a minimum coverage of EUR 250,000 (for cabotage transport within Germany in the amount of EUR 600.000) per damage claim (incl. Article 29 CMR), subject to individual exceptions (see shipment order page 1). The Contractor has to provide evidence of such insurance (e.g., policies or else insurance certificate in Greek or English). Should such proof not be provided in accordance with the above requirements at least one (1) hour before the scheduled loading time, InterNova reserves the right, regardless of the occurrence of a loss, to obtain sufficient liability insurance coverage and to make a 3% deduction on the freight rate. The assertion of further damages remains unaffected.</div> <div>3. InterNova assumes that the Contractor holds all necessary transport permits and furthermore carries such documentation in the truck cabin (EU-license, ECMT, etc.). In addition, the drivers engaged by the Contractor have all the necessary and valid permits (driver's license, ADR permit in the case of the shipments of hazardous goods, residence as well as work permit).</div> <div>4. The use of sub-carriers requires the express written permission of InterNova Trans. In the event of a breach of this instruction, the Contractor itself shall be liable for cases of damage to the same extent and will be charged with a penalty in the amount of EUR 10,000 plus VAT in addition to the damages incurred.</div> <div>5. Freight inquiries and orders of InterNova , are in no case to be advertised directly nor neutralized over freight exchanges. In the case of a breach, the Contractor will be charged a fee in the amount of EUR 1.500 plus VAT.</div> <div>6. Additional and trans-shipments are expressly prohibited. Any infringement will be treated as a total loss.</div> <div>7. In order to prevent damage and theft, the Contractor shall solely make use of parking places that are under surveillance. The truck has to be specifically secured against theft. The handover of the cargo can only occur with the recipient named by InterNova - any change requires the prior written approval of InterNova.</div> <div>8. The above dates (loading-/unloading times) are fixed dates and are binding. In the case that a contractor negligently or intentionally violates these deadlines, the contractor must pay InterNova a contractual penalty to the amount of the losses that have been incurred and proven by InterNova. This contractual penalty is due immediately. Furthermore, InterNova reserves the right to offset the penalty for the transportation rate, if required. Further claims for loss or damage shall remain unaffected.</div> <div>9. The contract stipulates the unit-based transfer and delivery of shipments by the driver. In the event of any conflict in the handover, InterNova must be informed immediately.</div> <div>10. Any loads transported by the vehicle will be safe for traffic, in particular in compliance with permissible axle loads, as well as securing of goods with lashing straps and cordons and are the responsibility of the Contractor or driver. Any costs or delays resulting from failure to observe this instruction shall be borne by the Contractor.</div> <div>11. In case of delays and / or impediments in any form to transport, InterNova must be informed immediately. Failure to comply with the specified dates or to provide a suitable vehicle will result in replacement by InterNova, of which the additional costs incurred will be borne by the Contractor.</div> <div>12. Obligation in the case of damage The Contractor must immediately notify InterNova and insurer in writing, in the event of damage or compensation claim raised against contractor. Any damage expected to exceed the amount of EUR 3.000 or for which the amount can not be estimated reliably, a competent accident commissioner, where applicable appoint by the insurer, will be commissioned without delay to assess the damage and whos instructions must be followed strictly. All costs for and associated with the commissioner shall be borne by the contractor. Each traffic accident or theft has to be reported immediately to the local police authority. The Contractor must procure instructions from InterNova and fully comply with them in order to ensure that the damage is minimised. In event of damage, InterNova Trans reserves the right to offset or hold back the exact or predicted damage amount from earned and future freight rate payments until the case is resolved.</div> <div>13. Pallet Exchange Euro pallets or E-PAL pallets must be replaced immediately. In case palettes are not replaced immediately, a deadline to return the palettes of a maximum of 14 days is stipulated. Failure to comply with this deadline will result in the Contractor being billed EUR 13,00 plus VAT per piece plus an administration fee of EUR 15,00 plus VAT. A replacement after the deadline has expired is not possible and will therefore not be accepted. Any replacement of pallets, including the non-replacement has to be demonstrated by appropriate documentation. The pallet notes that are issued by the driver are only valid with the stamp and signature of the consignor or recipient of the goods. Remarks on the CMR-waybill must likewise be countersigned by whoever is involved in the replacement of the pallets; a verbal confirmation on its own is insufficient. Invoices related to pallets are due immediately. Furthermore, InterNova reserve the right to retain and offset pallet costs against freight rate payments, if required. Further claims for loss or damage shall remain unaffected.</div> <div>14. InterNova states that invoices will only be accepted if they are accompanied by the original issued CMR-Waybills, applicable pallet notes and any other original accompanying documents. Additionally for temperature-controlled transports, a legible temperature record is required (see paragraph 20, point b). Should the contractor fail to provide the temperature sheet, a confirmation and/or a garage temperature record will be necessary. At the request of the Contractor, InterNova grant a credit voucher upon receipt of the shipping documents.</div> <div>15. InterNova expects complete and original delivery documents to be available at InterNova offices within 10 days of unloading. In case of failure to meet this deadline, InterNova shall immediately levy an administration fee of Euro 50,00 (not including VAT) and will be offset in transport rate claims.</div> <div>16. Terms of payment Terms of payment are as stated in the transport order.</div> <div>17. The contractor is obligated to ensure that all drivers spend their frequent weekly rest periods outside of the vehicle.</div> <div>18. Compliance with the minimum wage act a) By signing the contract, you confirm that you have taken note of and comply with the payment of a minimum wage in Germany and France. b) You guarantee that you autonomously comply with all legal requirements of both the German and France minimum wage acts and that you and in case also your subcontractors or vicarious agents comply with the legal requirements of the minimum wage act. c) You commit yourself to indemnify InterNova from all claims of compensation raised by third parties or authorities due to the breach of applicable minimum wage requirements, including resulting fines etc.</div> <div>19. Additional agreement for refrigerated transportation: a) Loading, unloading and transport temperatures must be checked and adjusted according to the instruction of the consignor. In case of uncertainties and differences with regard to the temperature information, InterNova must be notified immediately The hired refrigeration unit must be in operation continuously. b) The Contractor ensures throughout the period of transportation the maintenance of temperature records and to provide them to InterNova without request. For GDP-transports the temperature recording interval should not exceed 15 minutes and the recording has to begin one hour before loading time. All the temperature recordings must be preserved according to the statutory requirements that are correspondingly applicable (see, amongst others, Regulation (EC) no. 37/2005 of 12.01.2005 for quick-frozen foodstuffs = at least 1 year, Guideline 2013/C 343/01 of 05.11.2013 on Good Distribution Practice of medicinal products for human use = at least 5 years). c) The driver must pre-cool the loading area of the vehicle and when loading to ascertain and ensure adequate circulation of the cooling air, and that the cargo does not damage the cooling equipment nor render it inoperative, and in particular third parties (loading personnel of the consignor) load according to the above instructions. d) Sufficient fixing rails must be carried along for to secure cargo. e) The loading area must be kept clean, dry, free from foreign odours as well as generally suitable for food transport (no meat rails incl. hooks). f) The truck deployed by the Contractor must comply with the applicable ATP provisions. A corresponding certificate as well as a certificate of calibration must be sumitted to us upon request.</div> <div>20. Customer protection: The Contractor guarantees customer protection of InterNova . He may neither indirectly nor directly accept transport shipments nor transfer such orders to third parties that come from customers of the freight forwarder, who have become known to him within the framework of his activities with InterNova. In the event of a breach, the Contractor agrees to pay compensation for damages for any event in the amount of Euro 15.000.</div> <div>21. The law applicable to the contract is the Greek law and the competent Court for hearing disputes shall be the Court in Athens, Greece</div>"]]></textFieldExpression>
+			</textField>
+			<frame>
+				<reportElement x="10" y="0" width="534" height="100" uuid="0b6db22e-35c0-4fe1-bdaf-29b1151cedee"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+				</box>
+				<textField>
+					<reportElement x="0" y="81" width="534" height="19" uuid="41f14b84-94b1-4b81-b5b0-600f5031216c"/>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["3)Active CMR Insurance it is Mandatory "]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="51" width="534" height="30" uuid="9b7c415c-c4e2-45f8-b828-6b5c25fa0123"/>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["2)Original Signed CMR for the Correct Delivery and Original Invoice, you should send it by post to the following Address: Evaggelistrias 14, 15342, Agia Paraskevi Athens Greece"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="11" width="534" height="40" uuid="caa11748-c9ae-41c1-9526-fd51646f4331"/>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["1)All the necessary transport documents must be in a PDF format, pure copy of it and the size do not exceed the 2MB and should be send it to the following email: accounting@internovatrans.gr"]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+	<summary>
+		<band height="114">
+			<textField>
+				<reportElement x="10" y="20" width="190" height="30" uuid="77dfd0f4-dd2c-4601-9653-d4e9bb398ce0"/>
+				<textElement textAlignment="Center" rotation="None">
+					<font fontName="ArialPdf" size="14" isBold="true" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Supplier Approval"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="340" y="20" width="190" height="30" uuid="8a7142be-8c4e-41cc-83f0-180c87c8b497"/>
+				<textElement textAlignment="Center" rotation="None">
+					<font fontName="ArialPdf" size="14" isBold="true" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["INTERNOVA TRANS"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="340" y="50" width="190" height="40" uuid="ca155b4a-a519-4067-a2e5-905dafff8eae"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{user}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

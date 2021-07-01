@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="items" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="fde0a53b-2225-43d9-837b-127dd7017390">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="internova_db"/>
+	<parameter name="order_loading_id" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[select salt_table.order_id,f.address,f.brand_name,point_type,point_id
+			 from 
+			(
+			select 
+			os.id as point_id,
+			os.order_id,
+			os.factory_id,
+			os.position,
+			f.address,
+			'order_schedule' as point_type
+			
+			from order_schedules os
+			join factories f on (f.id=os.factory_id)
+			union
+			
+			select 
+			ow.id as point_id,
+			ow.order_id,
+			ow.factory_id,
+			ow.position,
+			f.address,
+			'order_waypoint' as point_type
+			
+			from order_waypoints ow
+			join factories f on (f.id=ow.factory_id)
+			)as salt_table
+			left join factories f on (f.id = salt_table.factory_id)
+				where salt_table.order_id in 
+					(
+					
+					select id
+					from orders
+					where id in
+					(
+					select order_id 
+					from orders_loading_orders_selections 
+					where order_loading_id=$P{order_loading_id}
+					)
+					
+					)
+			
+			 
+			order by salt_table.position]]>
+	</queryString>
+	<field name="order_id" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="order_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="order_id"/>
+	</field>
+	<field name="address" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="address"/>
+		<property name="com.jaspersoft.studio.field.label" value="address"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="factories"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="brand_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="brand_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="brand_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="factories"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="point_type" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="point_type"/>
+		<property name="com.jaspersoft.studio.field.label" value="point_type"/>
+	</field>
+	<field name="point_id" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="point_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="point_id"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="20">
+			<textField>
+				<reportElement x="0" y="0" width="555" height="20" uuid="f4115e73-b90d-47f1-8a83-2f915c251ca5"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="ArialPdf" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["ΑΝΑΛΥΣΗ ΣΤΑΘΜΩΝ"]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<detail>
+		<band height="50" splitType="Stretch">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="50" uuid="ab75c0ae-400b-46ce-949d-6707e2ff7303"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0" lineStyle="Dashed"/>
+				</box>
+				<textField>
+					<reportElement x="0" y="8" width="500" height="15" uuid="e28bed2b-bed2-4492-b5ab-afc9fa063e5a">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Διέυθυνση:"+$F{address}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="23" width="500" height="15" uuid="cb8bd31b-c2b7-40c4-9ae9-17fa2081a92a">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Επωνυμία:"+$F{brand_name}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="30">
+			<subreport>
+				<reportElement isPrintRepeatedValues="false" x="0" y="0" width="555" height="30" isRemoveLineWhenBlank="true" uuid="f5ccafdd-7942-453a-bd7c-a6d0302fb7e7">
+					<printWhenExpression><![CDATA[$F{point_type}.equalsIgnoreCase( "order_schedule" )]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="point_id">
+					<subreportParameterExpression><![CDATA[$F{point_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR}+"items_analysis.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement isPrintRepeatedValues="false" x="0" y="0" width="555" height="30" isRemoveLineWhenBlank="true" uuid="a2c73fac-215c-47b7-bf13-861eaac9ea95">
+					<printWhenExpression><![CDATA[$F{point_type}.equalsIgnoreCase( "order_waypoint" )]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="point_id">
+					<subreportParameterExpression><![CDATA[$F{point_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[
+$P{SUBREPORT_DIR}+"items_analysis_waypoints.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+</jasperReport>
