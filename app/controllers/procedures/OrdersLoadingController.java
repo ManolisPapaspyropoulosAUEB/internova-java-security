@@ -117,14 +117,15 @@ public class OrdersLoadingController extends Application {
                                     ordersLoadingOrdersSelectionsEntity.setCreationDate(new Date());
                                     ordersLoadingOrdersSelectionsEntity.setOrderId(orderNode.findPath("orderId").asLong());
                                     ordersLoadingOrdersSelectionsEntity.setOrderLoadingId(ordersLoadingEntity.getId());
+
                                     while (dromologioParIter.hasNext()) {
                                         JsonNode dromologioParNode = (JsonNode) dromologioParIter.next();
                                         finalDromologioParaggelias.add(dromologioParNode);
                                         if (dromologioParNode.findPath("type").asText().equalsIgnoreCase("Αφετηρία")) {
-                                            OrderSchedulesEntity orderSchedulesEntity = entityManager.find(OrderSchedulesEntity.class,
-                                                    dromologioParNode.findPath("orderScheduleId").asLong());
-                                            if (!dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("") &&
-                                                    !dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("Invalid date")) {
+                                            OrderSchedulesEntity orderSchedulesEntity = entityManager.find(OrderSchedulesEntity.class, dromologioParNode.findPath("orderScheduleId").asLong());
+                                            String pointComments =  dromologioParNode.findPath("pointComments").asText();
+                                            orderSchedulesEntity.setComments(pointComments);
+                                            if (!dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("") && !dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("Invalid date")) {
                                                 String appointmentDay = dromologioParNode.findPath("appointmentDay").asText();
                                                 DateFormat myDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                                                 if (appointmentDay != null && !appointmentDay.equalsIgnoreCase("")) {
@@ -136,12 +137,13 @@ public class OrdersLoadingController extends Application {
                                                     }
                                                 }
                                             }
+                                            entityManager.merge(orderSchedulesEntity);
                                         } else {
-                                            if (!dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("") &&
-                                                    !dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("Invalid date")) {
-                                                OrderWaypointsEntity orderWaypointsEntity = entityManager.find(OrderWaypointsEntity.class,
-                                                        dromologioParNode.findPath("waypointId").asLong());
+                                            if (!dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("") && !dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("Invalid date")) {
+                                                OrderWaypointsEntity orderWaypointsEntity = entityManager.find(OrderWaypointsEntity.class, dromologioParNode.findPath("waypointId").asLong());
                                                 String appointmentDay = dromologioParNode.findPath("appointmentDay").asText();
+                                                String pointComments =  dromologioParNode.findPath("pointComments").asText();
+                                                orderWaypointsEntity.setComments(pointComments);
                                                 DateFormat myDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                                                 if (appointmentDay != null && !appointmentDay.equalsIgnoreCase("")) {
                                                     try {
@@ -151,15 +153,17 @@ public class OrdersLoadingController extends Application {
                                                         e.printStackTrace();
                                                     }
                                                 }
+                                                entityManager.merge(orderWaypointsEntity);
                                             }
                                         }
                                     }
+
+
+
                                     entityManager.persist(ordersLoadingOrdersSelectionsEntity);
                                 }
                                 while (doneListIt.hasNext()) {
                                     JsonNode orderNode = (JsonNode) doneListIt.next();
-                                    OrdersEntity order = entityManager.find(OrdersEntity.class, orderNode.findPath("orderId").asLong());
-
                                     OrdersLoadingOrdersSelectionsEntity ordersLoadingOrdersSelectionsEntity = new OrdersLoadingOrdersSelectionsEntity();
                                     ordersLoadingOrdersSelectionsEntity.setCreationDate(new Date());
                                     ordersLoadingOrdersSelectionsEntity.setOrderId(orderNode.findPath("orderId").asLong());
@@ -169,6 +173,8 @@ public class OrdersLoadingController extends Application {
                                         JsonNode dromologioParNode = (JsonNode) dromologioParIter.next();
                                         finalDromologioParaggelias.add(dromologioParNode);
                                         if (dromologioParNode.findPath("type").asText().equalsIgnoreCase("Αφετηρία")) {
+
+
                                             if (!dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("") &&
                                                     !dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("Invalid date")) {
                                                 OrderSchedulesEntity orderSchedulesEntity = entityManager.find(OrderSchedulesEntity.class,
@@ -288,8 +294,7 @@ public class OrdersLoadingController extends Application {
                                 Date appointmentDayDate = null;
                                 for (int i = 0; i < doneDromologia.size(); i++) {
                                     JsonNode stationNode = doneDromologia.get(i);
-                                    if (!stationNode.findPath("appointmentDay2").asText().equalsIgnoreCase("")
-                                            && !stationNode.findPath("appointmentDay2").asText().equalsIgnoreCase("Invalid date")) {
+                                    if (!stationNode.findPath("appointmentDay2").asText().equalsIgnoreCase("") && !stationNode.findPath("appointmentDay2").asText().equalsIgnoreCase("Invalid date")) {
                                         String appointmentDay = stationNode.findPath("appointmentDay2").asText();
                                         DateFormat myDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                                         if (appointmentDay != null && !appointmentDay.equalsIgnoreCase("")) {
@@ -442,7 +447,13 @@ public class OrdersLoadingController extends Application {
                                         if (dromologioParNode.findPath("type").asText().equalsIgnoreCase("Αφετηρία")) {
                                             OrderSchedulesEntity orderSchedulesEntity = entityManager.find(OrderSchedulesEntity.class, dromologioParNode.findPath("orderScheduleId").asLong());
                                             Integer position = dromologioParNode.findPath("position").asInt();
+                                            String pointComments =  dromologioParNode.findPath("pointComments").asText();
+
                                             orderSchedulesEntity.setPosition(position);
+                                            orderSchedulesEntity.setComments(pointComments);
+
+
+
                                             if (!dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("") && !dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("Invalid date")) {
                                                 String appointmentDay = dromologioParNode.findPath("appointmentDay").asText();
                                                 DateFormat myDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -461,7 +472,9 @@ public class OrdersLoadingController extends Application {
                                         } else {
                                             OrderWaypointsEntity orderWaypointsEntity = entityManager.find(OrderWaypointsEntity.class, dromologioParNode.findPath("waypointId").asLong());
                                             Integer position = dromologioParNode.findPath("position").asInt();
+                                            String pointComments =  dromologioParNode.findPath("pointComments").asText();
                                             orderWaypointsEntity.setPosition(position);
+                                            orderWaypointsEntity.setComments(pointComments);
                                             if (!dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("") && !dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("Invalid date")) {
                                                 String appointmentDay = dromologioParNode.findPath("appointmentDay").asText();
                                                 DateFormat myDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -940,7 +953,6 @@ public class OrdersLoadingController extends Application {
                                             DecimalFormat df;
                                             String sqlSumPrice = "";
                                             Double summPrice;
-                                            Double summMasterSchedule;
                                             String sqlSumLdm;
                                             Double summLdm;
                                             String sqlSumQuantity;
@@ -968,6 +980,9 @@ public class OrdersLoadingController extends Application {
                                                     osMap.put("address", entityManager.find(FactoriesEntity.class, os.getFactoryId()).getAddress());
                                                     osMap.put("orderId", os.getOrderId());
                                                     osMap.put("orderScheduleId", os.getId());
+                                                    osMap.put("pointComments", os.getComments());
+                                                    osMap.put("truckTemprature", entityManager.find(OrdersEntity.class,os.getOrderId()).getTruckTemprature());
+                                                    osMap.put("weight", entityManager.find(OrdersEntity.class,os.getOrderId()).getGrossWeight());
                                                     osMap.put("unloadingLoadingCode", entityManager.find(FactoriesEntity.class, os.getFactoryId()).getUnloadingLoadingCode());
                                                     osMap.put("truckLoadingCode",os.getTruckLoadingCode());
                                                     osMap.put("appointmentDay", os.getAppointmentDay());
@@ -987,8 +1002,11 @@ public class OrdersLoadingController extends Application {
                                                     osMap.put("country", os.getFromCountry());
                                                     osMap.put("unloadingLoadingCode", "");
                                                     osMap.put("truckLoadingCode","");
+                                                    osMap.put("pointComments", os.getComments());
                                                     osMap.put("appointmentDay", os.getAppointmentDay());
                                                     osMap.put("position", os.getPosition());
+                                                    osMap.put("truckTemprature", entityManager.find(OrdersEntity.class,os.getOrderId()).getTruckTemprature());
+                                                    osMap.put("weight", entityManager.find(OrdersEntity.class,os.getOrderId()).getGrossWeight());
                                                     osMap.put("appointment", os.getAppointment());
                                                     osMap.put("orderId", os.getOrderId());
                                                     osMap.put("orderScheduleId", os.getId());
@@ -1067,8 +1085,13 @@ public class OrdersLoadingController extends Application {
                                                 packagesFortwshs = new ArrayList<HashMap<String, Object>>();
                                                 packagesEkfortwshs = new ArrayList<HashMap<String, Object>>();
                                                 allPackages = new ArrayList<HashMap<String, Object>>();
+
+                                                List<HashMap<String, Object>> quantityByTypeInPointList = new ArrayList<HashMap<String, Object>>();
+                                                List<HashMap<String, Object>> typeByTypeInPointList = new ArrayList<HashMap<String, Object>>();
                                                 for (OrdersSelectionsByPointEntity osafet : ordersSelectionsByPointEntityList) {
                                                     HashMap<String, Object> osafetmap = new HashMap<String, Object>();
+                                                    HashMap<String, Object> quantityByTypeInPointMap = new HashMap<String, Object>();
+                                                    HashMap<String, Object> typeByTypeInPointMap = new HashMap<String, Object>();
                                                     osafetmap.put("id", osafet.getId());
                                                     osafetmap.put("orderId", osafet.getOrderId());
                                                     osafetmap.put("title", osafet.getTitle());
@@ -1078,6 +1101,9 @@ public class OrdersLoadingController extends Application {
                                                     osafetmap.put("quantity", osafet.getQuantity());
                                                     osafetmap.put("typePackage", osafet.getTypePackage());
                                                     osafetmap.put("packageType", entityManager.find(PackageTypeEntity.class, osafet.getPackageTypeId()).getType());
+                                                    quantityByTypeInPointMap.put("title",osafet.getTitle());
+                                                    quantityByTypeInPointMap.put("quantity",osafet.getQuantity());
+                                                    typeByTypeInPointMap.put("packageType",entityManager.find(PackageTypeEntity.class, osafet.getPackageTypeId()).getType());
                                                     osafetmap.put("stackingType", osafet.getStackingType());
                                                     osafetmap.put("ldm", osafet.getLdm());
                                                     if (osafet.getUnitPrice() != null) {
@@ -1090,8 +1116,27 @@ public class OrdersLoadingController extends Application {
                                                     } else {
                                                         packagesEkfortwshs.add(osafetmap);
                                                     }
+                                                    for(int i=0;i<quantityByTypeInPointList.size();i++){
+                                                        if(quantityByTypeInPointList.get(i).get("title").toString().equalsIgnoreCase(osafet.getTitle())){
+                                                            Integer newQuantity = Integer.valueOf( quantityByTypeInPointList.get(i).get("quantity").toString())+osafet.getQuantity();
+                                                            quantityByTypeInPointList.remove(i);
+                                                            quantityByTypeInPointMap.put("quantity",newQuantity);
+                                                        }
+                                                    }
+                                                    boolean packTypeExist=false;
+                                                    for(int i=0;i<typeByTypeInPointList.size();i++){
+                                                        if(typeByTypeInPointList.get(i).get("packageType").toString().equalsIgnoreCase(entityManager.find(PackageTypeEntity.class, osafet.getPackageTypeId()).getType())){
+                                                            packTypeExist=true;
+                                                        }
+                                                    }
+                                                    quantityByTypeInPointList.add(quantityByTypeInPointMap);
+                                                    if(packTypeExist==false){
+                                                        typeByTypeInPointList.add(typeByTypeInPointMap);
+                                                    }
                                                     allPackages.add(osafetmap);
                                                 }
+                                                osMap.put("quantityByTypeInPointList", quantityByTypeInPointList);
+                                                osMap.put("typeByTypeInPointList", typeByTypeInPointList);
                                                 osMap.put("packagesFortwshs", packagesFortwshs);
                                                 osMap.put("packagesEkfortwshs", packagesEkfortwshs);
                                                 osMap.put("allPackages", allPackages);
@@ -1115,6 +1160,9 @@ public class OrdersLoadingController extends Application {
                                                         owpeMap.put("truckLoadingCode",owpe.getTruckLoadingCode());
                                                         owpeMap.put("orderId", owpe.getOrderId());
                                                         owpeMap.put("waypointId", owpe.getId());
+                                                        owpeMap.put("pointComments", owpe.getComments());
+                                                        owpeMap.put("truckTemprature", entityManager.find(OrdersEntity.class,owpe.getOrderId()).getTruckTemprature());
+                                                        owpeMap.put("weight", entityManager.find(OrdersEntity.class,owpe.getOrderId()).getGrossWeight());
                                                         owpeMap.put("appointmentDay", owpe.getAppointmentDay());
                                                         owpeMap.put("position", owpe.getPosition());
                                                         owpeMap.put("appointment", owpe.getAppointment());
@@ -1132,6 +1180,11 @@ public class OrdersLoadingController extends Application {
                                                         owpeMap.put("orderId", owpe.getOrderId());
                                                         owpeMap.put("unloadingLoadingCode", "");
                                                         owpeMap.put("truckLoadingCode","");
+                                                        owpeMap.put("pointComments", owpe.getComments());
+
+                                                        owpeMap.put("truckTemprature", entityManager.find(OrdersEntity.class,owpe.getOrderId()).getTruckTemprature());
+                                                        owpeMap.put("weight", entityManager.find(OrdersEntity.class,owpe.getOrderId()).getGrossWeight());
+
                                                         owpeMap.put("waypointId", owpe.getId());
                                                         owpeMap.put("country", owpe.getCountry());
                                                         owpeMap.put("appointmentDay", owpe.getAppointmentDay());
@@ -1232,8 +1285,13 @@ public class OrdersLoadingController extends Application {
                                                     packagesFortwshs = new ArrayList<HashMap<String, Object>>();
                                                     packagesEkfortwshs = new ArrayList<HashMap<String, Object>>();
                                                     allPackages = new ArrayList<HashMap<String, Object>>();
+
+                                                    List<HashMap<String, Object>> quantityByTypeInWayPointList = new ArrayList<HashMap<String, Object>>();
+                                                    List<HashMap<String, Object>> typeByTypeInWayPointList = new ArrayList<HashMap<String, Object>>();
                                                     for (OrdersSelectionsByPointEntity osafet : ordersSelectionsByPointEntityList) {
                                                         HashMap<String, Object> osafetmap = new HashMap<String, Object>();
+                                                        HashMap<String, Object> quantityByTypeInPointMap = new HashMap<String, Object>();
+                                                        HashMap<String, Object> typeByTypeInPointMap = new HashMap<String, Object>();
                                                         osafetmap.put("id", osafet.getId());
                                                         osafetmap.put("orderId", osafet.getOrderId());
                                                         osafetmap.put("title", osafet.getTitle());
@@ -1244,6 +1302,9 @@ public class OrdersLoadingController extends Application {
                                                         osafetmap.put("typePackage", osafet.getTypePackage());
                                                         osafetmap.put("packageType", entityManager.find(PackageTypeEntity.class, osafet.getPackageTypeId()).getType());
                                                         osafetmap.put("stackingType", osafet.getStackingType());
+                                                        quantityByTypeInPointMap.put("title",osafet.getTitle());
+                                                        quantityByTypeInPointMap.put("quantity",osafet.getQuantity());
+                                                        typeByTypeInPointMap.put("packageType",entityManager.find(PackageTypeEntity.class, osafet.getPackageTypeId()).getType());
                                                         osafetmap.put("ldm", osafet.getLdm());
                                                         if (osafet.getUnitPrice() != null) {
                                                             osafetmap.put("unitPrice", osafet.getUnitPrice());
@@ -1255,8 +1316,27 @@ public class OrdersLoadingController extends Application {
                                                         } else {
                                                             packagesEkfortwshs.add(osafetmap);
                                                         }
+                                                        for(int i=0;i<quantityByTypeInWayPointList.size();i++){
+                                                            if(quantityByTypeInWayPointList.get(i).get("title").toString().equalsIgnoreCase(osafet.getTitle())){
+                                                                Integer newQuantity = Integer.valueOf( quantityByTypeInWayPointList.get(i).get("quantity").toString())+osafet.getQuantity();
+                                                                quantityByTypeInWayPointList.remove(i);
+                                                                quantityByTypeInPointMap.put("quantity",newQuantity);
+                                                            }
+                                                        }
+                                                        boolean packTypeExist=false;
+                                                        for(int i=0;i<typeByTypeInWayPointList.size();i++){
+                                                            if(typeByTypeInWayPointList.get(i).get("packageType").toString().equalsIgnoreCase(entityManager.find(PackageTypeEntity.class, osafet.getPackageTypeId()).getType())){
+                                                                packTypeExist=true;
+                                                            }
+                                                        }
+                                                        quantityByTypeInWayPointList.add(quantityByTypeInPointMap);
+                                                        if(packTypeExist==false){
+                                                            typeByTypeInWayPointList.add(typeByTypeInPointMap);
+                                                        }
                                                         allPackages.add(osafetmap);
                                                     }
+                                                    owpeMap.put("quantityByTypeInPointList", quantityByTypeInWayPointList);
+                                                    owpeMap.put("typeByTypeInPointList", typeByTypeInWayPointList);
                                                     owpeMap.put("packagesFortwshs", packagesFortwshs);
                                                     owpeMap.put("packagesEkfortwshs", packagesEkfortwshs);
                                                     owpeMap.put("allPackages", allPackages);
@@ -1968,12 +2048,16 @@ public class OrdersLoadingController extends Application {
                                                             dromResNodeMap.put("brandName", dromResNode.findPath("brandName").asText());
                                                             dromResNodeMap.put("orderCustomerName", dromResNode.findPath("orderCustomerName").asText());
                                                             dromResNodeMap.put("timelinetype", dromResNode.findPath("timelinetype").asText());
+                                                            dromResNodeMap.put("quantityByTypeInPointList", dromResNode.findPath("quantityByTypeInPointList"));
+                                                            dromResNodeMap.put("typeByTypeInPointList", dromResNode.findPath("typeByTypeInPointList"));
                                                             dromResNodeMap.put("nestedScheduleIndicator", dromResNode.findPath("nestedScheduleIndicator").asText());
                                                             dromResNodeMap.put("position", dromResNode.findPath("position").asInt());
                                                             dromResNodeMap.put("address", dromResNode.findPath("address").asText());
-                                                            dromResNodeMap.put("lattitude", dromResNode.findPath("lattitude").asDouble());
+                                                            dromResNodeMap.put("truckTemprature", dromResNode.findPath("truckTemprature").asText());
+                                                            dromResNodeMap.put("weight", dromResNode.findPath("lattitude").asText());
                                                             dromResNodeMap.put("city", dromResNode.findPath("city").asText());
                                                             dromResNodeMap.put("postalCode", dromResNode.findPath("postalCode").asText());
+                                                            dromResNodeMap.put("lattitude", dromResNode.findPath("lattitude").asDouble());
                                                             dromResNodeMap.put("longtitude", dromResNode.findPath("longtitude").asDouble());
                                                             dromResNodeMap.put("appointment", dromResNode.findPath("appointment").asText());
                                                             dromResNodeMap.put("message", dromResNode.findPath("message").asText());
@@ -1989,6 +2073,16 @@ public class OrdersLoadingController extends Application {
                                                             dromResNodeMap.put("showPackagesIndicator", false);
                                                             dromResNodeMap.put("showDromologioIndicator", false);
                                                             dromResNodeMap.put("includedToDromologio", true);
+
+                                                            if(dromResNode.findPath("pointComments").asText().equalsIgnoreCase("null")){
+                                                                dromResNodeMap.put("pointComments", "");
+
+                                                            }else{
+                                                                dromResNodeMap.put("pointComments", dromResNode.findPath("pointComments").asText());
+
+                                                            }
+
+
                                                             dromologioParaggelias.add(dromResNodeMap);
                                                         }
                                                         doneMap.put("dromologioParaggelias", dromologioParaggelias);
@@ -2082,26 +2176,46 @@ public class OrdersLoadingController extends Application {
                 CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
                             return jpaApi.withTransaction(entityManager -> {
                                 ObjectNode add_result = Json.newObject();
-
-                                System.out.println(json);
                                 Long orderLoadingId = json.findPath("order_loading_id").asLong();
                                 String comments = json.findPath("comments").asText();
                                 JsonNode billingsAssignments = json.findPath("billingsAssignments");
                                 ((ObjectNode) json).remove("billingsAssignments");
 
-                                OrderLoadingAssignmentEntity orderLoadingAssignmentEntity = new OrderLoadingAssignmentEntity();
-                                orderLoadingAssignmentEntity.setOrderLoadingId(orderLoadingId);
-                                orderLoadingAssignmentEntity.setComments(comments);
-                                orderLoadingAssignmentEntity.setCreationDate(new Date());
-                                entityManager.persist(orderLoadingAssignmentEntity);
 
-                                for(int i=0;i<billingsAssignments.size();i++){
-                                    JsonNode ass = billingsAssignments.get(i);
-                                    AssignmentBillingsEntity assignmentBillingsEntity = new AssignmentBillingsEntity();
-                                    assignmentBillingsEntity.setAssignmentId(orderLoadingAssignmentEntity.getId());
-                                    assignmentBillingsEntity.setBillingId(ass.findPath("billingId").asLong());
-                                    assignmentBillingsEntity.setNaulo(ass.findPath("naulo").asDouble());
-                                    entityManager.persist(assignmentBillingsEntity);
+                                String sqlExist = "select * from order_loading_assignment where order_loading_id="+orderLoadingId;
+                                List<OrderLoadingAssignmentEntity> orderLoadingAssignmentEntityList = entityManager.createNativeQuery(sqlExist,OrderLoadingAssignmentEntity.class).getResultList();
+                                if(orderLoadingAssignmentEntityList.size()>0){
+                                    //update
+                                    orderLoadingAssignmentEntityList.get(0).setComments(comments);
+                                    entityManager.merge( orderLoadingAssignmentEntityList.get(0));
+                                    String sqlAss = "select * from assignment_billings where assignment_id="+orderLoadingAssignmentEntityList.get(0).getId();
+                                    List<AssignmentBillingsEntity> assignmentBillingsEntityList = entityManager.createNativeQuery(sqlAss,AssignmentBillingsEntity.class).getResultList();
+                                    for(AssignmentBillingsEntity assb : assignmentBillingsEntityList){
+                                        entityManager.remove(assb);
+                                    }
+                                    for(int i=0;i<billingsAssignments.size();i++){
+                                        JsonNode ass = billingsAssignments.get(i);
+                                        AssignmentBillingsEntity assignmentBillingsEntity = new AssignmentBillingsEntity();
+                                        assignmentBillingsEntity.setAssignmentId(orderLoadingAssignmentEntityList.get(0).getId());
+                                        assignmentBillingsEntity.setBillingId(ass.findPath("billingId").asLong());
+                                        assignmentBillingsEntity.setNaulo(ass.findPath("naulo").asDouble());
+                                        entityManager.persist(assignmentBillingsEntity);
+                                    }
+                                }else{
+                                    //add
+                                    OrderLoadingAssignmentEntity orderLoadingAssignmentEntity = new OrderLoadingAssignmentEntity();
+                                    orderLoadingAssignmentEntity.setOrderLoadingId(orderLoadingId);
+                                    orderLoadingAssignmentEntity.setComments(comments);
+                                    orderLoadingAssignmentEntity.setCreationDate(new Date());
+                                    entityManager.persist(orderLoadingAssignmentEntity);
+                                    for(int i=0;i<billingsAssignments.size();i++){
+                                        JsonNode ass = billingsAssignments.get(i);
+                                        AssignmentBillingsEntity assignmentBillingsEntity = new AssignmentBillingsEntity();
+                                        assignmentBillingsEntity.setAssignmentId(orderLoadingAssignmentEntity.getId());
+                                        assignmentBillingsEntity.setBillingId(ass.findPath("billingId").asLong());
+                                        assignmentBillingsEntity.setNaulo(ass.findPath("naulo").asDouble());
+                                        entityManager.persist(assignmentBillingsEntity);
+                                    }
                                 }
                                 add_result.put("status", "success");
                                 add_result.put("message", "Η καταχωρηση πραγματοποίηθηκε με επιτυχία");
@@ -2120,6 +2234,42 @@ public class OrdersLoadingController extends Application {
             }
         }
     }
+
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    @BodyParser.Of(BodyParser.Json.class)
+    public Result updateOrderLoadingAssignment(final Http.Request request) throws IOException {
+        JsonNode json = request.body().asJson();
+        if (json == null) {
+            return badRequest("Expecting Json data");
+        } else {
+            try {
+                ObjectNode result = Json.newObject();
+                CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
+                            return jpaApi.withTransaction(entityManager -> {
+                                ObjectNode add_result = Json.newObject();
+                                Long id = json.findPath("id").asLong();
+                                Double naulo = json.findPath("naulo").asDouble();
+                                AssignmentBillingsEntity assignmentBillingsEntity = entityManager.find(AssignmentBillingsEntity.class,id);
+                                assignmentBillingsEntity.setNaulo(naulo);
+                                add_result.put("status", "success");
+                                add_result.put("message", "Η Ενημέρωση πραγματοποίηθηκε με επιτυχία");
+                                return add_result;
+                            });
+                        },
+                        executionContext);
+                result = (ObjectNode) addFuture.get();
+                return ok(result);
+            } catch (Exception e) {
+                ObjectNode result = Json.newObject();
+                e.printStackTrace();
+                result.put("status", "error");
+                result.put("message", "Προβλημα κατα την καταχωρηση");
+                return ok(result);
+            }
+        }
+    }
+
 
 
 

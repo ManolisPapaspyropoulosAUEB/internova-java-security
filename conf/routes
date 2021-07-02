@@ -194,6 +194,7 @@ POST        /updateOrderLoading                              controllers.procedu
 POST        /deleteOrderLoading                              controllers.procedures.OrdersLoadingController.deleteOrderLoading(req: Request)
 POST        /updateOrAddSuplierRoadCost                      controllers.procedures.OrdersLoadingController.updateOrAddSuplierRoadCost(req: Request)
 POST        /addOrderLoadingAssignment                       controllers.procedures.OrdersLoadingController.addOrderLoadingAssignment(req: Request)
+POST        /updateOrderLoadingAssignment                    controllers.procedures.OrdersLoadingController.updateOrderLoadingAssignment(req: Request)
 POST        /getOrdersLoadingsAssignments                    controllers.procedures.OrdersLoadingController.getOrdersLoadingsAssignments(req: Request)
 POST        /sendEmailOrderLoading                           controllers.procedures.OrdersLoadingController.sendEmailOrderLoading(req: Request)
 POST        /sendEmailWS                                     controllers.MailerService.sendEmailWS(req: Request)

@@ -21,9 +21,9 @@
 		<band splitType="Stretch"/>
 	</background>
 	<pageHeader>
-		<band height="110">
+		<band height="100">
 			<frame>
-				<reportElement x="10" y="0" width="545" height="80" uuid="56ab27e9-2a43-4a51-b1f0-e241e801c712"/>
+				<reportElement x="10" y="0" width="545" height="100" uuid="56ab27e9-2a43-4a51-b1f0-e241e801c712"/>
 				<image>
 					<reportElement x="0" y="10" width="230" height="70" uuid="837d74de-dfef-467c-beff-6c7494504d35"/>
 					<imageExpression><![CDATA[$P{SUBREPORT_DIR}+"internovaLogo.png"]]></imageExpression>
@@ -77,9 +77,12 @@
 					</textField>
 				</frame>
 				<subreport>
-					<reportElement x="0" y="80" width="534" height="30" uuid="576ef8a9-3113-4808-ba3b-8637a6bda10d"/>
+					<reportElement x="0" y="80" width="534" height="20" uuid="576ef8a9-3113-4808-ba3b-8637a6bda10d"/>
 					<subreportParameter name="order_loading_id">
 						<subreportParameterExpression><![CDATA[$P{order_loading_id}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="SUBREPORT_DIR">
+						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 					</subreportParameter>
 					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					<subreportExpression><![CDATA[$P{SUBREPORT_DIR}+"title.jasper"]]></subreportExpression>
@@ -94,31 +97,14 @@
 				<subreportParameter name="order_loading_id">
 					<subreportParameterExpression><![CDATA[$P{order_loading_id}]]></subreportParameterExpression>
 				</subreportParameter>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR}+"orders.jasper"]]></subreportExpression>
-			</subreport>
-		</band>
-		<band height="35">
-			<subreport>
-				<reportElement x="11" y="5" width="533" height="30" uuid="6e68a27e-a799-4880-81ec-f628a02f0b55">
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<subreportParameter name="order_loading_id">
-					<subreportParameterExpression><![CDATA[$P{order_loading_id}]]></subreportParameterExpression>
-				</subreportParameter>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR}+"items.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR}+"orders.jasper"]]></subreportExpression>
 			</subreport>
-			<break>
-				<reportElement x="0" y="1" width="100" height="1" uuid="e5d7e860-58ed-4ab1-a9e6-c36bddf6f96f"/>
-			</break>
 		</band>
-	</detail>
-	<summary>
-		<band height="60">
+		<band height="30">
 			<subreport>
 				<reportElement x="10" y="0" width="534" height="30" uuid="cb5c4304-ccd3-46ac-aa47-6678c747b26d"/>
 				<subreportParameter name="order_loading_id">
@@ -127,6 +113,10 @@
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR}+"naulo.jasper"]]></subreportExpression>
 			</subreport>
+		</band>
+	</detail>
+	<summary>
+		<band height="60">
 			<break>
 				<reportElement x="0" y="30" width="93" height="1" uuid="16fca06a-54bd-462e-876b-c99a3da5e097"/>
 			</break>

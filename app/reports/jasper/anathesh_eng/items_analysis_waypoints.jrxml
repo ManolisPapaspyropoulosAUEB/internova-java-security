@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="items_analysis_waypoints" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="c704b3d5-3823-4333-8c8e-a7fe0832c67d">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="internova_db"/>
+	<parameter name="point_id" class="java.lang.Long"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT * FROM 
+orders_selections_by_point osbp where osbp.order_waypoint_id=$P{point_id}]]>
+	</queryString>
+	<field name="id" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="id"/>
+		<property name="com.jaspersoft.studio.field.label" value="id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="orders_selections_by_point"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="order_id" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="order_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="order_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="orders_selections_by_point"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="title" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="title"/>
+		<property name="com.jaspersoft.studio.field.label" value="title"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="orders_selections_by_point"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="order_schedule_id" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="order_schedule_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="order_schedule_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="orders_selections_by_point"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="order_waypoint_id" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="order_waypoint_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="order_waypoint_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="orders_selections_by_point"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="type" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="type"/>
+		<property name="com.jaspersoft.studio.field.label" value="type"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="orders_selections_by_point"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="quantity" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="quantity"/>
+		<property name="com.jaspersoft.studio.field.label" value="quantity"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="orders_selections_by_point"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="package_type_id" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="package_type_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="package_type_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="orders_selections_by_point"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="type_package" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="type_package"/>
+		<property name="com.jaspersoft.studio.field.label" value="type_package"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="orders_selections_by_point"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="stacking_type" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="stacking_type"/>
+		<property name="com.jaspersoft.studio.field.label" value="stacking_type"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="orders_selections_by_point"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="measure_unit_id" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="measure_unit_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="measure_unit_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="orders_selections_by_point"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="ldm" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.name" value="ldm"/>
+		<property name="com.jaspersoft.studio.field.label" value="ldm"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="orders_selections_by_point"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="unit_price" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.name" value="unit_price"/>
+		<property name="com.jaspersoft.studio.field.label" value="unit_price"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="orders_selections_by_point"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="60" splitType="Stretch">
+			<frame>
+				<reportElement x="0" y="10" width="555" height="50" uuid="635ff1f3-d5af-4aad-970c-31d78ea518cb"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textField>
+					<reportElement x="0" y="0" width="340" height="15" uuid="f8bb3991-2867-422c-8efa-2539ee98e0a4">
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Τίτλος: "+$F{title}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="15" width="340" height="15" uuid="4e28c2ba-1a3d-497c-8664-d1fde0928977">
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Ποσότητα: "+$F{quantity}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="30" width="340" height="15" uuid="2a55805f-808d-4b12-aa2a-7fa95171ba00">
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Tύπος: "+$F{stacking_type}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

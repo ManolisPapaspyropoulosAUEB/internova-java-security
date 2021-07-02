@@ -53,7 +53,7 @@
 					<textFieldExpression><![CDATA["(Ναύλο Προμηθευτή)"]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="0" y="70" width="534" height="140" uuid="47f3f3b9-2d67-4fe6-805f-db3d136a0dec"/>
+					<reportElement x="0" y="60" width="534" height="150" uuid="47f3f3b9-2d67-4fe6-805f-db3d136a0dec"/>
 					<textElement>
 						<font fontName="ArialPdf"/>
 					</textElement>
@@ -62,4 +62,35 @@
 			</frame>
 		</band>
 	</detail>
+	<summary>
+		<band height="100">
+			<frame>
+				<reportElement x="0" y="0" width="534" height="100" uuid="374e8450-0c12-464c-b718-248e8eabcc64"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+				</box>
+				<textField>
+					<reportElement x="0" y="81" width="534" height="19" uuid="d7890b35-8409-4944-83d9-2e3b1f2e5e4a"/>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["3)Θα πρέπει να υπάρχει ενεργή ασφάλεια CMR"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="51" width="534" height="30" uuid="57d7fa76-28aa-484a-99c7-d62c86037422"/>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["2)Τα έγγραφα της μεταφοράς θα πρέπει να αποστέλλονται πρωτότυπα στην διεύθυνση Ευαγγελιστρίας 14 Αγία Παρασκευή 15442 Αθήνα"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="11" width="534" height="40" uuid="8c0414de-9c95-47ca-b68f-b9102fb233a9"/>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["1)Όλα τα απαραίτητα έγγραφα της μεταφοράς θα αποστέλλονται με email στην διεύθυνση accounts@internovatrans.gr To μέγεθος του αρχείου δεν θα πρέπει να ξεπερνάει τα 2ΜΒ, θα πρέπει να είναι σε μορφή PDF και θα πρέπει να είναι ευανάγνωστα."]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</summary>
 </jasperReport>

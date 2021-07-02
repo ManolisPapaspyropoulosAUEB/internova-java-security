@@ -31,6 +31,7 @@ public class OrderSchedulesEntity {
     private String truckLoadingCode;
     private Date appointmentDayLoad;
     private Integer position;
+    private String comments;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -287,5 +288,15 @@ public class OrderSchedulesEntity {
 
     public void setPosition(Integer position) {
         this.position = position;
+    }
+
+    @Basic
+    @Column(name = "comments")
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
     }
 }

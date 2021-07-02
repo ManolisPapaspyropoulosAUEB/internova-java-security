@@ -53,4 +53,35 @@
 			</frame>
 		</band>
 	</detail>
+	<summary>
+		<band height="100">
+			<frame>
+				<reportElement x="0" y="0" width="534" height="100" uuid="67cd0ebb-1e8d-4ecb-85b6-749096ad3249"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+				</box>
+				<textField>
+					<reportElement x="0" y="81" width="534" height="19" uuid="625389ce-64c2-4eb4-aa72-fa92c9bae087"/>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["3)Active CMR Insurance it is Mandatory "]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="51" width="534" height="30" uuid="ac025cb3-3c0c-46d5-aa9e-98aa28afb880"/>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["2)Original Signed CMR for the Correct Delivery and Original Invoice, you should send it by post to the following Address: Evaggelistrias 14, 15342, Agia Paraskevi Athens Greece"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="11" width="534" height="40" uuid="6b88a838-d67a-442f-b919-d1e548413557"/>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["1)All the necessary transport documents must be in a PDF format, pure copy of it and the size do not exceed the 2MB and should be send it to the following email: accounting@internovatrans.gr"]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</summary>
 </jasperReport>
