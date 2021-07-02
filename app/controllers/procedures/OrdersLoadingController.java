@@ -983,6 +983,7 @@ public class OrdersLoadingController extends Application {
                                                     osMap.put("pointComments", os.getComments());
                                                     osMap.put("truckTemprature", entityManager.find(OrdersEntity.class,os.getOrderId()).getTruckTemprature());
                                                     osMap.put("weight", entityManager.find(OrdersEntity.class,os.getOrderId()).getGrossWeight());
+                                                    osMap.put("grossweight", entityManager.find(OrdersEntity.class,os.getOrderId()).getGrossWeight());
                                                     osMap.put("unloadingLoadingCode", entityManager.find(FactoriesEntity.class, os.getFactoryId()).getUnloadingLoadingCode());
                                                     osMap.put("truckLoadingCode",os.getTruckLoadingCode());
                                                     osMap.put("appointmentDay", os.getAppointmentDay());
@@ -1007,6 +1008,7 @@ public class OrdersLoadingController extends Application {
                                                     osMap.put("position", os.getPosition());
                                                     osMap.put("truckTemprature", entityManager.find(OrdersEntity.class,os.getOrderId()).getTruckTemprature());
                                                     osMap.put("weight", entityManager.find(OrdersEntity.class,os.getOrderId()).getGrossWeight());
+                                                    osMap.put("grossweight", entityManager.find(OrdersEntity.class,os.getOrderId()).getGrossWeight());
                                                     osMap.put("appointment", os.getAppointment());
                                                     osMap.put("orderId", os.getOrderId());
                                                     osMap.put("orderScheduleId", os.getId());
@@ -1163,6 +1165,7 @@ public class OrdersLoadingController extends Application {
                                                         owpeMap.put("pointComments", owpe.getComments());
                                                         owpeMap.put("truckTemprature", entityManager.find(OrdersEntity.class,owpe.getOrderId()).getTruckTemprature());
                                                         owpeMap.put("weight", entityManager.find(OrdersEntity.class,owpe.getOrderId()).getGrossWeight());
+                                                        owpeMap.put("grossweight", entityManager.find(OrdersEntity.class,owpe.getOrderId()).getGrossWeight());
                                                         owpeMap.put("appointmentDay", owpe.getAppointmentDay());
                                                         owpeMap.put("position", owpe.getPosition());
                                                         owpeMap.put("appointment", owpe.getAppointment());
@@ -1184,6 +1187,7 @@ public class OrdersLoadingController extends Application {
 
                                                         owpeMap.put("truckTemprature", entityManager.find(OrdersEntity.class,owpe.getOrderId()).getTruckTemprature());
                                                         owpeMap.put("weight", entityManager.find(OrdersEntity.class,owpe.getOrderId()).getGrossWeight());
+                                                        owpeMap.put("grossweight", entityManager.find(OrdersEntity.class,owpe.getOrderId()).getGrossWeight());
 
                                                         owpeMap.put("waypointId", owpe.getId());
                                                         owpeMap.put("country", owpe.getCountry());
@@ -2045,7 +2049,8 @@ public class OrdersLoadingController extends Application {
                                                             dromResNodeMap.put("waypointId", dromResNode.findPath("waypointId").asText());
                                                             dromResNodeMap.put("unloadingLoadingCode", dromResNode.findPath("unloadingLoadingCode").asText());
                                                             dromResNodeMap.put("truckLoadingCode", dromResNode.findPath("truckLoadingCode").asText());
-                                                            dromResNodeMap.put("brandName", dromResNode.findPath("brandName").asText());
+                                                            dromResNodeMap.put("brandName", dromResNode.findPath("brandName").asText());//
+                                                            dromResNodeMap.put("grossweight", dromResNode.findPath("grossweight").asText());//
                                                             dromResNodeMap.put("orderCustomerName", dromResNode.findPath("orderCustomerName").asText());
                                                             dromResNodeMap.put("timelinetype", dromResNode.findPath("timelinetype").asText());
                                                             dromResNodeMap.put("quantityByTypeInPointList", dromResNode.findPath("quantityByTypeInPointList"));
