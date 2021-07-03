@@ -1175,8 +1175,6 @@ public class OrdersController extends Application {
                                 String timologioCode = json.findPath("timologioCode").asText();
                                 String status = json.findPath("status").asText();
                                 String comments = json.findPath("orders_comments").asText();//      orders_comments: this.comments,
-
-                                System.out.println(json);
                                 String sqlPackagesByPoints =
                                         "select * " +
                                                 "from orders_selections_by_point " +
@@ -1187,7 +1185,6 @@ public class OrdersController extends Application {
                                 for (OrdersSelectionsByPointEntity osp : ordersSelectionsByPointEntityList) {
                                     entityManager.remove(osp);
                                 }
-
                                 String sqlDv =
                                         "select * " +
                                                 "from order_distinct_item " +
@@ -1198,8 +1195,6 @@ public class OrdersController extends Application {
                                 for (OrderDistinctItemEntity odv : orderDistinctItemEntitiesList) {
                                     entityManager.remove(odv);
                                 }
-
-
                                 String sqlOrderPackages =
                                         "select * " +
                                                 "from  order_package_schedules ops " +
@@ -1249,7 +1244,6 @@ public class OrdersController extends Application {
                                 if (sender != null && !sender.equalsIgnoreCase("null")) {
                                     ordersEntity.setSender(sender);
                                 }
-                                System.out.println(comments);
                                 if (comments != null && !comments.equalsIgnoreCase("null")) {
                                     ordersEntity.setComments(comments);
                                 }

@@ -158,13 +158,10 @@ public class BillingsController extends Application {
                                 Long id = json.findPath("id").asLong();
                                 Long user_id = json.findPath("user_id").asLong();
                                 BillingsEntity billingsEntity = entityManager.find(BillingsEntity.class, id);
-
                                 String sqlExistCs = "select * from customers_suppliers cs where cs.billing_id=" + id;
                                 List<CustomersSuppliersEntity> suppliersEntityList = (List<CustomersSuppliersEntity>) entityManager.createNativeQuery(sqlExistCs, CustomersSuppliersEntity.class).getResultList();
-
                                 String sqlExistOffers = "select * from offers o where o.billing_id=" + id;
                                 List<OffersEntity> offersEntityList = (List<OffersEntity>) entityManager.createNativeQuery(sqlExistOffers, OffersEntity.class).getResultList();
-
                                 if (suppliersEntityList.size() > 0) {
                                     add_result.put("status", "error");
                                     add_result.put("message", "Αποτυχία Διαγραφής.Ο συγκεκριμένος λογαριασμός είναι συνδεδεμένος με πελάτη/προμηθευτή");
@@ -179,7 +176,6 @@ public class BillingsController extends Application {
                                     add_result.put("system", "Λογαριασμοί/Billings");
                                     add_result.put("user_id", user_id);
                                 }
-
                                 return add_result;
                             });
                         },

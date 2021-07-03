@@ -1000,6 +1000,8 @@ public class OrdersLoadingController extends Application {
                                                     osMap.put("status", "error");
                                                     osMap.put("message", "Δεν έχει οριστεί εργοστάσιο ή αποθήκη ");
                                                     osMap.put("city", os.getFromCity());
+                                                    osMap.put("longtitude", 0);
+                                                    osMap.put("lattitude", 0);
                                                     osMap.put("country", os.getFromCountry());
                                                     osMap.put("unloadingLoadingCode", "");
                                                     osMap.put("truckLoadingCode","");
@@ -1184,7 +1186,8 @@ public class OrdersLoadingController extends Application {
                                                         owpeMap.put("unloadingLoadingCode", "");
                                                         owpeMap.put("truckLoadingCode","");
                                                         owpeMap.put("pointComments", owpe.getComments());
-
+                                                        owpeMap.put("longtitude",0);
+                                                        owpeMap.put("lattitude",0);
                                                         owpeMap.put("truckTemprature", entityManager.find(OrdersEntity.class,owpe.getOrderId()).getTruckTemprature());
                                                         owpeMap.put("weight", entityManager.find(OrdersEntity.class,owpe.getOrderId()).getGrossWeight());
                                                         owpeMap.put("grossweight", entityManager.find(OrdersEntity.class,owpe.getOrderId()).getGrossWeight());
@@ -2062,8 +2065,6 @@ public class OrdersLoadingController extends Application {
                                                             dromResNodeMap.put("weight", dromResNode.findPath("lattitude").asText());
                                                             dromResNodeMap.put("city", dromResNode.findPath("city").asText());
                                                             dromResNodeMap.put("postalCode", dromResNode.findPath("postalCode").asText());
-                                                            dromResNodeMap.put("lattitude", dromResNode.findPath("lattitude").asDouble());
-                                                            dromResNodeMap.put("longtitude", dromResNode.findPath("longtitude").asDouble());
                                                             dromResNodeMap.put("appointment", dromResNode.findPath("appointment").asText());
                                                             dromResNodeMap.put("message", dromResNode.findPath("message").asText());
                                                             dromResNodeMap.put("appointmentDay", dromResNode.findPath("appointmentDay").asText());
@@ -2078,15 +2079,21 @@ public class OrdersLoadingController extends Application {
                                                             dromResNodeMap.put("showPackagesIndicator", false);
                                                             dromResNodeMap.put("showDromologioIndicator", false);
                                                             dromResNodeMap.put("includedToDromologio", true);
-
+                                                            if(dromResNode.findPath("lattitude").asText().equalsIgnoreCase("null")){
+                                                                dromResNodeMap.put("lattitude", "0");
+                                                            }else{
+                                                                dromResNodeMap.put("lattitude", dromResNode.findPath("lattitude").asDouble());
+                                                            }
+                                                            if(dromResNode.findPath("longtitude").asText().equalsIgnoreCase("null")){
+                                                                dromResNodeMap.put("longtitude", "0");
+                                                            }else{
+                                                                dromResNodeMap.put("longtitude", dromResNode.findPath("longtitude").asDouble());
+                                                            }
                                                             if(dromResNode.findPath("pointComments").asText().equalsIgnoreCase("null")){
                                                                 dromResNodeMap.put("pointComments", "");
-
                                                             }else{
                                                                 dromResNodeMap.put("pointComments", dromResNode.findPath("pointComments").asText());
-
                                                             }
-
 
                                                             dromologioParaggelias.add(dromResNodeMap);
                                                         }
