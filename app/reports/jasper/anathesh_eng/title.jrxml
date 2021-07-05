@@ -92,7 +92,7 @@
 					<textFieldExpression><![CDATA["TRANSPORT ORDER"]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="240" y="20" width="270" height="40" uuid="8a5565d4-5761-44d7-8191-244116e68bda"/>
+					<reportElement x="240" y="20" width="270" height="40" forecolor="#FF0400" uuid="8a5565d4-5761-44d7-8191-244116e68bda"/>
 					<textElement verticalAlignment="Bottom">
 						<font fontName="ArialPdf" isBold="true"/>
 					</textElement>
