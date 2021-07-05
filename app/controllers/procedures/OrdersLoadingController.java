@@ -988,6 +988,7 @@ public class OrdersLoadingController extends Application {
                                                     OrdersEntity ordersEntity = entityManager.find(OrdersEntity.class, json.findPath("orderId").asLong());
                                                     CustomersSuppliersEntity customersSuppliersEntity = entityManager.find(CustomersSuppliersEntity.class, ordersEntity.getCustomerId());
                                                     osMap.put("orderCustomerName", customersSuppliersEntity.getBrandName());
+                                                    osMap.put("orderStatus", ordersEntity.getStatus());
                                                     osMap.put("status", "success");
                                                     osMap.put("message", "success");
 
@@ -1013,7 +1014,8 @@ public class OrdersLoadingController extends Application {
                                                     OrdersEntity ordersEntity = entityManager.find(OrdersEntity.class, json.findPath("orderId").asLong());
                                                     CustomersSuppliersEntity customersSuppliersEntity = entityManager.find(CustomersSuppliersEntity.class, ordersEntity.getCustomerId());
                                                     osMap.put("orderCustomerName", customersSuppliersEntity.getBrandName());
-                                                    osMap.put("brandName", "Δεν έχει οριστεί");
+                                                    osMap.put("orderStatus", ordersEntity.getStatus());
+                                                    osMap.put("brandName", "Δεν έχει οριστεί κανένα σημείο");
                                                     osMap.put("address", "Δεν έχει οριστεί");
                                                 }
 
@@ -1171,6 +1173,7 @@ public class OrdersLoadingController extends Application {
                                                         OrdersEntity ordersEntity = entityManager.find(OrdersEntity.class, json.findPath("orderId").asLong());
                                                         CustomersSuppliersEntity customersSuppliersEntity = entityManager.find(CustomersSuppliersEntity.class, ordersEntity.getCustomerId());
                                                         owpeMap.put("orderCustomerName", customersSuppliersEntity.getBrandName());
+                                                        owpeMap.put("orderStatus", ordersEntity.getStatus());
                                                         owpeMap.put("status", "success");
                                                         owpeMap.put("message", "success");
                                                     } else {
@@ -1196,7 +1199,8 @@ public class OrdersLoadingController extends Application {
                                                         OrdersEntity ordersEntity = entityManager.find(OrdersEntity.class, json.findPath("orderId").asLong());
                                                         CustomersSuppliersEntity customersSuppliersEntity = entityManager.find(CustomersSuppliersEntity.class, ordersEntity.getCustomerId());
                                                         owpeMap.put("orderCustomerName", customersSuppliersEntity.getBrandName());
-                                                        owpeMap.put("brandName", "Δεν έχει οριστεί");
+                                                        owpeMap.put("orderStatus", ordersEntity.getStatus());
+                                                        owpeMap.put("brandName", "Δεν έχει οριστεί κανένα σημείο");
                                                         owpeMap.put("address", "Δεν έχει οριστεί");
                                                     }
                                                     if (owpe.getOfferScheduleBetweenWaypointId() != null) {
@@ -1734,6 +1738,11 @@ public class OrdersLoadingController extends Application {
                                         String supplierNameSearch = json.findPath("supplierNameSearch").asText();
                                         String truckTrailerNameSearch = json.findPath("truckTrailerNameSearch").asText();
                                         String truckTractorNameSearch = json.findPath("truckTractorNameSearch").asText();
+
+                                        String truckTractorNumberSearch = json.findPath("truckTractorNumberSearch").asText();
+                                        String truckTrailerNumberSearch = json.findPath("truckTrailerNumberSearch").asText();
+
+
                                         String aa = json.findPath("aa").asText();
                                         String start = json.findPath("start").asText();
                                         String limit = json.findPath("limit").asText();
@@ -1773,6 +1782,14 @@ public class OrdersLoadingController extends Application {
                                         if (truckTrailerNameSearch != null && !truckTrailerNameSearch.equalsIgnoreCase("")) {
                                             sqlOrdLoads += " and  ord_load.supplier_truck_trailer_id  in ( select t.id from trucks t  where t.brand_name   like '%" + truckTrailerNameSearch + "%'   )";
                                         }
+
+                                        if (truckTractorNumberSearch != null && !truckTractorNumberSearch.equalsIgnoreCase("")) {
+                                            sqlOrdLoads += " and  ord_load.supplier_truck_tractor_id " + " in ( select t.id from trucks t  where t.plate_number   like '%" + truckTractorNumberSearch + "%'   )";
+                                        }
+                                        if (truckTrailerNumberSearch != null && !truckTrailerNumberSearch.equalsIgnoreCase("")) {
+                                            sqlOrdLoads += " and  ord_load.supplier_truck_trailer_id  in ( select t.id from trucks t  where t.plate_number   like '%" + truckTrailerNumberSearch + "%'   )";
+                                        }
+
                                         if (supplierNameSearch != null && !supplierNameSearch.equalsIgnoreCase("")) {
                                             sqlOrdLoads += " and ord_load.supplier_id in (  select cs.id   from customers_suppliers cs where cs.brand_name like '%" + supplierNameSearch + "%' ) ";
                                         }
@@ -2071,11 +2088,11 @@ public class OrdersLoadingController extends Application {
                                                             dromResNodeMap.put("orderCustomerName", dromResNode.findPath("orderCustomerName").asText());
                                                             dromResNodeMap.put("timelinetype", dromResNode.findPath("timelinetype").asText());
                                                             dromResNodeMap.put("quantityByTypeInPointList", dromResNode.findPath("quantityByTypeInPointList"));
+                                                            dromResNodeMap.put("orderStatus", dromResNode.findPath("orderStatus"));
                                                             dromResNodeMap.put("typeByTypeInPointList", dromResNode.findPath("typeByTypeInPointList"));
                                                             dromResNodeMap.put("nestedScheduleIndicator", dromResNode.findPath("nestedScheduleIndicator").asText());
                                                             dromResNodeMap.put("position", dromResNode.findPath("position").asInt());
                                                             dromResNodeMap.put("address", dromResNode.findPath("address").asText());
-                                                            dromResNodeMap.put("truckTemprature", dromResNode.findPath("truckTemprature").asText());
                                                             dromResNodeMap.put("weight", dromResNode.findPath("lattitude").asText());
                                                             dromResNodeMap.put("city", dromResNode.findPath("city").asText());
                                                             dromResNodeMap.put("postalCode", dromResNode.findPath("postalCode").asText());
@@ -2093,6 +2110,11 @@ public class OrdersLoadingController extends Application {
                                                             dromResNodeMap.put("showPackagesIndicator", false);
                                                             dromResNodeMap.put("showDromologioIndicator", false);
                                                             dromResNodeMap.put("includedToDromologio", true);
+                                                            if(dromResNode.findPath("truckTemprature").asText().equalsIgnoreCase("null")){
+                                                                dromResNodeMap.put("truckTemprature","-");
+                                                            }else{
+                                                                dromResNodeMap.put("truckTemprature", dromResNode.findPath("truckTemprature").asText());
+                                                            }
                                                             if(dromResNode.findPath("lattitude").asText().equalsIgnoreCase("null")){
                                                                 dromResNodeMap.put("lattitude", "0");
                                                             }else{
@@ -2213,6 +2235,7 @@ public class OrdersLoadingController extends Application {
                                 if(orderLoadingAssignmentEntityList.size()>0){
                                     //update
                                     orderLoadingAssignmentEntityList.get(0).setComments(comments);
+                                    orderLoadingAssignmentEntityList.get(0).setCreationDate(new Date());
                                     entityManager.merge( orderLoadingAssignmentEntityList.get(0));
                                     String sqlAss = "select * from assignment_billings where assignment_id="+orderLoadingAssignmentEntityList.get(0).getId();
                                     List<AssignmentBillingsEntity> assignmentBillingsEntityList = entityManager.createNativeQuery(sqlAss,AssignmentBillingsEntity.class).getResultList();

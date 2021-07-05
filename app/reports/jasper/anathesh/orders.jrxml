@@ -178,7 +178,7 @@
 					<textElement>
 						<font fontName="ArialPdf"/>
 					</textElement>
-					<textFieldExpression><![CDATA["Κωδικός Φόρτωσης: "+
+					<textFieldExpression><![CDATA["Κωδικός "+($F{point_type2})+": "+
 (
 	($F{truck_loading_code}!=null &&$F{truck_loading_code}!="null")?$F{truck_loading_code}:"-"
 )]]></textFieldExpression>
@@ -355,7 +355,7 @@
 					<textElement>
 						<font fontName="ArialPdf"/>
 					</textElement>
-					<textFieldExpression><![CDATA["Ημερομηνία Φόρτωσης: "+($F{appointment_required}!=null && $F{appointment_required}==1?
+					<textFieldExpression><![CDATA["Ημερομηνία "+($F{point_type2})+" : "+($F{appointment_required}!=null && $F{appointment_required}==1?
 (
 	$F{appointment_day_load}!=null?(
 	new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format($F{appointment_day_load})	

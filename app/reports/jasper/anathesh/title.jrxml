@@ -6,7 +6,7 @@
 	<parameter name="order_loading_id" class="java.lang.String"/>
 	<queryString language="SQL">
 		<![CDATA[select
-	ol.creation_date,
+ols.creation_date,
 	ol.display_aa as 'merida',
 	 cs.brand_name as 'supplier',
 	 trailer.plate_number as 'trailer',
@@ -15,12 +15,13 @@
 	join customers_suppliers cs on (ol.supplier_id=cs.id)
 	left join trucks trailer on (trailer.id=ol.supplier_truck_trailer_id)
 	left join trucks trackor on (trackor.id=ol.supplier_truck_tractor_id)
+    join order_loading_assignment ols on (ols.order_loading_id=ol.id)
 	where ol.id=$P{order_loading_id}]]>
 	</queryString>
 	<field name="creation_date" class="java.sql.Timestamp">
 		<property name="com.jaspersoft.studio.field.name" value="creation_date"/>
 		<property name="com.jaspersoft.studio.field.label" value="creation_date"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="orders_loading"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="order_loading_assignment"/>
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="merida" class="java.lang.String">

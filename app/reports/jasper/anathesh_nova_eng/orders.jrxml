@@ -216,7 +216,7 @@
 					<textElement>
 						<font fontName="ArialPdf"/>
 					</textElement>
-					<textFieldExpression><![CDATA["Loading Ref: "+
+					<textFieldExpression><![CDATA[$F{point_type}+" Ref: "+
 (
 	($F{truck_loading_code}!=null &&$F{truck_loading_code}!="null")?$F{truck_loading_code}:"-"
 )]]></textFieldExpression>
@@ -389,7 +389,7 @@
 					<textElement>
 						<font fontName="ArialPdf"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$F{point_type}+"Date"+($F{appointment_required}!=null && $F{appointment_required}==1?
+					<textFieldExpression><![CDATA[$F{point_type}+" Date"+($F{appointment_required}!=null && $F{appointment_required}==1?
 (
 	
 	$F{appointment_day_load}!=null?(
