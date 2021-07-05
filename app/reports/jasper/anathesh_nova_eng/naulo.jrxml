@@ -5,22 +5,21 @@
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="internova_db"/>
 	<parameter name="order_loading_id" class="java.lang.String"/>
 	<queryString language="SQL">
-		<![CDATA[select
-	ol.naulo,
-	ol.comments
-	from orders_loading ol
-
-	where ol.id=$P{order_loading_id}]]>
+		<![CDATA[  select ordl.comments,  sum(asb.naulo) as naulo
+    from order_loading_assignment ol 
+    join assignment_billings asb on (ol.id=asb.assignment_id)
+    join orders_loading ordl on (ordl.id=ol.order_loading_id)
+    where ol.order_loading_id=$P{order_loading_id}]]>
 	</queryString>
-	<field name="naulo" class="java.lang.Double">
-		<property name="com.jaspersoft.studio.field.name" value="naulo"/>
-		<property name="com.jaspersoft.studio.field.label" value="naulo"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="orders_loading"/>
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
 	<field name="comments" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="comments"/>
 		<property name="com.jaspersoft.studio.field.label" value="comments"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="orders_loading"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="naulo" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.name" value="naulo"/>
+		<property name="com.jaspersoft.studio.field.label" value="naulo"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="orders_loading"/>
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
@@ -54,9 +53,9 @@
 		</band>
 	</detail>
 	<summary>
-		<band height="100">
+		<band height="119">
 			<frame>
-				<reportElement x="0" y="0" width="534" height="100" uuid="67cd0ebb-1e8d-4ecb-85b6-749096ad3249"/>
+				<reportElement x="0" y="0" width="534" height="119" uuid="67cd0ebb-1e8d-4ecb-85b6-749096ad3249"/>
 				<box>
 					<topPen lineWidth="0.0"/>
 				</box>
@@ -80,6 +79,13 @@
 						<font fontName="ArialPdf"/>
 					</textElement>
 					<textFieldExpression><![CDATA["1)All the necessary transport documents must be in a PDF format, pure copy of it and the size do not exceed the 2MB and should be send it to the following email: accounting@internovatrans.gr"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="100" width="534" height="19" uuid="e98af063-d621-4161-81ad-58f51cb7a769"/>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["4)THE COURT OF ATHENS HAS THE JURISTRICTION TO CLEAR OUT ANY DIFFERENCE "]]></textFieldExpression>
 				</textField>
 			</frame>
 		</band>

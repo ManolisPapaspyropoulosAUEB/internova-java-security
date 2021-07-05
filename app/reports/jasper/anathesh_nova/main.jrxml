@@ -73,7 +73,7 @@
 				<reportElement x="0" y="30" width="93" height="1" uuid="16fca06a-54bd-462e-876b-c99a3da5e097"/>
 			</break>
 			<subreport>
-				<reportElement x="10" y="30" width="535" height="30" uuid="c81ed0d9-b0f7-4808-9af8-9117bebf80a6"/>
+				<reportElement x="0" y="30" width="555" height="30" uuid="c81ed0d9-b0f7-4808-9af8-9117bebf80a6"/>
 				<subreportParameter name="user">
 					<subreportParameterExpression><![CDATA[$P{user}]]></subreportParameterExpression>
 				</subreportParameter>

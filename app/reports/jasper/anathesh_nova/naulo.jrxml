@@ -5,22 +5,21 @@
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="internova_db"/>
 	<parameter name="order_loading_id" class="java.lang.String"/>
 	<queryString language="SQL">
-		<![CDATA[select
-	ol.naulo,
-	ol.comments
-	from orders_loading ol
-
-	where ol.id=$P{order_loading_id}]]>
+		<![CDATA[  select ordl.comments,  sum(asb.naulo) as naulo
+    from order_loading_assignment ol 
+    join assignment_billings asb on (ol.id=asb.assignment_id)
+    join orders_loading ordl on (ordl.id=ol.order_loading_id)
+    where ol.order_loading_id=$P{order_loading_id}]]>
 	</queryString>
-	<field name="naulo" class="java.lang.Double">
-		<property name="com.jaspersoft.studio.field.name" value="naulo"/>
-		<property name="com.jaspersoft.studio.field.label" value="naulo"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="orders_loading"/>
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
 	<field name="comments" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="comments"/>
 		<property name="com.jaspersoft.studio.field.label" value="comments"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="orders_loading"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="naulo" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.name" value="naulo"/>
+		<property name="com.jaspersoft.studio.field.label" value="naulo"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="orders_loading"/>
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
@@ -63,9 +62,9 @@
 		</band>
 	</detail>
 	<summary>
-		<band height="100">
+		<band height="119">
 			<frame>
-				<reportElement x="0" y="0" width="534" height="100" uuid="374e8450-0c12-464c-b718-248e8eabcc64"/>
+				<reportElement x="0" y="0" width="534" height="119" uuid="374e8450-0c12-464c-b718-248e8eabcc64"/>
 				<box>
 					<topPen lineWidth="0.0"/>
 				</box>
@@ -81,7 +80,7 @@
 					<textElement>
 						<font fontName="ArialPdf"/>
 					</textElement>
-					<textFieldExpression><![CDATA["2)Τα έγγραφα της μεταφοράς θα πρέπει να αποστέλλονται πρωτότυπα στην διεύθυνση Ευαγγελιστρίας 14 Αγία Παρασκευή 15442 Αθήνα"]]></textFieldExpression>
+					<textFieldExpression><![CDATA["2)Τα έγγραφα της μεταφοράς θα πρέπει να αποστέλλονται πρωτότυπα στην διεύθυνση Ευαγγελιστρίας 14 Αγία Παρασκευή 15342 Αθήνα"]]></textFieldExpression>
 				</textField>
 				<textField>
 					<reportElement x="0" y="11" width="534" height="40" uuid="8c0414de-9c95-47ca-b68f-b9102fb233a9"/>
@@ -89,6 +88,13 @@
 						<font fontName="ArialPdf"/>
 					</textElement>
 					<textFieldExpression><![CDATA["1)Όλα τα απαραίτητα έγγραφα της μεταφοράς θα αποστέλλονται με email στην διεύθυνση accounts@internovatrans.gr To μέγεθος του αρχείου δεν θα πρέπει να ξεπερνάει τα 2ΜΒ, θα πρέπει να είναι σε μορφή PDF και θα πρέπει να είναι ευανάγνωστα."]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="100" width="534" height="19" uuid="00c86212-6316-4354-9be2-5898b4cf4a6b"/>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["4)ΓΙΑ ΚΑΘΕ ΔΙΑΦΟΡΑ ΑΡΜΟΔΙΑ ΕΙΝΑΙ ΤΑ ΔΙΚΑΣΤΗΡΙΑ ΑΘΗΝΩΝ"]]></textFieldExpression>
 				</textField>
 			</frame>
 		</band>

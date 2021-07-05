@@ -8,10 +8,11 @@
 	<parameter name="order_loading_id" class="java.lang.String"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
 	<queryString language="SQL">
-		<![CDATA[				select * from 
+		<![CDATA[select * from 
 				(
 				select 
 				'Φόρτωση' as point_type,
+				'φόρτωσης' as point_type2,
 				os.id,
 				os.order_id,
 				os.position,
@@ -23,6 +24,8 @@
 				ord.truck_temprature,
 				ord.gross_weight,
 				f.address,
+				f.appointment_required,
+				f.postal_code,
 				f.brand_name  as 'factory_name',
 				concat(f.lattitude,',',f.longtitude) coordinates,
 				cs.brand_name  as 'customer_name'
@@ -36,6 +39,7 @@
 				
 				select 
 				IF(ow.offer_schedule_between_waypoint_id is null, 'Εκφόρτωση','Φόρτωση/Εκφόρτωση') as point_type,
+				IF(ow.offer_schedule_between_waypoint_id is null, 'εκφόρτωσης','φόρτωση/εκφόρτωσης') as point_type2,
 				ow.id,
 				ow.order_id,
 				ow.position,
@@ -47,6 +51,8 @@
 				ord.truck_temprature,
 				ord.gross_weight,
 				f.address,
+				f.appointment_required,                
+				f.postal_code,
 				f.brand_name 'factory_name',
 				concat(f.lattitude,',',f.longtitude) coordinates,
 				cs.brand_name as 'customer_name'
@@ -68,21 +74,15 @@
 				)
 				)
 				
-				order by   timeline_table.position
-				
-				
-				
-				
-				
-				
-				
-				
-				
-]]>
+				order by   timeline_table.position]]>
 	</queryString>
 	<field name="point_type" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="point_type"/>
 		<property name="com.jaspersoft.studio.field.label" value="point_type"/>
+	</field>
+	<field name="point_type2" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="point_type2"/>
+		<property name="com.jaspersoft.studio.field.label" value="point_type2"/>
 	</field>
 	<field name="id" class="java.lang.Long">
 		<property name="com.jaspersoft.studio.field.name" value="id"/>
@@ -138,6 +138,14 @@
 		<property name="com.jaspersoft.studio.field.name" value="address"/>
 		<property name="com.jaspersoft.studio.field.label" value="address"/>
 	</field>
+	<field name="appointment_required" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="appointment_required"/>
+		<property name="com.jaspersoft.studio.field.label" value="appointment_required"/>
+	</field>
+	<field name="postal_code" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="postal_code"/>
+		<property name="com.jaspersoft.studio.field.label" value="postal_code"/>
+	</field>
 	<field name="factory_name" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="factory_name"/>
 		<property name="com.jaspersoft.studio.field.label" value="factory_name"/>
@@ -154,9 +162,9 @@
 		<band splitType="Stretch"/>
 	</background>
 	<detail>
-		<band height="200" splitType="Stretch">
+		<band height="188" splitType="Stretch">
 			<frame>
-				<reportElement stretchType="ElementGroupHeight" x="0" y="0" width="554" height="200" uuid="ba4ebebc-d76f-4f73-b640-31d9091ed099"/>
+				<reportElement stretchType="ElementGroupHeight" x="0" y="0" width="554" height="188" uuid="ba4ebebc-d76f-4f73-b640-31d9091ed099"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -164,26 +172,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textField textAdjust="StretchHeight">
-					<reportElement stretchType="ElementGroupHeight" x="0" y="31" width="554" height="14" isPrintWhenDetailOverflows="true" uuid="d1110772-1b9f-40b1-ae10-5b06bfc8193d">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					</reportElement>
-					<textElement>
-						<font fontName="ArialPdf"/>
-					</textElement>
-					<textFieldExpression><![CDATA["Επωνυμία: "+($F{factory_id}!=null?$F{factory_name}:"-")]]></textFieldExpression>
-				</textField>
-				<textField textAdjust="StretchHeight">
-					<reportElement stretchType="ElementGroupHeight" x="0" y="60" width="554" height="14" isPrintWhenDetailOverflows="true" uuid="6f925040-09d2-4944-90e0-c8c552e19427">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					</reportElement>
-					<textElement>
-						<font fontName="ArialPdf"/>
-					</textElement>
-					<textFieldExpression><![CDATA["Ημερομηνία Φόρτωσης: "+
-($F{appointment_day_load}!=null?new SimpleDateFormat("dd/MM/yyyy").format($F{appointment_day_load}):"-")]]></textFieldExpression>
-				</textField>
-				<textField textAdjust="StretchHeight">
-					<reportElement stretchType="ElementGroupHeight" x="0" y="74" width="554" height="14" isPrintWhenDetailOverflows="true" uuid="78f2239a-b3fe-4f5a-9e4d-2a60a71ee3d3">
+					<reportElement stretchType="ElementGroupHeight" x="0" y="60" width="554" height="14" isPrintWhenDetailOverflows="true" uuid="78f2239a-b3fe-4f5a-9e4d-2a60a71ee3d3">
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<textElement>
@@ -195,7 +184,7 @@
 )]]></textFieldExpression>
 				</textField>
 				<textField textAdjust="StretchHeight">
-					<reportElement stretchType="ContainerBottom" x="0" y="45" width="554" height="15" uuid="6ec60ec7-214d-4004-945c-e82fba8c4c2d">
+					<reportElement stretchType="ContainerBottom" x="0" y="31" width="554" height="15" uuid="6ec60ec7-214d-4004-945c-e82fba8c4c2d">
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<textElement>
@@ -210,11 +199,18 @@
 					<textElement>
 						<font fontName="ArialPdf"/>
 					</textElement>
-					<textFieldExpression><![CDATA["Διεύθυνση Φόρτωσης: "+($F{address}!=null?$F{address}:"-")]]></textFieldExpression>
+					<textFieldExpression><![CDATA["Διεύθυνση " +
+
+(
+	$F{point_type2}
+)
+
++": " + ($F{factory_id}!=null?$F{factory_name}+",":"")+  ($F{address}!=null?$F{address}:"")+(($F{postal_code}!=null && $F{postal_code}!="null")?(",")+$F{postal_code}:"-"  )]]></textFieldExpression>
 				</textField>
 				<textField textAdjust="ScaleFont">
-					<reportElement stretchType="ElementGroupHeight" x="0" y="148" width="554" height="14" isPrintWhenDetailOverflows="true" uuid="bbd9e3d0-31ee-4d04-a5cc-b76781d7c872">
+					<reportElement stretchType="ElementGroupHeight" x="0" y="136" width="554" height="14" isPrintWhenDetailOverflows="true" uuid="bbd9e3d0-31ee-4d04-a5cc-b76781d7c872">
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					</reportElement>
 					<textElement>
 						<font fontName="ArialPdf"/>
@@ -225,8 +221,9 @@
 )]]></textFieldExpression>
 				</textField>
 				<textField textAdjust="StretchHeight">
-					<reportElement stretchType="ElementGroupHeight" x="0" y="162" width="554" height="38" isPrintWhenDetailOverflows="true" uuid="514f66b7-b03a-4ede-8dd9-df5211309687">
+					<reportElement stretchType="ElementGroupHeight" x="0" y="150" width="554" height="38" isPrintWhenDetailOverflows="true" uuid="514f66b7-b03a-4ede-8dd9-df5211309687">
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					</reportElement>
 					<textElement>
 						<font fontName="ArialPdf"/>
@@ -237,7 +234,7 @@
 )]]></textFieldExpression>
 				</textField>
 				<textField textAdjust="StretchHeight">
-					<reportElement stretchType="ElementGroupHeight" x="0" y="88" width="554" height="14" isPrintWhenDetailOverflows="true" uuid="a10abdb4-58a8-459b-ab2e-4d8a3cd73a19">
+					<reportElement stretchType="ElementGroupHeight" x="0" y="74" width="554" height="16" isPrintWhenDetailOverflows="true" uuid="a10abdb4-58a8-459b-ab2e-4d8a3cd73a19">
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<textElement>
@@ -245,12 +242,13 @@
 					</textElement>
 					<textFieldExpression><![CDATA["Θερμοκρασία: "+ 
 (
-	($F{truck_temprature}!=null && $F{truck_temprature}!="null")?$F{truck_temprature}:"-"
+	($F{truck_temprature}!=null && $F{truck_temprature}!="null")?$F{truck_temprature}+"°C":"-"
 )]]></textFieldExpression>
 				</textField>
 				<textField textAdjust="StretchHeight">
-					<reportElement stretchType="ElementGroupHeight" x="0" y="132" width="554" height="16" isPrintWhenDetailOverflows="true" uuid="6d79815d-4a13-4ec3-878b-6cc49e7a6668">
+					<reportElement stretchType="ElementGroupHeight" x="0" y="120" width="554" height="16" isPrintWhenDetailOverflows="true" uuid="6d79815d-4a13-4ec3-878b-6cc49e7a6668">
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					</reportElement>
 					<textElement>
 						<font fontName="ArialPdf"/>
@@ -267,7 +265,7 @@
 					<textFieldExpression><![CDATA[$F{point_type}]]></textFieldExpression>
 				</textField>
 				<frame>
-					<reportElement x="0" y="102" width="554" height="15" uuid="46d914d6-f655-42f9-8980-3ee693ad4f09">
+					<reportElement x="0" y="90" width="554" height="15" uuid="46d914d6-f655-42f9-8980-3ee693ad4f09">
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 						<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					</reportElement>
@@ -309,7 +307,7 @@
 					</subreport>
 				</frame>
 				<frame>
-					<reportElement x="0" y="117" width="554" height="15" uuid="d68347ce-932e-45da-907b-3cf56360f2eb">
+					<reportElement x="0" y="105" width="554" height="15" uuid="d68347ce-932e-45da-907b-3cf56360f2eb">
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 						<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					</reportElement>
@@ -350,6 +348,27 @@
 						<subreportExpression><![CDATA[$P{SUBREPORT_DIR}+  "items_quantity_waypoint.jasper"]]></subreportExpression>
 					</subreport>
 				</frame>
+				<textField textAdjust="ScaleFont">
+					<reportElement stretchType="ElementGroupHeight" x="0" y="46" width="554" height="14" isPrintWhenDetailOverflows="true" uuid="4dd008b7-f9b0-4f5a-884d-38c8075d4b1e">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Ημερομηνία Φόρτωσης: "+($F{appointment_required}!=null && $F{appointment_required}==1?
+(
+	$F{appointment_day_load}!=null?(
+	new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format($F{appointment_day_load})	
+)+" (Με ραντεβού)":"-"
+):
+(
+	$F{appointment_day_load}!=null?(
+	new SimpleDateFormat("dd/MM/yyyy").format($F{appointment_day_load})
+	
+	
+):"-"
+))]]></textFieldExpression>
+				</textField>
 			</frame>
 		</band>
 	</detail>

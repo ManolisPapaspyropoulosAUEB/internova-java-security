@@ -242,6 +242,83 @@ public class OrdersController extends Application {
     }
 
 
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    @BodyParser.Of(BodyParser.Json.class)
+    public Result updateOrderStatus(final Http.Request request) throws IOException {
+        JsonNode json = request.body().asJson();
+        if (json == null) {
+            return badRequest("Expecting Json data");
+        } else {
+            try {
+                ObjectNode result = Json.newObject();
+                CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
+                            return jpaApi.withTransaction(entityManager -> {
+                                ObjectNode add_result = Json.newObject();
+                                Long orderId = json.findPath("orderId").asLong();
+                                String status = json.findPath("status").asText();
+                                OrdersEntity ordersEntity = entityManager.find(OrdersEntity.class,orderId);
+                                ordersEntity.setStatus(status);
+                                entityManager.merge(ordersEntity);
+                                add_result.put("status", "success");
+                                add_result.put("message", "Η Ενημέρωση πραγματοποίηθηκε με επιτυχία");
+                                return add_result;
+                            });
+                        },
+                        executionContext);
+                result = (ObjectNode) addFuture.get();
+                return ok(result, request);
+            } catch (Exception e) {
+                ObjectNode result = Json.newObject();
+                e.printStackTrace();
+                result.put("status", "error");
+                result.put("message", "Προβλημα κατα την καταχωρηση");
+                return ok(result);
+            }
+        }
+    }
+
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    @BodyParser.Of(BodyParser.Json.class)
+    public Result updateOrderBilling(final Http.Request request) throws IOException {
+        JsonNode json = request.body().asJson();
+        if (json == null) {
+            return badRequest("Expecting Json data");
+        } else {
+            try {
+                ObjectNode result = Json.newObject();
+                CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
+                            return jpaApi.withTransaction(entityManager -> {
+                                ObjectNode add_result = Json.newObject();
+                                Long orderId = json.findPath("orderId").asLong();
+                                Long billingId = json.findPath("billingId").asLong();
+                                OrdersEntity ordersEntity = entityManager.find(OrdersEntity.class,orderId);
+                                ordersEntity.setBillingId(billingId);
+                                BillingsEntity billName = entityManager.find(BillingsEntity.class,billingId);
+                                entityManager.merge(ordersEntity);
+                                add_result.put("status", "success");
+                                add_result.put("message", "Η Ενημέρωση πραγματοποίηθηκε με επιτυχία");
+                                add_result.put("billName", billName.getName());
+                                add_result.put("billingId", billName.getId());
+                                return add_result;
+                            });
+                        },
+                        executionContext);
+                result = (ObjectNode) addFuture.get();
+                return ok(result, request);
+            } catch (Exception e) {
+                ObjectNode result = Json.newObject();
+                e.printStackTrace();
+                result.put("status", "error");
+                result.put("message", "Προβλημα κατα την καταχωρηση");
+                return ok(result);
+            }
+        }
+    }
+
+
+
     @SuppressWarnings({"Duplicates", "unchecked"})
     public Result getOrders(final Http.Request request) throws IOException,
             ExecutionException, InterruptedException {

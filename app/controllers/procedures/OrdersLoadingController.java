@@ -883,11 +883,6 @@ public class OrdersLoadingController extends Application {
                                                 } else {
                                                     sHmpam.put("attatchmentsCount", "0");
                                                 }
-
-
-
-
-
                                                 serversList.add(sHmpam);
                                             }
                                             returnList_future.put("data", serversList);
@@ -1729,10 +1724,12 @@ public class OrdersLoadingController extends Application {
                 CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
                             return jpaApi.withTransaction(
                                     entityManager -> {
+                                        //searchTextHmerides
                                         String orderCol = json.findPath("orderCol").asText();
                                         String descAsc = json.findPath("descAsc").asText();
                                         String id = json.findPath("id").asText();
                                         String statusSearch = json.findPath("statusSearch").asText();
+                                        String statusAndOperationSearch = json.findPath("statusAndOperationSearch").asText();
                                         String idOrderSearch = json.findPath("idOrderSearch").asText();
                                         String supplierNameSearch = json.findPath("supplierNameSearch").asText();
                                         String truckTrailerNameSearch = json.findPath("truckTrailerNameSearch").asText();
@@ -1779,6 +1776,23 @@ public class OrdersLoadingController extends Application {
                                         if (supplierNameSearch != null && !supplierNameSearch.equalsIgnoreCase("")) {
                                             sqlOrdLoads += " and ord_load.supplier_id in (  select cs.id   from customers_suppliers cs where cs.brand_name like '%" + supplierNameSearch + "%' ) ";
                                         }
+                                        if(statusAndOperationSearch!=null && !statusAndOperationSearch.equalsIgnoreCase("") && !statusAndOperationSearch.equalsIgnoreCase("null")){
+                                           sqlOrdLoads+=" and ord_load.id in \n" +
+                                                   "(\n" +
+                                                   "\n" +
+                                                   "select order_loading_id\n" +
+                                                   "from \n" +
+                                                   "orders_loading_orders_selections olos\n" +
+                                                   "where \n" +
+                                                   "olos.order_id\n" +
+                                                   "in (select id from \n" +
+                                                   "orders ord\n" +
+                                                   "where ord.status='"+statusAndOperationSearch+"'\n" +
+                                                   ")\n" +
+                                                   "\n" +
+                                                   ")";
+                                        }
+
                                         List<OrdersLoadingEntity> ordersLoadingAllList
                                                 = (List<OrdersLoadingEntity>) entityManager.createNativeQuery(
                                                 sqlOrdLoads, OrdersLoadingEntity.class).getResultList();

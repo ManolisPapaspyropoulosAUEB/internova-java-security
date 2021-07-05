@@ -29,7 +29,7 @@ group by  osbp.title) as quantityTable]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="ArialPdf"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{quantity}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{quantity}!=null &&$F{quantity}!="null"?$F{quantity}:"-"]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

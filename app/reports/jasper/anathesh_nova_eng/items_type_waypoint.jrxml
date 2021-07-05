@@ -9,7 +9,7 @@
 (select distinct p.type
 from  orders_selections_by_point osbp 
 join package_type p on (p.id=osbp.package_type_id)
-where osbp.order_waypoint_id= $P{id} ) as typegroup ]]>
+where osbp.order_waypoint_id= $P{id} ) as typegroup]]>
 	</queryString>
 	<field name="type" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="type"/>
@@ -28,7 +28,7 @@ where osbp.order_waypoint_id= $P{id} ) as typegroup ]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="ArialPdf"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{type}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{type}!=null && $F{type}!="null"?$F{type}:"-"]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
