@@ -30,6 +30,7 @@ public class OrderWaypointsEntity {
     private Date appointmentDayLoad;
     private Integer position;
     private String comments;
+    private String status;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -272,5 +273,15 @@ public class OrderWaypointsEntity {
 
     public void setComments(String comments) {
         this.comments = comments;
+    }
+
+    @Basic
+    @Column(name = "status")
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

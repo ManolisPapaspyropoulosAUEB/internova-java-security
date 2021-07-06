@@ -6,6 +6,8 @@ import controllers.execution_context.DatabaseExecutionContext;
 import controllers.system.Application;
 import models.CustomersSuppliersEntity;
 import models.FactoriesEntity;
+import models.OrderSchedulesEntity;
+import models.OrderWaypointsEntity;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
 import play.mvc.BodyParser;
@@ -795,6 +797,15 @@ public class FactoriesController extends Application {
                                     ObjectNode result_add = Json.newObject();
                                     Long id = json.findPath("id").asLong();
                                     Long user_id = json.findPath("user_id").asLong();
+                                    String sqlFactorForeignKeyOs = " select * from order_schedules where factory_id ="+id;
+                                    String sqlFactorForeignKeyOw = " select * from order_waypoints where factory_id ="+id;
+                                    List<OrderSchedulesEntity> orderSchedulesEntityList = entityManager.createNativeQuery(sqlFactorForeignKeyOs,OrderSchedulesEntity.class).getResultList();
+                                    List<OrderWaypointsEntity> orderWaypointsEntityList = entityManager.createNativeQuery(sqlFactorForeignKeyOw,OrderWaypointsEntity.class).getResultList();
+                                    if(orderSchedulesEntityList.size()>0 || orderWaypointsEntityList.size()>0){
+                                        result_add.put("status", "error");
+                                        result_add.put("message", "Βρέθηκαν συνδεδεμένες εγγραφές με παραγγελίες!");
+                                        return result_add;
+                                    }
                                     FactoriesEntity factoriesEntity = entityManager.find(FactoriesEntity.class,id);
                                     entityManager.remove(factoriesEntity);
                                     result_add.put("status", "success");
