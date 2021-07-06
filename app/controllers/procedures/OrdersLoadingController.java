@@ -359,7 +359,7 @@ public class OrdersLoadingController extends Application {
                                     }else if (allmyListCount.intValue()==orderSchedulesEntityListCount.intValue() && allmyListCount.intValue()>orderWaypointsEntityListCount.intValue()){
                                         statusByTimeline="ΦΟΡΤΩΘΕΙΣΑ";
                                     }
-                                    if((!ord.getStatus().equalsIgnoreCase("ΣΕ ΖΗΤΗΣΗ")) && (!ord.getStatus().equalsIgnoreCase("ΟΛΟΚΛΗΡΩΜΕΝΗ"))){
+                                    if((!ord.getStatus().equalsIgnoreCase("ΑΚΥΡΩΜΕΝΗ")) && (!ord.getStatus().equalsIgnoreCase("ΟΛΟΚΛΗΡΩΜΕΝΗ"))){
                                         ord.setStatus(statusByTimeline);
                                         entityManager.merge(ord);
                                     }
@@ -651,7 +651,7 @@ public class OrdersLoadingController extends Application {
                                     }else if (allmyListCount.intValue()==orderSchedulesEntityListCount.intValue() && allmyListCount.intValue()>orderWaypointsEntityListCount.intValue()){
                                         statusByTimeline="ΦΟΡΤΩΘΕΙΣΑ";
                                     }
-                                    if((!ord.getStatus().equalsIgnoreCase("ΣΕ ΖΗΤΗΣΗ")) && (!ord.getStatus().equalsIgnoreCase("ΟΛΟΚΛΗΡΩΜΕΝΗ"))){
+                                    if((!ord.getStatus().equalsIgnoreCase("ΑΚΥΡΩΜΕΝΗ")) && (!ord.getStatus().equalsIgnoreCase("ΟΛΟΚΛΗΡΩΜΕΝΗ"))){
                                         ord.setStatus(statusByTimeline);
                                         entityManager.merge(ord);
                                     }
