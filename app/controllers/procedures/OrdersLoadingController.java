@@ -353,7 +353,7 @@ public class OrdersLoadingController extends Application {
                                             " and ow.status='ΕΚΦΟΡΤΩΘΗΚΕ' ";
                                     BigInteger orderSchedulesEntityListCount = (BigInteger) entityManager.createNativeQuery(sqlFortwshAfethrias).getSingleResult();
                                     BigInteger orderWaypointsEntityListCount = (BigInteger) entityManager.createNativeQuery(sqlTermatismou).getSingleResult();
-                                    String statusByTimeline="";
+                                    String statusByTimeline=ord.getStatus();
                                     if(allmyListCount.intValue()==orderSchedulesEntityListCount.intValue() && allmyListCount.intValue()==orderWaypointsEntityListCount.intValue()){
                                         statusByTimeline="ΕΚΦΟΡΤΩΘΗΚΕ";
                                     }else if (allmyListCount.intValue()==orderSchedulesEntityListCount.intValue() && allmyListCount.intValue()>orderWaypointsEntityListCount.intValue()){
@@ -645,7 +645,7 @@ public class OrdersLoadingController extends Application {
                                             " and ow.status='ΕΚΦΟΡΤΩΘΗΚΕ' ";
                                     BigInteger orderSchedulesEntityListCount = (BigInteger) entityManager.createNativeQuery(sqlFortwshAfethrias).getSingleResult();
                                     BigInteger orderWaypointsEntityListCount = (BigInteger) entityManager.createNativeQuery(sqlTermatismou).getSingleResult();
-                                    String statusByTimeline="";
+                                    String statusByTimeline=ord.getStatus();
                                     if(allmyListCount.intValue()==orderSchedulesEntityListCount.intValue() && allmyListCount.intValue()==orderWaypointsEntityListCount.intValue()){
                                         statusByTimeline="ΕΚΦΟΡΤΩΘΗΚΕ";
                                     }else if (allmyListCount.intValue()==orderSchedulesEntityListCount.intValue() && allmyListCount.intValue()>orderWaypointsEntityListCount.intValue()){
