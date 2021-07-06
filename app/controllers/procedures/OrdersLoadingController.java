@@ -1919,6 +1919,9 @@ public class OrdersLoadingController extends Application {
                                         String start = json.findPath("start").asText();
                                         String limit = json.findPath("limit").asText();
                                         String sqlOrdLoads = "select * from orders_loading ord_load   where 1=1 ";
+
+                                        System.out.println("sqlOrdLoads>>>"+sqlOrdLoads);
+
                                         if (!id.equalsIgnoreCase("") && id != null) {
                                             sqlOrdLoads += " and ord_load.id =" + id;
                                         }
