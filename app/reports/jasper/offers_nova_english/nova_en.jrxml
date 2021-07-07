@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="internova_offer_gr" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="c23bbd5a-4600-4d7d-a82b-3809ec767b38">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="internova_db"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="offer_id" class="java.lang.String"/>
+	<parameter name="user" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA[".\\"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select
+ cs.brand_name,
+concat( manager.first_name ," ", manager.last_name) as manager,
+offer.offer_date 
+from offers offer 
+join customers_suppliers cs on (cs.id=offer.customer_id)
+join  managers manager  on (manager.id=offer.manager_customer_id)
+where offer.id=$P{offer_id}]]>
+	</queryString>
+	<field name="brand_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="brand_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="brand_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="customers_suppliers"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="manager" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="manager"/>
+		<property name="com.jaspersoft.studio.field.label" value="manager"/>
+	</field>
+	<field name="offer_date" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="offer_date"/>
+		<property name="com.jaspersoft.studio.field.label" value="offer_date"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="offers"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="328">
+			<textField>
+				<reportElement x="0" y="140" width="510" height="70" uuid="15766b7b-9be0-439b-a141-4d2837ff18d1"/>
+				<textElement textAlignment="Left">
+					<font fontName="ArialPdf" size="12" isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Offer Number :  "+$P{offer_id}+"  \n" + 
+"Date :   "+new SimpleDateFormat("dd/MM/yyyy").format($F{offer_date})+" \n" + 
+"To : "+$F{brand_name}+"\n" +
+"Attention : "+$F{manager}+""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="220" width="554" height="14" uuid="5a44ed33-b25c-4761-8264-955892a15a0d">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Justified">
+					<font fontName="ArialPdf" size="11" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Dear "+$F{manager}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="234" width="554" height="14" uuid="76d3a1ab-e557-4342-8a6a-53159ddbd7a5">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Justified">
+					<font fontName="ArialPdf" size="11" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["below is our offer for the transport of your goods "]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="253" width="554" height="14" uuid="14037829-42f3-4251-8920-cb282e63cbc8">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Justified">
+					<font fontName="ArialPdf" size="11" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[".............................................................................................................................................................................."]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="275" width="554" height="14" uuid="198e051a-fead-449a-9db5-5e40b6f2b73d">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Justified">
+					<font fontName="ArialPdf" size="11" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" from ..........................................................................  to  ................................................................................"]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="1" y="1" width="553" height="91" uuid="e4e43bb3-4ca2-44f6-b4cf-59425b302030"/>
+				<imageExpression><![CDATA[$P{SUBREPORT_DIR}+"logo.png"]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<detail>
+		<band height="142" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="10" width="554" height="120" uuid="4142f5bf-1e64-430a-8231-e2bbadf1cdf0"/>
+				<textElement>
+					<font fontName="ArialPdf" size="11" isBold="true" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Our offer is  :………………………........................................……………………….......................................................\n" +
+"Payment Method :......................................................................\n\n" +
+"We hope our offer will find your approval.\n Please do not hesitate to contact us for any further information, remaining at your disposal  .\n\n" + 
+
+"Yours sincerely\n\n"  +$P{user}+" \n\n"]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="308">
+			<textField>
+				<reportElement x="404" y="247" width="151" height="20" uuid="c5a180af-a977-46c6-bd42-e5b743eba7a6"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialPdf" isBold="true" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["NOVAFREIGHT LTD"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="404" y="277" width="151" height="20" uuid="48795939-b595-4156-9dc6-06ffa4d071dc"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialPdf" isBold="false" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{user}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="20" width="554" height="160" uuid="eb798a0e-3791-4fd7-a402-e9e6bced58b6"/>
+				<textElement>
+					<font fontName="ArialPdf" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Offer Terms\n\n" + 
+
+"1) Our offer is based on today's current freight, fuel and currency rates in normal, unaltered and unhindered transport conditions.\n\n" + 
+
+"2) Our prices are for goods, packaged for commercial use. In the case of any other type of packaging, of any kind, please contact us, as there may be a price difference.\n\n" + 
+
+"3) Direct deliveries / receipts to / from your premises by international car transport can be made provided they can be accessed at the landing point\n\n" + 
+
+"4) in case of change of the quoted quantity in the current offer will be a price adjustment"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="10" y="247" width="151" height="61" uuid="f7be7756-c9e7-49c8-ab9c-d8a9dac3ca51"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialPdf" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["CLIENT'S APPROVAL"]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

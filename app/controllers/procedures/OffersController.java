@@ -423,16 +423,26 @@ public class OffersController extends Application {
                                                 sHmpam.put("acceptOfferDate", j.getAcceptOfferDate());
                                                 sHmpam.put("sendOfferDate", j.getSendOfferDate());
                                                 sHmpam.put("customerId", j.getCustomerId());
+                                                sHmpam.put("managerCustomerId", j.getManagerCustomerId());
                                                 sHmpam.put("aa", j.getAa());
                                                 if (j.getCustomerId() != null) {
                                                     HashMap<String, Object> customerMap = new HashMap<String, Object>();
                                                     HashMap<String, Object> billingsMap = new HashMap<String, Object>();
                                                     HashMap<String, Object> sellerMap = new HashMap<String, Object>();
+                                                    HashMap<String, Object> managerMap = new HashMap<String, Object>();
                                                     CustomersSuppliersEntity customersSuppliersEntity = entityManager.find(CustomersSuppliersEntity.class, j.getCustomerId());
                                                     customerMap.put("customerId", customersSuppliersEntity.getId());
                                                     customerMap.put("email", customersSuppliersEntity.getEmail());
                                                     customerMap.put("telephone", customersSuppliersEntity.getTelephone());
                                                     customerMap.put("brandName", customersSuppliersEntity.getBrandName());
+
+                                                    if(j.getManagerCustomerId()!=null){
+                                                        managerMap.put("managerCustomerId", j.getManagerCustomerId());
+                                                        ManagersEntity managersEntity = entityManager.find(ManagersEntity.class,j.getManagerCustomerId());
+                                                        managerMap.put("managerName", managersEntity.getFirstName()+" "+managersEntity.getLastName());
+                                                    }
+                                                    sHmpam.put("managerMap", managerMap);
+
                                                     if (j.getBillingId() != null) {
                                                         billingsMap.put("billingId", j.getBillingId());
                                                         billingsMap.put("billingName", entityManager.find(BillingsEntity.class, j.getBillingId()).getName());
@@ -926,6 +936,7 @@ public class OffersController extends Application {
                                 Long offerId = json.findPath("offerId").asLong();
                                 String user_id = json.findPath("user_id").asText();
                                 JsonNode internovaSeller = json.findPath("internovaSeller");
+                                JsonNode manager = json.findPath("manager");
                                 JsonNode billing = json.findPath("billing");
                                 JsonNode from = json.findPath("from");
                                 JsonNode to = json.findPath("to");
@@ -964,6 +975,7 @@ public class OffersController extends Application {
                                 offersEntity.setDeclineReasons(json.findPath("declineReasons").asText());
                                 offersEntity.setUpdateDate(new Date());
                                 offersEntity.setCustomerId(custommer.findPath("customerSupplierId").asLong());
+                                offersEntity.setManagerCustomerId(manager.findPath("managerCustomerId").asLong());
                                 offersEntity.setFromAddress(from.findPath("address").asText());
                                 offersEntity.setFromCity(from.findPath("city").asText());
                                 offersEntity.setFromCountry(from.findPath("country").asText());
@@ -1170,6 +1182,7 @@ public class OffersController extends Application {
                                     ((ObjectNode) json).remove("custommer2");
                                     JsonNode internovaSeller = json.findPath("internovaSeller");
                                     JsonNode billing = json.findPath("billing");
+                                    JsonNode manager = json.findPath("manager");
                                     JsonNode from = json.findPath("from");
                                     JsonNode to = json.findPath("to");
                                     boolean cloneInd = json.findPath("cloneInd").asBoolean();
@@ -1208,6 +1221,7 @@ public class OffersController extends Application {
                                     } else {
                                         offersEntity.setCustomerId(custommer.findPath("customerId").asLong());
                                     }
+                                    offersEntity.setManagerCustomerId(manager.findPath("managerCustomerId").asLong());
                                     offersEntity.setFromAddress(from.findPath("address").asText());
                                     offersEntity.setFromCity(from.findPath("city").asText());
                                     offersEntity.setFromCountry(from.findPath("country").asText());

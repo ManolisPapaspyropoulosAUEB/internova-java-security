@@ -109,7 +109,6 @@ public class MailerService {
                                 String to = json.findPath("to").asText();
                                 String bodyText = json.findPath("bodyText").asText();
                                 String orderLoadingId = json.findPath("orderLoadingId").asText();
-                                String offerSchedulesIds = json.findPath("offerSchedulesIds").asText();
                                 String offerId = json.findPath("offerId").asText();
 
                                 Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
@@ -138,16 +137,17 @@ public class MailerService {
                                     add_result.put("status", "success");
                                     add_result.put("message", "Το email αποστάλθηκε με επυτιχία!");
                                     return add_result;
-                                }else if(offerSchedulesIds!=null && !offerSchedulesIds.equalsIgnoreCase("") && !offerSchedulesIds.equalsIgnoreCase("null")){
+                                }else if(offerId!=null && !offerId.equalsIgnoreCase("") && !offerId.equalsIgnoreCase("null")){
+                                    UsersEntity user = entityManager.find(UsersEntity.class,Long.valueOf(userId));
                                     OffersEntity offersEntity = entityManager.find(OffersEntity.class,Long.valueOf(offerId));
-                                    entityManager.merge(offersEntity);
                                     offersEntity.setSendOfferDate(new Date());
+                                    entityManager.merge(offersEntity);
                                     ProceduresPrintController proceduresPrintController =
                                             new ProceduresPrintController(db, jpaApi, executionContext);
                                     try {
                                         email.addAttachment("Offer.pdf",
                                                 readStream(proceduresPrintController.
-                                                        generateOfferReport(offerSchedulesIds,offerId)),
+                                                        generateOfferReport(offerId,user.getFirstname()+" "+user.getLastname(),lng,company)),
                                                 "application/pdf", "Offer",
                                                 EmailAttachment.INLINE);
                                     } catch (IOException e) {

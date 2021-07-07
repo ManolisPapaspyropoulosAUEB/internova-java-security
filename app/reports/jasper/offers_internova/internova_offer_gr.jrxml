@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="internova_offer_gr" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="c23bbd5a-4600-4d7d-a82b-3809ec767b38">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="internova_db"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="offer_id" class="java.lang.String"/>
+	<parameter name="user" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA[".\\"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select
+ cs.brand_name,
+concat( manager.first_name ," ", manager.last_name) as manager,
+offer.offer_date 
+from offers offer 
+join customers_suppliers cs on (cs.id=offer.customer_id)
+join  managers manager  on (manager.id=offer.manager_customer_id)
+where offer.id=$P{offer_id}]]>
+	</queryString>
+	<field name="brand_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="brand_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="brand_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="customers_suppliers"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="manager" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="manager"/>
+		<property name="com.jaspersoft.studio.field.label" value="manager"/>
+	</field>
+	<field name="offer_date" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="offer_date"/>
+		<property name="com.jaspersoft.studio.field.label" value="offer_date"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="offers"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="328">
+			<textField>
+				<reportElement x="303" y="33" width="251" height="96" uuid="e0096572-76c2-4044-8668-848bd74f9fe4"/>
+				<textElement textAlignment="Right">
+					<font fontName="ArialPdf" size="12" isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Ευαγγελίστριας 14\n" + 
+"Αγιά Παρασκευή, Αθήνα 15342\n" +
+"ΑΦΜ : 099005820\n" +
+"Τηλέφωνο : 2103472260\n" +
+"info@internovatrans.gr\n" +
+"www.internovatrans.gr"]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="1" y="1" width="221" height="91" uuid="5635d85b-330a-46b0-895f-ab497c1cd05f"/>
+				<imageExpression><![CDATA[$P{SUBREPORT_DIR}+"logo.png"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="0" y="140" width="553" height="70" uuid="15766b7b-9be0-439b-a141-4d2837ff18d1"/>
+				<textElement textAlignment="Left">
+					<font fontName="ArialPdf" size="12" isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Αριθμός Προσφοράς :  "+$P{offer_id}+"  \n" + 
+"Ημερομηνία  Προσφοράς :   "+new SimpleDateFormat("dd/MM/yyyy").format($F{offer_date})+" \n" + 
+"Προς : "+$F{brand_name}+"\n" +
+"Υπόψιν : "+$F{manager}+""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="220" width="554" height="14" uuid="5a44ed33-b25c-4761-8264-955892a15a0d">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Justified">
+					<font fontName="ArialPdf" size="11" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Αγαπητέ /τη "+$F{manager}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="303" y="0" width="251" height="31" uuid="bdf9e229-3cfb-4e92-b882-96d6ce118d74"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ArialPdf" size="14" isBold="true" isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["ΙΝΤΕΡΝΟΒΑ ΤΡΑΝΣ ΜΟΝ ΕΠΕ"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="234" width="554" height="14" uuid="76d3a1ab-e557-4342-8a6a-53159ddbd7a5">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Justified">
+					<font fontName="ArialPdf" size="11" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["ακολουθεί  η  οικονομική προσφορά για την οδική μεταφορά των προϊόντων σας"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="253" width="554" height="14" uuid="14037829-42f3-4251-8920-cb282e63cbc8">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Justified">
+					<font fontName="ArialPdf" size="11" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["..............................................................................................................................................................................\n"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="275" width="554" height="14" uuid="198e051a-fead-449a-9db5-5e40b6f2b73d">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Justified">
+					<font fontName="ArialPdf" size="11" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" από ..........................................................................  στην  ................................................................................"]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<detail>
+		<band height="142" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="10" width="554" height="120" uuid="4142f5bf-1e64-430a-8231-e2bbadf1cdf0"/>
+				<textElement>
+					<font fontName="ArialPdf" size="11" isBold="true" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Η προσφορά μας :………........................................………………………....................................................\n\n" +
+"Τρόπος Πληρωμής :......................................................................\n\n" +
+"Ελπίζουμε η προσφορά μας να τύχει της εγκρίσεως σας, παραμένουμε στην διάθεση σας.\n\n" + 
+
+"Με εκτίμηση\n\n"  +$P{user}+" \n\n"]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="308">
+			<textField>
+				<reportElement x="0" y="10" width="554" height="160" uuid="cfb64e10-bdc8-4990-bb63-435f1a04ab8a"/>
+				<textElement>
+					<font fontName="ArialPdf" size="10" isBold="true" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Όροι προσφοράς :\n\n" + 
+
+"1) Η προσφορά μας βασίζεται στις σημερινές ισχύουσες τιμές ναύλων, καυσίμων και συναλλάγματος σε κανονικές, αμετάβλητες και ανεμπόδιστες συνθήκες μεταφοράς.\n\n" + 
+
+"2) Οι προσφερόμενες τιμές μας αφορούν σε εμπορεύματα, κατάλληλα συσκευασμένα για     εμπορική χρήση. Σε περίπτωσηάλλου τύπου συσκευασίας, οποιασδήποτε μορφής, παρακαλούμε να επικοινωνήσετε μαζί μας, γιατί ενδεχομένως να υπάρξει διαφοροποίηση\n\n" + 
+
+"3) Σε περίπτωση αλλαγής της ποσότητας των προϊόντων ή της συσκευασίας θα  υπάρξει και διαφοροποίηση της τιμής"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="247" width="151" height="61" uuid="27dc9800-6401-4f47-863f-e59a47a9e5a5"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialPdf" isBold="true" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Υπογραφή Πελάτη"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="404" y="247" width="151" height="20" uuid="c5a180af-a977-46c6-bd42-e5b743eba7a6"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialPdf" isBold="true" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["ΙΝΤΕΡΝΟΒΑ ΤΡΑΝΣ"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="404" y="277" width="151" height="20" uuid="48795939-b595-4156-9dc6-06ffa4d071dc"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialPdf" isBold="false" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{user}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

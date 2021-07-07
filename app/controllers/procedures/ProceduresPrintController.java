@@ -47,14 +47,24 @@ public class ProceduresPrintController extends Application {
 
 
 
-    public ByteArrayInputStream generateOfferReport(String offerSchedulesIds,String offerId) throws FileNotFoundException, JRException {
-        offerSchedulesIds=" id in "+offerSchedulesIds;
+    public ByteArrayInputStream generateOfferReport(String offerId,String user,String lng,String company) throws FileNotFoundException, JRException {
         ObjectNode reportParams = Json.newObject();
-        reportParams.put("offerSchedulesIds", offerSchedulesIds);
-        reportParams.put("offerId", offerId);
-        ByteArrayInputStream export = (ByteArrayInputStream)
-                BaseJasperReport.generatePDF("selected_schedules_offer/main", reportParams);
-
+        reportParams.put("offer_id", offerId);
+        reportParams.put("user", user);
+        ByteArrayInputStream export=null;
+        if(lng.equalsIgnoreCase("el") && company.equalsIgnoreCase("internova")){
+            export = (ByteArrayInputStream) BaseJasperReport.generatePDF("offers_internova/internova_offer_gr", reportParams);
+            return export;
+        }else if(lng.equalsIgnoreCase("en") && company.equalsIgnoreCase("internova")){
+            export = (ByteArrayInputStream) BaseJasperReport.generatePDF("offers_internova _english/internova_offer_en", reportParams);
+            return export;
+        }else if(lng.equalsIgnoreCase("el") && company.equalsIgnoreCase("nova")){
+            export = (ByteArrayInputStream) BaseJasperReport.generatePDF("offers_nova/nova_gr", reportParams);
+            return export;
+        }else if (lng.equalsIgnoreCase("en") && company.equalsIgnoreCase("nova")){
+            export = (ByteArrayInputStream) BaseJasperReport.generatePDF("offers_nova_english/nova_en", reportParams);
+            return export;
+        }
         return export;
     }
 
@@ -63,14 +73,16 @@ public class ProceduresPrintController extends Application {
     public Result exportSelectedSchedulesOffersJasper(final Http.Request request) throws IOException {
         try {
             Result result;
-            String offerSchedulesIds = request.queryString("offerSchedulesIds").get();
             String offerId = request.queryString("offerId").get();
-
+            String userId = request.queryString("userId").get();
+            String lng = request.queryString("lng").get();
+            String company = request.queryString("company").get();
             CompletableFuture<Result> addFuture = CompletableFuture.supplyAsync(() -> {
                         return jpaApi.withTransaction(entityManager -> {
+                            UsersEntity user = entityManager.find(UsersEntity.class,Long.valueOf(userId));
                             ObjectNode add_result = Json.newObject();
                             try {
-                                ByteArrayInputStream  export=  generateOfferReport(offerSchedulesIds,offerId);
+                                ByteArrayInputStream  export=  generateOfferReport(offerId,user.getFirstname()+" "+user.getLastname(),lng,company);
                                 add_result.put("status", "success");
                                 add_result.put("message", "Η καταχωρηση πραγματοποίηθηκε με επιτυχία");
                                 return ok(export).as("application/pdf; charset=UTF-8");
@@ -252,9 +264,7 @@ public class ProceduresPrintController extends Application {
             String company = request.queryString("company").get();
             CompletableFuture<Result> addFuture = CompletableFuture.supplyAsync(() -> {
                         return jpaApi.withTransaction(entityManager -> {
-
                             UsersEntity user = entityManager.find(UsersEntity.class,Long.valueOf(userId));
-
                             ObjectNode add_result = Json.newObject();
                             try {
                                 ByteArrayInputStream  export=  generateOrderLoadingReport(order_loading_id,user.getFirstname()+" "+user.getLastname(),lng,company);

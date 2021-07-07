@@ -399,6 +399,7 @@ public class ManagersController extends Application {
                                     for (ManagersEntity j : posList) {
                                         HashMap<String, Object> sHmpam = new HashMap<String, Object>();
                                         sHmpam.put("id", j.getId());
+                                        sHmpam.put("managerId", j.getId());
                                         sHmpam.put("firstname", j.getFirstName());
                                         sHmpam.put("lastname", j.getLastName());
                                         sHmpam.put("fullName", j.getFirstName() + " " + j.getLastName());

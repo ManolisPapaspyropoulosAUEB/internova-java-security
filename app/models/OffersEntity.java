@@ -36,6 +36,7 @@ public class OffersEntity {
     private String declineReasons;
     private Date acceptOfferDate;
     private Date sendOfferDate;
+    private Long managerCustomerId;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -359,5 +360,15 @@ public class OffersEntity {
 
     public void setSendOfferDate(Date sendOfferDate) {
         this.sendOfferDate = sendOfferDate;
+    }
+
+    @Basic
+    @Column(name = "manager_customer_id")
+    public Long getManagerCustomerId() {
+        return managerCustomerId;
+    }
+
+    public void setManagerCustomerId(Long managerCustomerId) {
+        this.managerCustomerId = managerCustomerId;
     }
 }
