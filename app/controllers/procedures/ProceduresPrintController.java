@@ -47,10 +47,15 @@ public class ProceduresPrintController extends Application {
 
 
 
-    public ByteArrayInputStream generateOfferReport(String offerId,String user,String lng,String company) throws FileNotFoundException, JRException {
+    public ByteArrayInputStream generateOfferReport(String offerId,String user,String lng,String company,String label1,String fromCountryCity,String toCountryCity,String ourOffer,String paymentMethod) throws FileNotFoundException, JRException {
         ObjectNode reportParams = Json.newObject();
         reportParams.put("offer_id", offerId);
         reportParams.put("user", user);
+        reportParams.put("label1", label1);
+        reportParams.put("fromCountryCity", fromCountryCity);
+        reportParams.put("toCountryCity", toCountryCity);
+        reportParams.put("ourOffer", ourOffer);
+        reportParams.put("paymentMethod", paymentMethod);
         ByteArrayInputStream export=null;
         if(lng.equalsIgnoreCase("el") && company.equalsIgnoreCase("internova")){
             export = (ByteArrayInputStream) BaseJasperReport.generatePDF("offers_internova/internova_offer_gr", reportParams);
@@ -77,12 +82,18 @@ public class ProceduresPrintController extends Application {
             String userId = request.queryString("userId").get();
             String lng = request.queryString("lng").get();
             String company = request.queryString("company").get();
+            String label1 = request.queryString("label1").get();
+            String fromCountryCity = request.queryString("fromCountryCity").get();
+            String toCountryCity = request.queryString("toCountryCity").get();
+            String ourOffer = request.queryString("ourOffer").get();
+            String paymentMethod = request.queryString("paymentMethod").get();
             CompletableFuture<Result> addFuture = CompletableFuture.supplyAsync(() -> {
                         return jpaApi.withTransaction(entityManager -> {
                             UsersEntity user = entityManager.find(UsersEntity.class,Long.valueOf(userId));
                             ObjectNode add_result = Json.newObject();
                             try {
-                                ByteArrayInputStream  export=  generateOfferReport(offerId,user.getFirstname()+" "+user.getLastname(),lng,company);
+                                ByteArrayInputStream  export=
+                                        generateOfferReport(offerId,user.getFirstname()+" "+user.getLastname(),lng,company,label1,fromCountryCity,toCountryCity,ourOffer,paymentMethod);
                                 add_result.put("status", "success");
                                 add_result.put("message", "Η καταχωρηση πραγματοποίηθηκε με επιτυχία");
                                 return ok(export).as("application/pdf; charset=UTF-8");

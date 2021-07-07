@@ -110,6 +110,11 @@ public class MailerService {
                                 String bodyText = json.findPath("bodyText").asText();
                                 String orderLoadingId = json.findPath("orderLoadingId").asText();
                                 String offerId = json.findPath("offerId").asText();
+                                String label1 = json.findPath("label1").asText();
+                                String fromCountryCity = json.findPath("fromCountryCity").asText();
+                                String toCountryCity = json.findPath("toCountryCity").asText();
+                                String ourOffer = json.findPath("ourOffer").asText();
+                                String paymentMethod = json.findPath("paymentMethod").asText();
 
                                 Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
                                 Email email = new Email()
@@ -147,7 +152,7 @@ public class MailerService {
                                     try {
                                         email.addAttachment("Offer.pdf",
                                                 readStream(proceduresPrintController.
-                                                        generateOfferReport(offerId,user.getFirstname()+" "+user.getLastname(),lng,company)),
+                                                        generateOfferReport(offerId,user.getFirstname()+" "+user.getLastname(),lng,company,label1,fromCountryCity,toCountryCity,ourOffer,paymentMethod)),
                                                 "application/pdf", "Offer",
                                                 EmailAttachment.INLINE);
                                     } catch (IOException e) {

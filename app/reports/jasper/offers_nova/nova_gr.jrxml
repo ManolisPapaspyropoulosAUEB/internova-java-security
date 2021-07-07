@@ -8,6 +8,11 @@
 	<parameter name="SUBREPORT_DIR" class="java.lang.String">
 		<defaultValueExpression><![CDATA[".\\"]]></defaultValueExpression>
 	</parameter>
+	<parameter name="label1" class="java.lang.String"/>
+	<parameter name="fromCountryCity" class="java.lang.String"/>
+	<parameter name="toCountryCity" class="java.lang.String"/>
+	<parameter name="ourOffer" class="java.lang.String"/>
+	<parameter name="paymentMethod" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[select
  cs.brand_name,
@@ -38,7 +43,7 @@ where offer.id=$P{offer_id}]]>
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="328">
+		<band height="307">
 			<textField>
 				<reportElement x="0" y="140" width="510" height="70" uuid="15766b7b-9be0-439b-a141-4d2837ff18d1"/>
 				<textElement textAlignment="Left">
@@ -49,8 +54,32 @@ where offer.id=$P{offer_id}]]>
 "Προς : "+$F{brand_name}+"\n" +
 "Υπόψιν : "+$F{manager}+""]]></textFieldExpression>
 			</textField>
+			<image>
+				<reportElement x="1" y="1" width="553" height="91" uuid="7cd7225a-b30d-4915-8491-3ada39dd0e40"/>
+				<imageExpression><![CDATA[$P{SUBREPORT_DIR}+"logo.png"]]></imageExpression>
+			</image>
 			<textField>
-				<reportElement x="0" y="220" width="554" height="14" uuid="5a44ed33-b25c-4761-8264-955892a15a0d">
+				<reportElement x="0" y="248" width="554" height="14" uuid="788c9a7b-137b-4691-a3e2-8881f144eaa2">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Justified">
+					<font fontName="ArialPdf" size="11" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{label1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="263" width="554" height="14" uuid="7fed0dc3-be01-41ca-bfcb-374a293b05e5">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Justified">
+					<font fontName="ArialPdf" size="11" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["από "+$P{fromCountryCity}+"  στην  "+$P{toCountryCity}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="220" width="554" height="14" uuid="a3cc6242-3f8e-484d-abdb-1b4f606a9162">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Justified">
@@ -59,7 +88,7 @@ where offer.id=$P{offer_id}]]>
 				<textFieldExpression><![CDATA["Αγαπητέ /τη "+$F{manager}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="234" width="554" height="14" uuid="76d3a1ab-e557-4342-8a6a-53159ddbd7a5">
+				<reportElement x="0" y="234" width="554" height="14" uuid="6e032cce-36d2-4a87-a858-a62901f3673f">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</reportElement>
@@ -68,41 +97,17 @@ where offer.id=$P{offer_id}]]>
 				</textElement>
 				<textFieldExpression><![CDATA["ακολουθεί  η  οικονομική προσφορά για την οδική μεταφορά των προϊόντων σας"]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="0" y="253" width="554" height="14" uuid="14037829-42f3-4251-8920-cb282e63cbc8">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Justified">
-					<font fontName="ArialPdf" size="11" isItalic="false"/>
-				</textElement>
-				<textFieldExpression><![CDATA[".............................................................................................................................................................................."]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="0" y="275" width="554" height="14" uuid="198e051a-fead-449a-9db5-5e40b6f2b73d">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Justified">
-					<font fontName="ArialPdf" size="11" isItalic="false"/>
-				</textElement>
-				<textFieldExpression><![CDATA[" από ..........................................................................  στην  ................................................................................"]]></textFieldExpression>
-			</textField>
-			<image>
-				<reportElement x="1" y="1" width="553" height="91" uuid="7cd7225a-b30d-4915-8491-3ada39dd0e40"/>
-				<imageExpression><![CDATA[$P{SUBREPORT_DIR}+"logo.png"]]></imageExpression>
-			</image>
 		</band>
 	</title>
 	<detail>
 		<band height="142" splitType="Stretch">
 			<textField>
-				<reportElement x="0" y="10" width="554" height="120" uuid="4142f5bf-1e64-430a-8231-e2bbadf1cdf0"/>
+				<reportElement x="0" y="10" width="554" height="120" uuid="93a86bec-40fe-42a9-9b1b-206ce04aaf5a"/>
 				<textElement>
 					<font fontName="ArialPdf" size="11" isBold="true" isItalic="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Η προσφορά μας :………………………........................................…..................................\n\n" +
-"Τρόπος Πληρωμής :......................................................................\n\n" +
+				<textFieldExpression><![CDATA["Η προσφορά μας : "+$P{ourOffer}+" \n\n" +
+"Τρόπος Πληρωμής : "+$P{paymentMethod}+"\n\n" +
 "Ελπίζουμε η προσφορά μας να τύχει της εγκρίσεως σας, παραμένουμε στην διάθεση σας.\n\n" + 
 
 "Με εκτίμηση\n\n"  +$P{user}+" \n\n"]]></textFieldExpression>

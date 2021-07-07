@@ -8,6 +8,11 @@
 	<parameter name="SUBREPORT_DIR" class="java.lang.String">
 		<defaultValueExpression><![CDATA[".\\"]]></defaultValueExpression>
 	</parameter>
+	<parameter name="label1" class="java.lang.String"/>
+	<parameter name="fromCountryCity" class="java.lang.String"/>
+	<parameter name="toCountryCity" class="java.lang.String"/>
+	<parameter name="ourOffer" class="java.lang.String"/>
+	<parameter name="paymentMethod" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[select
  cs.brand_name,
@@ -38,7 +43,7 @@ where offer.id=$P{offer_id}]]>
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="328">
+		<band height="302">
 			<textField>
 				<reportElement x="0" y="140" width="510" height="70" uuid="15766b7b-9be0-439b-a141-4d2837ff18d1"/>
 				<textElement textAlignment="Left">
@@ -49,8 +54,12 @@ where offer.id=$P{offer_id}]]>
 "To : "+$F{brand_name}+"\n" +
 "Attention : "+$F{manager}+""]]></textFieldExpression>
 			</textField>
+			<image>
+				<reportElement x="1" y="1" width="553" height="91" uuid="e4e43bb3-4ca2-44f6-b4cf-59425b302030"/>
+				<imageExpression><![CDATA[$P{SUBREPORT_DIR}+"logo.png"]]></imageExpression>
+			</image>
 			<textField>
-				<reportElement x="0" y="220" width="554" height="14" uuid="5a44ed33-b25c-4761-8264-955892a15a0d">
+				<reportElement x="0" y="220" width="554" height="14" uuid="5d76dd35-5d9b-4c30-a846-c85d949eac8f">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Justified">
@@ -59,7 +68,27 @@ where offer.id=$P{offer_id}]]>
 				<textFieldExpression><![CDATA["Dear "+$F{manager}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="234" width="554" height="14" uuid="76d3a1ab-e557-4342-8a6a-53159ddbd7a5">
+				<reportElement x="0" y="248" width="554" height="14" uuid="ca71ffd2-238d-4696-b862-a530128f1e38">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Justified">
+					<font fontName="ArialPdf" size="11" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{label1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="263" width="554" height="14" uuid="6364bc44-a8e2-438c-b12e-f6f06c46bd30">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Justified">
+					<font fontName="ArialPdf" size="11" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["from "+$P{fromCountryCity}+"  to  "+$P{toCountryCity}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="234" width="554" height="14" uuid="f72fe7bf-90a3-46c2-a34c-015f74ff2f15">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</reportElement>
@@ -68,41 +97,17 @@ where offer.id=$P{offer_id}]]>
 				</textElement>
 				<textFieldExpression><![CDATA["below is our offer for the transport of your goods "]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="0" y="253" width="554" height="14" uuid="14037829-42f3-4251-8920-cb282e63cbc8">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Justified">
-					<font fontName="ArialPdf" size="11" isItalic="false"/>
-				</textElement>
-				<textFieldExpression><![CDATA[".............................................................................................................................................................................."]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="0" y="275" width="554" height="14" uuid="198e051a-fead-449a-9db5-5e40b6f2b73d">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Justified">
-					<font fontName="ArialPdf" size="11" isItalic="false"/>
-				</textElement>
-				<textFieldExpression><![CDATA[" from ..........................................................................  to  ................................................................................"]]></textFieldExpression>
-			</textField>
-			<image>
-				<reportElement x="1" y="1" width="553" height="91" uuid="e4e43bb3-4ca2-44f6-b4cf-59425b302030"/>
-				<imageExpression><![CDATA[$P{SUBREPORT_DIR}+"logo.png"]]></imageExpression>
-			</image>
 		</band>
 	</title>
 	<detail>
 		<band height="142" splitType="Stretch">
 			<textField>
-				<reportElement x="0" y="10" width="554" height="120" uuid="4142f5bf-1e64-430a-8231-e2bbadf1cdf0"/>
+				<reportElement x="0" y="10" width="554" height="120" uuid="82d2703a-7ec5-4a41-b4e5-6018b2d52f53"/>
 				<textElement>
 					<font fontName="ArialPdf" size="11" isBold="true" isItalic="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Our offer is  :………………………........................................……………………….......................................................\n" +
-"Payment Method :......................................................................\n\n" +
+				<textFieldExpression><![CDATA["Our offer is  : "+$P{ourOffer}+"\n\n" +
+"Payment Method : "+$P{paymentMethod}+"\n\n" +
 "We hope our offer will find your approval.\n Please do not hesitate to contact us for any further information, remaining at your disposal  .\n\n" + 
 
 "Yours sincerely\n\n"  +$P{user}+" \n\n"]]></textFieldExpression>
