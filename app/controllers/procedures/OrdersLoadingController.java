@@ -1414,7 +1414,7 @@ public class OrdersLoadingController extends Application {
                                                             " from orders_selections_by_point osbp " +
                                                             " where osbp.order_schedule_id="
                                                             + owpe.getOrderScheduleId() +
-                                                            " and osbp.order_waypoint_id =" + owpe.getId();
+                                                            " and osbp.order_waypoint_id =" + owpe.getId() +" and osbp.type='Φόρτωση'";
                                                     summLdm = (Double) entityManager.createNativeQuery(sqlSumLdm).getSingleResult();
                                                     if (summLdm != null) {
                                                         finalSummLdm = finalSummLdm + summLdm;
