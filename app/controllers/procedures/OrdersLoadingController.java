@@ -1013,7 +1013,7 @@ public class OrdersLoadingController extends Application {
                                                     sHmpam.put("summMasterSchedule", "0.0");
                                                     sHmpam.put("summPriceNested", "0.0");
                                                 }
-                                                String sqlSumLdm = "select  sum(osp.ldm) from orders_selections_by_point osp where osp.order_id=" + j.getId();
+                                                String sqlSumLdm = "select  sum(osp.ldm) from orders_selections_by_point osp where osp.order_id=" + j.getId()+" and osp.type='Φόρτωση'";
                                                 Double summLdm = (Double) entityManager.createNativeQuery(sqlSumLdm).getSingleResult();
                                                 if (summLdm != null) {
                                                     sHmpam.put("summLdm", df.format(summLdm));
@@ -1210,7 +1210,7 @@ public class OrdersLoadingController extends Application {
                                                     osMap.put("finalSummPrice", df.format(finalSummPrice));
                                                 }
                                                 sqlSumLdm = "select  sum(osbp.ldm) from orders_selections_by_point osbp where osbp.order_schedule_id="
-                                                        + os.getId() + " and osbp.order_waypoint_id is null";
+                                                        + os.getId() + " and osbp.order_waypoint_id is null and osbp.type='Φόρτωση'";
                                                 summLdm = (Double) entityManager.createNativeQuery(sqlSumLdm).getSingleResult();
                                                 if (summLdm != null) {
                                                     finalSummLdm = finalSummLdm + summLdm;
@@ -1280,7 +1280,12 @@ public class OrdersLoadingController extends Application {
                                                     quantityByTypeInPointMap.put("quantity", osafet.getQuantity());
                                                     typeByTypeInPointMap.put("packageType", entityManager.find(PackageTypeEntity.class, osafet.getPackageTypeId()).getType());
                                                     osafetmap.put("stackingType", osafet.getStackingType());
-                                                    osafetmap.put("ldm", osafet.getLdm());
+                                                    if(osafet.getType().equalsIgnoreCase("Φόρτωση")){
+                                                        osafetmap.put("ldm", osafet.getLdm());
+                                                    }else{
+                                                        osafetmap.put("ldm",0);
+                                                    }
+
                                                     if (osafet.getUnitPrice() != null) {
                                                         osafetmap.put("unitPrice", osafet.getUnitPrice());
                                                     } else {
@@ -1487,7 +1492,11 @@ public class OrdersLoadingController extends Application {
                                                         quantityByTypeInPointMap.put("title", osafet.getTitle());
                                                         quantityByTypeInPointMap.put("quantity", osafet.getQuantity());
                                                         typeByTypeInPointMap.put("packageType", entityManager.find(PackageTypeEntity.class, osafet.getPackageTypeId()).getType());
-                                                        osafetmap.put("ldm", osafet.getLdm());
+                                                        if(osafet.getType().equalsIgnoreCase("Φόρτωση")){
+                                                            osafetmap.put("ldm", osafet.getLdm());
+                                                        }else{
+                                                            osafetmap.put("ldm",0);
+                                                        }
                                                         if (osafet.getUnitPrice() != null) {
                                                             osafetmap.put("unitPrice", osafet.getUnitPrice());
                                                         } else {
@@ -2201,7 +2210,7 @@ public class OrdersLoadingController extends Application {
                                                         } else {
                                                             sHmpam.put("finalSummPrice", df.format(finalSummPrice));
                                                         }
-                                                        String sqlSumLdm = "select  sum(osp.ldm) from orders_selections_by_point osp where osp.order_id=" + doneNode.findPath("orderId").asText();
+                                                        String sqlSumLdm = "select  sum(osp.ldm) from orders_selections_by_point osp where osp.order_id=" + doneNode.findPath("orderId").asText() +" and osp.type='Φόρτωση'";
                                                         Double summLdm = (Double) entityManager.createNativeQuery(sqlSumLdm).getSingleResult();
                                                         if (summLdm != null) {
                                                             finalSummLdm = finalSummLdm + summLdm;
