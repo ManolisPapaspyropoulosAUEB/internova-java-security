@@ -47,6 +47,17 @@ public class ProceduresPrintController extends Application {
 
 
 
+
+
+    public ByteArrayInputStream generateOrdeReport(String selectedOrdersIds) throws FileNotFoundException, JRException {
+        ObjectNode reportParams = Json.newObject();
+        reportParams.put("selected_orders_ids", " timeline_table.order_id in "+selectedOrdersIds);
+        ByteArrayInputStream export=null;
+        export = (ByteArrayInputStream) BaseJasperReport.generatePDF("selectedOrders/main", reportParams);
+        return export;
+    }
+
+
     public ByteArrayInputStream generateOfferReport(String offerId,String user,String lng,String company,String label1,String fromCountryCity,String toCountryCity,String ourOffer,String paymentMethod) throws FileNotFoundException, JRException {
         ObjectNode reportParams = Json.newObject();
         reportParams.put("offer_id", offerId);
@@ -119,6 +130,46 @@ public class ProceduresPrintController extends Application {
             return ok(result);
         }
     }
+
+
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    public Result exportSelectedOrdersJasper(final Http.Request request) throws IOException {
+        try {
+            Result result;
+            String selectedOrdersIds = request.queryString("selectedOrdersIds").get();
+            CompletableFuture<Result> addFuture = CompletableFuture.supplyAsync(() -> {
+                        return jpaApi.withTransaction(entityManager -> {
+                            ObjectNode add_result = Json.newObject();
+                            try {
+                                ByteArrayInputStream  export=
+                                        generateOrdeReport(selectedOrdersIds);
+                                add_result.put("status", "success");
+                                add_result.put("message", "Η καταχωρηση πραγματοποίηθηκε με επιτυχία");
+                                return ok(export).as("application/pdf; charset=UTF-8");
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+
+                            } catch (JRException e) {
+                                e.printStackTrace();
+                            }
+                            add_result.put("status", "error");
+                            add_result.put("message", "Προβλημα κατα την καταχωρηση");
+                            return ok(add_result);
+                        });
+                    },
+                    executionContext);
+            result = addFuture.get();
+            return result;
+        } catch (Exception e) {
+            ObjectNode result = Json.newObject();
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "Προβλημα κατα την καταχωρηση");
+            return ok(result);
+        }
+    }
+
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})

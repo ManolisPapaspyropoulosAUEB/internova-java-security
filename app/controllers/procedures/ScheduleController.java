@@ -359,7 +359,8 @@ public class ScheduleController extends Application {
                                                 sHmpam.put("expanded", false);
                                                 sHmpam.put("updateDate", j.getUpdateDate());
                                                 sHmpam.put("type", j.getType());
-                                                String fullTracked = "select * from schedule_packages sp where sp.measurement_unit_id=23 and sp.schedule_id=" + j.getId();
+                                                String fullTracked = "select * from schedule_packages sp " +
+                                                        "where sp.measurement_unit_id=23 and sp.schedule_id=" + j.getId();
                                                 List<SchedulePackagesEntity> spList = entityManager.createNativeQuery(fullTracked, SchedulePackagesEntity.class).getResultList();
                                                 if (spList.size() > 0) {
                                                     sHmpam.put("fullTracked", true);

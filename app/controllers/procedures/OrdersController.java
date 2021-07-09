@@ -876,6 +876,7 @@ public class OrdersController extends Application {
                                             sHmpam.put("timologioCode", j.getTimologioCode());
                                             sHmpam.put("id", j.getId());
                                             sHmpam.put("orderId", j.getId());
+                                            sHmpam.put("prepareForPdf", false);
                                             sHmpam.put("comments", j.getComments());
                                             sHmpam.put("factoryId", j.getFactoryId());
                                             sHmpam.put("generalInstructions", j.getGeneralInstructions());

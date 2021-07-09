@@ -13,6 +13,7 @@ import controllers.execution_context.DatabaseExecutionContext;
 import controllers.procedures.ProceduresPrintController;
 import models.BillingsEntity;
 import models.OffersEntity;
+import models.OrdersLoadingEntity;
 import models.UsersEntity;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.commons.mail.*;
@@ -115,6 +116,7 @@ public class MailerService {
                                 String toCountryCity = json.findPath("toCountryCity").asText();
                                 String ourOffer = json.findPath("ourOffer").asText();
                                 String paymentMethod = json.findPath("paymentMethod").asText();
+                                String selectedOrdersIds = json.findPath("selectedOrdersIds").asText();
 
                                 Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
                                 Email email = new Email()
@@ -124,11 +126,12 @@ public class MailerService {
                                 if(orderLoadingId!=null && !orderLoadingId.equalsIgnoreCase("") && !orderLoadingId.equalsIgnoreCase("null")){
 
                                     UsersEntity user = entityManager.find(UsersEntity.class,Long.valueOf(userId));
+                                    OrdersLoadingEntity ordersLoadingEntity = entityManager.find(OrdersLoadingEntity.class,orderLoadingId);
 
                                     ProceduresPrintController proceduresPrintController =
                                             new ProceduresPrintController(db, jpaApi, executionContext);
                                     try {
-                                        email.addAttachment("OderLoad.pdf",
+                                        email.addAttachment(ordersLoadingEntity.getDisplayAa(),
                                                 readStream(proceduresPrintController.
                                                         generateOrderLoadingReport(orderLoadingId,user.getFirstname()+" "+user.getLastname(),lng,company)),
                                                 "application/pdf", "OderLoad",
@@ -154,6 +157,24 @@ public class MailerService {
                                                 readStream(proceduresPrintController.
                                                         generateOfferReport(offerId,user.getFirstname()+" "+user.getLastname(),lng,company,label1,fromCountryCity,toCountryCity,ourOffer,paymentMethod)),
                                                 "application/pdf", "Offer",
+                                                EmailAttachment.INLINE);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    } catch (JRException e) {
+                                        e.printStackTrace();
+                                    }
+                                    mailerClient.send(email);
+                                    add_result.put("status", "success");
+                                    add_result.put("message", "Το email αποστάλθηκε με επυτιχία!");
+                                    return add_result;
+                                }else if (selectedOrdersIds!=null && !selectedOrdersIds.equalsIgnoreCase("") && !selectedOrdersIds.equalsIgnoreCase("null")){
+                                    ProceduresPrintController proceduresPrintController =
+                                            new ProceduresPrintController(db, jpaApi, executionContext);
+                                    try {
+                                        email.addAttachment("Orders.pdf",
+                                                readStream(proceduresPrintController.
+                                                        generateOrdeReport(selectedOrdersIds)),
+                                                "application/pdf", "Orders",
                                                 EmailAttachment.INLINE);
                                     } catch (IOException e) {
                                         e.printStackTrace();
