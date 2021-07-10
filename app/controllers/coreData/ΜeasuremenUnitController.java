@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execution_context.DatabaseExecutionContext;
 import controllers.system.Application;
 import models.MeasurementUnitEntity;
+import models.OrdersSelectionsByPointEntity;
 import models.SchedulePackageOfferEntity;
+import models.SchedulePackagesEntity;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
 import play.mvc.BodyParser;
@@ -164,17 +166,26 @@ public class ΜeasuremenUnitController  extends Application {
                             return jpaApi.withTransaction(entityManager -> {
                                 ObjectNode add_result = Json.newObject();
                                 Long id = json.findPath("id").asLong();
-                                //todo: tsekare an uparxei stis prosfores
-                                // String existSql = "select * from ";
-                                add_result.put("status", "error");
-                                add_result.put("message", "Προσωρινά αυτό το service δεν είναι διαθέσιμο");
-
-
-                                //                                update_result.put("DO_ID", measurementUnitEntity.getId());
-                                //                                update_result.put("system", "Υπεύθυνοι");
-                                //                                update_result.put("user_id", user_id);
-
-
+                                String sqlSpo ="select * from schedule_package_offer spo where spo.measure_unit_id="+id;
+                                List<SchedulePackageOfferEntity> schedulePackageOfferEntityList =
+                                        entityManager.createNativeQuery(sqlSpo,SchedulePackageOfferEntity.class).getResultList();
+                                String sqlOsp ="select * from orders_selections_by_point spo where spo.measure_unit_id="+id;
+                                List<OrdersSelectionsByPointEntity> ordersSelectionsByPointEntityList  =
+                                        entityManager.createNativeQuery(sqlOsp,OrdersSelectionsByPointEntity.class).getResultList();
+                                String sqlSpa ="select * from schedule_packages spo where spo.measurement_unit_id="+id;
+                                List<SchedulePackagesEntity> schedulePackagesEntityList  =
+                                        entityManager.createNativeQuery(sqlSpa,SchedulePackagesEntity.class).getResultList();
+                                if(schedulePackageOfferEntityList.size()>0 ||
+                                        ordersSelectionsByPointEntityList.size()>0 ||
+                                        schedulePackagesEntityList.size()>0 ){
+                                    add_result.put("status", "error");
+                                    add_result.put("message", "Bρέθηκαν συνδεδεμένες εγγραφές");
+                                    return add_result;
+                                }
+                                MeasurementUnitEntity measurementUnitEntity = entityManager.find(MeasurementUnitEntity.class,id);
+                                entityManager.remove(measurementUnitEntity);
+                                add_result.put("status", "success");
+                                add_result.put("message", "Η διαγραφή πραγματοποιήθηκε με επιτυχία");
                                 return add_result;
                             });
                         },
