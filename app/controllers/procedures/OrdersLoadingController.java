@@ -240,8 +240,9 @@ public class OrdersLoadingController extends Application {
                                         "from orders_loading t ";
                                 Integer maxAa = (Integer) entityManager.
                                         createNativeQuery(maxAasql).getSingleResult();
-
-
+                                if(maxAa==null){
+                                    maxAa=0;
+                                }
                                 String strDate = myDateFormater.format(new Date());
                                 if (fromCountry.trim().equalsIgnoreCase("Ελλάδα") && toCountry.equalsIgnoreCase("Ελλάδα")) {
                                     ordersLoadingEntity.setType("PR");
