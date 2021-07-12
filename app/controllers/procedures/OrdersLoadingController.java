@@ -125,7 +125,13 @@ public class OrdersLoadingController extends Application {
                                             OrderSchedulesEntity orderSchedulesEntity = entityManager.find(OrderSchedulesEntity.class, dromologioParNode.findPath("orderScheduleId").asLong());
                                             String pointComments = dromologioParNode.findPath("pointComments").asText();
                                             String pointStatus = dromologioParNode.findPath("pointStatus").asText();
-                                            orderSchedulesEntity.setComments(pointComments);
+                                            Integer position = dromologioParNode.findPath("position").asInt();
+                                            if(position!=null){
+                                                orderSchedulesEntity.setPosition(position);
+                                            }
+                                            if(pointComments!=null){
+                                                orderSchedulesEntity.setComments(pointComments);
+                                            }
                                             orderSchedulesEntity.setStatus(status);
                                             if (!dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("") && !dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("Invalid date")) {
                                                 String appointmentDay = dromologioParNode.findPath("appointmentDay").asText();
@@ -145,8 +151,17 @@ public class OrdersLoadingController extends Application {
                                                 OrderWaypointsEntity orderWaypointsEntity = entityManager.find(OrderWaypointsEntity.class, dromologioParNode.findPath("waypointId").asLong());
                                                 String appointmentDay = dromologioParNode.findPath("appointmentDay").asText();
                                                 String pointComments = dromologioParNode.findPath("pointComments").asText();
+                                                Integer position = dromologioParNode.findPath("position").asInt();
                                                 String pointStatus = dromologioParNode.findPath("pointStatus").asText();
-                                                orderWaypointsEntity.setComments(pointComments);
+                                                if(pointStatus!=null){
+                                                    orderWaypointsEntity.setStatus(pointStatus);
+                                                }
+                                                if(position!=null){
+                                                    orderWaypointsEntity.setPosition(position);
+                                                }
+                                                if(pointComments!=null){
+                                                    orderWaypointsEntity.setComments(pointComments);
+                                                }
                                                 orderWaypointsEntity.setStatus(pointStatus);
                                                 DateFormat myDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                                                 if (appointmentDay != null && !appointmentDay.equalsIgnoreCase("")) {
