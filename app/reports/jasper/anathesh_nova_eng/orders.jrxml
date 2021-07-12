@@ -178,13 +178,35 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textField textAdjust="StretchHeight">
-					<reportElement stretchType="ElementGroupHeight" x="120" y="46" width="434" height="14" isPrintWhenDetailOverflows="true" uuid="f0936e04-ca8e-4179-8639-79f581bd17d7">
+					<reportElement stretchType="ElementGroupHeight" x="0" y="120" width="554" height="16" isPrintWhenDetailOverflows="true" uuid="48ec3a0f-57c0-454c-89cf-81c108b42d59">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Weight: "+ $F{gross_weight}]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="ScaleFont">
+					<reportElement stretchType="ElementGroupHeight" x="0" y="16" width="554" height="15" isPrintWhenDetailOverflows="true" uuid="45068b79-6075-4c24-8735-8279101b62bc">
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<textElement>
 						<font fontName="ArialPdf"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$F{appointment_required}!=null && $F{appointment_required}==1?
+					<textFieldExpression><![CDATA[$F{point_type3}
+
++": " + ($F{factory_id}!=null?$F{factory_name}+",":"")+  ($F{address}!=null?$F{address}:"")+(($F{postal_code}!=null && $F{postal_code}!="null")?(",")+$F{postal_code}:"-"  )]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight">
+					<reportElement stretchType="ElementGroupHeight" x="0" y="46" width="554" height="14" isPrintWhenDetailOverflows="true" uuid="55bebefc-9bcd-4efd-8ce1-329a2f52de16">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{point_type}+" Date: "+(
+	$F{appointment_required}!=null && $F{appointment_required}==1?
 (
 	
 	$F{appointment_day_load}!=null?(
@@ -207,146 +229,16 @@
 	
 	
 ):"-"
+)
 )]]></textFieldExpression>
-				</textField>
-				<textField textAdjust="StretchHeight">
-					<reportElement stretchType="ElementGroupHeight" x="0" y="60" width="554" height="14" isPrintWhenDetailOverflows="true" uuid="e35274fe-77e9-4f32-afb8-75a93f180f53">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					</reportElement>
-					<textElement>
-						<font fontName="ArialPdf"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$F{point_type}+" Ref: "+
-(
-	($F{truck_loading_code}!=null &&$F{truck_loading_code}!="null")?$F{truck_loading_code}:"-"
-)]]></textFieldExpression>
-				</textField>
-				<textField textAdjust="StretchHeight">
-					<reportElement stretchType="ContainerBottom" x="0" y="31" width="554" height="15" uuid="b28d17ed-1272-4b08-b9eb-76db5e47c7fd">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					</reportElement>
-					<textElement>
-						<font fontName="ArialPdf"/>
-					</textElement>
-					<textFieldExpression><![CDATA["Coordinates: "+($F{coordinates}!=null?$F{coordinates}:"-")]]></textFieldExpression>
-				</textField>
-				<textField textAdjust="ScaleFont">
-					<reportElement stretchType="ElementGroupHeight" x="0" y="16" width="554" height="15" isPrintWhenDetailOverflows="true" uuid="8f4fdec9-7215-46b1-bbd8-a099aca68d09">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					</reportElement>
-					<textElement>
-						<font fontName="ArialPdf"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$F{point_type3}
-
-+": " + ($F{factory_id}!=null?$F{factory_name}+",":"")+  ($F{address}!=null?$F{address}:"")+(($F{postal_code}!=null && $F{postal_code}!="null")?(",")+$F{postal_code}:"-"  )]]></textFieldExpression>
-				</textField>
-				<textField textAdjust="ScaleFont">
-					<reportElement stretchType="ElementGroupHeight" x="0" y="136" width="554" height="14" isPrintWhenDetailOverflows="true" uuid="e9e15fbd-9813-46e2-8b9d-8c3b45451303">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-						<property name="com.jaspersoft.studio.unit.y" value="px"/>
-					</reportElement>
-					<textElement>
-						<font fontName="ArialPdf"/>
-					</textElement>
-					<textFieldExpression><![CDATA["Customer Name: "+
-(
-	($F{customer_name}!=null &&$F{customer_name}!="null")?$F{customer_name}:"-"
-)]]></textFieldExpression>
-				</textField>
-				<textField textAdjust="StretchHeight">
-					<reportElement stretchType="ElementGroupHeight" x="0" y="150" width="554" height="38" isPrintWhenDetailOverflows="true" uuid="db93b012-1b2f-40ba-a516-66fffcc865de">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-						<property name="com.jaspersoft.studio.unit.y" value="px"/>
-					</reportElement>
-					<textElement>
-						<font fontName="ArialPdf"/>
-					</textElement>
-					<textFieldExpression><![CDATA["Comments: "+
-(
-	($F{comments}!=null && $F{comments}!="null")?$F{comments}:"-"
-)]]></textFieldExpression>
-				</textField>
-				<textField textAdjust="StretchHeight">
-					<reportElement stretchType="ElementGroupHeight" x="0" y="74" width="554" height="16" isPrintWhenDetailOverflows="true" uuid="b1ec1032-e145-43ed-8d0c-2504f23b4216">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					</reportElement>
-					<textElement>
-						<font fontName="ArialPdf"/>
-					</textElement>
-					<textFieldExpression><![CDATA["Temprature: "+ 
-(
-	($F{truck_temprature}!=null && $F{truck_temprature}!="null")?$F{truck_temprature}+"°C":"-"
-)]]></textFieldExpression>
-				</textField>
-				<textField textAdjust="StretchHeight">
-					<reportElement stretchType="ElementGroupHeight" x="0" y="120" width="554" height="16" isPrintWhenDetailOverflows="true" uuid="6ab41d91-9f5a-40e8-93bc-a18e26c87a09">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-						<property name="com.jaspersoft.studio.unit.y" value="px"/>
-					</reportElement>
-					<textElement>
-						<font fontName="ArialPdf"/>
-					</textElement>
-					<textFieldExpression><![CDATA["Weight: "+ $F{gross_weight}]]></textFieldExpression>
-				</textField>
-				<textField textAdjust="ScaleFont">
-					<reportElement stretchType="ElementGroupHeight" x="0" y="1" width="554" height="15" isPrintWhenDetailOverflows="true" uuid="dde8e7a0-3d24-4322-9840-189d1363ba3e">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					</reportElement>
-					<textElement>
-						<font fontName="ArialPdf"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$F{point_type}]]></textFieldExpression>
 				</textField>
 				<frame>
-					<reportElement x="0" y="90" width="554" height="15" uuid="0d700611-b05e-41d8-9252-1e7bfdb7240f">
+					<reportElement x="0" y="105" width="554" height="15" uuid="df268e55-c4da-44d3-a9e8-835c8b6f0e9f">
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 						<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					</reportElement>
 					<textField textAdjust="StretchHeight">
-						<reportElement stretchType="ElementGroupHeight" x="0" y="0" width="80" height="15" isPrintWhenDetailOverflows="true" uuid="71d01618-e69b-43e9-8ba2-0295d5bd96e6">
-							<property name="com.jaspersoft.studio.unit.height" value="px"/>
-							<property name="com.jaspersoft.studio.unit.y" value="px"/>
-						</reportElement>
-						<textElement>
-							<font fontName="ArialPdf"/>
-						</textElement>
-						<textFieldExpression><![CDATA["Commodity: "]]></textFieldExpression>
-					</textField>
-					<subreport>
-						<reportElement x="60" y="0" width="494" height="15" uuid="73f5fb1f-7a90-427d-a278-296796ee1097">
-							<printWhenExpression><![CDATA[$F{point_type}.equalsIgnoreCase( "Φόρτωση" )]]></printWhenExpression>
-						</reportElement>
-						<subreportParameter name="SUBREPORT_DIR">
-							<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
-						</subreportParameter>
-						<subreportParameter name="id">
-							<subreportParameterExpression><![CDATA[$F{id}]]></subreportParameterExpression>
-						</subreportParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-						<subreportExpression><![CDATA[$P{SUBREPORT_DIR}+  "items_type_point.jasper"]]></subreportExpression>
-					</subreport>
-					<subreport>
-						<reportElement x="60" y="0" width="494" height="15" uuid="7e920266-2ead-46eb-a11a-0ef8eeaf531c">
-							<printWhenExpression><![CDATA[!$F{point_type}.equalsIgnoreCase( "Φόρτωση" )]]></printWhenExpression>
-						</reportElement>
-						<subreportParameter name="SUBREPORT_DIR">
-							<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
-						</subreportParameter>
-						<subreportParameter name="id">
-							<subreportParameterExpression><![CDATA[$F{id}]]></subreportParameterExpression>
-						</subreportParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-						<subreportExpression><![CDATA[$P{SUBREPORT_DIR}+  "items_type_waypoint.jasper"]]></subreportExpression>
-					</subreport>
-				</frame>
-				<frame>
-					<reportElement x="0" y="105" width="554" height="15" uuid="455dcf33-7ec2-4eef-bef4-228487fe2204">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-						<property name="com.jaspersoft.studio.unit.y" value="px"/>
-					</reportElement>
-					<textField textAdjust="StretchHeight">
-						<reportElement stretchType="ElementGroupHeight" x="0" y="0" width="80" height="15" isPrintWhenDetailOverflows="true" uuid="4137901d-e7e3-411c-a3ea-d51f310f364c">
+						<reportElement stretchType="ElementGroupHeight" x="0" y="0" width="80" height="15" isPrintWhenDetailOverflows="true" uuid="96dab6f6-10d8-4cc1-91f5-641c1c894b89">
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
 							<property name="com.jaspersoft.studio.unit.y" value="px"/>
 						</reportElement>
@@ -356,7 +248,7 @@
 						<textFieldExpression><![CDATA["Quantity: "]]></textFieldExpression>
 					</textField>
 					<subreport>
-						<reportElement x="60" y="0" width="494" height="15" uuid="241200ea-6b5a-4c6b-926a-76b5a079acc0">
+						<reportElement x="60" y="0" width="494" height="15" uuid="bb5c6f4a-778b-4029-8e60-262eca6dbfda">
 							<printWhenExpression><![CDATA[$F{point_type}.equalsIgnoreCase( "Φόρτωση" )]]></printWhenExpression>
 						</reportElement>
 						<subreportParameter name="SUBREPORT_DIR">
@@ -369,7 +261,7 @@
 						<subreportExpression><![CDATA[$P{SUBREPORT_DIR}+  "items_quantity_point.jasper"]]></subreportExpression>
 					</subreport>
 					<subreport>
-						<reportElement x="60" y="0" width="494" height="15" uuid="f61040b1-07bc-4d28-833e-dd57461c869a">
+						<reportElement x="60" y="0" width="494" height="15" uuid="f2f3551a-a88d-42c4-a5ac-5c537e003d52">
 							<printWhenExpression><![CDATA[!$F{point_type}.equalsIgnoreCase( "Φόρτωση" )]]></printWhenExpression>
 						</reportElement>
 						<subreportParameter name="SUBREPORT_DIR">
@@ -382,37 +274,115 @@
 						<subreportExpression><![CDATA[$P{SUBREPORT_DIR}+  "items_quantity_waypoint.jasper"]]></subreportExpression>
 					</subreport>
 				</frame>
-				<textField textAdjust="StretchHeight">
-					<reportElement stretchType="ElementGroupHeight" x="0" y="46" width="120" height="14" isPrintWhenDetailOverflows="true" uuid="6a5a1843-08ce-4dac-84ed-7d7d5502f3dd">
+				<textField textAdjust="ScaleFont">
+					<reportElement stretchType="ElementGroupHeight" x="0" y="1" width="554" height="15" isPrintWhenDetailOverflows="true" uuid="829a9dc6-b2f3-4cf6-ac58-1699b7e3d2f7">
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<textElement>
 						<font fontName="ArialPdf"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$F{point_type}+" Date"+($F{appointment_required}!=null && $F{appointment_required}==1?
+					<textFieldExpression><![CDATA[$F{point_type}]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight">
+					<reportElement stretchType="ElementGroupHeight" x="0" y="74" width="554" height="16" isPrintWhenDetailOverflows="true" uuid="bbdb5fab-deea-4adb-80d9-7e63f9a34a28">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Temprature: "+ 
 (
-	
-	$F{appointment_day_load}!=null?(
-	
-	
-	
-	new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format($F{appointment_day_load})
-	
-	
-)+" ( With appointment )":"-"
-	
-	
-):
+	($F{truck_temprature}!=null && $F{truck_temprature}!="null")?$F{truck_temprature}+"°C":"-"
+)]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight">
+					<reportElement stretchType="ElementGroupHeight" x="0" y="150" width="554" height="38" isPrintWhenDetailOverflows="true" uuid="d13caaa8-3150-44c8-9fd4-a02fcb42352a">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Comments: "+
 (
-	$F{appointment_day_load}!=null?(
-	
-	
-	
-	new SimpleDateFormat("dd/MM/yyyy").format($F{appointment_day_load})
-	
-	
-):"-"
-))]]></textFieldExpression>
+	($F{comments}!=null && $F{comments}!="null")?$F{comments}:"-"
+)]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight">
+					<reportElement stretchType="ElementGroupHeight" x="0" y="60" width="554" height="14" isPrintWhenDetailOverflows="true" uuid="c88a680d-96c0-42f7-86da-2dd39368eba1">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{point_type}+" Ref: "+
+(
+	($F{truck_loading_code}!=null &&$F{truck_loading_code}!="null")?$F{truck_loading_code}:"-"
+)]]></textFieldExpression>
+				</textField>
+				<textField textAdjust="StretchHeight">
+					<reportElement stretchType="ContainerBottom" x="0" y="31" width="554" height="15" uuid="5e76796d-24dc-4d25-bb96-8a16beb5a90a">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Coordinates: "+($F{coordinates}!=null?$F{coordinates}:"-")]]></textFieldExpression>
+				</textField>
+				<frame>
+					<reportElement x="0" y="90" width="554" height="15" uuid="e5325f8d-fe1b-479b-b59b-467a6c257411">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<textField textAdjust="StretchHeight">
+						<reportElement stretchType="ElementGroupHeight" x="0" y="0" width="80" height="15" isPrintWhenDetailOverflows="true" uuid="315b205e-568e-4194-ba12-645428e51cfa">
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						</reportElement>
+						<textElement>
+							<font fontName="ArialPdf"/>
+						</textElement>
+						<textFieldExpression><![CDATA["Commodity: "]]></textFieldExpression>
+					</textField>
+					<subreport>
+						<reportElement x="60" y="0" width="494" height="15" uuid="342e2402-be78-41ec-971c-a32da2f79b3a">
+							<printWhenExpression><![CDATA[$F{point_type}.equalsIgnoreCase( "Φόρτωση" )]]></printWhenExpression>
+						</reportElement>
+						<subreportParameter name="SUBREPORT_DIR">
+							<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+						</subreportParameter>
+						<subreportParameter name="id">
+							<subreportParameterExpression><![CDATA[$F{id}]]></subreportParameterExpression>
+						</subreportParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						<subreportExpression><![CDATA[$P{SUBREPORT_DIR}+  "items_type_point.jasper"]]></subreportExpression>
+					</subreport>
+					<subreport>
+						<reportElement x="60" y="0" width="494" height="15" uuid="c56d692b-ce91-45ec-bd89-2adb27151786">
+							<printWhenExpression><![CDATA[!$F{point_type}.equalsIgnoreCase( "Φόρτωση" )]]></printWhenExpression>
+						</reportElement>
+						<subreportParameter name="SUBREPORT_DIR">
+							<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+						</subreportParameter>
+						<subreportParameter name="id">
+							<subreportParameterExpression><![CDATA[$F{id}]]></subreportParameterExpression>
+						</subreportParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						<subreportExpression><![CDATA[$P{SUBREPORT_DIR}+  "items_type_waypoint.jasper"]]></subreportExpression>
+					</subreport>
+				</frame>
+				<textField textAdjust="ScaleFont">
+					<reportElement stretchType="ElementGroupHeight" x="0" y="136" width="554" height="14" isPrintWhenDetailOverflows="true" uuid="8a05280e-f917-4190-80f4-89c156db06ef">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Customer Name: "+
+(
+	($F{customer_name}!=null &&$F{customer_name}!="null")?$F{customer_name}:"-"
+)]]></textFieldExpression>
 				</textField>
 			</frame>
 		</band>
