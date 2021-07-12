@@ -147,22 +147,23 @@ public class OrdersLoadingController extends Application {
                                             }
                                             entityManager.merge(orderSchedulesEntity);
                                         } else {
-                                            if (!dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("") && !dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("Invalid date")) {
-                                                OrderWaypointsEntity orderWaypointsEntity = entityManager.find(OrderWaypointsEntity.class, dromologioParNode.findPath("waypointId").asLong());
-                                                String appointmentDay = dromologioParNode.findPath("appointmentDay").asText();
-                                                String pointComments = dromologioParNode.findPath("pointComments").asText();
-                                                Integer position = dromologioParNode.findPath("position").asInt();
-                                                String pointStatus = dromologioParNode.findPath("pointStatus").asText();
-                                                if(pointStatus!=null){
-                                                    orderWaypointsEntity.setStatus(pointStatus);
-                                                }
-                                                if(position!=null){
-                                                    orderWaypointsEntity.setPosition(position);
-                                                }
-                                                if(pointComments!=null){
-                                                    orderWaypointsEntity.setComments(pointComments);
-                                                }
+                                            OrderWaypointsEntity orderWaypointsEntity = entityManager.find(OrderWaypointsEntity.class, dromologioParNode.findPath("waypointId").asLong());
+                                            String pointComments = dromologioParNode.findPath("pointComments").asText();
+                                            Integer position = dromologioParNode.findPath("position").asInt();
+                                            String pointStatus = dromologioParNode.findPath("pointStatus").asText();
+                                            String appointmentDay = dromologioParNode.findPath("appointmentDay").asText();
+                                            if(pointStatus!=null){
                                                 orderWaypointsEntity.setStatus(pointStatus);
+                                            }
+                                            if(position!=null){
+                                                orderWaypointsEntity.setPosition(position);
+                                            }
+                                            if(pointComments!=null){
+                                                orderWaypointsEntity.setComments(pointComments);
+                                            }
+                                            orderWaypointsEntity.setStatus(pointStatus);
+                                            if (!dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("") && !dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("Invalid date")) {
+
                                                 DateFormat myDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                                                 if (appointmentDay != null && !appointmentDay.equalsIgnoreCase("")) {
                                                     try {
