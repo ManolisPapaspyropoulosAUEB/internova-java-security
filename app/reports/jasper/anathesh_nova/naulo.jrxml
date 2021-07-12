@@ -87,7 +87,7 @@
 					<textElement>
 						<font fontName="ArialPdf"/>
 					</textElement>
-					<textFieldExpression><![CDATA["1)Όλα τα απαραίτητα έγγραφα της μεταφοράς θα αποστέλλονται με email στην διεύθυνση 1) invoicing@novafreightltd.com To μέγεθος του αρχείου δεν θα πρέπει να ξεπερνάει τα 2ΜΒ, θα πρέπει να είναι σε μορφή PDF και θα πρέπει να είναι ευανάγνωστα."]]></textFieldExpression>
+					<textFieldExpression><![CDATA["1)Όλα τα απαραίτητα έγγραφα της μεταφοράς θα αποστέλλονται με email στην διεύθυνση: invoicing@novafreightltd.com. To μέγεθος του αρχείου δεν θα πρέπει να ξεπερνάει τα 2ΜΒ, θα πρέπει να είναι σε μορφή PDF και θα πρέπει να είναι ευανάγνωστα."]]></textFieldExpression>
 				</textField>
 				<textField>
 					<reportElement x="0" y="100" width="534" height="19" uuid="00c86212-6316-4354-9be2-5898b4cf4a6b"/>
