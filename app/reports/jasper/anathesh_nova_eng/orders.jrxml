@@ -168,9 +168,9 @@
 		<band splitType="Stretch"/>
 	</background>
 	<detail>
-		<band height="188" splitType="Stretch">
+		<band height="175" splitType="Stretch">
 			<frame>
-				<reportElement stretchType="ElementGroupHeight" x="0" y="0" width="554" height="188" uuid="b6011189-0000-4948-80fa-2dd51b3236ed"/>
+				<reportElement stretchType="ElementGroupHeight" x="0" y="0" width="554" height="175" uuid="b6011189-0000-4948-80fa-2dd51b3236ed"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -296,7 +296,7 @@
 )]]></textFieldExpression>
 				</textField>
 				<textField textAdjust="StretchHeight">
-					<reportElement stretchType="ElementGroupHeight" x="0" y="150" width="554" height="38" isPrintWhenDetailOverflows="true" uuid="d13caaa8-3150-44c8-9fd4-a02fcb42352a">
+					<reportElement stretchType="ElementGroupHeight" x="0" y="136" width="554" height="39" isPrintWhenDetailOverflows="true" uuid="d13caaa8-3150-44c8-9fd4-a02fcb42352a">
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 						<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					</reportElement>
@@ -371,19 +371,6 @@
 						<subreportExpression><![CDATA[$P{SUBREPORT_DIR}+  "items_type_waypoint.jasper"]]></subreportExpression>
 					</subreport>
 				</frame>
-				<textField textAdjust="ScaleFont">
-					<reportElement stretchType="ElementGroupHeight" x="0" y="136" width="554" height="14" isPrintWhenDetailOverflows="true" uuid="8a05280e-f917-4190-80f4-89c156db06ef">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-						<property name="com.jaspersoft.studio.unit.y" value="px"/>
-					</reportElement>
-					<textElement>
-						<font fontName="ArialPdf"/>
-					</textElement>
-					<textFieldExpression><![CDATA["Customer Name: "+
-(
-	($F{customer_name}!=null &&$F{customer_name}!="null")?$F{customer_name}:"-"
-)]]></textFieldExpression>
-				</textField>
 			</frame>
 		</band>
 	</detail>
