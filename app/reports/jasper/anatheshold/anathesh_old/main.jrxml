@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="main" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="f237a289-524a-478a-a691-7d4013697fb7">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="internova_db"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="469"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="522"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA[".\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="order_loading_id" class="java.lang.String"/>
+	<parameter name="user" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[select 1 from dual]]>
+	</queryString>
+	<field name="1" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="1"/>
+		<property name="com.jaspersoft.studio.field.label" value="1"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="100">
+			<frame>
+				<reportElement x="10" y="0" width="545" height="100" uuid="56ab27e9-2a43-4a51-b1f0-e241e801c712"/>
+				<image>
+					<reportElement x="0" y="10" width="230" height="70" uuid="837d74de-dfef-467c-beff-6c7494504d35"/>
+					<imageExpression><![CDATA[$P{SUBREPORT_DIR}+"internovaLogo.png"]]></imageExpression>
+				</image>
+				<frame>
+					<reportElement x="230" y="0" width="304" height="80" uuid="8aeb7c16-f62b-4980-841a-fb3836ab07ab"/>
+					<textField>
+						<reportElement x="0" y="10" width="304" height="13" uuid="e5e4c8fd-0778-4092-a6cc-8c9448627fc4">
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						</reportElement>
+						<textElement textAlignment="Right">
+							<font fontName="ArialPdf"/>
+						</textElement>
+						<textFieldExpression><![CDATA["ΙΝΤΕΡΝΟΒΑ ΤΡΑΝΣ"]]></textFieldExpression>
+					</textField>
+					<textField>
+						<reportElement x="0" y="23" width="304" height="13" uuid="7baec416-9ec8-4584-81ac-2390aa29d3b6">
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						</reportElement>
+						<textElement textAlignment="Right">
+							<font fontName="ArialPdf"/>
+						</textElement>
+						<textFieldExpression><![CDATA["ΑΦΜ: 099005820"]]></textFieldExpression>
+					</textField>
+					<textField>
+						<reportElement x="0" y="36" width="304" height="13" uuid="7c672151-723b-41a4-a390-5ad999fb67c1">
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						</reportElement>
+						<textElement textAlignment="Right">
+							<font fontName="ArialPdf"/>
+						</textElement>
+						<textFieldExpression><![CDATA["Ευαγγελιστρίας 14,Αγία Παρασκευή 15342"]]></textFieldExpression>
+					</textField>
+					<textField>
+						<reportElement x="0" y="49" width="304" height="13" uuid="2410ec5e-cb5f-41b0-a1d0-12c24d80a9c3">
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						</reportElement>
+						<textElement textAlignment="Right">
+							<font fontName="ArialPdf"/>
+						</textElement>
+						<textFieldExpression><![CDATA["Τηλ:2103472260"]]></textFieldExpression>
+					</textField>
+					<textField>
+						<reportElement x="0" y="62" width="304" height="18" uuid="99863426-9519-4c35-b7e6-89f22daa6e72">
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						</reportElement>
+						<textElement textAlignment="Right">
+							<font fontName="ArialPdf"/>
+						</textElement>
+						<textFieldExpression><![CDATA["www.internovatrans.gr , info@internovatrans.gr "]]></textFieldExpression>
+					</textField>
+				</frame>
+				<subreport>
+					<reportElement x="0" y="80" width="534" height="20" uuid="576ef8a9-3113-4808-ba3b-8637a6bda10d"/>
+					<subreportParameter name="order_loading_id">
+						<subreportParameterExpression><![CDATA[$P{order_loading_id}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="SUBREPORT_DIR">
+						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA[$P{SUBREPORT_DIR}+"title.jasper"]]></subreportExpression>
+				</subreport>
+			</frame>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="31" splitType="Stretch">
+			<subreport>
+				<reportElement x="10" y="0" width="534" height="30" uuid="a61a3f26-8c23-4b0d-abd3-c171c9ec5cad"/>
+				<subreportParameter name="order_loading_id">
+					<subreportParameterExpression><![CDATA[$P{order_loading_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR}+"orders.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="30">
+			<subreport>
+				<reportElement x="10" y="0" width="534" height="30" uuid="cb5c4304-ccd3-46ac-aa47-6678c747b26d"/>
+				<subreportParameter name="order_loading_id">
+					<subreportParameterExpression><![CDATA[$P{order_loading_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR}+"naulo.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<summary>
+		<band height="60">
+			<break>
+				<reportElement x="0" y="30" width="93" height="1" uuid="16fca06a-54bd-462e-876b-c99a3da5e097"/>
+			</break>
+			<subreport>
+				<reportElement x="0" y="30" width="555" height="30" uuid="c81ed0d9-b0f7-4808-9af8-9117bebf80a6"/>
+				<subreportParameter name="user">
+					<subreportParameterExpression><![CDATA[$P{user}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR}+"footer.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</summary>
+</jasperReport>

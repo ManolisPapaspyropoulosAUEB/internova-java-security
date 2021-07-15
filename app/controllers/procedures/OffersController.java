@@ -315,6 +315,7 @@ public class OffersController extends Application {
                                             String offerId = json.findPath("offerId").asText();
                                             String offerDate = json.findPath("offerDate").asText();
                                             String aa = json.findPath("aa").asText();
+                                            String idOrdersSearch = json.findPath("idOrdersSearch").asText();
                                             String customer = json.findPath("customer").asText();
                                             String suplierId = json.findPath("suplierId").asText();
                                             String status = json.findPath("status").asText();
@@ -330,6 +331,10 @@ public class OffersController extends Application {
                                             }
                                             if(suplierId!=null && !suplierId.equalsIgnoreCase("")){
                                                 sqlCustSupl += " and  offer.customer_id="+suplierId;
+                                            }
+                                            if(idOrdersSearch!=null && !idOrdersSearch.equalsIgnoreCase("")
+                                                    && !idOrdersSearch.equalsIgnoreCase("null")){
+                                                sqlCustSupl += " and  offer.id in (select ord.offer_id from orders ord where ord.id like '%"+idOrdersSearch+"%' ) ";
                                             }
                                             if (!customer.equalsIgnoreCase("") && customer != null) {
                                                 sqlCustSupl += " and offer.customer_id  in " +
@@ -363,14 +368,7 @@ public class OffersController extends Application {
                                                         " and offer.seller_id " +
                                                                 " in ( select id" +
                                                                 "      from  internova_sellers isell" +
-                                                                "      where isell.name like '%" + seller + "%' ) " +
-                                                                " union " +
-                                                                " select offer.*" +
-                                                                " from offers offer " +
-                                                                " join customers_suppliers cs on (cs.id=offer.customer_id and offer.seller_id is null )" +
-                                                                " where " +
-                                                                " cs.internova_seller_id in " +
-                                                                " (select id from  internova_sellers isell where isell.name like '%" + seller + "%' )";
+                                                                "      where isell.name like '%" + seller + "%' ) " ;
                                             }
                                             if (!from.equalsIgnoreCase("") && from != null) {
                                                 sqlCustSupl += " and offer.from_address like '%" + from + "%'";
@@ -392,7 +390,9 @@ public class OffersController extends Application {
                                                     sqlCustSupl += " order by (select name from internova_sellers iseller where iseller.id=offer.seller_id)" + descAsc;
                                                 } else if (orderCol.equalsIgnoreCase("brandName")) {
                                                     sqlCustSupl += " order by (select brand_name from customers_suppliers cs where cs.id=offer.customer_id)" + descAsc;
-                                                } else {
+                                                } else if ( orderCol.equalsIgnoreCase("idOrders") ) {
+                                                    sqlCustSupl += "order by (select count(ord.id) from orders ord where ord.offer_id=offer.id) " + descAsc;
+                                                }else{
                                                     sqlCustSupl += " order by " + orderCol + " " + descAsc;
                                                 }
                                             } else {
@@ -417,8 +417,21 @@ public class OffersController extends Application {
 
                                                 } else {
                                                     sHmpam.put("orderExist", false);
-
                                                 }
+                                                String sqlOrders = "select GROUP_CONCAT(concat('#','(',ord.id,')'))  as ordids \n" +
+                                                        "from orders ord where ord.offer_id = "+j.getId();
+                                                String ordids = (String) entityManager.createNativeQuery(sqlOrders).getSingleResult();
+
+                                                if (ordids != null) {
+                                                    sHmpam.put("ordids", ordids);
+                                                } else {
+                                                    sHmpam.put("ordids", "-");
+                                                }
+
+
+
+
+
                                                 sHmpam.put("id", j.getId());
                                                 sHmpam.put("acceptOfferDate", j.getAcceptOfferDate());
                                                 sHmpam.put("sendOfferDate", j.getSendOfferDate());
@@ -504,6 +517,22 @@ public class OffersController extends Application {
                                                     if (orderSchedulesEntityList.size() > 0) {
                                                         osentMap.put("order_id", orderSchedulesEntityList.get(0).getOrderId());
                                                     }
+
+                                                    List<HashMap<String, Object>> offerOrderList= new ArrayList<HashMap<String, Object>>();
+                                                    for(OrderSchedulesEntity ordsd : orderSchedulesEntityList){
+                                                        HashMap<String, Object> ordOfferMap = new HashMap<String, Object>();
+                                                        OrdersEntity ordersEntity = entityManager.find(OrdersEntity.class,ordsd.getOrderId());
+                                                        ordOfferMap.put("id", "#"+ordersEntity.getId());
+                                                        ordOfferMap.put("orderId", ordersEntity.getId());
+                                                        ordOfferMap.put("status", ordersEntity.getStatus());
+                                                        ordOfferMap.put("creationDate", ordersEntity.getCreationDate());
+                                                        offerOrderList.add(ordOfferMap);
+                                                    }
+
+
+
+                                                    osentMap.put("isPopoverOpen", false);
+                                                    osentMap.put("offerOrderList", offerOrderList);
                                                     osentMap.put("fromAddress", osent.getFromAddress());
                                                     osentMap.put("token", osent.getToken());
                                                     osentMap.put("fromCity", osent.getFromCity());
@@ -1038,7 +1067,11 @@ public class OffersController extends Application {
                                         schedulePackageOfferEntity.setCreationDate(new Date());
                                         schedulePackageOfferEntity.setOfferScheduleId(offersSchedulesEntity.getId()); //TODO
                                         schedulePackageOfferEntity.setFromUnit(schedulePackageOfferNode.findPath("from").asInt());
-                                        schedulePackageOfferEntity.setToUnit(schedulePackageOfferNode.findPath("to").asInt());
+                                        if(schedulePackageOfferNode.findPath("from").asInt()>schedulePackageOfferNode.findPath("to").asInt()){
+                                            schedulePackageOfferEntity.setToUnit(schedulePackageOfferNode.findPath("from").asInt());
+                                        }else{
+                                            schedulePackageOfferEntity.setToUnit(schedulePackageOfferNode.findPath("to").asInt());
+                                        }
                                         schedulePackageOfferEntity.setUnitPrice(schedulePackageOfferNode.findPath("unitPrice").asDouble());
                                         String sqlUnit = "select * from measurement_unit mu where mu.title='" + schedulePackageOfferNode.findPath("measureUnitLabel").asText() + "'";
                                         List<MeasurementUnitEntity> muList = (List<MeasurementUnitEntity>) entityManager.createNativeQuery(sqlUnit, MeasurementUnitEntity.class).getResultList();

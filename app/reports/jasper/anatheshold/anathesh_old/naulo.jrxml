@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="naulo" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="a5c1a116-ec22-4ea0-92e2-24a08bb5bf8c">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="internova_db"/>
+	<parameter name="order_loading_id" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[select ordl.comments,  sum(asb.naulo) as naulo
+    from order_loading_assignment ol 
+    join assignment_billings asb on (ol.id=asb.assignment_id)
+    join orders_loading ordl on (ordl.id=ol.order_loading_id)
+    where ol.order_loading_id=$P{order_loading_id}]]>
+	</queryString>
+	<field name="comments" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="comments"/>
+		<property name="com.jaspersoft.studio.field.label" value="comments"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="orders_loading"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="naulo" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.name" value="naulo"/>
+		<property name="com.jaspersoft.studio.field.label" value="naulo"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="orders_loading"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="210" splitType="Stretch">
+			<frame>
+				<reportElement x="0" y="0" width="534" height="210" uuid="25737eb9-e287-46b3-ac61-b7990c7b4429"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+				</box>
+				<textField>
+					<reportElement x="0" y="20" width="290" height="14" uuid="1e35eb68-c7c4-4d8c-be14-87d58ec95d90">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Ναύλο Μεταφοράς ="+$F{naulo} +" (€) "]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="34" width="290" height="14" uuid="d8859de7-d084-4bf4-914c-4ca0b972b942">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["(Ναύλο Προμηθευτή)"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="60" width="534" height="150" uuid="47f3f3b9-2d67-4fe6-805f-db3d136a0dec"/>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["ΣΗΜΕΙΩΣΕΙΣ : " +($F{comments}!=null && $F{comments}!="-"?$F{comments}:"-")]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+	<summary>
+		<band height="119">
+			<frame>
+				<reportElement x="0" y="0" width="534" height="119" uuid="374e8450-0c12-464c-b718-248e8eabcc64"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+				</box>
+				<textField>
+					<reportElement x="0" y="81" width="534" height="19" uuid="d7890b35-8409-4944-83d9-2e3b1f2e5e4a"/>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["3)Θα πρέπει να υπάρχει ενεργή ασφάλεια CMR"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="51" width="534" height="30" uuid="57d7fa76-28aa-484a-99c7-d62c86037422"/>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["2)Τα έγγραφα της μεταφοράς θα πρέπει να αποστέλλονται πρωτότυπα στην διεύθυνση Ευαγγελιστρίας 14 Αγία Παρασκευή 15342 Αθήνα"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="11" width="534" height="40" uuid="8c0414de-9c95-47ca-b68f-b9102fb233a9"/>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["1)Όλα τα απαραίτητα έγγραφα της μεταφοράς θα αποστέλλονται με email στην διεύθυνση accounts@internovatrans.gr To μέγεθος του αρχείου δεν θα πρέπει να ξεπερνάει τα 2ΜΒ, θα πρέπει να είναι σε μορφή PDF και θα πρέπει να είναι ευανάγνωστα."]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="100" width="534" height="19" uuid="00c86212-6316-4354-9be2-5898b4cf4a6b"/>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["4)ΓΙΑ ΚΑΘΕ ΔΙΑΦΟΡΑ ΑΡΜΟΔΙΑ ΕΙΝΑΙ ΤΑ ΔΙΚΑΣΤΗΡΙΑ ΑΘΗΝΩΝ"]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</summary>
+</jasperReport>

@@ -1,26 +1,19 @@
 # Routes
 # This file defines all application routes (Higher priority routes first)
-# ~~~~ GET    /:id                 v1.post.PostController.show(request:Request,id)
-
-# An example controller showing a sample home page
 GET         /                                                 controllers.HomeController.index
-
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file                                     controllers.Assets.versioned(path="/public", file: Asset)
 GET         /app/*file                                        controllers.WebAppAssets.at(path="webapp/", file: String)
-
 #OrganizationsController
 POST        /addOrganization                                  controllers.security.OrganizationsController.addOrganization(req: Request)
 POST        /updateOrganization                               controllers.security.OrganizationsController.updateOrganization(req: Request)
 POST        /getOrganizations                                 controllers.security.OrganizationsController.getOrganizations(req: Request)
 POST        /deleteOrganization                               controllers.security.OrganizationsController.deleteOrganization(req: Request)
-
 #RolesController
 POST        /addRole                                          controllers.security.RolesController.addRole(req: Request)
 POST        /updateRole                                       controllers.security.RolesController.updateRole(req: Request)
 POST        /deleteRole                                       controllers.security.RolesController.deleteRole(req: Request)
 POST        /getRoles                                         controllers.security.RolesController.getRoles(req: Request)
-
 #UsersControllers//
 POST        /addUser                                          controllers.security.UsersControllers.addUser(req: Request)
 POST        /updateUser                                       controllers.security.UsersControllers.updateUser(req: Request)
@@ -29,7 +22,6 @@ POST        /getUsers                                         controllers.securi
 POST        /getAllUsersNoPagination                          controllers.security.UsersControllers.getAllUsersNoPagination(req: Request)
 POST        /updatePassword                                   controllers.security.UsersControllers.updatePassword(req: Request)
 POST        /login                                            controllers.security.UsersControllers.login(req: Request)
-
 #AuditLogsController ftpRetrieveFromPath ftpRetrieveFromFrankana
 POST        /ftpRetrieveFromPath                              controllers.security.AuditLogsController.ftpRetrieveFromPath(req: Request)
 POST        /ftpRetrieveFromFrankana                          controllers.security.AuditLogsController.ftpRetrieveFromFrankana(req: Request)
@@ -38,14 +30,11 @@ POST        /addAuditLog                                      controllers.securi
 POST        /updateAuditLog                                   controllers.security.AuditLogsController.updateAuditLog(req: Request)
 POST        /deleteLog                                        controllers.security.AuditLogsController.deleteLog(req: Request)
 POST        /getAuditLogs                                     controllers.security.AuditLogsController.getAuditLogs(req: Request)
-
 #AuditLogsController
 POST        /addDepartment                                    controllers.security.DepartmentController.addDepartment(req: Request)
 POST        /updateDepartment                                 controllers.security.DepartmentController.updateDepartment(req: Request)
 POST        /getDepartments                                   controllers.security.DepartmentController.getDepartments(req: Request)
 POST        /deleteDepartment                                 controllers.security.DepartmentController.deleteDepartment(req: Request)
-
-
 #DocumentsController
 POST        /getUploadsBySystemId                             controllers.documents.DocumentsController.getUploadsBySystemId(req: Request)
 POST        /uploadFile                                       controllers.documents.DocumentsController.uploadFile(req: Request)
@@ -53,24 +42,18 @@ POST        /downloadDocument                                 controllers.docume
 POST        /deleteAttatchment                                controllers.documents.DocumentsController.deleteAttatchment(req: Request)
 POST        /downloadDocumentGet                              controllers.documents.DocumentsController.downloadDocumentGet(req: Request)
 POST        /updateAttatchment                                controllers.documents.DocumentsController.updateAttatchment(req: Request)
-
-
-
 #SecurityPrintsController
 POST        /exportUsersAsXLS                                 controllers.security.SecurityPrintsController.exportUsersAsXLS(req: Request)
 POST        /exportRolesAsXLS                                 controllers.security.SecurityPrintsController.exportRolesAsXLS(req: Request)
 POST        /exportDepartmentsAsXLS                           controllers.security.SecurityPrintsController.exportDepartmentsAsXLS(req: Request)
 POST        /exportOrganizationsAsXLS                         controllers.security.SecurityPrintsController.exportOrganizationsAsXLS(req: Request)
 POST        /deleteXLSFromFolder                              controllers.security.SecurityPrintsController.deleteXLSFromFolder(req: Request)
-
 #WarehousesController
 POST        /addWarehouse                                     controllers.archives.WarehousesController.addWarehouse(req: Request)
 POST        /getWarehouses                                    controllers.archives.WarehousesController.getWarehouses(req: Request)
 POST        /updateWarehouse                                  controllers.archives.WarehousesController.updateWarehouse(req: Request)
 POST        /deleteWarehouse                                  controllers.archives.WarehousesController.deleteWarehouse(req: Request)
 POST        /getAllWarehousesNoPagination                     controllers.archives.WarehousesController.getAllWarehousesNoPagination(req: Request)
-
-
 #FactoriesController
 POST        /getFactories                                     controllers.archives.FactoriesController.getFactories(req: Request)
 POST        /getFactoryCustomers                              controllers.archives.FactoriesController.getFactoryCustomers(req: Request)
@@ -79,7 +62,6 @@ POST        /addFactory                                       controllers.archiv
 POST        /updateFactory                                    controllers.archives.FactoriesController.updateFactory(req: Request)
 POST        /deleteFactory                                    controllers.archives.FactoriesController.deleteFactory(req: Request)
 POST        /getAllFactoriesNoPagination                      controllers.archives.FactoriesController.getAllFactoriesNoPagination(req: Request)
-
 #TrucksController deleteTruckSupplier
 POST        /addTruck                                         controllers.archives.TrucksController.addTruck(req: Request)
 POST        /updateTruck                                      controllers.archives.TrucksController.updateTruck(req: Request)
@@ -91,19 +73,12 @@ POST        /addTruckType                                     controllers.archiv
 POST        /updateTruckType                                  controllers.archives.TrucksController.updateTruckType(req: Request)
 POST        /getTruckTypes                                    controllers.archives.TrucksController.getTruckTypes(req: Request)
 POST        /deleteTruckTypes                                 controllers.archives.TrucksController.deleteTruckTypes(req: Request)
-
-
-
-
 #ManagersController
 POST        /addManager                                       controllers.coreData.ManagersController.addManager(req: Request)
 POST        /updateManager                                    controllers.coreData.ManagersController.updateManager(req: Request)
 POST        /deleteManager                                    controllers.coreData.ManagersController.deleteManager(req: Request)
 POST        /getManagers                                      controllers.coreData.ManagersController.getManagers(req: Request)
 POST        /getManagersExpect                                controllers.coreData.ManagersController.getManagersExpect(req: Request)
-
-
-
 #CustomersSuppliersController
 POST        /addCustomerSupplier                              controllers.archives.CustomersSuppliersController.addCustomerSupplier(req: Request)
 POST        /updateCustomerSupplier                           controllers.archives.CustomersSuppliersController.updateCustomerSupplier(req: Request)
@@ -117,9 +92,6 @@ POST        /getRoadCosts                                     controllers.archiv
 POST        /getRoadCostsBySuplier                            controllers.archives.CustomersSuppliersController.getRoadCostsBySuplier(req: Request)
 POST        /viesvalidator                                    controllers.archives.CustomersSuppliersController.viesvalidator(req: Request)
 POST        /getRoadCostsHistoryBySuppCountryCity             controllers.archives.CustomersSuppliersController.getRoadCostsHistoryBySuppCountryCity(req: Request)
-
-
-
 #ArchivesPrintController
 POST        /exportWarehousesAsXLS                            controllers.archives.ArchivesPrintController.exportWarehousesAsXLS(req: Request)
 POST        /deleteXLSFromFolder                              controllers.archives.ArchivesPrintController.deleteXLSFromFolder(req: Request)
@@ -129,32 +101,21 @@ POST        /exportManagersAsXLS                              controllers.coreDa
 POST        /exportBillingsAsXls                              controllers.coreData.CoreDataPrintsController.exportBillingsAsXls(req: Request)
 POST        /exportInternovaAsXls                             controllers.coreData.CoreDataPrintsController.exportInternovaAsXls(req: Request)
 POST        /exportMeasuresUnitsAsXLS                         controllers.coreData.CoreDataPrintsController.exportMeasuresUnitsAsXLS(req: Request)
-
-
 #BillingsController
 POST        /addBillingEntry                                  controllers.coreData.BillingsController.addBillingEntry(req: Request)
 POST        /updateBillingEntry                               controllers.coreData.BillingsController.updateBillingEntry(req: Request)
 POST        /deleteBilling                                    controllers.coreData.BillingsController.deleteBilling(req: Request)
 POST        /getBillings                                      controllers.coreData.BillingsController.getBillings(req: Request)
-
 #PackageTypeController
 POST        /addPackageTypeEntry                              controllers.coreData.PackageTypeController.addPackageTypeEntry(req: Request)
 POST        /updatePackageTypeEntry                           controllers.coreData.PackageTypeController.updatePackageTypeEntry(req: Request)
 POST        /deletePackageTypeEntry                           controllers.coreData.PackageTypeController.deletePackageTypeEntry(req: Request)
 POST        /getPackagesTypesEntries                          controllers.coreData.PackageTypeController.getPackagesTypesEntries(req: Request)
-
-
-
-
-
-
 #InternovaSellersController
 POST        /addInternovaSeller                               controllers.coreData.InternovaSellersController.addInternovaSeller(req: Request)
 POST        /updateInternovaSeller                            controllers.coreData.InternovaSellersController.updateInternovaSeller(req: Request)
 POST        /deleteInternovaSeller                            controllers.coreData.InternovaSellersController.deleteInternovaSeller(req: Request)
 POST        /getInternovaSellers                              controllers.coreData.InternovaSellersController.getInternovaSellers(req: Request)
-
-
 #OffersController getCountries
 POST        /getOffers                                        controllers.procedures.OffersController.getOffers(req: Request)
 POST        /getAllOffersNoPagination                         controllers.procedures.OffersController.getAllOffersNoPagination(req: Request)
@@ -171,7 +132,6 @@ POST        /updateOfferBetweenWayPoint                       controllers.proced
 POST        /deleteOfferBetweenWayPoint                       controllers.procedures.OffersController.deleteOfferBetweenWayPoint(req: Request)
 POST        /getOffersSchedulesBetweenWayPoints               controllers.procedures.OffersController.getOffersSchedulesBetweenWayPoints(req: Request)
 POST        /getAllSuggestedSchedulesByCustomer               controllers.procedures.OffersController.getAllSuggestedSchedulesByCustomer(req: Request)
-
 #OrdersController
 POST        /updateOrder                                      controllers.procedures.OrdersController.updateOrder(req: Request)
 POST        /updateOrderStatus                                controllers.procedures.OrdersController.updateOrderStatus(req: Request)
@@ -184,11 +144,10 @@ POST        /updateOrderWaypoint                              controllers.proced
 POST        /getDistinctPckagesStartPoint                     controllers.procedures.OrdersController.getDistinctPckagesStartPoint(req: Request)
 POST        /updateOrderFactory                               controllers.procedures.OrdersController.updateOrderFactory(req: Request)
 POST        /deleteOrder                                      controllers.procedures.OrdersController.deleteOrder(req: Request)
-
 #OrdersLoadingController
 POST        /getAvailablesOrders                              controllers.procedures.OrdersLoadingController.getAvailablesOrders(req: Request)
 POST        /getOrdersLoadings                                controllers.procedures.OrdersLoadingController.getOrdersLoadings(req: Request)
-POST        /getOrdersLoadingsViewOnly                        controllers.procedures.OrdersLoadingController.getOrdersLoadings(req: Request)
+POST        /getOrdersLoadingsViewOnly                        controllers.procedures.OrdersLoadingController.getOrdersLoadingsViewOnly(req: Request)
 POST        /getDromologioByOrder                             controllers.procedures.OrdersLoadingController.getDromologioByOrder(req: Request)
 POST        /getNauloBySuplierAndSchedule                     controllers.procedures.OrdersLoadingController.getNauloBySuplierAndSchedule(req: Request)
 POST        /saveOrderLoading                                 controllers.procedures.OrdersLoadingController.saveOrderLoading(req: Request)
@@ -201,29 +160,19 @@ POST        /getOrdersLoadingsAssignments                     controllers.proced
 POST        /sendEmailOrderLoading                            controllers.procedures.OrdersLoadingController.sendEmailOrderLoading(req: Request)
 POST        /sendEmailWS                                      controllers.MailerService.sendEmailWS(req: Request)
 POST        /updateOrderStatusAccordingToFactoryStatus        controllers.procedures.OrdersLoadingController.updateOrderStatusAccordingToFactoryStatus(req: Request)
-
-
-
-
-
 #ProceduresPrintController
 POST        /exportOffersAsXls                                controllers.procedures.ProceduresPrintController.exportOffersAsXls(req: Request)
 POST        /exportOrdersAsXls                                controllers.procedures.ProceduresPrintController.exportOrdersAsXls(req: Request)
 POST        /exportScheduleAsXlsx                             controllers.procedures.ProceduresPrintController.exportScheduleAsXlsx(req: Request)
 GET         /exportOrderLoadingJasper                         controllers.procedures.ProceduresPrintController.exportOrderLoadingJasper(req: Request)
 GET         /exportSelectedSchedulesOffersJasper              controllers.procedures.ProceduresPrintController.exportSelectedSchedulesOffersJasper(req: Request)
-GET         /exportSelectedOrdersJasper              controllers.procedures.ProceduresPrintController.exportSelectedOrdersJasper(req: Request)
-
-
-
+GET         /exportSelectedOrdersJasper                       controllers.procedures.ProceduresPrintController.exportSelectedOrdersJasper(req: Request)
 #ΜeasuremenUnitController
 POST        /addMeasureUnit                                   controllers.coreData.ΜeasuremenUnitController.addMeasureUnit(req: Request)
 POST        /getMeasureUnits                                  controllers.coreData.ΜeasuremenUnitController.getMeasureUnits(req: Request)
 POST        /deleteMeasureUnit                                controllers.coreData.ΜeasuremenUnitController.deleteMeasureUnit(req: Request)
 POST        /updateMeasureUnit                                controllers.coreData.ΜeasuremenUnitController.updateMeasureUnit(req: Request)
-
 #ScheduleController
-
 POST        /addSchedule                                      controllers.procedures.ScheduleController.addSchedule(req: Request)
 POST        /updateSchedule                                   controllers.procedures.ScheduleController.updateSchedule(req: Request)
 POST        /deleteSchedule                                   controllers.procedures.ScheduleController.deleteSchedule(req: Request)
@@ -233,10 +182,13 @@ POST        /addScheduleMeasureUnit                           controllers.proced
 POST        /updateScheduleMeasureUnit                        controllers.procedures.ScheduleController.updateScheduleMeasureUnit(req: Request)
 POST        /deleteScheduleMeasureUnit                        controllers.procedures.ScheduleController.deleteScheduleMeasureUnit(req: Request)
 POST        /deleteAllScheduleMeasureUnitByScheduleId         controllers.procedures.ScheduleController.deleteAllScheduleMeasureUnitByScheduleId(req: Request)
-
 #CoreVariables
 POST        /getStackingFactor                                controllers.CoreVariables.getStackingFactor(req: Request)
 POST        /updateStackingFactor                             controllers.CoreVariables.updateStackingFactor(req: Request)
+#AnalyticsController
+POST        /getAnalytics                                     controllers.analytics.AnalyticsController.getAnalytics(req: Request)
+
+
 
 
 

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="naulo" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="a5c1a116-ec22-4ea0-92e2-24a08bb5bf8c">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="internova_db"/>
+	<parameter name="order_loading_id" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[  select ordl.comments,  sum(asb.naulo) as naulo
+    from order_loading_assignment ol 
+    join assignment_billings asb on (ol.id=asb.assignment_id)
+    join orders_loading ordl on (ordl.id=ol.order_loading_id)
+    where ol.order_loading_id=$P{order_loading_id}]]>
+	</queryString>
+	<field name="comments" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="comments"/>
+		<property name="com.jaspersoft.studio.field.label" value="comments"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="orders_loading"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="naulo" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.name" value="naulo"/>
+		<property name="com.jaspersoft.studio.field.label" value="naulo"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="orders_loading"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="210" splitType="Stretch">
+			<frame>
+				<reportElement x="0" y="0" width="534" height="210" uuid="25737eb9-e287-46b3-ac61-b7990c7b4429"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+				</box>
+				<textField>
+					<reportElement x="0" y="20" width="290" height="14" uuid="1e35eb68-c7c4-4d8c-be14-87d58ec95d90">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Transport Freight  ="+$F{naulo} +" (€) "]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="70" width="534" height="140" uuid="47f3f3b9-2d67-4fe6-805f-db3d136a0dec"/>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["NOTES : " +($F{comments}!=null && $F{comments}!="-"?$F{comments}:"-")]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+	<summary>
+		<band height="119">
+			<frame>
+				<reportElement x="0" y="0" width="534" height="119" uuid="67cd0ebb-1e8d-4ecb-85b6-749096ad3249"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+				</box>
+				<textField>
+					<reportElement x="0" y="81" width="534" height="19" uuid="625389ce-64c2-4eb4-aa72-fa92c9bae087"/>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["3)Active CMR Insurance it is Mandatory "]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="51" width="534" height="30" uuid="ac025cb3-3c0c-46d5-aa9e-98aa28afb880"/>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["2)Original Signed CMR for the Correct Delivery and Original Invoice, you should send it by post to the following Address: Evaggelistrias 14, 15342, Agia Paraskevi Athens Greece"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="11" width="534" height="40" uuid="6b88a838-d67a-442f-b919-d1e548413557"/>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["1)All the necessary transport documents must be in a PDF format, pure copy of it and the size do not exceed the 2MB and should be send it to the following email: accounting@internovatrans.gr"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="100" width="534" height="19" uuid="e98af063-d621-4161-81ad-58f51cb7a769"/>
+					<textElement>
+						<font fontName="ArialPdf"/>
+					</textElement>
+					<textFieldExpression><![CDATA["4)THE COURT OF ATHENS HAS THE JURISTRICTION TO CLEAR OUT ANY DIFFERENCE "]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</summary>
+</jasperReport>

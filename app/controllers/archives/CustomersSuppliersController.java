@@ -235,8 +235,6 @@ public class CustomersSuppliersController extends Application {
                 return badRequest("Expecting Json data");
             } else {
                 try {
-
-                    //
                     ObjectNode result = Json.newObject();
                     CompletableFuture<JsonNode> deleteFuture = CompletableFuture.supplyAsync(() -> {
                                 return jpaApi.withTransaction(entityManager -> {
@@ -245,13 +243,46 @@ public class CustomersSuppliersController extends Application {
                                     ((ObjectNode) json).remove("internovaSeller");
                                     Long id = json.findPath("id").asLong();
                                     Long user_id = json.findPath("user_id").asLong();
-                                    System.out.println(id);
-                                    System.out.println(json);
-                                    String sql = "select * from offers of where of.customer_id=" + id;
-                                    List<OffersEntity> suppliersEntityList = (List<OffersEntity>) entityManager.createNativeQuery(sql, OffersEntity.class).getResultList();
+                                    String sqlOffers = "select * from offers of where of.customer_id=" + id;
+                                    List<OffersEntity> suppliersEntityList = (List<OffersEntity>) entityManager.createNativeQuery(sqlOffers, OffersEntity.class).getResultList();
                                     if (suppliersEntityList.size() > 0) {
                                         delete_result.put("status", "error");
-                                        delete_result.put("message", "βρέθηκαν συνδεδεμένες εγγραφές");
+                                        delete_result.put("message", "Βρέθηκαν συνδεδεμένες εγγραφές με προσφορές");
+                                        return delete_result;
+                                    }
+                                    String sqlOrders = "select * from orders ord where ord.customer_id="+id;
+                                    List<OrdersEntity> ordersEntityList =entityManager.createNativeQuery(sqlOrders,OrdersEntity.class).getResultList();
+                                    if (ordersEntityList.size() > 0) {
+                                        delete_result.put("status", "error");
+                                        delete_result.put("message", "Βρέθηκαν συνδεδεμένες εγγραφές με παραγγελίες");
+                                        return delete_result;
+                                    }
+                                    String sqlManagers = " select * from managers_system ms where ms.system='Πελάτες-Προμηθευτές' and ms.system_id="+id;
+                                    List<ManagersSystemEntity> managersSystemEntityList = entityManager.createNativeQuery(sqlManagers,ManagersSystemEntity.class).getResultList();
+                                    if (managersSystemEntityList.size() > 0) {
+                                        delete_result.put("status", "error");
+                                        delete_result.put("message", "Βρέθηκαν συνδεδεμένες εγγραφές με Υπέυθυνους");
+                                        return delete_result;
+                                    }
+                                    String sqlSupExtras = "select * from order_loading_extra_suppliers ols where ols.supplier_id="+id;
+                                    List<OrderLoadingExtraSuppliersEntity> orderLoadingExtraSuppliersEntityList = entityManager.createNativeQuery(sqlSupExtras,OrderLoadingExtraSuppliersEntity.class).getResultList();
+                                    if (orderLoadingExtraSuppliersEntityList.size() > 0) {
+                                        delete_result.put("status", "error");
+                                        delete_result.put("message", "Βρέθηκαν συνδεδεμένες εγγραφές με Μερίδες");
+                                        return delete_result;
+                                    }
+                                    String sqlTrucksSups = "select * from suppliers_trucks st where st.customers_suppliers_id="+id;
+                                    List<SuppliersTrucksEntity>  suppliersTrucksEntityList = entityManager.createNativeQuery(sqlTrucksSups,SuppliersTrucksEntity.class).getResultList();
+                                    if (suppliersTrucksEntityList.size() > 0) {
+                                        delete_result.put("status", "error");
+                                        delete_result.put("message", "Βρέθηκαν συνδεδεμένες εγγραφές με Φορτηγά");
+                                        return delete_result;
+                                    }
+                                    String sqlOrdLoad = "select * from orders_loading ol where ol.supplier_id="+id;
+                                    List<OrdersLoadingEntity> ordersLoadingEntityList = entityManager.createNativeQuery(sqlOrdLoad,OrdersLoadingEntity.class).getResultList();
+                                    if (ordersLoadingEntityList.size() > 0) {
+                                        delete_result.put("status", "error");
+                                        delete_result.put("message", "Βρέθηκαν συνδεδεμένες εγγραφές με Μερίδες");
                                         return delete_result;
                                     }
                                     CustomersSuppliersEntity customersSuppliersEntity = entityManager.find(CustomersSuppliersEntity.class, id);

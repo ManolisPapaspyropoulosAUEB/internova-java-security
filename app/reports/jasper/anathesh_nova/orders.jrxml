@@ -8,62 +8,10 @@
 	<parameter name="order_loading_id" class="java.lang.String"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
 	<queryString language="SQL">
-		<![CDATA[select * from 
-				(
-				select 
-				'Φόρτωση' as point_type,
-				'φόρτωσης' as point_type2,
-				os.id,
-				os.order_id,
-				os.position,
-				os.factory_id,
-				os.appointment_day,
-				os.appointment_day_load,
-				os.truck_loading_code,
-				os.comments,
-				ord.truck_temprature,
-				ord.gross_weight,
-				f.address,
-				f.appointment_required,
-				f.postal_code,
-				f.brand_name  as 'factory_name',
-				concat(f.lattitude,',',f.longtitude) coordinates,
-				cs.brand_name  as 'customer_name'
-				from 
-				order_schedules os
-				left join factories f on (f.id=os.factory_id)
-				join orders ord on (ord.id=os.order_id)
-				join customers_suppliers cs on (cs.id=ord.customer_id)
-				
-				union
-				
-				select 
-				IF(ow.offer_schedule_between_waypoint_id is null, 'Εκφόρτωση','Φόρτωση/Εκφόρτωση') as point_type,
-				IF(ow.offer_schedule_between_waypoint_id is null, 'εκφόρτωσης','φόρτωση/εκφόρτωσης') as point_type2,
-				ow.id,
-				ow.order_id,
-				ow.position,
-				ow.factory_id,
-				ow.appointment_day,
-				ow.appointment_day_load,
-				ow.truck_loading_code,
-				ow.comments,
-				ord.truck_temprature,
-				ord.gross_weight,
-				f.address,
-				f.appointment_required,                
-				f.postal_code,
-				f.brand_name 'factory_name',
-				concat(f.lattitude,',',f.longtitude) coordinates,
-				cs.brand_name as 'customer_name'
-				from 
-				order_waypoints ow
-				left join factories f on (f.id=ow.factory_id)
-				join orders ord on (ord.id=ow.order_id)
-				join customers_suppliers cs on (cs.id=ord.customer_id)
-				) as timeline_table
-				where timeline_table.order_id in 
-				(
+		<![CDATA[SELECT * 
+FROM order_schedules_waypoints_factories_view sv
+
+where sv.order_id in				(
 				select id
 				from orders
 				where id in
@@ -73,9 +21,13 @@
 				where order_loading_id=$P{order_loading_id}
 				)
 				)
-				
-				order by   timeline_table.position]]>
+and sv.billing_id=35  				
+order by   sv.position]]>
 	</queryString>
+	<field name="point_type_indicator" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="point_type_indicator"/>
+		<property name="com.jaspersoft.studio.field.label" value="point_type_indicator"/>
+	</field>
 	<field name="point_type" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="point_type"/>
 		<property name="com.jaspersoft.studio.field.label" value="point_type"/>
@@ -84,9 +36,41 @@
 		<property name="com.jaspersoft.studio.field.name" value="point_type2"/>
 		<property name="com.jaspersoft.studio.field.label" value="point_type2"/>
 	</field>
+	<field name="point_type_text" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="point_type_text"/>
+		<property name="com.jaspersoft.studio.field.label" value="point_type_text"/>
+	</field>
+	<field name="point_type_en" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="point_type_en"/>
+		<property name="com.jaspersoft.studio.field.label" value="point_type_en"/>
+	</field>
+	<field name="point_type2_en" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="point_type2_en"/>
+		<property name="com.jaspersoft.studio.field.label" value="point_type2_en"/>
+	</field>
+	<field name="point_type3_en" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="point_type3_en"/>
+		<property name="com.jaspersoft.studio.field.label" value="point_type3_en"/>
+	</field>
+	<field name="mixed_id" class="java.math.BigInteger">
+		<property name="com.jaspersoft.studio.field.name" value="mixed_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="mixed_id"/>
+	</field>
 	<field name="id" class="java.lang.Long">
 		<property name="com.jaspersoft.studio.field.name" value="id"/>
 		<property name="com.jaspersoft.studio.field.label" value="id"/>
+	</field>
+	<field name="order_schedule_id" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="order_schedule_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="order_schedule_id"/>
+	</field>
+	<field name="order_waypoint_id" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="order_waypoint_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="order_waypoint_id"/>
+	</field>
+	<field name="status" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="status"/>
+		<property name="com.jaspersoft.studio.field.label" value="status"/>
 	</field>
 	<field name="order_id" class="java.lang.Long">
 		<property name="com.jaspersoft.studio.field.name" value="order_id"/>
@@ -157,6 +141,10 @@
 	<field name="customer_name" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="customer_name"/>
 		<property name="com.jaspersoft.studio.field.label" value="customer_name"/>
+	</field>
+	<field name="billing_id" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="billing_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="billing_id"/>
 	</field>
 	<background>
 		<band splitType="Stretch"/>
@@ -344,13 +332,13 @@
 					</textElement>
 					<textFieldExpression><![CDATA["Ημερομηνία  "+$F{point_type2}+": "+($F{appointment_required}!=null && $F{appointment_required}==1?
 (
-	$F{appointment_day_load}!=null?(
-	new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format($F{appointment_day_load})	
+	$F{appointment_day}!=null?(
+	new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format($F{appointment_day})	
 )+" (Με ραντεβού)":"-"
 ):
 (
-	$F{appointment_day_load}!=null?(
-	new SimpleDateFormat("dd/MM/yyyy").format($F{appointment_day_load})
+	$F{appointment_day}!=null?(
+	new SimpleDateFormat("dd/MM/yyyy").format($F{appointment_day})
 	
 	
 ):"-"
