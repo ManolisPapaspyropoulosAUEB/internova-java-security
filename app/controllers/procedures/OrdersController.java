@@ -953,6 +953,10 @@ public class OrdersController extends Application {
                                             sHmpam.put("orderId", j.getId());
                                             String sqlOrdersSchedules = "select * from order_schedules ord_s where ord_s.order_id=" + j.getId()
                                                     + " and ord_s.primary_schedule=1 ";
+
+
+                                            System.out.println(sqlOrdersSchedules);
+
                                             List<OrderSchedulesEntity> osList =
                                                     entityManager.createNativeQuery(sqlOrdersSchedules, OrderSchedulesEntity.class).getResultList();
                                             sHmpam.put("mainSchedule", osList.get(0).getFromCountry() + " " + osList.get(0).getFromCity() + "  /  "

@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.security.Key;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -292,7 +293,7 @@ public class OffersController extends Application {
 
     @SuppressWarnings({"Duplicates", "unchecked"})
     public Result getOffers(final Http.Request request) throws IOException {
-        ObjectNode result = Json.newObject();
+        ObjectNode result = Json.newObject();//
         try {
             JsonNode json = request.body().asJson();
             if (json == null) {
@@ -411,7 +412,6 @@ public class OffersController extends Application {
                                                 HashMap<String, Object> sHmpam = new HashMap<String, Object>();
                                                 String orderCheck = "select * from orders ord where ord.offer_id=" + j.getId();
                                                 List<OrdersEntity> ordersEntityListcheck = entityManager.createNativeQuery(orderCheck, OrdersEntity.class).getResultList();
-
                                                 if (ordersEntityListcheck.size() > 0) {
                                                     sHmpam.put("orderExist", true);
 
@@ -427,14 +427,23 @@ public class OffersController extends Application {
                                                 } else {
                                                     sHmpam.put("ordids", "-");
                                                 }
-
-
-
-
-
+                                                String isLatestVersionSql
+                                                        = "select offer.id  from offers offer\n" +
+                                                        " where customer_id= "+j.getCustomerId()+"  \n" +
+                                                        " and offer.creation_date\n" +
+                                                        " =(select max(offer2.creation_date) from offers offer2 where customer_id="+j.getCustomerId()+")\n" +
+                                                        " ";
+                                                BigInteger latestVersionOfferId = (BigInteger) entityManager.createNativeQuery(isLatestVersionSql).getSingleResult();
+                                                if(latestVersionOfferId.longValue()==j.getId()){
+                                                    sHmpam.put("isLatestVersion", true);
+                                                }else{
+                                                    sHmpam.put("isLatestVersion", false);
+                                                }
+                                                sHmpam.put("latestVersionOfferId", latestVersionOfferId);
                                                 sHmpam.put("id", j.getId());
                                                 sHmpam.put("acceptOfferDate", j.getAcceptOfferDate());
                                                 sHmpam.put("sendOfferDate", j.getSendOfferDate());
+                                                sHmpam.put("offerDate", j.getOfferDate());
                                                 sHmpam.put("customerId", j.getCustomerId());
                                                 sHmpam.put("managerCustomerId", j.getManagerCustomerId());
                                                 sHmpam.put("aa", j.getAa());
@@ -498,6 +507,7 @@ public class OffersController extends Application {
                                                 toAddress.put("region", j.getToRegion());
                                                 sHmpam.put("to", toAddress);
                                                 sHmpam.put("status", j.getStatus());
+                                                sHmpam.put("statusTemp", j.getStatus());
                                                 String sqlOffersSchedules = "select * " +
                                                         " from offers_schedules os" +
                                                         " where os.offer_id= " + j.getId() + " " +
@@ -944,6 +954,42 @@ public class OffersController extends Application {
 
 
 
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    @BodyParser.Of(BodyParser.Json.class)
+    public Result updateOfferStatus(final Http.Request request) throws IOException {
+        JsonNode json = request.body().asJson();
+        if (json == null) {
+            return badRequest("Expecting Json data");
+        } else {
+            try {
+                ObjectNode result = Json.newObject();
+                CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
+                            return jpaApi.withTransaction(entityManager -> {
+                                ObjectNode add_result = Json.newObject();
+                                String status = json.findPath("status").asText();
+                                Long offerId = json.findPath("offerId").asLong();
+                                OffersEntity offersEntity = entityManager.find(OffersEntity.class,offerId);
+                                offersEntity.setStatus(status);
+                                entityManager.merge(offersEntity);
+                                add_result.put("status", "success");
+                                add_result.put("message", "Η ενημέρωση πραγματοποίηθηκε με επιτυχία");
+                                return add_result;
+                            });
+                        },
+                        executionContext);
+                result = (ObjectNode) addFuture.get();
+                return ok( result);
+            } catch (Exception e) {
+                ObjectNode result = Json.newObject();
+                e.printStackTrace();
+                result.put("status", "error");
+                result.put("message", "Προβλημα κατα την καταχωρηση");
+                return ok(result);
+            }
+        }
+    }
+
+
 
 
 
@@ -986,6 +1032,19 @@ public class OffersController extends Application {
                                     try {
                                         Date offerDateString = myDateFormat.parse(json.findPath("offerDate").asText());
                                         offersEntity.setOfferDate(offerDateString);
+                                        System.out.println(offerDateString);
+
+                                    } catch (ParseException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+
+
+                                if (json.findPath("sendOfferDate").asText() != null && !json.findPath("sendOfferDate").asText().equalsIgnoreCase("")) {
+                                    try {
+                                        Date sendofferDateString = myDateFormat.parse(json.findPath("sendOfferDate").asText());
+                                        offersEntity.setSendOfferDate(sendofferDateString);
+                                        System.out.println(sendofferDateString);
 
                                     } catch (ParseException e) {
                                         e.printStackTrace();
@@ -1232,8 +1291,31 @@ public class OffersController extends Application {
                                     ObjectNode add_result = Json.newObject();
                                     OffersEntity offersEntity = new OffersEntity();
                                     offersEntity.setAa((long) generateRandomDigits(3));
-                                    Date offerDateString = new SimpleDateFormat("yyyy-MM-dd").parse(json.findPath("offerDate").asText());
-                                    offersEntity.setOfferDate(offerDateString);
+//                                    Date offerDateString = new SimpleDateFormat("yyyy-MM-dd").parse(json.findPath("offerDate").asText());
+//                                    offersEntity.setOfferDate(offerDateString);
+
+
+                                    if (json.findPath("offerDate").asText() != null && !json.findPath("offerDate").asText().equalsIgnoreCase("")) {
+                                        try {
+                                            Date offerDateString = myDateFormat.parse(json.findPath("offerDate").asText());
+                                            offersEntity.setOfferDate(offerDateString);
+
+                                        } catch (ParseException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+
+                                    if (json.findPath("sendOfferDate").asText() != null && !json.findPath("sendOfferDate").asText().equalsIgnoreCase("")) {
+                                        try {
+                                            Date sendofferDateString = myDateFormat.parse(json.findPath("sendOfferDate").asText());
+                                            offersEntity.setSendOfferDate(sendofferDateString);
+
+                                        } catch (ParseException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+
+
                                     offersEntity.setSellerId(internovaSeller.findPath("sellerId").asLong());
                                     offersEntity.setBillingId(billing.findPath("billingId").asLong());
                                     offersEntity.setComments(json.findPath("offers_comments").asText());
@@ -1241,12 +1323,10 @@ public class OffersController extends Application {
                                         offersEntity.setStatus("ΝΕΑ");
                                     } else {
                                         offersEntity.setStatus(json.findPath("status").asText());
+                                        if(json.findPath("status").asText().equalsIgnoreCase("ΑΠΟΔΟΧΗ")){
+                                            offersEntity.setAcceptOfferDate(new Date());
+                                        }
                                     }
-                                    offersEntity.setStatus(json.findPath("status").asText());
-                                    if(json.findPath("status").asText().equalsIgnoreCase("ΑΠΟΔΟΧΗ")){
-                                        offersEntity.setAcceptOfferDate(new Date());
-                                    }
-
                                     offersEntity.setDeclineReasons(json.findPath("declineReasons").asText());
                                     offersEntity.setCreationDate(new Date());
                                     if (custommer.findPath("customerSupplierId").asText() != null && !custommer.findPath("customerSupplierId").asText().equalsIgnoreCase("")) {

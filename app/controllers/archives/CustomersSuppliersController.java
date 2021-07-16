@@ -77,8 +77,22 @@ public class CustomersSuppliersController extends Application {
                                     String customerType = json.findPath("customerType").asText();
                                     String job = json.findPath("job").asText();
                                     Long internovaSellerId = json.findPath("internovaSellerId").asLong();
-
-
+                                    String sqlUniqEmail=" select * from customers_suppliers cs where cs.email='"+email+"'";
+                                    List<CustomersSuppliersEntity> suppliersEntityList =
+                                            entityManager.createNativeQuery(sqlUniqEmail,CustomersSuppliersEntity.class).getResultList();
+                                    if(suppliersEntityList.size()>0){
+                                        add_result.put("status", "success");
+                                        add_result.put("message", "Το email που δώσατε χρησιμοποιείτε από κάποιον άλλον χρήστη");
+                                        return add_result;
+                                    }
+                                    String sqlUniqBrand = " select * from customers_suppliers cs where cs.brand_name='"+brandName+"'";
+                                    suppliersEntityList =
+                                            entityManager.createNativeQuery(sqlUniqBrand,CustomersSuppliersEntity.class).getResultList();
+                                    if(suppliersEntityList.size()>0){
+                                        add_result.put("status", "success");
+                                        add_result.put("message", "Η επωνυμία που δώσατε χρησιμοποιείτε από κάποιον άλλον χρήστη");
+                                        return add_result;
+                                    }
                                     CustomersSuppliersEntity warehousesEntity = new CustomersSuppliersEntity();
                                     warehousesEntity.setAddress(address);
                                     warehousesEntity.setBrandName(brandName);
@@ -173,6 +187,22 @@ public class CustomersSuppliersController extends Application {
                                     Long internovaSellerId = json.findPath("internovaSellerId").asLong();
                                     Long id = json.findPath("id").asLong();
 
+                                    String sqlUniqEmail=" select * from customers_suppliers cs where cs.email='"+email+"'" +" and cs.id!="+id;
+                                    List<CustomersSuppliersEntity> suppliersEntityList =
+                                            entityManager.createNativeQuery(sqlUniqEmail,CustomersSuppliersEntity.class).getResultList();
+                                    if(suppliersEntityList.size()>0){
+                                        add_result.put("status", "success");
+                                        add_result.put("message", "Το email που δώσατε χρησιμοποιείτε από κάποιον άλλον χρήστη");
+                                        return add_result;
+                                    }
+                                    String sqlUniqBrand = " select * from customers_suppliers cs where cs.brand_name='"+brandName+"'"+" and cs.id!="+id;;
+                                    suppliersEntityList =
+                                            entityManager.createNativeQuery(sqlUniqBrand,CustomersSuppliersEntity.class).getResultList();
+                                    if(suppliersEntityList.size()>0){
+                                        add_result.put("status", "success");
+                                        add_result.put("message", "Η επωνυμία που δώσατε χρησιμοποιείτε από κάποιον άλλον χρήστη");
+                                        return add_result;
+                                    }
                                     CustomersSuppliersEntity warehousesEntity = entityManager.find(CustomersSuppliersEntity.class, id);
                                     warehousesEntity.setAddress(address);
                                     warehousesEntity.setBrandName(brandName);
@@ -419,6 +449,7 @@ public class CustomersSuppliersController extends Application {
                                             String job = json.findPath("job").asText();
                                             String customersSupliersTypes = json.findPath("customersSupliersTypes").asText();
                                             boolean supplier = json.findPath("supplier").asBoolean();
+                                            boolean customer = json.findPath("customer").asBoolean();
                                             String brandName = json.findPath("brandName").asText();
                                             String country = json.findPath("country").asText();
                                             String city = json.findPath("city").asText();
@@ -452,9 +483,11 @@ public class CustomersSuppliersController extends Application {
                                             if (!customersSupliersTypes.equalsIgnoreCase("") && customersSupliersTypes != null && !customersSupliersTypes.equalsIgnoreCase("null")) {
                                                 sqlCustSupl += " and pos.customer_type = '" + customersSupliersTypes + "'";
                                             }
-//                                            if (supplier == true) {
-//                                                sqlCustSupl += " and pos.customer_type in ('Προμηθευτής','Πελάτης & Προμηθευτής') and pos.id in (select o.customer_id from orders o )";
-//                                            }
+                                            if (supplier == true) {
+                                                sqlCustSupl += " and pos.customer_type in ('Προμηθευτής','Πελάτης & Προμηθευτής')";
+                                            }else if(customer==true){
+                                                sqlCustSupl += " and pos.customer_type in ('Πελάτης','Πελάτης & Προμηθευτής')";
+                                            }
                                             if (!brandName.equalsIgnoreCase("") && brandName != null) {
                                                 sqlCustSupl += " and pos.brand_name like '%" + brandName + "%'";
                                             }
@@ -493,7 +526,6 @@ public class CustomersSuppliersController extends Application {
                                             if (!creationDate.equalsIgnoreCase("") && creationDate != null) {
                                                 sqlCustSupl += " and SUBSTRING( role.creation_date, 1, 10)  = '" + creationDate + "'";
                                             }
-                                            System.out.println(sqlCustSupl);
                                             List<CustomersSuppliersEntity> filalistAll
                                                     = (List<CustomersSuppliersEntity>) entityManager.createNativeQuery(
                                                     sqlCustSupl, CustomersSuppliersEntity.class).getResultList();
@@ -611,6 +643,7 @@ public class CustomersSuppliersController extends Application {
                                 return jpaApi.withTransaction(
                                         entityManager -> {
                                             //roleDescSearchInput afmSearch customersSupliersTypesSearch
+
 
                                             String sqlCustSupl = "select * from customers_suppliers pos where 1=1 order by creation_date desc ";
 

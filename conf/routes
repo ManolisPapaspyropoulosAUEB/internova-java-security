@@ -116,7 +116,7 @@ POST        /addInternovaSeller                               controllers.coreDa
 POST        /updateInternovaSeller                            controllers.coreData.InternovaSellersController.updateInternovaSeller(req: Request)
 POST        /deleteInternovaSeller                            controllers.coreData.InternovaSellersController.deleteInternovaSeller(req: Request)
 POST        /getInternovaSellers                              controllers.coreData.InternovaSellersController.getInternovaSellers(req: Request)
-#OffersController getCountries
+#OffersController
 POST        /getOffers                                        controllers.procedures.OffersController.getOffers(req: Request)
 POST        /getAllOffersNoPagination                         controllers.procedures.OffersController.getAllOffersNoPagination(req: Request)
 POST        /deleteOffer                                      controllers.procedures.OffersController.deleteOffer(req: Request)

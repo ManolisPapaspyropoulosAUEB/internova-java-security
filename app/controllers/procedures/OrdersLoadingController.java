@@ -895,6 +895,7 @@ public class OrdersLoadingController extends Application {
                                                 } else {
                                                     sHmpam.put("customerBilling", "-");
                                                 }
+                                                sHmpam.put("prepareForPdf", false);
                                                 sHmpam.put("status", j.getStatus());
                                                 sHmpam.put("grossWeight", j.getGrossWeight());
                                                 sHmpam.put("netWeight", j.getNetWeight());
@@ -1815,6 +1816,26 @@ public class OrdersLoadingController extends Application {
                                             } else {
                                                 sHmpam.put("finalSummQuantityKgNet", finalSummQuantityKgNet);
                                             }
+                                            String sqlCustomers = "select\n" +
+                                                    "GROUP_CONCAT(concat(' (', cs.brand_name,') '))  \n" +
+                                                    "from orders_loading ol\n" +
+                                                    "join orders_loading_orders_selections ols on (ols.order_loading_id=ol.id)\n" +
+                                                    "join orders ord on (ord.id=ols.order_id)\n" +
+                                                    "join customers_suppliers cs on (cs.id=ord.customer_id)\n" +
+                                                    "where ols.order_id \n" +
+                                                    "in \n" +
+                                                    "(select id\n" +
+                                                    "from orders\n" +
+                                                    "where id in\n" +
+                                                    "(select order_id \n" +
+                                                    "from orders_loading_orders_selections \n" +
+                                                    "where order_loading_id="+j.getId()+"))";
+                                            String customersGroupConcat = (String) entityManager.createNativeQuery(sqlCustomers).getSingleResult();
+                                            if (customersGroupConcat != null) {
+                                                sHmpam.put("customersGroupConcat", customersGroupConcat);
+                                            } else {
+                                                sHmpam.put("customersGroupConcat", "-");
+                                            }
                                             sHmpam.put("id", j.getId());
                                             sHmpam.put("summGross", summGross);
                                             sHmpam.put("summNet", summNet);
@@ -2145,11 +2166,19 @@ public class OrdersLoadingController extends Application {
                                             sHmpam.put("creationDate", j.getCreationDate());
                                             sHmpam.put("updateDate", j.getUpdateDate());
                                             sHmpam.put("customerSupplierId", j.getSupplierId());
-                                            sHmpam.put("naulo", j.getNaulo());
-                                            sHmpam.put("sumNaula", j.getNaulo() + naulaPromhtheytwn);
-
-                                            //naulaPromhtheytwn
-
+                                            String naulo = "select sum(asb.naulo) \n" +
+                                                    "from order_loading_assignment oas \n" +
+                                                    "join assignment_billings asb on (asb.assignment_id=oas.id)\n" +
+                                                    "where oas.order_loading_id="+j.getId();
+                                            Double summnaulo = (Double) entityManager.
+                                                    createNativeQuery(naulo).getSingleResult();
+                                            if (summnaulo != null) {
+                                                sHmpam.put("naulo", summnaulo);
+                                                sHmpam.put("sumNaula",summnaulo + naulaPromhtheytwn);
+                                            } else {
+                                                sHmpam.put("naulo", "0.0");
+                                                sHmpam.put("sumNaula", naulaPromhtheytwn);
+                                            }
                                             sHmpam.put("finalSummPrice", 0);
                                             sHmpam.put("finalSummLdm", 0);
                                             sHmpam.put("finalSummQuantity", 0);
