@@ -354,7 +354,7 @@ public class OrdersController extends Application {
                                         String limit = json.findPath("limit").asText();
                                         String sqlCustSupl = "select * from orders ord where 1=1 ";
                                         if (!id.equalsIgnoreCase("") && id != null) {
-                                            sqlCustSupl += " and ord.id =" + id + "";
+                                            sqlCustSupl += " and ord.id like '%" + id + "%'";
                                         }
                                         if (!offerId.equalsIgnoreCase("") && offerId != null) {
                                             sqlCustSupl += " and ord.offer_id like '%" + offerId + "%'";
