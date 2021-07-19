@@ -27,6 +27,7 @@ public class UsersEntity {
     private String mobilePhone;
     private String gender;
     private String comments;
+    private Long internovaSellerId;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -242,5 +243,15 @@ public class UsersEntity {
 
     public void setComments(String comments) {
         this.comments = comments;
+    }
+
+    @Basic
+    @Column(name = "internova_seller_id")
+    public Long getInternovaSellerId() {
+        return internovaSellerId;
+    }
+
+    public void setInternovaSellerId(Long internovaSellerId) {
+        this.internovaSellerId = internovaSellerId;
     }
 }

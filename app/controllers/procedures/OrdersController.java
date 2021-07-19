@@ -338,6 +338,14 @@ public class OrdersController extends Application {
                 CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> { //
                             return jpaApi.withTransaction(
                                     entityManager -> {
+                                        HashMap<String, Object> returnList_future = new HashMap<String, Object>();
+                                        Long user_id = json.findPath("user_id").asLong();
+                                        UsersEntity internovaUser = entityManager.find(UsersEntity.class,user_id);
+                                        if(internovaUser==null){
+                                            returnList_future.put("status", "error");
+                                            returnList_future.put("message", "Δεν έχετε δώσει user_id  αποστειλει εγκυρα δεδομενα.");
+                                            return returnList_future;
+                                        }
                                         String orderCol = json.findPath("orderCol").asText();
                                         String descAsc = json.findPath("descAsc").asText();
                                         String id = json.findPath("id").asText();
@@ -353,6 +361,17 @@ public class OrdersController extends Application {
                                         String start = json.findPath("start").asText();
                                         String limit = json.findPath("limit").asText();
                                         String sqlCustSupl = "select * from orders ord where 1=1 ";
+
+
+                                        if(internovaUser.getRoleId()==60){
+                                            InternovaSellersEntity internovaSellersEntity =
+                                                    entityManager.find(InternovaSellersEntity.
+                                                            class,internovaUser.getInternovaSellerId());
+                                            sqlCustSupl += " and ord.customer_id in " +
+                                                    "( select cs.id from customers_suppliers cs where cs.internova_seller_id="
+                                                    +internovaSellersEntity.getId()+")";
+                                        }
+
                                         if (!id.equalsIgnoreCase("") && id != null) {
                                             sqlCustSupl += " and ord.id like '%" + id + "%'";
                                         }
@@ -432,7 +451,6 @@ public class OrdersController extends Application {
                                         if (!start.equalsIgnoreCase("") && start != null) {
                                             sqlCustSupl += " limit " + start + "," + limit;
                                         }
-                                        HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                         List<HashMap<String, Object>> filalist = new ArrayList<HashMap<String, Object>>();
                                         List<OrdersEntity> ordersEntityList
                                                 = (List<OrdersEntity>) entityManager.createNativeQuery(

@@ -8,6 +8,7 @@ import controllers.system.Application;
 import models.CustomersSuppliersEntity;
 import models.InternovaSellersEntity;
 import models.OffersEntity;
+import models.UsersEntity;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
 import play.mvc.BodyParser;
@@ -159,7 +160,14 @@ public class InternovaSellersController extends Application {
                                 List<CustomersSuppliersEntity> suppliersEntityList = (List<CustomersSuppliersEntity>) entityManager.createNativeQuery(sqlExistCs, CustomersSuppliersEntity.class).getResultList();
                                 String sqlExistOffers = "select * from offers o where o.seller_id=" + id;
                                 List<OffersEntity> offersEntityList = (List<OffersEntity>) entityManager.createNativeQuery(sqlExistOffers, OffersEntity.class).getResultList();
-                                if(suppliersEntityList.size()>0){
+
+                                String userSeller = "select * from users u where u.internova_seller_id="+id;
+                                List<UsersEntity> usersEntityList = entityManager.createNativeQuery(userSeller,UsersEntity.class).getResultList();
+                                System.out.println(userSeller);
+                                if(usersEntityList.size()>0){
+                                    add_result.put("status", "error");
+                                    add_result.put("message", "Αποτυχία Διαγραφής.Ο συγκεκριμένος Πωλητής είναι συνδεδεμένος με χρήστη συστήματος");
+                                } else if(suppliersEntityList.size()>0){
                                     add_result.put("status", "error");
                                     add_result.put("message", "Αποτυχία Διαγραφής.Ο συγκεκριμένος Πωλητής είναι συνδεδεμένος με πελάτη/προμηθευτή");
                                 }else if(offersEntityList.size()>0){
@@ -250,6 +258,7 @@ public class InternovaSellersController extends Application {
                                                 sHmpam.put("name", j.getName());
                                                 sHmpam.put("sellerName", j.getName());
                                                 sHmpam.put("sellerId", j.getId());
+                                                sHmpam.put("internovaSellerId", j.getId());
                                                 sHmpam.put("description", j.getDescription());
                                                 sHmpam.put("creationDate", j.getCreationDate());
                                                 sHmpam.put("updateDate", j.getUpdateDate());

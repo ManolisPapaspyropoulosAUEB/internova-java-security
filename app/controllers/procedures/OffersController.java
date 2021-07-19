@@ -299,7 +299,7 @@ public class OffersController extends Application {
             if (json == null) {
                 return badRequest("Expecting Json data");
             } else {
-                if (json == null) {
+                if (json == null  ) {
                     result.put("status", "error");
                     result.put("message", "Δεν εχετε αποστειλει εγκυρα δεδομενα.");
                     return ok(result);
@@ -310,6 +310,15 @@ public class OffersController extends Application {
                     CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> { //
                                 return jpaApi.withTransaction(
                                         entityManager -> {
+                                            HashMap<String, Object> returnList_future = new HashMap<String, Object>();
+                                            Long user_id = json.findPath("user_id").asLong();
+                                            UsersEntity internovaUser = entityManager.find(UsersEntity.class,user_id);
+                                            if(internovaUser==null){
+                                                returnList_future.put("status", "error");
+                                                returnList_future.put("message", "Δεν έχετε δώσει user_id  αποστειλει εγκυρα δεδομενα.");
+                                                return returnList_future;
+                                            }
+
                                             String orderCol = json.findPath("orderCol").asText();
                                             String descAsc = json.findPath("descAsc").asText();
                                             String id = json.findPath("id").asText();
@@ -327,9 +336,18 @@ public class OffersController extends Application {
                                             String start = json.findPath("start").asText();
                                             String limit = json.findPath("limit").asText();
                                             String sqlCustSupl = "select * from offers offer where 1=1 ";
+                                            if(internovaUser.getRoleId()==60){
+                                                InternovaSellersEntity internovaSellersEntity =
+                                                        entityManager.find(InternovaSellersEntity.
+                                                                class,internovaUser.getInternovaSellerId());
+                                                sqlCustSupl += " and offer.customer_id in " +
+                                                        "( select cs.id from customers_suppliers cs where cs.internova_seller_id="
+                                                        +internovaSellersEntity.getId()+")";
+                                            }
                                             if (!id.equalsIgnoreCase("") && id != null) {
                                                 sqlCustSupl += " and offer.id =" + id + "";
                                             }
+
                                             if(suplierId!=null && !suplierId.equalsIgnoreCase("")){
                                                 sqlCustSupl += " and  offer.customer_id="+suplierId;
                                             }
@@ -402,7 +420,7 @@ public class OffersController extends Application {
                                             if (!start.equalsIgnoreCase("") && start != null) {
                                                 sqlCustSupl += " limit " + start + "," + limit;
                                             }
-                                            HashMap<String, Object> returnList_future = new HashMap<String, Object>();
+
                                             List<HashMap<String, Object>> filalist = new ArrayList<HashMap<String, Object>>();
                                             List<OffersEntity> offersEntityList
                                                     = (List<OffersEntity>) entityManager.createNativeQuery(
@@ -1027,31 +1045,22 @@ public class OffersController extends Application {
                                 ObjectNode add_result = Json.newObject();
                                 OffersEntity offersEntity = entityManager.find(OffersEntity.class, offerId);
                                 offersEntity.setAa((long) generateRandomDigits(3));
-
                                 if (json.findPath("offerDate").asText() != null && !json.findPath("offerDate").asText().equalsIgnoreCase("")) {
                                     try {
                                         Date offerDateString = myDateFormat.parse(json.findPath("offerDate").asText());
                                         offersEntity.setOfferDate(offerDateString);
-                                        System.out.println(offerDateString);
-
                                     } catch (ParseException e) {
                                         e.printStackTrace();
                                     }
                                 }
-
-
                                 if (json.findPath("sendOfferDate").asText() != null && !json.findPath("sendOfferDate").asText().equalsIgnoreCase("")) {
                                     try {
                                         Date sendofferDateString = myDateFormat.parse(json.findPath("sendOfferDate").asText());
                                         offersEntity.setSendOfferDate(sendofferDateString);
-                                        System.out.println(sendofferDateString);
-
                                     } catch (ParseException e) {
                                         e.printStackTrace();
                                     }
                                 }
-
-
                                 offersEntity.setSellerId(internovaSeller.findPath("sellerId").asLong());
                                 offersEntity.setBillingId(billing.findPath("billingId").asLong());
                                 offersEntity.setComments(json.findPath("offers_comments").asText());

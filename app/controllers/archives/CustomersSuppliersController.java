@@ -188,6 +188,9 @@ public class CustomersSuppliersController extends Application {
                                     Long id = json.findPath("id").asLong();
 
                                     String sqlUniqEmail=" select * from customers_suppliers cs where cs.email='"+email+"'" +" and cs.id!="+id;
+
+                                    System.out.println(sqlUniqEmail);
+
                                     List<CustomersSuppliersEntity> suppliersEntityList =
                                             entityManager.createNativeQuery(sqlUniqEmail,CustomersSuppliersEntity.class).getResultList();
                                     if(suppliersEntityList.size()>0){
@@ -225,7 +228,7 @@ public class CustomersSuppliersController extends Application {
                                         warehousesEntity.setInternovaSellerId(internovaSellerId);
                                     }
                                     warehousesEntity.setJob(job);
-                                    entityManager.persist(warehousesEntity);
+                                    entityManager.merge(warehousesEntity);
                                     add_result.put("status", "success");
                                     add_result.put("message", "Η ενημέρωση πραγματοποίηθηκε με επιτυχία");
                                     add_result.put("DO_ID", warehousesEntity.getId());

@@ -823,6 +823,14 @@ public class OrdersLoadingController extends Application {
                     CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
                                 return jpaApi.withTransaction(
                                         entityManager -> {
+                                            HashMap<String, Object> returnList_future = new HashMap<String, Object>();
+                                            Long user_id = json.findPath("user_id").asLong();
+                                            UsersEntity internovaUser = entityManager.find(UsersEntity.class,user_id);
+                                            if(internovaUser==null){
+                                                returnList_future.put("status", "error");
+                                                returnList_future.put("message", "Δεν έχετε δώσει user_id  αποστειλει εγκυρα δεδομενα.");
+                                                return returnList_future;
+                                            }
                                             DecimalFormat df = new DecimalFormat("###.#");
                                             String availableOrdersSearch = json.findPath("availableOrdersSearch").asText();
                                             String sqlAvailablesOrders = "select * from orders ord where 1=1  ";
@@ -853,7 +861,6 @@ public class OrdersLoadingController extends Application {
                                                     "\n" +
                                                     " ) as ows_table\n" +
                                                     " where   ows_table.order_id = (ord.id) )asc " ;
-                                            HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             List<HashMap<String, Object>> serversList = new ArrayList<HashMap<String, Object>>();
                                             List<OrdersEntity> ordersEntityList
                                                     = (List<OrdersEntity>) entityManager.createNativeQuery(
@@ -861,7 +868,6 @@ public class OrdersLoadingController extends Application {
                                             for (OrdersEntity j : ordersEntityList) {
                                                 HashMap<String, Object> sHmpam = new HashMap<String, Object>();
                                                 List<HashMap<String, Object>> dromologioParaggelias = new ArrayList<HashMap<String, Object>>();
-
                                                 String sqlPack = "select * from orders_selections_by_point osp where osp.order_id= " + j.getId();
                                                 List<OrdersSelectionsByPointEntity> ordersPackages = entityManager.createNativeQuery(sqlPack,
                                                         OrdersSelectionsByPointEntity.class).getResultList();
@@ -894,6 +900,29 @@ public class OrdersLoadingController extends Application {
                                                             entityManager.find(CustomersSuppliersEntity.class, j.getCustomerId()).getBillingId()).getName());
                                                 } else {
                                                     sHmpam.put("customerBilling", "-");
+                                                }
+                                                if(internovaUser.getRoleId()==60){
+                                                    InternovaSellersEntity internovaSellersEntity =
+                                                            entityManager.find(InternovaSellersEntity.class,internovaUser.getInternovaSellerId());
+                                                    String sqlAccess =
+                                                            " select * " +
+                                                            " from orders ord " +
+                                                            " where ord.customer_id in " +
+                                                            " (select cs.id " +
+                                                            " from customers_suppliers  cs" +
+                                                            " where cs.internova_seller_id="
+                                                            +internovaSellersEntity.getId()+ " ) " +
+                                                            "and ord.id="+j.getId();
+                                                    List<OrdersEntity> ordersEntityAccessList = entityManager.createNativeQuery(sqlAccess,OrdersEntity.class).getResultList();
+                                                    if(ordersEntityAccessList.size()>0){
+                                                        sHmpam.put("navigationAccess", true);
+                                                    }else{
+                                                        sHmpam.put("navigationAccess", false);
+                                                    }
+                                                }else if(internovaUser.getRoleId()==61){
+                                                    sHmpam.put("navigationAccess", false);
+                                                }else{
+                                                    sHmpam.put("navigationAccess", true);
                                                 }
                                                 sHmpam.put("prepareForPdf", false);
                                                 sHmpam.put("status", j.getStatus());
@@ -1949,7 +1978,16 @@ public class OrdersLoadingController extends Application {
                 CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
                             return jpaApi.withTransaction(
                                     entityManager -> {
+                                        HashMap<String, Object> returnList_future = new HashMap<String, Object>();
+
                                         //searchTextHmerides
+                                        Long user_id = json.findPath("user_id").asLong();
+                                        UsersEntity internovaUser = entityManager.find(UsersEntity.class,user_id);
+                                        if(internovaUser==null){
+                                            returnList_future.put("status", "error");
+                                            returnList_future.put("message", "Δεν έχετε δώσει user_id  αποστειλει εγκυρα δεδομενα.");
+                                            return returnList_future;
+                                        }
                                         String orderCol = json.findPath("orderCol").asText();
                                         String descAsc = json.findPath("descAsc").asText();
                                         String id = json.findPath("id").asText();
@@ -2061,7 +2099,6 @@ public class OrdersLoadingController extends Application {
                                         if (!start.equalsIgnoreCase("") && start != null) {
                                             sqlOrdLoads += " limit " + start + "," + limit;
                                         }
-                                        HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                         List<HashMap<String, Object>> serversList = new ArrayList<HashMap<String, Object>>();
                                         List<OrdersLoadingEntity> ordersLoadingList
                                                 = (List<OrdersLoadingEntity>) entityManager.createNativeQuery(
@@ -2203,6 +2240,7 @@ public class OrdersLoadingController extends Application {
                                                 ObjectNode wsResult = Json.newObject();
                                                 ObjectNode reqBody = Json.newObject();
                                                 reqBody.put("orderId", os.getOrderId());
+                                                reqBody.put("user_id",user_id);
                                                 CompletableFuture<WSResponse> wsFuture = (CompletableFuture)
                                                         ws.url(ConfigFactory.load().getString("ws_url") + "getAvailablesOrders")
                                                                 .post(reqBody).thenApplyAsync(webServiceResponse -> {

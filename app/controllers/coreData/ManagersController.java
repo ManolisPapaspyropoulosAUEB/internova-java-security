@@ -204,7 +204,7 @@ public class ManagersController extends Application {
                                     }
                                 } else {
                                     String sqldeleteManagerFromSystem = "select *  from managers_system ms  " +
-                                            "where ms.system=" + "'" + system + "'" + " and ms.system_id=" + system_id;
+                                            "where ms.system=" + "'" + system + "'" + " and ms.manager_id=" + id +" and ms.system_id="+system_id;
                                     List<ManagersSystemEntity> managersSystemEntityList
                                             = entityManager.createNativeQuery(sqldeleteManagerFromSystem, ManagersSystemEntity.class).getResultList();
                                     entityManager.remove(managersSystemEntityList.get(0));

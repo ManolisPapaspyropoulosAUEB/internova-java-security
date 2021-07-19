@@ -69,7 +69,8 @@ public class UsersControllers extends Application {
                                     Long roleId = json.findPath("roleId").asLong();
                                     Long orgId = json.findPath("orgId").asLong();
                                     Long depId = json.findPath("depId").asLong();
-                                    //check if username is unique
+                                    JsonNode internovaSeller = json.findPath("internovaSeller");
+                                    ((ObjectNode)json).remove("internovaSeller");
                                     String sqlUsername = "select * from users where username='" + username + "'";
                                     List<UsersEntity> usersEntityList = (List<UsersEntity>)
                                             entityManager.createNativeQuery(sqlUsername, UsersEntity.class).getResultList();
@@ -91,8 +92,9 @@ public class UsersControllers extends Application {
                                     user.setUsername(username);
                                     user.setEmail(email);
                                     user.setPosition(position);
-
-
+                                    if(!internovaSeller.isEmpty()){
+                                        user.setInternovaSellerId(internovaSeller.findPath("id").asLong());
+                                    }
                                     user.setFirstname(firstname);
                                     user.setLastname(lastname);
                                     user.setDepId(depId);
@@ -178,7 +180,8 @@ public class UsersControllers extends Application {
                                     String comments = json.findPath("comments").asText();
                                     Long id = json.findPath("userId").asLong();
                                     Long user_id = json.findPath("user_id").asLong();
-
+                                    JsonNode internovaSeller = json.findPath("internovaSeller");
+                                    ((ObjectNode)json).remove("internovaSeller");
 
 //                                    Long roleId = json.findPath("selectedRole").findPath("id").asLong();
 //                                    Long orgId = json.findPath("selectedOrganization").findPath("id").asLong();
@@ -221,10 +224,12 @@ public class UsersControllers extends Application {
                                         resultfuture.put("message", "Συστημικο προβλημα παρουσιαστηκε,παρακαλω επικοινωνηστε με τον administrator");
                                         return resultfuture;
                                     }
+                                    if(!internovaSeller.isEmpty()){
+                                        user.setInternovaSellerId(internovaSeller.findPath("id").asLong());
+                                    }
                                     user.setComments(comments);
                                     user.setGender(gender);
                                     user.setMobilePhone(mobilePhone);
-                                    user.setPosition(position);
                                     user.setPhone(phone);
                                     user.setPosition(position);
                                     user.setToken(token);
@@ -301,6 +306,7 @@ public class UsersControllers extends Application {
                                         result_future.put("lastName", usersEntityList.get(0).getLastname() );
                                         result_future.put("email", usersEntityList.get(0).getEmail() );
                                         result_future.put("DO_ID", usersEntityList.get(0).getUserId());
+                                        result_future.put("role_id", usersEntityList.get(0).getRoleId());
                                         result_future.put("system", "login");
                                         result_future.put("user_id", usersEntityList.get(0).getUserId());
                                         try {
@@ -588,6 +594,13 @@ public class UsersControllers extends Application {
                                                 sHmpam.put("orgId", j.getOrgId());
                                                 sHmpam.put("roleId", j.getRoleId());
                                                 sHmpam.put("depId", j.getDepId());
+                                                if(j.getInternovaSellerId()!=null){
+                                                    HashMap<String, Object> sellerMap = new HashMap<>();
+                                                    InternovaSellersEntity internovaSellersEntity = entityManager.find(InternovaSellersEntity.class,j.getInternovaSellerId());
+                                                    sellerMap.put("name", internovaSellersEntity.getName());
+                                                    sellerMap.put("id", internovaSellersEntity.getId());
+                                                    sHmpam.put("internovaSeller", sellerMap);
+                                                }
                                                 if (j.getOrgId() != null && j.getOrgId()!=0) {
                                                     HashMap<String, Object> orgMap = new HashMap<>();
                                                     OrganizationsEntity organizationsEntity = entityManager.find(OrganizationsEntity.class, j.getOrgId());
