@@ -594,7 +594,7 @@ public class AuditLogsController {
                                                 }
                                                 sHmpam.put("objectId", j.getObjectId());
                                                 sHmpam.put("creationDate", j.getCreationDate());
-
+                                                sHmpam.put("method",j.getMethod());
 
                                                 if (j.getMethod().substring(0, 12).equalsIgnoreCase("POST /update")) {
                                                     sHmpam.put("method", "επεξεργασία");
@@ -602,6 +602,10 @@ public class AuditLogsController {
                                                     sHmpam.put("method", "προσθήκη");
                                                 } else if (j.getMethod().substring(0, 12).equalsIgnoreCase("POST /create")) {
                                                     sHmpam.put("method", "προσθήκη");
+                                                }else if (j.getMethod().substring(0, 12).equalsIgnoreCase("POST /delete")){
+                                                    sHmpam.put("method", "διαγραφή");
+                                                }else{
+                                                    sHmpam.put("method",j.getMethod());
                                                 }
 
 
