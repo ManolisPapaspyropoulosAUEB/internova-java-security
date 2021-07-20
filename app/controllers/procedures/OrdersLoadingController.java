@@ -2250,7 +2250,7 @@ public class OrdersLoadingController extends Application {
                                                     wsResult = (ObjectNode) wsFuture.get().asJson();
                                                     Iterator doneIt = wsResult.findPath("data").iterator();
                                                     while (doneIt.hasNext()) {
-                                                        JsonNode doneNode = (JsonNode) doneIt.next();
+                                                        JsonNode doneNode = (JsonNode) doneIt.next(); //navigationAccess
                                                         HashMap<String, Object> doneMap = new HashMap<String, Object>();
                                                         doneMap.put("updateDate", doneNode.findPath("updateDate").asText());
                                                         doneMap.put("mainSchedule", doneNode.findPath("mainSchedule").asText());
@@ -2271,6 +2271,7 @@ public class OrdersLoadingController extends Application {
                                                             doneMap.put("truckTemprature", doneNode.findPath("truckTemprature").asText());
                                                         }
                                                         doneMap.put("crmIndicator", doneNode.findPath("crmIndicator").asBoolean());
+                                                        doneMap.put("navigationAccess", doneNode.findPath("navigationAccess").asBoolean());
                                                         doneMap.put("crmNumber", doneNode.findPath("crmNumber").asText());
                                                         doneMap.put("orderId", doneNode.findPath("orderId").asText());
                                                         doneMap.put("type", doneNode.findPath("type").asText());
