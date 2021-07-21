@@ -221,43 +221,53 @@ public class FactoriesController extends Application {
                                                 sqlFactFinal=sqlFact1;
                                             }else if (typeCategory.equalsIgnoreCase("2")){
                                                 sqlFactFinal=sqlFact2;
-                                            }else if (typeCategory.equalsIgnoreCase("3")){
+                                            }else if (typeCategory.equalsIgnoreCase("3") || typeCategory.equalsIgnoreCase("4")){
                                                 sqlFactFinal=sqlFact3;
                                             }
-                                            if(!id.equalsIgnoreCase("") && id!=null){
-                                                sqlFactFinal+=" and pos.id = "+id;
-                                            }
-                                            if(!factoryId.equalsIgnoreCase("") && factoryId!=null){
-                                                sqlFactFinal+=" and pos.id like '%"+factoryId+"%'";
-                                            }
-                                            if(!factoryId.equalsIgnoreCase("") && factoryId!=null && !factoryId.equalsIgnoreCase("null")){
-                                                sqlFactFinal+=" and pos.id like '%"+factoryId+"%'";
-                                            }
-                                            if(!postalCode.equalsIgnoreCase("") && postalCode!=null  && !postalCode.equalsIgnoreCase("null")){
-                                                sqlFactFinal+=" and pos.postal_code like '%"+postalCode+"%'";
+
+
+
+                                            if(!typeCategory.equalsIgnoreCase("4")){
+                                                if(!address.equalsIgnoreCase("") && address!=null && !address.equalsIgnoreCase("null")){
+                                                    sqlFactFinal+=" and pos.address like '%"+address+"%'";
+                                                }
+                                                if(!id.equalsIgnoreCase("") && id!=null){
+                                                    sqlFactFinal+=" and pos.id = "+id;
+                                                }
+                                                if(!factoryId.equalsIgnoreCase("") && factoryId!=null){
+                                                    sqlFactFinal+=" and pos.id like '%"+factoryId+"%'";
+                                                }
+                                                if(!factoryId.equalsIgnoreCase("") && factoryId!=null && !factoryId.equalsIgnoreCase("null")){
+                                                    sqlFactFinal+=" and pos.id like '%"+factoryId+"%'";
+                                                }
+                                                if(!postalCode.equalsIgnoreCase("") && postalCode!=null  && !postalCode.equalsIgnoreCase("null")){
+                                                    sqlFactFinal+=" and pos.postal_code like '%"+postalCode+"%'";
+                                                }
+
+                                                if(!email.equalsIgnoreCase("") && email!=null && !email.equalsIgnoreCase("null")){
+                                                    sqlFactFinal+=" and pos.email like '%"+email+"%'";
+                                                }
+                                                if(!manager.equalsIgnoreCase("") && manager!=null && !manager.equalsIgnoreCase("null")){
+                                                    sqlFactFinal+=" and pos.manager like '%"+manager+"%'";
+                                                }
+                                                if(!region.equalsIgnoreCase("") && region!=null && !region.equalsIgnoreCase("null")){
+                                                    sqlFactFinal+=" and pos.region like '%"+region+"%'";
+                                                }
+                                                if(!telephone.equalsIgnoreCase("") && telephone!=null && !telephone.equalsIgnoreCase("null")){
+                                                    sqlFactFinal+=" and pos.telephone like '%"+telephone+"%'";
+                                                }
+                                                if(!creationDate.equalsIgnoreCase("") && creationDate!=null && !creationDate.equalsIgnoreCase("null")){
+                                                    sqlFactFinal += " and SUBSTRING( role.creation_date, 1, 10)  = '" + creationDate + "'";
+                                                }
                                             }
                                             if(!address.equalsIgnoreCase("") && address!=null && !address.equalsIgnoreCase("null")){
                                                 sqlFactFinal+=" and pos.address like '%"+address+"%'";
                                             }
+
                                             if(!brandName.equalsIgnoreCase("") && brandName!=null && !brandName.equalsIgnoreCase("null")){
                                                 sqlFactFinal+=" and pos.brand_name like '%"+brandName+"%'";
                                             }
-                                            if(!email.equalsIgnoreCase("") && email!=null && !email.equalsIgnoreCase("null")){
-                                                sqlFactFinal+=" and pos.email like '%"+email+"%'";
-                                            }
-                                            if(!manager.equalsIgnoreCase("") && manager!=null && !manager.equalsIgnoreCase("null")){
-                                                sqlFactFinal+=" and pos.manager like '%"+manager+"%'";
-                                            }
-                                            if(!region.equalsIgnoreCase("") && region!=null && !region.equalsIgnoreCase("null")){
-                                                sqlFactFinal+=" and pos.region like '%"+region+"%'";
-                                            }
-                                            if(!telephone.equalsIgnoreCase("") && telephone!=null && !telephone.equalsIgnoreCase("null")){
-                                                sqlFactFinal+=" and pos.telephone like '%"+telephone+"%'";
-                                            }
-                                            if(!creationDate.equalsIgnoreCase("") && creationDate!=null && !creationDate.equalsIgnoreCase("null")){
-                                                sqlFactFinal += " and SUBSTRING( role.creation_date, 1, 10)  = '" + creationDate + "'";
-                                            }
-                                            System.out.println(sqlFactFinal);
+
                                             List<FactoriesEntity> filalistAll
                                                     = (List<FactoriesEntity>) entityManager.createNativeQuery(
                                                     sqlFactFinal, FactoriesEntity.class).getResultList();

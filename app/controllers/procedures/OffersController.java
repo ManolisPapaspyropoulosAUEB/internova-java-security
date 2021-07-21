@@ -651,6 +651,12 @@ public class OffersController extends Application {
                                                         spoMap.put("typePackageMeasure", spo.getTypePackageMeasure());
                                                         spoMap.put("scheduleId", osent.getId());//todo:na ginei object id
                                                         spoMap.put("id", spo.getId());
+                                                        if(orderSchedulesEntityList.size()>0){
+                                                            spoMap.put("disableUpdate",true);
+                                                        }else{
+                                                            spoMap.put("disableUpdate",false);
+
+                                                        }
                                                         spoMap.put("comments", spo.getComments());
                                                         spoMap.put("measureUnitId", spo.getMeasureUnitId());
                                                         spoMap.put("measurementUnitId", spo.getMeasureUnitId());
@@ -1158,75 +1164,85 @@ public class OffersController extends Application {
                                 String sqlOffSchedules = "select * from offers_schedules os where os.offer_id=" + offerId;
                                 List<OffersSchedulesEntity> ofList = (List<OffersSchedulesEntity>) entityManager.createNativeQuery(sqlOffSchedules, OffersSchedulesEntity.class).getResultList();
                                 for (OffersSchedulesEntity ofsElement : ofList) {
-                                    String sqlSchedulesPackeges = "select * from schedule_package_offer spo where spo.offer_id=" + offerId + " and spo.offer_schedule_id=" + ofsElement.getId();
-                                    List<SchedulePackageOfferEntity> spoEntList =
-                                            (List<SchedulePackageOfferEntity>) entityManager.createNativeQuery(sqlSchedulesPackeges, SchedulePackageOfferEntity.class).getResultList();
-                                    for (SchedulePackageOfferEntity p : spoEntList) {
-                                        entityManager.remove(p);
+                                    String sqlOrd = "select * from order_schedules ords where ords.offer_schedule_id= '" + ofsElement.getId() + "'";
+                                    List<OrderSchedulesEntity> orderSchedulesEntityList =
+                                            entityManager.createNativeQuery(sqlOrd, OrderSchedulesEntity.class).getResultList();
+                                    if(orderSchedulesEntityList.size()==0){
+                                        String sqlSchedulesPackeges = "select * from schedule_package_offer spo where spo.offer_id=" + offerId + " and spo.offer_schedule_id=" + ofsElement.getId();
+                                        List<SchedulePackageOfferEntity> spoEntList =
+                                                (List<SchedulePackageOfferEntity>) entityManager.createNativeQuery(sqlSchedulesPackeges, SchedulePackageOfferEntity.class).getResultList();
+                                        for (SchedulePackageOfferEntity p : spoEntList) {
+                                            entityManager.remove(p);
+                                        }
+                                        String wayPoints = "select * from offer_schedule_between_waypoints osw where osw.offer_id=" +
+                                                offersEntity.getId();
+                                        List<OfferScheduleBetweenWaypointsEntity> waypointsEntityList =
+                                                entityManager.createNativeQuery(wayPoints, OfferScheduleBetweenWaypointsEntity.class).getResultList();
+                                        for (OfferScheduleBetweenWaypointsEntity wp : waypointsEntityList) {
+                                            entityManager.remove(wp);
+                                        }
+                                        entityManager.remove(ofsElement);
                                     }
-                                    String wayPoints = "select * from offer_schedule_between_waypoints osw where osw.offer_id=" +
-                                            offersEntity.getId();
-                                    List<OfferScheduleBetweenWaypointsEntity> waypointsEntityList =
-                                            entityManager.createNativeQuery(wayPoints, OfferScheduleBetweenWaypointsEntity.class).getResultList();
-                                    for (OfferScheduleBetweenWaypointsEntity wp : waypointsEntityList) {
-                                        entityManager.remove(wp);
-                                    }
-                                    entityManager.remove(ofsElement);
                                 }
                                 Iterator itOffersSCHEDULDE = tableDataTimokatalogosProsfores.iterator();
                                 while (itOffersSCHEDULDE.hasNext()) {
                                     JsonNode offerScheduleNode = (JsonNode) itOffersSCHEDULDE.next();
-                                    OffersSchedulesEntity offersSchedulesEntity = new OffersSchedulesEntity();
-                                    offersSchedulesEntity.setUpdateDate(new Date());
-                                    offersSchedulesEntity.setType(offerScheduleNode.findPath("type").asText());
-                                    offersSchedulesEntity.setToken(offerScheduleNode.findPath("token").asText());
-                                    offersSchedulesEntity.setFromAddress(offerScheduleNode.findPath("departure").findPath("fromAddress").asText());
-                                    offersSchedulesEntity.setFromCity(offerScheduleNode.findPath("departure").findPath("fromCity").asText());
-                                    offersSchedulesEntity.setFromCountry(offerScheduleNode.findPath("departure").findPath("fromCountry").asText());
-                                    offersSchedulesEntity.setFromPostalCode(offerScheduleNode.findPath("departure").findPath("fromPostalCode").asText().replaceAll(" ", ""));
-                                    offersSchedulesEntity.setToAddress(offerScheduleNode.findPath("arrival").findPath("toAddress").asText());
-                                    offersSchedulesEntity.setToCity(offerScheduleNode.findPath("arrival").findPath("toCity").asText());
-                                    offersSchedulesEntity.setToCountry(offerScheduleNode.findPath("arrival").findPath("toCountry").asText());
-                                    offersSchedulesEntity.setToPostalCode(offerScheduleNode.findPath("arrival").findPath("toPostalCode").asText().replaceAll(" ", ""));
 
-                                    offersSchedulesEntity.setOfferId(offersEntity.getId());
-                                    entityManager.persist(offersSchedulesEntity);
+                                    Long countOrders = offerScheduleNode.findPath("countOrders").asLong();
+                                    if(countOrders==0){
+                                        OffersSchedulesEntity offersSchedulesEntity = new OffersSchedulesEntity();
+                                        offersSchedulesEntity.setUpdateDate(new Date());
+                                        offersSchedulesEntity.setType(offerScheduleNode.findPath("type").asText());
+                                        offersSchedulesEntity.setToken(offerScheduleNode.findPath("token").asText());
+                                        offersSchedulesEntity.setFromAddress(offerScheduleNode.findPath("departure").findPath("fromAddress").asText());
+                                        offersSchedulesEntity.setFromCity(offerScheduleNode.findPath("departure").findPath("fromCity").asText());
+                                        offersSchedulesEntity.setFromCountry(offerScheduleNode.findPath("departure").findPath("fromCountry").asText());
+                                        offersSchedulesEntity.setFromPostalCode(offerScheduleNode.findPath("departure").findPath("fromPostalCode").asText().replaceAll(" ", ""));
+                                        offersSchedulesEntity.setToAddress(offerScheduleNode.findPath("arrival").findPath("toAddress").asText());
+                                        offersSchedulesEntity.setToCity(offerScheduleNode.findPath("arrival").findPath("toCity").asText());
+                                        offersSchedulesEntity.setToCountry(offerScheduleNode.findPath("arrival").findPath("toCountry").asText());
+                                        offersSchedulesEntity.setToPostalCode(offerScheduleNode.findPath("arrival").findPath("toPostalCode").asText().replaceAll(" ", ""));
 
-                                    Iterator itChilds = offerScheduleNode.findPath("schedulePackageList").iterator();
-                                    while (itChilds.hasNext()) {
-                                        JsonNode schedulePackageOfferNode = (JsonNode) itChilds.next();
-                                        SchedulePackageOfferEntity schedulePackageOfferEntity = new SchedulePackageOfferEntity();
-                                        schedulePackageOfferEntity.setOfferId(offersEntity.getId());
-                                        schedulePackageOfferEntity.setComments(schedulePackageOfferNode.findPath("comments").asText());
-                                        schedulePackageOfferEntity.setTypePackageMeasure(schedulePackageOfferNode.findPath("typePackageMeasure").asText());
-                                        schedulePackageOfferEntity.setCreationDate(new Date());
-                                        schedulePackageOfferEntity.setOfferScheduleId(offersSchedulesEntity.getId()); //TODO
-                                        schedulePackageOfferEntity.setFromUnit(schedulePackageOfferNode.findPath("from").asInt());
-                                        if(schedulePackageOfferNode.findPath("from").asInt()>schedulePackageOfferNode.findPath("to").asInt()){
-                                            schedulePackageOfferEntity.setToUnit(schedulePackageOfferNode.findPath("from").asInt());
-                                        }else{
-                                            schedulePackageOfferEntity.setToUnit(schedulePackageOfferNode.findPath("to").asInt());
+                                        offersSchedulesEntity.setOfferId(offersEntity.getId());
+                                        entityManager.persist(offersSchedulesEntity);
+
+                                        Iterator itChilds = offerScheduleNode.findPath("schedulePackageList").iterator();
+                                        while (itChilds.hasNext()) {
+                                            JsonNode schedulePackageOfferNode = (JsonNode) itChilds.next();
+                                            SchedulePackageOfferEntity schedulePackageOfferEntity = new SchedulePackageOfferEntity();
+                                            schedulePackageOfferEntity.setOfferId(offersEntity.getId());
+                                            schedulePackageOfferEntity.setComments(schedulePackageOfferNode.findPath("comments").asText());
+                                            schedulePackageOfferEntity.setTypePackageMeasure(schedulePackageOfferNode.findPath("typePackageMeasure").asText());
+                                            schedulePackageOfferEntity.setCreationDate(new Date());
+                                            schedulePackageOfferEntity.setOfferScheduleId(offersSchedulesEntity.getId()); //TODO
+                                            schedulePackageOfferEntity.setFromUnit(schedulePackageOfferNode.findPath("from").asInt());
+                                            if(schedulePackageOfferNode.findPath("from").asInt()>schedulePackageOfferNode.findPath("to").asInt()){
+                                                schedulePackageOfferEntity.setToUnit(schedulePackageOfferNode.findPath("from").asInt());
+                                            }else{
+                                                schedulePackageOfferEntity.setToUnit(schedulePackageOfferNode.findPath("to").asInt());
+                                            }
+                                            schedulePackageOfferEntity.setUnitPrice(schedulePackageOfferNode.findPath("unitPrice").asDouble());
+                                            String sqlUnit = "select * from measurement_unit mu where mu.title='" + schedulePackageOfferNode.findPath("measureUnitLabel").asText() + "'";
+                                            List<MeasurementUnitEntity> muList = (List<MeasurementUnitEntity>) entityManager.createNativeQuery(sqlUnit, MeasurementUnitEntity.class).getResultList();
+                                            schedulePackageOfferEntity.setMeasureUnitId(muList.get(0).getId());
+                                            entityManager.persist(schedulePackageOfferEntity);
                                         }
-                                        schedulePackageOfferEntity.setUnitPrice(schedulePackageOfferNode.findPath("unitPrice").asDouble());
-                                        String sqlUnit = "select * from measurement_unit mu where mu.title='" + schedulePackageOfferNode.findPath("measureUnitLabel").asText() + "'";
-                                        List<MeasurementUnitEntity> muList = (List<MeasurementUnitEntity>) entityManager.createNativeQuery(sqlUnit, MeasurementUnitEntity.class).getResultList();
-                                        schedulePackageOfferEntity.setMeasureUnitId(muList.get(0).getId());
-                                        entityManager.persist(schedulePackageOfferEntity);
+                                        //270.977,34
+                                        Iterator itWayPoints = offerScheduleNode.findPath("waypointsEntityList").iterator();
+                                        while (itWayPoints.hasNext()) {
+                                            JsonNode wayPoint = (JsonNode) itWayPoints.next();
+                                            OfferScheduleBetweenWaypointsEntity waypoint = new OfferScheduleBetweenWaypointsEntity();
+                                            waypoint.setNestedScheduleIndicator(wayPoint.findPath("nestedScheduleIndicator").asInt());
+                                            waypoint.setCity(wayPoint.findPath("city").asText());
+                                            waypoint.setCountry(wayPoint.findPath("country").asText());
+                                            waypoint.setPostalCode(wayPoint.findPath("postalCode").asText().replaceAll(" ", ""));
+                                            waypoint.setOfferId(offersEntity.getId());
+                                            waypoint.setOfferScheduleId(offersSchedulesEntity.getId());
+                                            waypoint.setCreationDate(new Date());
+                                            entityManager.persist(waypoint);
+                                        }
                                     }
-                                    //270.977,34
-                                    Iterator itWayPoints = offerScheduleNode.findPath("waypointsEntityList").iterator();
-                                    while (itWayPoints.hasNext()) {
-                                        JsonNode wayPoint = (JsonNode) itWayPoints.next();
-                                        OfferScheduleBetweenWaypointsEntity waypoint = new OfferScheduleBetweenWaypointsEntity();
-                                        waypoint.setNestedScheduleIndicator(wayPoint.findPath("nestedScheduleIndicator").asInt());
-                                        waypoint.setCity(wayPoint.findPath("city").asText());
-                                        waypoint.setCountry(wayPoint.findPath("country").asText());
-                                        waypoint.setPostalCode(wayPoint.findPath("postalCode").asText().replaceAll(" ", ""));
-                                        waypoint.setOfferId(offersEntity.getId());
-                                        waypoint.setOfferScheduleId(offersSchedulesEntity.getId());
-                                        waypoint.setCreationDate(new Date());
-                                        entityManager.persist(waypoint);
-                                    }
+
                                 }
                                 add_result.put("status", "success");
                                 add_result.put("offerId", offersEntity.getId());

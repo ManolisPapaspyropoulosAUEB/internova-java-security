@@ -800,6 +800,80 @@ public class OrdersLoadingController extends Application {
     }
 
 
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    public Result getAvailableOrdersListenerSize(final Http.Request request) throws IOException, ExecutionException, InterruptedException {
+        try {
+            ObjectNode result = Json.newObject();
+            JsonNode json = request.body().asJson();
+            if (json == null) {
+                return badRequest("Expecting Json data");
+            } else {
+                if (json == null) {
+                    result.put("status", "error");
+                    result.put("message", "Δεν εχετε αποστειλει εγκυρα δεδομενα.");
+                    return ok(result);
+                } else {
+                    ObjectMapper ow = new ObjectMapper();
+                    HashMap<String, Object> returnList = new HashMap<String, Object>();
+                    String jsonResult = "";
+                    CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
+                                return jpaApi.withTransaction(
+                                        entityManager -> {
+                                            HashMap<String, Object> returnList_future = new HashMap<String, Object>();
+                                            String sqlOrdLoads = "select count(*) from orders ord   " +
+                                                    "where 1=1 and  ord.id not in (select order_id from orders_loading_orders_selections )  ";
+                                            BigInteger allmyListAvOrdersCount = (BigInteger) entityManager.createNativeQuery(sqlOrdLoads).getSingleResult();
+
+
+                                            String sqlTopOrder = "select ord.id from orders ord   " +
+                                                    "where 1=1 and  ord.id not in (select order_id from orders_loading_orders_selections )  ";
+                                            sqlTopOrder += " order by\n" +
+                                                    " (select min(  IF(appointment_day is null, '2125-06-02 18:46:00',appointment_day))\n" +
+                                                    " from (\n" +
+                                                    " select ords.appointment_day,ords.order_id\n" +
+                                                    " from order_schedules ords\n" +
+                                                    " union\n" +
+                                                    " select ow.appointment_day,ow.order_id\n" +
+                                                    " from order_waypoints ow\n" +
+                                                    "\n" +
+                                                    " ) as ows_table\n" +
+                                                    " where   ows_table.order_id = (ord.id) )asc  limit 1 ";
+
+
+                                            BigInteger topOrderId = (BigInteger) entityManager.createNativeQuery(sqlTopOrder).getSingleResult();
+                                            returnList_future.put("allmyListAvOrdersCount", allmyListAvOrdersCount);
+                                            returnList_future.put("topOrderId", topOrderId);
+                                            returnList_future.put("status", "success");
+                                            returnList_future.put("message", "success");
+                                            return returnList_future;
+                                        });
+                            },
+                            executionContext);
+                    returnList = getFuture.get();
+                    DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                    ow.setDateFormat(myDateFormat);
+                    try {
+                        jsonResult = ow.writeValueAsString(returnList);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        result.put("status", "error");
+                        result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων ");
+                        return ok(result);
+                    }
+                    return ok(jsonResult);
+                }
+            }
+        } catch (Exception e) {
+            ObjectNode result = Json.newObject();
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "Προβλημα κατα την ανάγνωση των στοιχείων");
+            return ok(result);
+        }
+    }
+
+
     @SuppressWarnings({"Duplicates", "unchecked"})
     public Result getAvailablesOrders(final Http.Request request) throws IOException, ExecutionException, InterruptedException {
         ObjectNode result = Json.newObject();
@@ -1033,6 +1107,29 @@ public class OrdersLoadingController extends Application {
                                                 }
                                                 serversList.add(sHmpam);
                                             }
+
+                                            String sqlOrdLoads = "select count(*) from orders ord   where 1=1 and  ord.id not in (select order_id from orders_loading_orders_selections )  ";
+                                            BigInteger allmyListAvOrdersCount = (BigInteger) entityManager.createNativeQuery(sqlOrdLoads).getSingleResult();
+
+                                            String sqlTopOrder = "select ord.id from orders ord   " +
+                                                    "where 1=1 and  ord.id not in (select order_id from orders_loading_orders_selections )  ";
+                                            sqlTopOrder += " order by\n" +
+                                                    " (select min(  IF(appointment_day is null, '2125-06-02 18:46:00',appointment_day))\n" +
+                                                    " from (\n" +
+                                                    " select ords.appointment_day,ords.order_id\n" +
+                                                    " from order_schedules ords\n" +
+                                                    " union\n" +
+                                                    " select ow.appointment_day,ow.order_id\n" +
+                                                    " from order_waypoints ow\n" +
+                                                    "\n" +
+                                                    " ) as ows_table\n" +
+                                                    " where   ows_table.order_id = (ord.id) )asc  limit 1 ";
+                                            BigInteger topOrderId = (BigInteger) entityManager.createNativeQuery(sqlTopOrder).getSingleResult();
+
+
+
+                                            returnList_future.put("allmyListAvOrdersCount", allmyListAvOrdersCount);
+                                            returnList_future.put("topOrderId", topOrderId);
                                             returnList_future.put("data", serversList);
                                             returnList_future.put("total", ordersEntityList.size());
                                             returnList_future.put("status", "success");

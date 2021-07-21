@@ -148,6 +148,7 @@ POST        /updateOrderFactory                               controllers.proced
 POST        /deleteOrder                                      controllers.procedures.OrdersController.deleteOrder(req: Request)
 #OrdersLoadingController
 POST        /getAvailablesOrders                              controllers.procedures.OrdersLoadingController.getAvailablesOrders(req: Request)
+POST        /getAvailableOrdersListenerSize                   controllers.procedures.OrdersLoadingController.getAvailableOrdersListenerSize(req: Request)
 POST        /getOrdersLoadings                                controllers.procedures.OrdersLoadingController.getOrdersLoadings(req: Request)
 POST        /getOrdersLoadingsViewOnly                        controllers.procedures.OrdersLoadingController.getOrdersLoadingsViewOnly(req: Request)
 POST        /getOrdersLoadingsListenerSize                    controllers.procedures.OrdersLoadingController.getOrdersLoadingsListenerSize(req: Request)
