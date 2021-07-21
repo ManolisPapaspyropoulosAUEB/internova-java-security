@@ -126,10 +126,10 @@ public class OrdersLoadingController extends Application {
                                             String pointComments = dromologioParNode.findPath("pointComments").asText();
                                             String pointStatus = dromologioParNode.findPath("pointStatus").asText();
                                             Integer position = dromologioParNode.findPath("position").asInt();
-                                            if(position!=null){
+                                            if (position != null) {
                                                 orderSchedulesEntity.setPosition(position);
                                             }
-                                            if(pointComments!=null){
+                                            if (pointComments != null) {
                                                 orderSchedulesEntity.setComments(pointComments);
                                             }
                                             orderSchedulesEntity.setStatus(status);
@@ -152,13 +152,13 @@ public class OrdersLoadingController extends Application {
                                             Integer position = dromologioParNode.findPath("position").asInt();
                                             String pointStatus = dromologioParNode.findPath("pointStatus").asText();
                                             String appointmentDay = dromologioParNode.findPath("appointmentDay").asText();
-                                            if(pointStatus!=null){
+                                            if (pointStatus != null) {
                                                 orderWaypointsEntity.setStatus(pointStatus);
                                             }
-                                            if(position!=null){
+                                            if (position != null) {
                                                 orderWaypointsEntity.setPosition(position);
                                             }
-                                            if(pointComments!=null){
+                                            if (pointComments != null) {
                                                 orderWaypointsEntity.setComments(pointComments);
                                             }
                                             orderWaypointsEntity.setStatus(pointStatus);
@@ -256,12 +256,12 @@ public class OrdersLoadingController extends Application {
                                         "from orders_loading t ";
                                 Integer maxAa = (Integer) entityManager.
                                         createNativeQuery(maxAasql).getSingleResult();
-                                if(maxAa==null){
-                                    maxAa=0;
+                                if (maxAa == null) {
+                                    maxAa = 0;
                                 }
                                 String strDate = myDateFormater.format(new Date());
-                                if ((fromCountry.trim().equalsIgnoreCase("Ελλάδα") || fromCountry.trim().equalsIgnoreCase("Greece") ) &&
-                                        (toCountry.equalsIgnoreCase("Ελλάδα") || toCountry.equalsIgnoreCase("Greece") )) {
+                                if ((fromCountry.trim().equalsIgnoreCase("Ελλάδα") || fromCountry.trim().equalsIgnoreCase("Greece")) &&
+                                        (toCountry.equalsIgnoreCase("Ελλάδα") || toCountry.equalsIgnoreCase("Greece"))) {
                                     ordersLoadingEntity.setType("PR");
                                     if (maxAa == null) {
                                         ordersLoadingEntity.setAa(0);
@@ -270,8 +270,8 @@ public class OrdersLoadingController extends Application {
                                         ordersLoadingEntity.setDisplayAa(formatAaOrderLoad(strDate, String.valueOf((maxAa + 1)), "PR"));
                                     }
                                 }
-                                if ((fromCountry.trim().equalsIgnoreCase("Ελλάδα")|| fromCountry.trim().equalsIgnoreCase("Greece") )
-                                        && ( !(toCountry.trim().equalsIgnoreCase("Ελλάδα")  || (toCountry.trim().equalsIgnoreCase("Greece")  ))) ){
+                                if ((fromCountry.trim().equalsIgnoreCase("Ελλάδα") || fromCountry.trim().equalsIgnoreCase("Greece"))
+                                        && (!(toCountry.trim().equalsIgnoreCase("Ελλάδα") || (toCountry.trim().equalsIgnoreCase("Greece"))))) {
                                     ordersLoadingEntity.setType("EX");
                                     if (maxAa == null) {
                                         ordersLoadingEntity.setAa(0);
@@ -280,8 +280,8 @@ public class OrdersLoadingController extends Application {
                                         ordersLoadingEntity.setDisplayAa(formatAaOrderLoad(strDate, String.valueOf((maxAa + 1)), "EX"));
                                     }
                                 }
-                                if (!(fromCountry.trim().equalsIgnoreCase("Ελλάδα") || fromCountry.trim().equalsIgnoreCase("Greece") ) &&
-                                        (toCountry.trim().equalsIgnoreCase("Ελλάδα") || toCountry.trim().equalsIgnoreCase("Greece") )) {
+                                if (!(fromCountry.trim().equalsIgnoreCase("Ελλάδα") || fromCountry.trim().equalsIgnoreCase("Greece")) &&
+                                        (toCountry.trim().equalsIgnoreCase("Ελλάδα") || toCountry.trim().equalsIgnoreCase("Greece"))) {
                                     ordersLoadingEntity.setType("IM");
                                     if (maxAa == null) {
                                         ordersLoadingEntity.setAa(0);
@@ -291,7 +291,7 @@ public class OrdersLoadingController extends Application {
                                     }
                                 }
                                 if (!(fromCountry.trim().equalsIgnoreCase("Ελλάδα") || fromCountry.trim().equalsIgnoreCase("Greece"))
-                                        && !(toCountry.trim().equalsIgnoreCase("Ελλάδα")  || (toCountry.trim().equalsIgnoreCase("Greece")  ))) {
+                                        && !(toCountry.trim().equalsIgnoreCase("Ελλάδα") || (toCountry.trim().equalsIgnoreCase("Greece")))) {
                                     ordersLoadingEntity.setType("PR");
                                     if (maxAa == null) {
                                         ordersLoadingEntity.setAa(0);
@@ -325,27 +325,27 @@ public class OrdersLoadingController extends Application {
                                     String sqlAllQr = " select  count(*) \n" +
                                             " from order_schedules os\n" +
                                             " join order_waypoints ow on (os.id=ow.order_schedule_id and offer_schedule_between_waypoint_id is null)\n" +
-                                            " where os.order_id="+ord.getId();
+                                            " where os.order_id=" + ord.getId();
                                     BigInteger allmyListCount = (BigInteger) entityManager.createNativeQuery(sqlAllQr).getSingleResult();
                                     String sqlFortwshAfethrias = " select  count(*) \n" +
                                             " from order_schedules os\n" +
                                             " join order_waypoints ow on (os.id=ow.order_schedule_id and offer_schedule_between_waypoint_id is null)\n" +
-                                            " where os.order_id=" +ord.getId()+ ""+
+                                            " where os.order_id=" + ord.getId() + "" +
                                             " and os.status='ΦΟΡΤΩΘΗΚΕ' ";
                                     String sqlTermatismou = " select  count(*) \n" +
                                             " from order_schedules os\n" +
                                             " join order_waypoints ow on (os.id=ow.order_schedule_id and offer_schedule_between_waypoint_id is null)\n" +
-                                            " where os.order_id=" +ord.getId() +" "+
+                                            " where os.order_id=" + ord.getId() + " " +
                                             " and ow.status='ΕΚΦΟΡΤΩΘΗΚΕ' ";
                                     BigInteger orderSchedulesEntityListCount = (BigInteger) entityManager.createNativeQuery(sqlFortwshAfethrias).getSingleResult();
                                     BigInteger orderWaypointsEntityListCount = (BigInteger) entityManager.createNativeQuery(sqlTermatismou).getSingleResult();
-                                    String statusByTimeline=ord.getStatus();
-                                    if(allmyListCount.intValue()==orderSchedulesEntityListCount.intValue() && allmyListCount.intValue()==orderWaypointsEntityListCount.intValue()){
-                                        statusByTimeline="ΕΚΦΟΡΤΩΘΗΚΕ";
-                                    }else if (allmyListCount.intValue()==orderSchedulesEntityListCount.intValue() && allmyListCount.intValue()>orderWaypointsEntityListCount.intValue()){
-                                        statusByTimeline="ΦΟΡΤΩΘΕΙΣΑ";
+                                    String statusByTimeline = ord.getStatus();
+                                    if (allmyListCount.intValue() == orderSchedulesEntityListCount.intValue() && allmyListCount.intValue() == orderWaypointsEntityListCount.intValue()) {
+                                        statusByTimeline = "ΕΚΦΟΡΤΩΘΗΚΕ";
+                                    } else if (allmyListCount.intValue() == orderSchedulesEntityListCount.intValue() && allmyListCount.intValue() > orderWaypointsEntityListCount.intValue()) {
+                                        statusByTimeline = "ΦΟΡΤΩΘΕΙΣΑ";
                                     }
-                                    if((!ord.getStatus().equalsIgnoreCase("ΑΚΥΡΩΜΕΝΗ")) && (!ord.getStatus().equalsIgnoreCase("ΟΛΟΚΛΗΡΩΜΕΝΗ"))){
+                                    if ((!ord.getStatus().equalsIgnoreCase("ΑΚΥΡΩΜΕΝΗ")) && (!ord.getStatus().equalsIgnoreCase("ΟΛΟΚΛΗΡΩΜΕΝΗ"))) {
                                         ord.setStatus(statusByTimeline);
                                         entityManager.merge(ord);
                                     }
@@ -475,17 +475,15 @@ public class OrdersLoadingController extends Application {
                                             Integer position = dromologioParNode.findPath("position").asInt();
                                             String pointComments = dromologioParNode.findPath("pointComments").asText();
                                             String pointStatus = dromologioParNode.findPath("pointStatus").asText();
-                                            if(pointStatus!=null){
+                                            if (pointStatus != null) {
                                                 orderSchedulesEntity.setStatus(pointStatus);
                                             }
-                                            if(position!=null){
+                                            if (position != null) {
                                                 orderSchedulesEntity.setPosition(position);
                                             }
-                                            if(pointComments!=null){
+                                            if (pointComments != null) {
                                                 orderSchedulesEntity.setComments(pointComments);
                                             }
-
-
 
 
                                             if (!dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("") && !dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("Invalid date")) {
@@ -508,13 +506,13 @@ public class OrdersLoadingController extends Application {
                                             Integer position = dromologioParNode.findPath("position").asInt();
                                             String pointComments = dromologioParNode.findPath("pointComments").asText();
                                             String pointStatus = dromologioParNode.findPath("pointStatus").asText();
-                                            if(pointStatus!=null){
+                                            if (pointStatus != null) {
                                                 orderWaypointsEntity.setStatus(pointStatus);
                                             }
-                                            if(position!=null){
+                                            if (position != null) {
                                                 orderWaypointsEntity.setPosition(position);
                                             }
-                                            if(pointComments!=null){
+                                            if (pointComments != null) {
                                                 orderWaypointsEntity.setComments(pointComments);
                                             }
                                             if (!dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("") && !dromologioParNode.findPath("appointmentDay").asText().equalsIgnoreCase("Invalid date")) {
@@ -596,27 +594,27 @@ public class OrdersLoadingController extends Application {
                                     String sqlAllQr = " select  count(*) \n" +
                                             " from order_schedules os\n" +
                                             " join order_waypoints ow on (os.id=ow.order_schedule_id and offer_schedule_between_waypoint_id is null)\n" +
-                                            " where os.order_id="+ord.getId();
+                                            " where os.order_id=" + ord.getId();
                                     BigInteger allmyListCount = (BigInteger) entityManager.createNativeQuery(sqlAllQr).getSingleResult();
                                     String sqlFortwshAfethrias = " select  count(*) \n" +
                                             " from order_schedules os\n" +
                                             " join order_waypoints ow on (os.id=ow.order_schedule_id and offer_schedule_between_waypoint_id is null)\n" +
-                                            " where os.order_id=" +ord.getId()+ ""+
+                                            " where os.order_id=" + ord.getId() + "" +
                                             " and os.status='ΦΟΡΤΩΘΗΚΕ' ";
                                     String sqlTermatismou = " select  count(*) \n" +
                                             " from order_schedules os\n" +
                                             " join order_waypoints ow on (os.id=ow.order_schedule_id and offer_schedule_between_waypoint_id is null)\n" +
-                                            " where os.order_id=" +ord.getId() +" "+
+                                            " where os.order_id=" + ord.getId() + " " +
                                             " and ow.status='ΕΚΦΟΡΤΩΘΗΚΕ' ";
                                     BigInteger orderSchedulesEntityListCount = (BigInteger) entityManager.createNativeQuery(sqlFortwshAfethrias).getSingleResult();
                                     BigInteger orderWaypointsEntityListCount = (BigInteger) entityManager.createNativeQuery(sqlTermatismou).getSingleResult();
-                                    String statusByTimeline=ord.getStatus();
-                                    if(allmyListCount.intValue()==orderSchedulesEntityListCount.intValue() && allmyListCount.intValue()==orderWaypointsEntityListCount.intValue()){
-                                        statusByTimeline="ΕΚΦΟΡΤΩΘΗΚΕ";
-                                    }else if (allmyListCount.intValue()==orderSchedulesEntityListCount.intValue() && allmyListCount.intValue()>orderWaypointsEntityListCount.intValue()){
-                                        statusByTimeline="ΦΟΡΤΩΘΕΙΣΑ";
+                                    String statusByTimeline = ord.getStatus();
+                                    if (allmyListCount.intValue() == orderSchedulesEntityListCount.intValue() && allmyListCount.intValue() == orderWaypointsEntityListCount.intValue()) {
+                                        statusByTimeline = "ΕΚΦΟΡΤΩΘΗΚΕ";
+                                    } else if (allmyListCount.intValue() == orderSchedulesEntityListCount.intValue() && allmyListCount.intValue() > orderWaypointsEntityListCount.intValue()) {
+                                        statusByTimeline = "ΦΟΡΤΩΘΕΙΣΑ";
                                     }
-                                    if((!ord.getStatus().equalsIgnoreCase("ΑΚΥΡΩΜΕΝΗ")) && (!ord.getStatus().equalsIgnoreCase("ΟΛΟΚΛΗΡΩΜΕΝΗ"))){
+                                    if ((!ord.getStatus().equalsIgnoreCase("ΑΚΥΡΩΜΕΝΗ")) && (!ord.getStatus().equalsIgnoreCase("ΟΛΟΚΛΗΡΩΜΕΝΗ"))) {
                                         ord.setStatus(statusByTimeline);
                                         entityManager.merge(ord);
                                     }
@@ -644,7 +642,6 @@ public class OrdersLoadingController extends Application {
             }
         }
     }
-
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
@@ -689,7 +686,7 @@ public class OrdersLoadingController extends Application {
                                                 " join orders ord on (ord.id=ow.order_id)\n" +
                                                 " join customers_suppliers cs on (cs.id=ord.customer_id)\n" +
                                                 " ) as timeline_table\n" +
-                                                " where timeline_table.order_id="+ord.getId() ;
+                                                " where timeline_table.order_id=" + ord.getId();
                                         boolean fortothike = true;
                                         boolean ekfortothike = true;
                                         List nodesList = entityManager.createNativeQuery(sqlNodes).getResultList();
@@ -736,7 +733,6 @@ public class OrdersLoadingController extends Application {
             return ok(result);
         }
     }
-
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
@@ -825,8 +821,8 @@ public class OrdersLoadingController extends Application {
                                         entityManager -> {
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             Long user_id = json.findPath("user_id").asLong();
-                                            UsersEntity internovaUser = entityManager.find(UsersEntity.class,user_id);
-                                            if(internovaUser==null){
+                                            UsersEntity internovaUser = entityManager.find(UsersEntity.class, user_id);
+                                            if (internovaUser == null) {
                                                 returnList_future.put("status", "error");
                                                 returnList_future.put("message", "Δεν έχετε δώσει user_id  αποστειλει εγκυρα δεδομενα.");
                                                 return returnList_future;
@@ -838,7 +834,7 @@ public class OrdersLoadingController extends Application {
                                             String ordersLoadingId = json.findPath("ordersLoadingId").asText();
                                             if (orderId != null && !orderId.equalsIgnoreCase("")) {
                                                 sqlAvailablesOrders += " and  ord.id=" + orderId;
-                                            }else if (ordersLoadingId != null && !ordersLoadingId.equalsIgnoreCase("")) {
+                                            } else if (ordersLoadingId != null && !ordersLoadingId.equalsIgnoreCase("")) {
                                                 sqlAvailablesOrders += " and  ord.id not in (select order_id from orders_loading_orders_selections ) ";
                                             }
                                             if (availableOrdersSearch != null && !availableOrdersSearch.equalsIgnoreCase("")) {
@@ -860,7 +856,7 @@ public class OrdersLoadingController extends Application {
                                                     " from order_waypoints ow\n" +
                                                     "\n" +
                                                     " ) as ows_table\n" +
-                                                    " where   ows_table.order_id = (ord.id) )asc " ;
+                                                    " where   ows_table.order_id = (ord.id) )asc ";
                                             List<HashMap<String, Object>> serversList = new ArrayList<HashMap<String, Object>>();
                                             List<OrdersEntity> ordersEntityList
                                                     = (List<OrdersEntity>) entityManager.createNativeQuery(
@@ -901,27 +897,27 @@ public class OrdersLoadingController extends Application {
                                                 } else {
                                                     sHmpam.put("customerBilling", "-");
                                                 }
-                                                if(internovaUser.getRoleId()==60){
+                                                if (internovaUser.getRoleId() == 60) {
                                                     InternovaSellersEntity internovaSellersEntity =
-                                                            entityManager.find(InternovaSellersEntity.class,internovaUser.getInternovaSellerId());
+                                                            entityManager.find(InternovaSellersEntity.class, internovaUser.getInternovaSellerId());
                                                     String sqlAccess =
                                                             " select * " +
-                                                            " from orders ord " +
-                                                            " where ord.customer_id in " +
-                                                            " (select cs.id " +
-                                                            " from customers_suppliers  cs" +
-                                                            " where cs.internova_seller_id="
-                                                            +internovaSellersEntity.getId()+ " ) " +
-                                                            "and ord.id="+j.getId();
-                                                    List<OrdersEntity> ordersEntityAccessList = entityManager.createNativeQuery(sqlAccess,OrdersEntity.class).getResultList();
-                                                    if(ordersEntityAccessList.size()>0){
+                                                                    " from orders ord " +
+                                                                    " where ord.customer_id in " +
+                                                                    " (select cs.id " +
+                                                                    " from customers_suppliers  cs" +
+                                                                    " where cs.internova_seller_id="
+                                                                    + internovaSellersEntity.getId() + " ) " +
+                                                                    "and ord.id=" + j.getId();
+                                                    List<OrdersEntity> ordersEntityAccessList = entityManager.createNativeQuery(sqlAccess, OrdersEntity.class).getResultList();
+                                                    if (ordersEntityAccessList.size() > 0) {
                                                         sHmpam.put("navigationAccess", true);
-                                                    }else{
+                                                    } else {
                                                         sHmpam.put("navigationAccess", false);
                                                     }
-                                                }else if(internovaUser.getRoleId()==61){
+                                                } else if (internovaUser.getRoleId() == 61) {
                                                     sHmpam.put("navigationAccess", false);
-                                                }else{
+                                                } else {
                                                     sHmpam.put("navigationAccess", true);
                                                 }
                                                 sHmpam.put("prepareForPdf", false);
@@ -993,7 +989,7 @@ public class OrdersLoadingController extends Application {
                                                     sHmpam.put("summMasterSchedule", "0.0");
                                                     sHmpam.put("summPriceNested", "0.0");
                                                 }
-                                                String sqlSumLdm = "select  sum(osp.ldm) from orders_selections_by_point osp where osp.order_id=" + j.getId()+" and osp.type='Φόρτωση'";
+                                                String sqlSumLdm = "select  sum(osp.ldm) from orders_selections_by_point osp where osp.order_id=" + j.getId() + " and osp.type='Φόρτωση'";
                                                 Double summLdm = (Double) entityManager.createNativeQuery(sqlSumLdm).getSingleResult();
                                                 if (summLdm != null) {
                                                     sHmpam.put("summLdm", df.format(summLdm));
@@ -1260,10 +1256,10 @@ public class OrdersLoadingController extends Application {
                                                     quantityByTypeInPointMap.put("quantity", osafet.getQuantity());
                                                     typeByTypeInPointMap.put("packageType", entityManager.find(PackageTypeEntity.class, osafet.getPackageTypeId()).getType());
                                                     osafetmap.put("stackingType", osafet.getStackingType());
-                                                    if(osafet.getType().equalsIgnoreCase("Φόρτωση")){
+                                                    if (osafet.getType().equalsIgnoreCase("Φόρτωση")) {
                                                         osafetmap.put("ldm", osafet.getLdm());
-                                                    }else{
-                                                        osafetmap.put("ldm",0);
+                                                    } else {
+                                                        osafetmap.put("ldm", 0);
                                                     }
 
                                                     if (osafet.getUnitPrice() != null) {
@@ -1399,7 +1395,7 @@ public class OrdersLoadingController extends Application {
                                                             " from orders_selections_by_point osbp " +
                                                             " where osbp.order_schedule_id="
                                                             + owpe.getOrderScheduleId() +
-                                                            " and osbp.order_waypoint_id =" + owpe.getId() +" and osbp.type='Φόρτωση'";
+                                                            " and osbp.order_waypoint_id =" + owpe.getId() + " and osbp.type='Φόρτωση'";
                                                     summLdm = (Double) entityManager.createNativeQuery(sqlSumLdm).getSingleResult();
                                                     if (summLdm != null) {
                                                         finalSummLdm = finalSummLdm + summLdm;
@@ -1472,10 +1468,10 @@ public class OrdersLoadingController extends Application {
                                                         quantityByTypeInPointMap.put("title", osafet.getTitle());
                                                         quantityByTypeInPointMap.put("quantity", osafet.getQuantity());
                                                         typeByTypeInPointMap.put("packageType", entityManager.find(PackageTypeEntity.class, osafet.getPackageTypeId()).getType());
-                                                        if(osafet.getType().equalsIgnoreCase("Φόρτωση")){
+                                                        if (osafet.getType().equalsIgnoreCase("Φόρτωση")) {
                                                             osafetmap.put("ldm", osafet.getLdm());
-                                                        }else{
-                                                            osafetmap.put("ldm",0);
+                                                        } else {
+                                                            osafetmap.put("ldm", 0);
                                                         }
                                                         if (osafet.getUnitPrice() != null) {
                                                             osafetmap.put("unitPrice", osafet.getUnitPrice());
@@ -1619,6 +1615,58 @@ public class OrdersLoadingController extends Application {
         }
     }
 
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    public Result getOrdersLoadingsListenerSize(final Http.Request request) throws IOException, ExecutionException, InterruptedException {
+        try {
+            ObjectNode result = Json.newObject();
+            JsonNode json = request.body().asJson();
+            if (json == null) {
+                return badRequest("Expecting Json data");
+            } else {
+                if (json == null) {
+                    result.put("status", "error");
+                    result.put("message", "Δεν εχετε αποστειλει εγκυρα δεδομενα.");
+                    return ok(result);
+                } else {
+                    ObjectMapper ow = new ObjectMapper();
+                    HashMap<String, Object> returnList = new HashMap<String, Object>();
+                    String jsonResult = "";
+                    CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
+                                return jpaApi.withTransaction(
+                                        entityManager -> {
+                                            HashMap<String, Object> returnList_future = new HashMap<String, Object>();
+                                            String sqlOrdLoads = "select count(*) from orders_loading ord_load   where 1=1 ";
+                                            BigInteger allmyListCount = (BigInteger) entityManager.createNativeQuery(sqlOrdLoads).getSingleResult();
+                                            returnList_future.put("allmyListCount", allmyListCount);
+                                            returnList_future.put("status", "success");
+                                            returnList_future.put("message", "success");
+                                            return returnList_future;
+                                        });
+                            },
+                            executionContext);
+                    returnList = getFuture.get();
+                    DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                    ow.setDateFormat(myDateFormat);
+                    try {
+                        jsonResult = ow.writeValueAsString(returnList);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        result.put("status", "error");
+                        result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων ");
+                        return ok(result);
+                    }
+                    return ok(jsonResult);
+                }
+            }
+        } catch (Exception e) {
+            ObjectNode result = Json.newObject();
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "Προβλημα κατα την ανάγνωση των στοιχείων");
+            return ok(result);
+        }
+    }
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
@@ -1802,7 +1850,7 @@ public class OrdersLoadingController extends Application {
                                                     "(\n" +
                                                     "select order_id \n" +
                                                     "from orders_loading_orders_selections \n" +
-                                                    "where order_loading_id=" +j.getId()+
+                                                    "where order_loading_id=" + j.getId() +
                                                     ")\n" +
                                                     ") ";
                                             String sqlSumPrice = "select  sum(osp.unit_price) from orders_selections_by_point osp " + ordersWhere;
@@ -1813,7 +1861,7 @@ public class OrdersLoadingController extends Application {
                                             } else {
                                                 sHmpam.put("finalSummPrice", df.format(finalSummPrice));
                                             }
-                                            String sqlSumLdm = "select  sum(osp.ldm) from orders_selections_by_point osp "+ordersWhere+ "and osp.type='Φόρτωση'";
+                                            String sqlSumLdm = "select  sum(osp.ldm) from orders_selections_by_point osp " + ordersWhere + "and osp.type='Φόρτωση'";
                                             Double summLdm = (Double) entityManager.createNativeQuery(sqlSumLdm).getSingleResult();
                                             if (summLdm != null) {
                                                 finalSummLdm = finalSummLdm + summLdm;
@@ -1821,7 +1869,7 @@ public class OrdersLoadingController extends Application {
                                             } else {
                                                 sHmpam.put("finalSummLdm", df.format(finalSummLdm));
                                             }
-                                            String sqlSumQuantity = "select  sum(osp.quantity) from orders_selections_by_point osp " +ordersWhere+ " and osp.type_package!='Βάσει βάρους επί καθαρού (kg)' and osp.type_package!='Βάσει βάρους επί μικτού (kg)' ";
+                                            String sqlSumQuantity = "select  sum(osp.quantity) from orders_selections_by_point osp " + ordersWhere + " and osp.type_package!='Βάσει βάρους επί καθαρού (kg)' and osp.type_package!='Βάσει βάρους επί μικτού (kg)' ";
                                             BigDecimal summQuantity = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantity).getSingleResult();
                                             if (summQuantity != null) {
                                                 finalSummQuantity = finalSummQuantity + summQuantity.intValue();
@@ -1829,7 +1877,7 @@ public class OrdersLoadingController extends Application {
                                             } else {
                                                 sHmpam.put("finalSummQuantity", finalSummQuantity);
                                             }
-                                            String sqlSumQuantityKg = "select  sum(osp.quantity) from orders_selections_by_point osp " +ordersWhere + "  and ( osp.type_package='Βάσει βάρους επί καθαρού (kg)' ) ";
+                                            String sqlSumQuantityKg = "select  sum(osp.quantity) from orders_selections_by_point osp " + ordersWhere + "  and ( osp.type_package='Βάσει βάρους επί καθαρού (kg)' ) ";
                                             BigDecimal summQuantityKg = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantityKg).getSingleResult();
                                             if (summQuantityKg != null) {
                                                 finalSummQuantityKg = finalSummQuantityKg + summQuantityKg.intValue();
@@ -1858,7 +1906,7 @@ public class OrdersLoadingController extends Application {
                                                     "where id in\n" +
                                                     "(select order_id \n" +
                                                     "from orders_loading_orders_selections \n" +
-                                                    "where order_loading_id="+j.getId()+"))";
+                                                    "where order_loading_id=" + j.getId() + "))";
                                             String customersGroupConcat = (String) entityManager.createNativeQuery(sqlCustomers).getSingleResult();
                                             if (customersGroupConcat != null) {
                                                 sHmpam.put("customersGroupConcat", customersGroupConcat);
@@ -1934,8 +1982,11 @@ public class OrdersLoadingController extends Application {
                                                     j.getToCity());
                                             serversList.add(sHmpam);
                                         }
+                                        String sqlOrdLoadsSize = "select count(*) from orders_loading ord_load   where 1=1 ";
+                                        BigInteger allmyListCount = (BigInteger) entityManager.createNativeQuery(sqlOrdLoadsSize).getSingleResult();
                                         returnList_future.put("data", serversList);
                                         returnList_future.put("total", ordersLoadingAllList.size());
+                                        returnList_future.put("allmyListCount", allmyListCount);
                                         returnList_future.put("status", "success");
                                         returnList_future.put("message", "success");
                                         return returnList_future;
@@ -1957,7 +2008,6 @@ public class OrdersLoadingController extends Application {
             }
         }
     }
-
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
@@ -1982,8 +2032,8 @@ public class OrdersLoadingController extends Application {
 
                                         //searchTextHmerides
                                         Long user_id = json.findPath("user_id").asLong();
-                                        UsersEntity internovaUser = entityManager.find(UsersEntity.class,user_id);
-                                        if(internovaUser==null){
+                                        UsersEntity internovaUser = entityManager.find(UsersEntity.class, user_id);
+                                        if (internovaUser == null) {
                                             returnList_future.put("status", "error");
                                             returnList_future.put("message", "Δεν έχετε δώσει user_id  αποστειλει εγκυρα δεδομενα.");
                                             return returnList_future;
@@ -2007,7 +2057,7 @@ public class OrdersLoadingController extends Application {
                                         String limit = json.findPath("limit").asText();
                                         String sqlOrdLoads = "select * from orders_loading ord_load   where 1=1 ";
 
-                                        System.out.println("sqlOrdLoads>>>"+sqlOrdLoads);
+                                        System.out.println("sqlOrdLoads>>>" + sqlOrdLoads);
 
                                         if (!id.equalsIgnoreCase("") && id != null) {
                                             sqlOrdLoads += " and ord_load.id =" + id;
@@ -2206,12 +2256,12 @@ public class OrdersLoadingController extends Application {
                                             String naulo = "select sum(asb.naulo) \n" +
                                                     "from order_loading_assignment oas \n" +
                                                     "join assignment_billings asb on (asb.assignment_id=oas.id)\n" +
-                                                    "where oas.order_loading_id="+j.getId();
+                                                    "where oas.order_loading_id=" + j.getId();
                                             Double summnaulo = (Double) entityManager.
                                                     createNativeQuery(naulo).getSingleResult();
                                             if (summnaulo != null) {
                                                 sHmpam.put("naulo", summnaulo);
-                                                sHmpam.put("sumNaula",summnaulo + naulaPromhtheytwn);
+                                                sHmpam.put("sumNaula", summnaulo + naulaPromhtheytwn);
                                             } else {
                                                 sHmpam.put("naulo", "0.0");
                                                 sHmpam.put("sumNaula", naulaPromhtheytwn);
@@ -2240,7 +2290,7 @@ public class OrdersLoadingController extends Application {
                                                 ObjectNode wsResult = Json.newObject();
                                                 ObjectNode reqBody = Json.newObject();
                                                 reqBody.put("orderId", os.getOrderId());
-                                                reqBody.put("user_id",user_id);
+                                                reqBody.put("user_id", user_id);
                                                 CompletableFuture<WSResponse> wsFuture = (CompletableFuture)
                                                         ws.url(ConfigFactory.load().getString("ws_url") + "getAvailablesOrders")
                                                                 .post(reqBody).thenApplyAsync(webServiceResponse -> {
@@ -2297,7 +2347,7 @@ public class OrdersLoadingController extends Application {
                                                         } else {
                                                             sHmpam.put("finalSummPrice", df.format(finalSummPrice));
                                                         }
-                                                        String sqlSumLdm = "select  sum(osp.ldm) from orders_selections_by_point osp where osp.order_id=" + doneNode.findPath("orderId").asText() +" and osp.type='Φόρτωση'";
+                                                        String sqlSumLdm = "select  sum(osp.ldm) from orders_selections_by_point osp where osp.order_id=" + doneNode.findPath("orderId").asText() + " and osp.type='Φόρτωση'";
                                                         Double summLdm = (Double) entityManager.createNativeQuery(sqlSumLdm).getSingleResult();
                                                         if (summLdm != null) {
                                                             finalSummLdm = finalSummLdm + summLdm;
@@ -2467,16 +2517,16 @@ public class OrdersLoadingController extends Application {
                                 for (OrdersLoadingOrdersSelectionsEntity ordls : ordersLoadingOrdersSelectionsEntityList) {
                                     entityManager.remove(ordls);
                                 }
-                                String sqlLoadingAssignments = "select * from  order_loading_assignment olas where olas.order_loading_id="+id;
+                                String sqlLoadingAssignments = "select * from  order_loading_assignment olas where olas.order_loading_id=" + id;
                                 List<OrderLoadingAssignmentEntity> orderLoadingAssignmentEntityList =
-                                        entityManager.createNativeQuery(sqlLoadingAssignments,OrderLoadingAssignmentEntity.class).getResultList();
-                                for(OrderLoadingAssignmentEntity olas : orderLoadingAssignmentEntityList ){
+                                        entityManager.createNativeQuery(sqlLoadingAssignments, OrderLoadingAssignmentEntity.class).getResultList();
+                                for (OrderLoadingAssignmentEntity olas : orderLoadingAssignmentEntityList) {
                                     entityManager.remove(olas);
                                 }
-                                String sqlExtraSups = "select * from order_loading_extra_suppliers oles where oles.order_loading_id="+id;
+                                String sqlExtraSups = "select * from order_loading_extra_suppliers oles where oles.order_loading_id=" + id;
                                 List<OrderLoadingExtraSuppliersEntity> orderLoadingExtraSuppliersEntityList =
-                                        entityManager.createNativeQuery(sqlExtraSups,OrderLoadingExtraSuppliersEntity.class).getResultList();
-                                for(OrderLoadingExtraSuppliersEntity oles : orderLoadingExtraSuppliersEntityList ){
+                                        entityManager.createNativeQuery(sqlExtraSups, OrderLoadingExtraSuppliersEntity.class).getResultList();
+                                for (OrderLoadingExtraSuppliersEntity oles : orderLoadingExtraSuppliersEntityList) {
                                     entityManager.remove(oles);
                                 }
                                 entityManager.remove(ordersLoadingEntity);

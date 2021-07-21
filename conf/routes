@@ -118,6 +118,7 @@ POST        /deleteInternovaSeller                            controllers.coreDa
 POST        /getInternovaSellers                              controllers.coreData.InternovaSellersController.getInternovaSellers(req: Request)
 #OffersController
 POST        /getOffers                                        controllers.procedures.OffersController.getOffers(req: Request)
+POST        /getOffersListenerSize                            controllers.procedures.OffersController.getOffersListenerSize(req: Request)
 POST        /getAllOffersNoPagination                         controllers.procedures.OffersController.getAllOffersNoPagination(req: Request)
 POST        /deleteOffer                                      controllers.procedures.OffersController.deleteOffer(req: Request)
 POST        /addOffer                                         controllers.procedures.OffersController.addOffer(req: Request)
@@ -138,6 +139,7 @@ POST        /updateOrderStatus                                controllers.proced
 POST        /updateOrderBilling                               controllers.procedures.OrdersController.updateOrderBilling(req: Request)
 POST        /createOrder                                      controllers.procedures.OrdersController.createOrder(req: Request)
 POST        /getOrders                                        controllers.procedures.OrdersController.getOrders(req: Request)
+POST        /getOrdersListenerSize                            controllers.procedures.OrdersController.getOrdersListenerSize(req: Request)
 POST        /getAllOrders                                     controllers.procedures.OrdersController.getAllOrdersNoPagination(req: Request)
 POST        /getOrderWaypoints                                controllers.procedures.OrdersController.getOrderWaypoints(req: Request)
 POST        /updateOrderWaypoint                              controllers.procedures.OrdersController.updateOrderWaypoint(req: Request)
@@ -148,6 +150,7 @@ POST        /deleteOrder                                      controllers.proced
 POST        /getAvailablesOrders                              controllers.procedures.OrdersLoadingController.getAvailablesOrders(req: Request)
 POST        /getOrdersLoadings                                controllers.procedures.OrdersLoadingController.getOrdersLoadings(req: Request)
 POST        /getOrdersLoadingsViewOnly                        controllers.procedures.OrdersLoadingController.getOrdersLoadingsViewOnly(req: Request)
+POST        /getOrdersLoadingsListenerSize                    controllers.procedures.OrdersLoadingController.getOrdersLoadingsListenerSize(req: Request)
 POST        /getDromologioByOrder                             controllers.procedures.OrdersLoadingController.getDromologioByOrder(req: Request)
 POST        /getNauloBySuplierAndSchedule                     controllers.procedures.OrdersLoadingController.getNauloBySuplierAndSchedule(req: Request)
 POST        /saveOrderLoading                                 controllers.procedures.OrdersLoadingController.saveOrderLoading(req: Request)
@@ -187,6 +190,7 @@ POST        /getStackingFactor                                controllers.CoreVa
 POST        /updateStackingFactor                             controllers.CoreVariables.updateStackingFactor(req: Request)
 #AnalyticsController
 POST        /getAnalytics                                     controllers.analytics.AnalyticsController.getAnalytics(req: Request)
+POST        /getAnalyticsOrders                               controllers.analytics.AnalyticsController.getAnalyticsOrders(req: Request)
 
 
 

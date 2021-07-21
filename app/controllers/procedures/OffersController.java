@@ -15,6 +15,8 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
+import play.libs.ws.WSClient;
+import play.libs.ws.WSResponse;
 import play.mvc.BodyParser;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -40,16 +42,19 @@ import static play.mvc.Results.ok;
 public class OffersController extends Application {
     private JPAApi jpaApi;
     private DatabaseExecutionContext executionContext;
+    private final WSClient ws;
+
     private static final String ALGO = "AES";
     private static final byte[] keyValue =
             new byte[]{'T', 'h', 'e', 'B', 'e', 's', 't',
                     'S', 'e', 'c', 'r', 'e', 't', 'K', 'e', 'y'};
 
     @Inject
-    public OffersController(JPAApi jpaApi, DatabaseExecutionContext executionContext) {
+    public OffersController(JPAApi jpaApi, DatabaseExecutionContext executionContext, WSClient ws) {
         super(jpaApi, executionContext);
         this.jpaApi = jpaApi;
         this.executionContext = executionContext;
+        this.ws = ws;
 
 
     }
@@ -286,6 +291,60 @@ public class OffersController extends Application {
             e.printStackTrace();
             result.put("status", "error");
             result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων");
+            return ok(result);
+        }
+    }
+
+
+
+    @SuppressWarnings({"Duplicates", "unchecked"})
+    public Result getOffersListenerSize(final Http.Request request) throws IOException, ExecutionException, InterruptedException {
+        try {
+            ObjectNode result = Json.newObject();
+            JsonNode json = request.body().asJson();
+            if (json == null) {
+                return badRequest("Expecting Json data");
+            } else {
+                if (json == null) {
+                    result.put("status", "error");
+                    result.put("message", "Δεν εχετε αποστειλει εγκυρα δεδομενα.");
+                    return ok(result);
+                } else {
+                    ObjectMapper ow = new ObjectMapper();
+                    HashMap<String, Object> returnList = new HashMap<String, Object>();
+                    String jsonResult = "";
+                    CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
+                                return jpaApi.withTransaction(
+                                        entityManager -> {
+                                            HashMap<String, Object> returnList_future = new HashMap<String, Object>();
+                                            String sqlOrdLoads = "select count(*) from offers offer   where 1=1 ";
+                                            BigInteger allmyListCount = (BigInteger) entityManager.createNativeQuery(sqlOrdLoads).getSingleResult();
+                                            returnList_future.put("allmyListCount", allmyListCount);
+                                            returnList_future.put("status", "success");
+                                            returnList_future.put("message", "success");
+                                            return returnList_future;
+                                        });
+                            },
+                            executionContext);
+                    returnList = getFuture.get();
+                    DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                    ow.setDateFormat(myDateFormat);
+                    try {
+                        jsonResult = ow.writeValueAsString(returnList);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        result.put("status", "error");
+                        result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων ");
+                        return ok(result);
+                    }
+                    return ok(jsonResult);
+                }
+            }
+        } catch (Exception e) {
+            ObjectNode result = Json.newObject();
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "Προβλημα κατα την ανάγνωση των στοιχείων");
             return ok(result);
         }
     }
@@ -605,8 +664,16 @@ public class OffersController extends Application {
                                                 sHmpam.put("tableDataTimokatalogosProsfores", offschelistFinal);
                                                 filalist.add(sHmpam);
                                             }
+
+
+                                            String sqlOrdLoads = "select count(*) from offers offer   where 1=1 ";
+                                            BigInteger allmyListCount = (BigInteger) entityManager.createNativeQuery(sqlOrdLoads).getSingleResult();
+
+
+
                                             returnList_future.put("data", filalist);
                                             returnList_future.put("total", filalistAll.size());
+                                            returnList_future.put("allmyListCount",allmyListCount);
                                             returnList_future.put("status", "success");
                                             returnList_future.put("message", "success");
                                             return returnList_future;
