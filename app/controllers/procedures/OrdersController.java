@@ -412,6 +412,7 @@ public class OrdersController extends Application {
                                         String orderCol = json.findPath("orderCol").asText();
                                         String descAsc = json.findPath("descAsc").asText();
                                         String id = json.findPath("id").asText();
+                                        String orderid = json.findPath("orderid").asText();
                                         String offerId = json.findPath("offerId").asText();
                                         String creationDate = json.findPath("creationDate").asText();
                                         String customer = json.findPath("customer").asText();
@@ -434,10 +435,13 @@ public class OrdersController extends Application {
                                                     "( select cs.id from customers_suppliers cs where cs.internova_seller_id="
                                                     +internovaSellersEntity.getId()+")";
                                         }
-
-                                        if (!id.equalsIgnoreCase("") && id != null) {
-                                            sqlCustSupl += " and ord.id like '%" + id + "%'";
+                                        if (!orderid.equalsIgnoreCase("") && orderid != null) {
+                                            sqlCustSupl += " and ord.id like '%" + orderid + "%'";
                                         }
+                                        if (!id.equalsIgnoreCase("") && id != null) {
+                                            sqlCustSupl += " and ord.id = '" + id + "'";
+                                        }
+                                        //orderid
                                         if (!offerId.equalsIgnoreCase("") && offerId != null) {
                                             sqlCustSupl += " and ord.offer_id like '%" + offerId + "%'";
                                         }

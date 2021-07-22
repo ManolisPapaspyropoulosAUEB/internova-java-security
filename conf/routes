@@ -106,6 +106,9 @@ POST        /addBillingEntry                                  controllers.coreDa
 POST        /updateBillingEntry                               controllers.coreData.BillingsController.updateBillingEntry(req: Request)
 POST        /deleteBilling                                    controllers.coreData.BillingsController.deleteBilling(req: Request)
 POST        /getBillings                                      controllers.coreData.BillingsController.getBillings(req: Request)
+
+
+
 #PackageTypeController
 POST        /addPackageTypeEntry                              controllers.coreData.PackageTypeController.addPackageTypeEntry(req: Request)
 POST        /updatePackageTypeEntry                           controllers.coreData.PackageTypeController.updatePackageTypeEntry(req: Request)

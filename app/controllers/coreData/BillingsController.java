@@ -32,6 +32,12 @@ public class BillingsController extends Application {
     private MailerService ms;
     private DatabaseExecutionContext executionContext;
 
+    enum Planet{
+
+        MERCURY,VENUS,EARTH
+    }
+
+
     @Inject
     public BillingsController(MailerService ms, JPAApi jpaApi, DatabaseExecutionContext executionContext) {
         super(jpaApi, executionContext);
@@ -191,6 +197,8 @@ public class BillingsController extends Application {
             }
         }
     }
+
+
 
 
     @SuppressWarnings({"Duplicates", "unchecked"})
