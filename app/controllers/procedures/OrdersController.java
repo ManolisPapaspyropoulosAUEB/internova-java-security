@@ -468,12 +468,12 @@ public class OrdersController extends Application {
                                                             " (select id from  internova_sellers isell where isell.name like '%" + seller + "%' )";
                                         }
 
-                                        if (!customer.equalsIgnoreCase("") && customer != null) {
+                                        if (!customer.equalsIgnoreCase("") && customer != null && !customer.equalsIgnoreCase("null")) {
                                             sqlCustSupl += " and ord.customer_id  in " +
-                                                    " ( select id from  customers_suppliers cs where cs.brand_name like '%" + customer + "%' )";
+                                                    " ( select id from  customers_suppliers cs where cs.brand_name = '" + customer + "' )";
                                         }
-                                        if (!status.equalsIgnoreCase("") && status != null) {
-                                            sqlCustSupl += " and ord.status like '%" + status + "%'";
+                                        if (!status.equalsIgnoreCase("") && status != null && !status.equalsIgnoreCase("null")) {
+                                            sqlCustSupl += " and ord.status = '" + status + "'";
                                         }
 
                                         if (!from.equalsIgnoreCase("") && from != null) {
@@ -505,10 +505,16 @@ public class OrdersController extends Application {
                                         if (!orderCol.equalsIgnoreCase("") && orderCol != null) {
                                             if (orderCol.equalsIgnoreCase("billingName")) {
                                                 sqlCustSupl += " order by (select name from billings b where b.id=offer.billing_id)" + descAsc;
-                                            } else if (orderCol.equalsIgnoreCase("sellerName")) {
-                                                sqlCustSupl += " order by (select name from internova_sellers iseller where iseller.id=offer.seller_id)" + descAsc;
-                                            } else if (orderCol.equalsIgnoreCase("brandName")) {
-                                                sqlCustSupl += " order by (select brand_name from customers_suppliers cs where cs.id=offer.customer_id)" + descAsc;
+                                            }else if(orderCol.equalsIgnoreCase("customerBrandName")){
+                                                sqlCustSupl += " order by (select brand_name from customers_suppliers cs where cs.id=ord.customer_id)" + descAsc;
+                                            } else if (orderCol.equalsIgnoreCase("mainSchedule")) {
+                                                sqlCustSupl+=" order by (select concat( osc.from_country,' ', osc.from_city)\n" +
+                                                        "from order_schedules osc \n" +
+                                                        "where \n" +
+                                                        "osc.primary_schedule=1 \n" +
+                                                        "and osc.order_id=ord.id\n" +
+                                                        "\n" +
+                                                        ")"; ;
                                             } else {
                                                 sqlCustSupl += " order by " + orderCol + " " + descAsc;
                                             }
@@ -568,7 +574,13 @@ public class OrdersController extends Application {
                                             for (OrderSchedulesEntity os : orderSchedulesEntityList) {
                                                 HashMap<String, Object> schedmap = new HashMap<String, Object>();
                                                 if (os.getPrimarySchedule() == 1) {
-                                                    sHmpam.put("mainSchedule", os.getFromCountry() + " " + os.getFromCity() + "  /  " + os.getToCountry() + " " + os.getToCity());
+
+                                                    if(os.getFactoryId()!=null && os.getFactoryId()!=0 ){
+                                                        FactoriesEntity factoriesEntity = entityManager.find(FactoriesEntity.class,os.getFactoryId());
+                                                        sHmpam.put("mainSchedule", os.getFromCountry() + " " + os.getFromCity() +"( "+factoriesEntity.getBrandName()+" )"+ "  /  " + os.getToCountry() + " " + os.getToCity());
+                                                    }else{
+                                                        sHmpam.put("mainSchedule", os.getFromCountry() + " " + os.getFromCity() +"( - )"+"  /  " + os.getToCountry() + " " + os.getToCity());
+                                                    }
                                                 }
                                                 schedmap.put("offerId", os.getOfferId());
                                                 schedmap.put("primarySchedule", os.getPrimarySchedule());

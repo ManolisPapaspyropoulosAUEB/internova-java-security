@@ -121,12 +121,12 @@ public class MailerService {
                                 Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
                                 Email email = new Email()
                                         .setSubject(subject)
-                                        .setFrom(from)
-                                        .addTo(to).addCc("manolis.papaspyropoulos@gmail.com").setBodyText(bodyText);
+                                        .setFrom("b.vogdis@internovatrans.gr")
+                                        .addTo(to).setBodyText(bodyText);
                                 if(orderLoadingId!=null && !orderLoadingId.equalsIgnoreCase("") && !orderLoadingId.equalsIgnoreCase("null")){
 
                                     UsersEntity user = entityManager.find(UsersEntity.class,Long.valueOf(userId));
-                                    OrdersLoadingEntity ordersLoadingEntity = entityManager.find(OrdersLoadingEntity.class,orderLoadingId);
+                                    OrdersLoadingEntity ordersLoadingEntity = entityManager.find(OrdersLoadingEntity.class,Long.valueOf(orderLoadingId));
 
                                     ProceduresPrintController proceduresPrintController =
                                             new ProceduresPrintController(db, jpaApi, executionContext);

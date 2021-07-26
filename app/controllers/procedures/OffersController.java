@@ -413,14 +413,14 @@ public class OffersController extends Application {
                                             }
                                             if(idOrdersSearch!=null && !idOrdersSearch.equalsIgnoreCase("")
                                                     && !idOrdersSearch.equalsIgnoreCase("null")){
-                                                sqlCustSupl += " and  offer.id in (select ord.offer_id from orders ord where ord.id like '%"+idOrdersSearch+"%' ) ";
+                                                sqlCustSupl += " and  offer.id in (select ord.offer_id from orders ord where ord.id in "+idOrdersSearch+" ) ";
                                             }
-                                            if (!customer.equalsIgnoreCase("") && customer != null) {
+                                            if (!customer.equalsIgnoreCase("") && customer != null  && !customer.equalsIgnoreCase("null")) {
                                                 sqlCustSupl += " and offer.customer_id  in " +
-                                                        " ( select id from  customers_suppliers cs where cs.brand_name like '%" + customer + "%' )";
+                                                        " ( select id from  customers_suppliers cs where cs.brand_name = '" + customer + "' )";
                                             }
-                                            if (!status.equalsIgnoreCase("") && status != null) {
-                                                sqlCustSupl += " and offer.status like '%" + status + "%'";
+                                            if (!status.equalsIgnoreCase("") && status != null && !status.equalsIgnoreCase("null")) {
+                                                sqlCustSupl += " and offer.status = '" + status + "'";
                                             }
                                             if (!offerId.equalsIgnoreCase("") && offerId != null) {
                                                 sqlCustSupl += " and offer.id like '%" + offerId + "%'";

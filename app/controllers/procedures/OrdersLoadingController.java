@@ -316,6 +316,11 @@ public class OrdersLoadingController extends Application {
                                     e.printStackTrace();
                                 }
                                 /**update order status according to timeline**/
+                                Integer prosEktelesh=0;
+                                Integer fortotheisa=0;
+                                Integer oloklhrwmenh=0;
+                                Integer timologimenh=0;
+                                Integer ekfortotheisa=0;
                                 String sqlOrders = "select * " +
                                         " from orders ord where ord.id in " +
                                         " (select ols.order_id from orders_loading_orders_selections ols " +
@@ -350,6 +355,20 @@ public class OrdersLoadingController extends Application {
                                         entityManager.merge(ord);
                                     }
                                 }
+
+                                if(prosEktelesh==ordersEntityList.size()){
+                                    ordersLoadingEntity.setStatus("ΠΡΟΣ ΕΚΤΕΛΕΣΗ");
+                                }else if (fortotheisa==ordersEntityList.size()){
+                                    ordersLoadingEntity.setStatus("ΦΟΡΤΩΘΕΙΣΑ");
+                                }else if (oloklhrwmenh==ordersEntityList.size()){
+                                    ordersLoadingEntity.setStatus("ΟΛΟΚΛΗΡΩΜΕΝΗ");
+                                }else if (ekfortotheisa==ordersEntityList.size()){
+                                    ordersLoadingEntity.setStatus("ΕΚΦΟΡΤΩΘΕΙΣΑ");
+                                }else if (timologimenh==ordersEntityList.size()){
+                                    ordersLoadingEntity.setStatus("ΤΙΜΟΛΟΓΙΜΕΝΗ");
+                                }
+                                entityManager.merge(ordersLoadingEntity);
+
                                 /**update order status according to timeline**/
 
                                 add_result.put("status", "success");
@@ -405,7 +424,6 @@ public class OrdersLoadingController extends Application {
                                 reqBody.put("naulo", naulo);
                                 OrdersLoadingEntity ordersLoadingEntity = entityManager.find(OrdersLoadingEntity.class, ordersLoadingId);
                                 ordersLoadingEntity.setUpdateDate(new Date());
-                                ordersLoadingEntity.setStatus(status);
                                 ordersLoadingEntity.setArithmosTimologiou(arithmosTimologiou);
                                 if (timologioIndicator) {
                                     ordersLoadingEntity.setTimologioIndicator((byte) 1);
@@ -585,12 +603,36 @@ public class OrdersLoadingController extends Application {
                                     e.printStackTrace();
                                 }
                                 /**update order status according to timeline**/
+
+
+                                Integer prosEktelesh=0;
+                                Integer fortotheisa=0;
+                                Integer oloklhrwmenh=0;
+                                Integer timologimenh=0;
+                                Integer ekfortotheisa=0;
                                 String sqlOrders = "select * " +
                                         " from orders ord where ord.id in " +
                                         " (select ols.order_id from orders_loading_orders_selections ols " +
                                         "where ols.order_loading_id=" + ordersLoadingId + ") ";
                                 List<OrdersEntity> ordersEntityList = entityManager.createNativeQuery(sqlOrders, OrdersEntity.class).getResultList();
+
                                 for (OrdersEntity ord : ordersEntityList) {
+                                    if(ord.getStatus().equalsIgnoreCase("ΠΡΟΣ ΕΚΤΕΛΕΣΗ")){
+                                        prosEktelesh++;
+                                    }
+                                    if(ord.getStatus().equalsIgnoreCase("ΦΟΡΤΩΘΕΙΣΑ")){
+                                        fortotheisa++;
+                                    }
+                                    if(ord.getStatus().equalsIgnoreCase("ΟΛΟΚΛΗΡΩΜΕΝΗ")){
+                                        oloklhrwmenh++;
+                                    }
+                                    if(ord.getStatus().equalsIgnoreCase("ΕΚΦΟΡΤΩΘΕΙΣΑ")){
+                                        ekfortotheisa++;
+                                    }
+                                    if(ord.getStatus().equalsIgnoreCase("ΤΙΜΟΛΟΓΙΜΕΝΗ")){
+                                        timologimenh++;
+                                    }
+
                                     String sqlAllQr = " select  count(*) \n" +
                                             " from order_schedules os\n" +
                                             " join order_waypoints ow on (os.id=ow.order_schedule_id and offer_schedule_between_waypoint_id is null)\n" +
@@ -619,6 +661,20 @@ public class OrdersLoadingController extends Application {
                                         entityManager.merge(ord);
                                     }
                                 }
+
+                                if(prosEktelesh==ordersEntityList.size()){
+                                    ordersLoadingEntity.setStatus("ΠΡΟΣ ΕΚΤΕΛΕΣΗ");
+                                }else if (fortotheisa==ordersEntityList.size()){
+                                    ordersLoadingEntity.setStatus("ΦΟΡΤΩΘΕΙΣΑ");
+                                }else if (oloklhrwmenh==ordersEntityList.size()){
+                                    ordersLoadingEntity.setStatus("ΟΛΟΚΛΗΡΩΜΕΝΗ");
+                                }else if (ekfortotheisa==ordersEntityList.size()){
+                                    ordersLoadingEntity.setStatus("ΕΚΦΟΡΤΩΘΕΙΣΑ");
+                                }else if (timologimenh==ordersEntityList.size()){
+                                    ordersLoadingEntity.setStatus("ΤΙΜΟΛΟΓΙΜΕΝΗ");
+                                }
+                                entityManager.merge(ordersLoadingEntity);
+
                                 /**update order status according to timeline**/
 
                                 add_result.put("status", "success");
@@ -1844,8 +1900,8 @@ public class OrdersLoadingController extends Application {
                                         if (truckTrailerNumberSearch != null && !truckTrailerNumberSearch.equalsIgnoreCase("")) {
                                             sqlOrdLoads += " and  ord_load.supplier_truck_trailer_id  in ( select t.id from trucks t  where t.plate_number   like '%" + truckTrailerNumberSearch + "%'   )";
                                         }
-                                        if (supplierNameSearch != null && !supplierNameSearch.equalsIgnoreCase("")) {
-                                            sqlOrdLoads += " and ord_load.supplier_id in (  select cs.id   from customers_suppliers cs where cs.brand_name like '%" + supplierNameSearch + "%' ) ";
+                                        if (supplierNameSearch != null && !supplierNameSearch.equalsIgnoreCase("") && !supplierNameSearch.equalsIgnoreCase("null")) {
+                                            sqlOrdLoads += " and ord_load.supplier_id in (  select cs.id   from customers_suppliers cs where cs.brand_name = '" + supplierNameSearch + "' ) ";
                                         }
                                         if (statusAndOperationSearch != null && !statusAndOperationSearch.equalsIgnoreCase("") && !statusAndOperationSearch.equalsIgnoreCase("null")) {
                                             sqlOrdLoads += " and ord_load.id in \n" +
