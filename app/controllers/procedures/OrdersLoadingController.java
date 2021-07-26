@@ -626,7 +626,7 @@ public class OrdersLoadingController extends Application {
                                     if(ord.getStatus().equalsIgnoreCase("ΟΛΟΚΛΗΡΩΜΕΝΗ")){
                                         oloklhrwmenh++;
                                     }
-                                    if(ord.getStatus().equalsIgnoreCase("ΕΚΦΟΡΤΩΘΕΙΣΑ")){
+                                    if(ord.getStatus().equalsIgnoreCase("ΕΚΦΟΡΤΩΘΗΚΕ")){
                                         ekfortotheisa++;
                                     }
                                     if(ord.getStatus().equalsIgnoreCase("ΤΙΜΟΛΟΓΙΜΕΝΗ")){
