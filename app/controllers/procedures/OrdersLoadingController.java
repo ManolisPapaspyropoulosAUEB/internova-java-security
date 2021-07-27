@@ -407,7 +407,6 @@ public class OrdersLoadingController extends Application {
                                 ObjectNode add_result = Json.newObject();
                                 ObjectMapper ow = new ObjectMapper();
                                 ObjectNode reqBody = Json.newObject();
-                                ObjectNode reqBodyOrderStatus = Json.newObject();
                                 String user_id = json.findPath("user_id").asText();
                                 Long customerSupplierId = json.findPath("customerSupplierId").asLong();
                                 Double naulo = json.findPath("naulo").asDouble();
@@ -656,7 +655,8 @@ public class OrdersLoadingController extends Application {
                                     } else if (allmyListCount.intValue() == orderSchedulesEntityListCount.intValue() && allmyListCount.intValue() > orderWaypointsEntityListCount.intValue()) {
                                         statusByTimeline = "ΦΟΡΤΩΘΕΙΣΑ";
                                     }
-                                    if ((!ord.getStatus().equalsIgnoreCase("ΑΚΥΡΩΜΕΝΗ")) && (!ord.getStatus().equalsIgnoreCase("ΟΛΟΚΛΗΡΩΜΕΝΗ"))) {
+                                    if ((!ord.getStatus().equalsIgnoreCase("ΑΚΥΡΩΜΕΝΗ")) && (!ord.getStatus().equalsIgnoreCase("ΟΛΟΚΛΗΡΩΜΕΝΗ"))
+                                            && (!ord.getStatus().equalsIgnoreCase("ΤΙΜΟΛΟΓΙΜΕΝΗ"))) {
                                         ord.setStatus(statusByTimeline);
                                         entityManager.merge(ord);
                                     }

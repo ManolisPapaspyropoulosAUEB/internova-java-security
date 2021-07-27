@@ -415,6 +415,7 @@ public class OrdersController extends Application {
                                         String orderid = json.findPath("orderid").asText();
                                         String offerId = json.findPath("offerId").asText();
                                         String creationDate = json.findPath("creationDate").asText();
+                                        String appointmentDayStartPoint = json.findPath("appointmentDayStartPoint").asText();
                                         String customer = json.findPath("customer").asText();
                                         String status = json.findPath("status").asText();
                                         String from = json.findPath("from").asText();
@@ -425,8 +426,6 @@ public class OrdersController extends Application {
                                         String start = json.findPath("start").asText();
                                         String limit = json.findPath("limit").asText();
                                         String sqlCustSupl = "select * from orders ord where 1=1 ";
-
-
                                         if(internovaUser.getRoleId()==60){
                                             InternovaSellersEntity internovaSellersEntity =
                                                     entityManager.find(InternovaSellersEntity.
@@ -499,14 +498,30 @@ public class OrdersController extends Application {
                                         if (!creationDate.equalsIgnoreCase("") && creationDate != null) {
                                             sqlCustSupl += " and SUBSTRING( offer.offer_date, 1, 10)  = '" + creationDate + "'";
                                         }
+                                        if (!appointmentDayStartPoint.equalsIgnoreCase("") && appointmentDayStartPoint != null) {
+                                            sqlCustSupl += "  and ord.id in \n" +
+                                                    " (select \n" +
+                                                    " osc.order_id\n" +
+                                                    " from order_schedules osc\n" +
+                                                    " where SUBSTRING( osc.appointment_day, 1, 10) = '" + appointmentDayStartPoint +"'"+
+                                                    " ) ";
+                                        }
                                         List<OrdersEntity> filalistAll
                                                 = (List<OrdersEntity>) entityManager.createNativeQuery(
                                                 sqlCustSupl, OrdersEntity.class).getResultList();
                                         if (!orderCol.equalsIgnoreCase("") && orderCol != null) {
                                             if (orderCol.equalsIgnoreCase("billingName")) {
                                                 sqlCustSupl += " order by (select name from billings b where b.id=offer.billing_id)" + descAsc;
-                                            }else if(orderCol.equalsIgnoreCase("customerBrandName")){
+                                            }else if(orderCol.equalsIgnoreCase("customerBrandName")) {
                                                 sqlCustSupl += " order by (select brand_name from customers_suppliers cs where cs.id=ord.customer_id)" + descAsc;
+                                            }else if (orderCol.equalsIgnoreCase("appointmentDayStartPoint")){
+                                                sqlCustSupl+="   order by (select \n" +
+                                                        "osc.appointment_day \n" +
+                                                        " from order_schedules osc\n" +
+                                                        " where osc.appointment_day \n" +
+                                                        " and osc.order_id=ord.id\n" +
+                                                        " limit 1\n" +
+                                                        " )"  + descAsc;
                                             } else if (orderCol.equalsIgnoreCase("mainSchedule")) {
                                                 sqlCustSupl+=" order by (select concat( osc.from_country,' ', osc.from_city)\n" +
                                                         "from order_schedules osc \n" +
@@ -514,7 +529,7 @@ public class OrdersController extends Application {
                                                         "osc.primary_schedule=1 \n" +
                                                         "and osc.order_id=ord.id\n" +
                                                         "\n" +
-                                                        ")"; ;
+                                                        ")"  + descAsc;
                                             } else {
                                                 sqlCustSupl += " order by " + orderCol + " " + descAsc;
                                             }
@@ -528,7 +543,6 @@ public class OrdersController extends Application {
                                         List<OrdersEntity> ordersEntityList
                                                 = (List<OrdersEntity>) entityManager.createNativeQuery(
                                                 sqlCustSupl, OrdersEntity.class).getResultList();
-
                                         for (OrdersEntity j : ordersEntityList) {
                                             HashMap<String, Object> sHmpam = new HashMap<String, Object>();
                                             String sqlRelativeOffers = "select distinct offer_id FROM order_schedules os where os.order_id=" + j.getId();
@@ -580,6 +594,11 @@ public class OrdersController extends Application {
                                                         sHmpam.put("mainSchedule", os.getFromCountry() + " " + os.getFromCity() +"( "+factoriesEntity.getBrandName()+" )"+ "  /  " + os.getToCountry() + " " + os.getToCity());
                                                     }else{
                                                         sHmpam.put("mainSchedule", os.getFromCountry() + " " + os.getFromCity() +"( - )"+"  /  " + os.getToCountry() + " " + os.getToCity());
+                                                    }
+                                                    if( os.getAppointmentDay()!=null){
+                                                        sHmpam.put("appointmentDayStartPoint", os.getAppointmentDay());
+                                                    }else{
+                                                        sHmpam.put("appointmentDayStartPoint", "-");
                                                     }
                                                 }
                                                 schedmap.put("offerId", os.getOfferId());
@@ -986,10 +1005,8 @@ public class OrdersController extends Application {
                                             sHmpam.put("status", j.getStatus());
                                             filalist.add(sHmpam);
                                         }
-
                                         String sqlOrdLoads = "select count(*) from orders ord   where 1=1 ";
                                         BigInteger allmyListCount = (BigInteger) entityManager.createNativeQuery(sqlOrdLoads).getSingleResult();
-
                                         returnList_future.put("data", filalist);
                                         returnList_future.put("total", filalistAll.size());
                                         returnList_future.put("allmyListCount", allmyListCount);
