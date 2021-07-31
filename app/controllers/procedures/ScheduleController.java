@@ -421,17 +421,13 @@ public class ScheduleController extends Application {
                     CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
                                 return jpaApi.withTransaction(
                                         entityManager -> {
-
                                             String orderCol = json.findPath("orderCol").asText();
                                             String descAsc = json.findPath("descAsc").asText();
                                             String id = json.findPath("scheduleId").asText();
                                             String measureUnitLabel = json.findPath("measureUnitLabel").asText();
-
                                             String measureuUitPrice = json.findPath("measureuUitPrice").asText();
                                             String measureTo = json.findPath("measureTo").asText();
                                             String measureFrom = json.findPath("measureFrom").asText();
-
-
                                             String start = json.findPath("start").asText();
                                             String limit = json.findPath("limit").asText();
                                             String sql = "select * from schedule_packages sp where 1=1 ";
@@ -451,13 +447,9 @@ public class ScheduleController extends Application {
                                             if (!measureuUitPrice.equalsIgnoreCase("") && measureuUitPrice != null) {
                                                 sql += " and sp.unit_price like '%" + measureuUitPrice + "%'";
                                             }
-
-
                                             List<SchedulePackagesEntity> schedulePackagesEntityListaLL
                                                     = (List<SchedulePackagesEntity>) entityManager.createNativeQuery(
                                                     sql, SchedulePackagesEntity.class).getResultList();
-
-
                                             if (!orderCol.equalsIgnoreCase("") && orderCol != null) {
                                                 if (orderCol.equalsIgnoreCase("measureUnitLabel")) {
                                                     sql += " order by (select title from measurement_unit r where r.id=sp.measurement_unit_id)" + descAsc;
@@ -470,10 +462,7 @@ public class ScheduleController extends Application {
                                             if (!start.equalsIgnoreCase("") && start != null) {
                                                 sql += " limit " + start + "," + limit;
                                             }
-
-                                            System.out.println(sql);
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
-
                                             List<HashMap<String, Object>> schedList = new ArrayList<HashMap<String, Object>>();
                                             List<SchedulePackagesEntity> scheduleEntityList
                                                     = (List<SchedulePackagesEntity>) entityManager.createNativeQuery(
@@ -484,6 +473,7 @@ public class ScheduleController extends Application {
                                                 spmap.put("to", sp.getToUnit().toString());
                                                 spmap.put("scheduleId", sp.getScheduleId());
                                                 spmap.put("shdulesPackageId", sp.getId());
+                                                spmap.put("typePackageMeasure", "Βάσει συσκευασίας (τεμ)");
                                                 spmap.put("id", sp.getId());
                                                 spmap.put("measurementUnitId", sp.getMeasurementUnitId());
                                                 MeasurementUnitEntity measurementUnit = entityManager.find(MeasurementUnitEntity.class, sp.getMeasurementUnitId());
@@ -497,7 +487,6 @@ public class ScheduleController extends Application {
                                                 spmap.put("measureUnitLabel", entityManager.find(MeasurementUnitEntity.class, sp.getMeasurementUnitId()).getTitle());
                                                 schedList.add(spmap);
                                             }
-                                            //searchMeasureSearch
                                             returnList_future.put("data", schedList);
                                             returnList_future.put("total", schedulePackagesEntityListaLL.size());
                                             returnList_future.put("status", "success");

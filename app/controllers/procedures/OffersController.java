@@ -259,6 +259,7 @@ public class OffersController extends Application {
                                                 spmap.put("offersScheduleId", sp.getOfferScheduleId());
                                                 spmap.put("shdulesPackageId", sp.getId());
                                                 spmap.put("id", sp.getId());
+                                                spmap.put("typePackageMeasure", sp.getTypePackageMeasure());
                                                 spmap.put("unitPrice", sp.getUnitPrice().toString());
                                                 spmap.put("updateDate", sp.getUpdateDate());
                                                 spmap.put("creationDate", sp.getCreationDate());
