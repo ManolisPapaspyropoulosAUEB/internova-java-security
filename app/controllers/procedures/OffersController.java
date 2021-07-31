@@ -726,6 +726,13 @@ public class OffersController extends Application {
                                 Long user_id = json.findPath("user_id").asLong();
                                 Long id = json.findPath("id").asLong();
                                 OffersEntity offersEntity = entityManager.find(OffersEntity.class, id);
+                                String sqlOrd="select * from orders ord where ord.offer_id="+id;
+                                List<OrdersEntity> ordersEntityList = entityManager.createNativeQuery(sqlOrd,OrdersEntity.class).getResultList();
+                                if(ordersEntityList.size()>0){
+                                    add_result.put("status", "error");
+                                    add_result.put("message", "Η συγκεκριμένη προσφορά έχει συνδεθεθεί με παραγγελία και γιαυτό δεν μπορεί να διαγραφτεί");
+                                    return add_result;
+                                }
                                 entityManager.remove(offersEntity);
                                 add_result.put("status", "success");
                                 add_result.put("message", "Η διαγραφή πραγματοποίηθηκε με επιτυχία");
