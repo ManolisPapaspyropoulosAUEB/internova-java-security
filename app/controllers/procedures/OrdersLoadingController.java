@@ -1126,8 +1126,8 @@ public class OrdersLoadingController extends Application {
                                                 } else {
                                                     sHmpam.put("summLdm", "0.0");
                                                 }
-                                                String sqlSumQuantity = "select  sum(osp.quantity) from orders_selections_by_point osp where osp.order_id="
-                                                        + j.getId() + " and osp.type_package!='Βάσει βάρους επί καθαρού (kg)' and osp.type_package!='Βάσει βάρους επί μικτού (kg)'";
+                                                 String sqlSumQuantity = "select  sum(osp.quantity) from orders_selections_by_point osp where osp.order_id="
+                                                        + j.getId() + " and  osp.type='Φόρτωση' ";
 
 
                                                 BigDecimal summQuantity = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantity).getSingleResult();
@@ -1137,7 +1137,7 @@ public class OrdersLoadingController extends Application {
                                                     sHmpam.put("summQuantity", "0");
                                                 }
                                                 String sqlSumQuantityKg = "select  sum(osp.quantity) from orders_selections_by_point osp where osp.order_id="
-                                                        + j.getId() + " and ( osp.type_package='Βάσει βάρους επί καθαρού (kg)' ) ";
+                                                        + j.getId() + " and  osp.type='Φόρτωση' and ( osp.type_package='Βάσει βάρους επί καθαρού (kg)' ) ";
                                                 BigDecimal summQuantityKg = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantityKg).getSingleResult();
                                                 if (summQuantityKg != null) {
                                                     sHmpam.put("summQuantityKg", summQuantityKg);
@@ -1147,7 +1147,7 @@ public class OrdersLoadingController extends Application {
 
                                                 String sqlsummQuantityKgNet = "select  sum(osp.quantity) " +
                                                         " from orders_selections_by_point osp where osp.order_id="
-                                                        + j.getId() + " and ( osp.type_package='Βάσει βάρους επί μικτού (kg)' ) ";
+                                                        + j.getId() + " and ( osp.type_package='Βάσει βάρους επί μικτού (kg)' ) and  osp.type='Φόρτωση' ";
                                                 BigDecimal summQuantityKgNet = (BigDecimal) entityManager.createNativeQuery(sqlsummQuantityKgNet).getSingleResult();
                                                 if (summQuantityKgNet != null) {
                                                     sHmpam.put("summQuantityKgNet", summQuantityKgNet);
@@ -2022,7 +2022,7 @@ public class OrdersLoadingController extends Application {
                                             } else {
                                                 sHmpam.put("finalSummLdm", df.format(finalSummLdm));
                                             }
-                                            String sqlSumQuantity = "select  sum(osp.quantity) from orders_selections_by_point osp " + ordersWhere + " and osp.type_package!='Βάσει βάρους επί καθαρού (kg)' and osp.type_package!='Βάσει βάρους επί μικτού (kg)' ";
+                                            String sqlSumQuantity = "select  sum(osp.quantity) from orders_selections_by_point osp " + ordersWhere + " and  osp.type='Φόρτωση' ";
                                             BigDecimal summQuantity = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantity).getSingleResult();
                                             if (summQuantity != null) {
                                                 finalSummQuantity = finalSummQuantity + summQuantity.intValue();
@@ -2030,7 +2030,7 @@ public class OrdersLoadingController extends Application {
                                             } else {
                                                 sHmpam.put("finalSummQuantity", finalSummQuantity);
                                             }
-                                            String sqlSumQuantityKg = "select  sum(osp.quantity) from orders_selections_by_point osp " + ordersWhere + "  and ( osp.type_package='Βάσει βάρους επί καθαρού (kg)' ) ";
+                                            String sqlSumQuantityKg = "select  sum(osp.quantity) from orders_selections_by_point osp " + ordersWhere + "  and ( osp.type_package='Βάσει βάρους επί καθαρού (kg)' ) and  osp.type='Φόρτωση' ";
                                             BigDecimal summQuantityKg = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantityKg).getSingleResult();
                                             if (summQuantityKg != null) {
                                                 finalSummQuantityKg = finalSummQuantityKg + summQuantityKg.intValue();
@@ -2038,7 +2038,7 @@ public class OrdersLoadingController extends Application {
                                             } else {
                                                 sHmpam.put("finalSummQuantityKg", finalSummQuantityKg);
                                             }
-                                            String sqlsummQuantityKgNet = "select  sum(osp.quantity) from orders_selections_by_point osp " + ordersWhere + "  and ( osp.type_package='Βάσει βάρους επί μικτού (kg)' ) ";
+                                            String sqlsummQuantityKgNet = "select  sum(osp.quantity) from orders_selections_by_point osp " + ordersWhere + "  and ( osp.type_package='Βάσει βάρους επί μικτού (kg)' ) and  osp.type='Φόρτωση' ";
                                             BigDecimal summQuantityKgNet = (BigDecimal) entityManager.createNativeQuery(sqlsummQuantityKgNet).getSingleResult();
                                             if (summQuantityKgNet != null) {
                                                 finalSummQuantityKgNet = finalSummQuantityKgNet + summQuantityKgNet.intValue();
@@ -2508,7 +2508,7 @@ public class OrdersLoadingController extends Application {
                                                         } else {
                                                             sHmpam.put("finalSummLdm", df.format(finalSummLdm));
                                                         }
-                                                        String sqlSumQuantity = "select  sum(osp.quantity) from orders_selections_by_point osp where osp.order_id=" + doneNode.findPath("orderId").asText() + " and osp.type_package!='Βάσει βάρους επί καθαρού (kg)' and osp.type_package!='Βάσει βάρους επί μικτού (kg)' ";
+                                                        String sqlSumQuantity = "select  sum(osp.quantity) from orders_selections_by_point osp where osp.order_id=" + doneNode.findPath("orderId").asText() + " and  osp.type='Φόρτωση' ";
                                                         BigDecimal summQuantity = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantity).getSingleResult();
                                                         if (summQuantity != null) {
                                                             finalSummQuantity = finalSummQuantity + summQuantity.intValue();
@@ -2517,7 +2517,7 @@ public class OrdersLoadingController extends Application {
                                                             sHmpam.put("finalSummQuantity", finalSummQuantity);
                                                         }
 
-                                                        String sqlSumQuantityKg = "select  sum(osbp.quantity) from orders_selections_by_point osbp where osbp.order_id=" + doneNode.findPath("orderId").asText() + "  and ( osbp.type_package='Βάσει βάρους επί καθαρού (kg)' ) ";
+                                                        String sqlSumQuantityKg = "select  sum(osbp.quantity) from orders_selections_by_point osbp where osbp.order_id=" + doneNode.findPath("orderId").asText() + "  and ( osbp.type_package='Βάσει βάρους επί καθαρού (kg)' ) and  osbp.type='Φόρτωση' ";
                                                         BigDecimal summQuantityKg = (BigDecimal) entityManager.createNativeQuery(sqlSumQuantityKg).getSingleResult();
                                                         if (summQuantityKg != null) {
                                                             finalSummQuantityKg = finalSummQuantityKg + summQuantityKg.intValue();
@@ -2526,7 +2526,7 @@ public class OrdersLoadingController extends Application {
                                                             sHmpam.put("finalSummQuantityKg", finalSummQuantityKg);
                                                         }
 
-                                                        String sqlsummQuantityKgNet = "select  sum(osbp.quantity) from orders_selections_by_point osbp where osbp.order_id=" + doneNode.findPath("orderId").asText() + "  and ( osbp.type_package='Βάσει βάρους επί μικτού (kg)' ) ";
+                                                        String sqlsummQuantityKgNet = "select  sum(osbp.quantity) from orders_selections_by_point osbp where osbp.order_id=" + doneNode.findPath("orderId").asText() + "  and ( osbp.type_package='Βάσει βάρους επί μικτού (kg)' ) and  osbp.type='Φόρτωση' ";
                                                         BigDecimal summQuantityKgNet = (BigDecimal) entityManager.createNativeQuery(sqlsummQuantityKgNet).getSingleResult();
                                                         if (summQuantityKgNet != null) {
                                                             finalSummQuantityKgNet = finalSummQuantityKgNet + summQuantityKgNet.intValue();
