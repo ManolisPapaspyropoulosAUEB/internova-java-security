@@ -712,6 +712,9 @@ public class UsersControllers extends Application {
                                                 sHmpam.put("orgId", j.getOrgId());
                                                 sHmpam.put("roleId", j.getRoleId());
                                                 sHmpam.put("depId", j.getDepId());
+                                                sHmpam.put("token", j.getToken());
+                                                sHmpam.put("username", j.getUsername());
+                                                sHmpam.put("updateDate", j.getUpdateDate());
                                                 if (j.getOrgId() != null && j.getOrgId()!=0) {
                                                     HashMap<String, Object> orgMap = new HashMap<>();
                                                     OrganizationsEntity organizationsEntity = entityManager.find(OrganizationsEntity.class, j.getOrgId());
@@ -736,10 +739,7 @@ public class UsersControllers extends Application {
                                                     sHmpam.put("department", depMap);
                                                     sHmpam.put("depName", departmentsEntity.getDepartment());
                                                 }
-                                                sHmpam.put("token", j.getToken());
-                                                sHmpam.put("username", j.getUsername());
-                                                sHmpam.put("creationDate", j.getCreationDate());
-                                                sHmpam.put("updateDate", j.getUpdateDate());
+
                                                 ufinalList.add(sHmpam);
                                             }
                                             returnList_future.put("data", ufinalList);

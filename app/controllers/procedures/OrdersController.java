@@ -1365,7 +1365,6 @@ public class OrdersController extends Application {
 
                                 Long cveid = Long.valueOf(1);
                                 CoreVariablesEntity cve = entityManager.find(CoreVariablesEntity.class, cveid);
-
                                 String user_id = json.findPath("user_id").asText();
                                 Long orderId = json.findPath("orderId").asLong();
                                 String generalInstructions = json.findPath("generalInstructions").asText();

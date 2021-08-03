@@ -1100,25 +1100,18 @@ public class OrdersLoadingController extends Application {
                                                     sHmpam.put("fromCountry", "-");
                                                     sHmpam.put("fromCity", "-");
                                                 }
-                                                //   String sqlMasterSchedule = "select  osp.unit_price from orders_selections_by_point osp where osp.order_id="+ j.getId()+" limit 1" ;
-                                                String sqlMasterSchedule = "select  * from orders_selections_by_point osp where osp.order_id=" + j.getId()
-                                                        + " and  osp.order_waypoint_id is null limit 1";
-                                                Double summMasterSchedule = 0.0;
-                                                List<OrdersSelectionsByPointEntity> ordersSelectionsByPointEntityList =
-                                                        entityManager.createNativeQuery(sqlMasterSchedule, OrdersSelectionsByPointEntity.class).getResultList();
-                                                if (ordersSelectionsByPointEntityList.size() > 0) {
-                                                    sHmpam.put("summMasterSchedule", ordersSelectionsByPointEntityList.get(0).getUnitPrice());
-                                                    String sqlSumPrice = "select  sum(osp.unit_price) from orders_selections_by_point osp where osp.order_id=" + j.getId();
-                                                    Double summPrice = (Double) entityManager.createNativeQuery(sqlSumPrice).getSingleResult();
-                                                    if (summPrice != null) {
-                                                        sHmpam.put("summPriceNested", summPrice - ordersSelectionsByPointEntityList.get(0).getUnitPrice());
-                                                    } else {
-                                                        sHmpam.put("summPriceNested", "0.0");
-                                                    }
+
+                                                String sqlsummMasterSchedule = "select  sum(osp.unit_price) from orders_selections_by_point osp where osp.order_id=" + j.getId() + " and osp.type='Φόρτωση'";
+                                                Double summMasterSchedule = (Double) entityManager.createNativeQuery(sqlsummMasterSchedule).getSingleResult();
+                                                if (summMasterSchedule != null) {
+                                                    sHmpam.put("summMasterSchedule", summMasterSchedule);
+                                                    sHmpam.put("summPriceNested",  "0.0");
                                                 } else {
                                                     sHmpam.put("summMasterSchedule", "0.0");
-                                                    sHmpam.put("summPriceNested", "0.0");
+                                                    sHmpam.put("summPriceNested",  "0.0");
                                                 }
+
+
                                                 String sqlSumLdm = "select  sum(osp.ldm) from orders_selections_by_point osp where osp.order_id=" + j.getId() + " and osp.type='Φόρτωση'";
                                                 Double summLdm = (Double) entityManager.createNativeQuery(sqlSumLdm).getSingleResult();
                                                 if (summLdm != null) {
