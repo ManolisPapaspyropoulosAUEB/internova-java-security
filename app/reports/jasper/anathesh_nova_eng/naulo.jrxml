@@ -9,7 +9,7 @@
     from order_loading_assignment ol 
     join assignment_billings asb on (ol.id=asb.assignment_id)
     join orders_loading ordl on (ordl.id=ol.order_loading_id)
-    where ol.order_loading_id=$P{order_loading_id}   and asb.billing_id=36]]>
+    where ol.order_loading_id=$P{order_loading_id}   and asb.billing_id=35]]>
 	</queryString>
 	<field name="comments" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="comments"/>
