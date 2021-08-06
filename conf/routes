@@ -25,7 +25,6 @@ POST        /login                                            controllers.securi
 #AuditLogsController ftpRetrieveFromPath ftpRetrieveFromFrankana
 POST        /ftpRetrieveFromPath                              controllers.security.AuditLogsController.ftpRetrieveFromPath(req: Request)
 POST        /ftpRetrieveFromFrankana                          controllers.security.AuditLogsController.ftpRetrieveFromFrankana(req: Request)
-#POST        /ftpRetrieveFromPathAkka                                     controllers.security.AuditLogsController.ftpRetrieveFromPathAkka(req: Request)
 POST        /addAuditLog                                      controllers.security.AuditLogsController.addAuditLog(req: Request)
 POST        /updateAuditLog                                   controllers.security.AuditLogsController.updateAuditLog(req: Request)
 POST        /deleteLog                                        controllers.security.AuditLogsController.deleteLog(req: Request)
@@ -195,6 +194,16 @@ POST        /updateStackingFactor                             controllers.CoreVa
 #AnalyticsController
 POST        /getAnalytics                                     controllers.analytics.AnalyticsController.getAnalytics(req: Request)
 POST        /getAnalyticsOrders                               controllers.analytics.AnalyticsController.getAnalyticsOrders(req: Request)
+
+
+#ExtraCostsController
+POST        /addExtraCost                                     controllers.coreData.ExtraCostsController.addExtraCost(req: Request)
+POST        /updateExtraCost                                  controllers.coreData.ExtraCostsController.updateExtraCost(req: Request)
+POST        /deleteExtraCost                                  controllers.coreData.ExtraCostsController.deleteExtraCost(req: Request)
+POST        /getExtraCosts                                    controllers.coreData.ExtraCostsController.getExtraCosts(req: Request)
+
+#ExtraCostsController
+POST        /getExtraCostsOffersSchedule                              controllers.coreData.ExtraCostsOffersController.getExtraCostsOffersSchedule(req: Request)
 
 
 

@@ -139,6 +139,24 @@ public class OrdersController extends Application {
                                         orderPackagesEntity.setOfferId(orderSchedule.getId());
                                         entityManager.persist(orderPackagesEntity);
                                     }
+
+                                    String extraCosts = "select * from extra_costs_offers where offer_schedule_id="+offerScheduleId;
+                                    List<ExtraCostsOffersEntity> extraCostsOffersEntityList =
+                                            entityManager.createNativeQuery(extraCosts,ExtraCostsOffersEntity.class).getResultList();
+                                    for(ExtraCostsOffersEntity exc : extraCostsOffersEntityList){
+                                        ExtraCostsOrderScheduleEntity extraCostsOrderScheduleEntity = new ExtraCostsOrderScheduleEntity();
+                                        extraCostsOrderScheduleEntity.setCreationDate(new Date());
+                                        extraCostsOrderScheduleEntity.setCost(exc.getCost());
+                                        extraCostsOrderScheduleEntity.setOrderScheduleId(orderSchedule.getId());
+                                        extraCostsOrderScheduleEntity.setOfferScheduleId(orderSchedule.getOfferId());
+                                        extraCostsOrderScheduleEntity.setExtraCostId(exc.getExtraCostId());
+                                        extraCostsOrderScheduleEntity.setOfferId(orderSchedule.getOfferId());
+                                        extraCostsOrderScheduleEntity.setOrderId(ordersEntity.getId());
+                                        entityManager.persist(extraCostsOrderScheduleEntity);
+                                    }
+
+
+
                                 }
                                 add_result.put("status", "success");
                                 add_result.put("id", ordersEntity.getId());
@@ -585,6 +603,7 @@ public class OrdersController extends Application {
                                             List<OrderSchedulesEntity> orderSchedulesEntityList =
                                                     entityManager.createNativeQuery(sqlOrdersSchedules, OrderSchedulesEntity.class).getResultList();
                                             List<HashMap<String, Object>> schedulesList = new ArrayList<HashMap<String, Object>>();
+                                            Double finalSumExtraCostSchedule = 0.0;
                                             for (OrderSchedulesEntity os : orderSchedulesEntityList) {
                                                 HashMap<String, Object> schedmap = new HashMap<String, Object>();
                                                 if (os.getPrimarySchedule() == 1) {
@@ -654,18 +673,8 @@ public class OrdersController extends Application {
                                                 schedmap.put("toPostalCode", os.getToPostalCode());
                                                 schedmap.put("orderScheduleId", os.getId());
 
-                                                String summSql = "select sum(final_unit_price) " +
-                                                        "from order_package_schedules t " +
-                                                        "where t.order_id=" + os.getOrderId() + " and t.order_schedule_id=" + os.getId();
 
-                                                Double summ = (Double) entityManager.
-                                                        createNativeQuery(summSql).getSingleResult();
-                                                if (summ != null) {
-                                                    schedmap.put("scheduleFinalUnitPrice", summ);
 
-                                                } else {
-                                                    schedmap.put("scheduleFinalUnitPrice", "0.0");
-                                                }
                                                 String itemsAfethriasFortwshs = "select * from orders_selections_by_point where order_id=" + os.getOrderId() +
                                                         " and  order_schedule_id=" + os.getId() + " and order_waypoint_id is null";
                                                 List<OrdersSelectionsByPointEntity> itemsPackagesAfethrias = entityManager.createNativeQuery(itemsAfethriasFortwshs, OrdersSelectionsByPointEntity.class).getResultList();
@@ -972,6 +981,48 @@ public class OrdersController extends Application {
                                                     waypFinal.add(waypmap);
                                                 }
                                                 schedmap.put("waypointsList", waypFinal);
+
+
+                                                String sqlExtraCost = "select * from extra_costs_order_schedule where order_schedule_id="+os.getId();
+                                                List<ExtraCostsOrderScheduleEntity> extraCostsOrderScheduleEntityList =
+                                                        entityManager.createNativeQuery(sqlExtraCost,ExtraCostsOrderScheduleEntity.class).getResultList();
+                                                List<HashMap<String, Object>> excList = new ArrayList<HashMap<String, Object>>();
+
+                                                Double sumExtraCostSchedule = 0.0;
+                                                for(ExtraCostsOrderScheduleEntity exord :extraCostsOrderScheduleEntityList ){
+                                                    HashMap<String, Object> exordmap = new HashMap<String, Object>();
+                                                    exordmap.put("cost", exord.getCost());
+                                                    exordmap.put("creationDate", exord.getCreationDate());
+                                                    exordmap.put("extraCostId", exord.getExtraCostId());
+                                                    exordmap.put("offerId", exord.getOfferId());
+                                                    exordmap.put("offerScheduleId", exord.getOfferScheduleId());
+                                                    exordmap.put("orderId", exord.getOrderId());
+                                                    exordmap.put("orderScheduleId", exord.getOrderScheduleId());
+                                                    ExtraCostsEntity extraCostsEntity = entityManager.find(ExtraCostsEntity.class,exord.getExtraCostId());
+                                                    exordmap.put("title", extraCostsEntity.getTitle());
+                                                    exordmap.put("description", extraCostsEntity.getDescription());
+                                                    excList.add(exordmap);
+                                                    sumExtraCostSchedule=sumExtraCostSchedule+exord.getCost();
+                                                    finalSumExtraCostSchedule=finalSumExtraCostSchedule+exord.getCost();
+                                                }
+
+                                                String summSql = "select sum(final_unit_price) " +
+                                                        "from order_package_schedules t " +
+                                                        "where t.order_id=" + os.getOrderId() + " and t.order_schedule_id=" + os.getId();
+
+                                                Double summ = (Double) entityManager.
+                                                        createNativeQuery(summSql).getSingleResult();
+                                                if (summ != null) {
+                                                    schedmap.put("scheduleFinalUnitPrice", summ+sumExtraCostSchedule);
+
+                                                } else {
+                                                    schedmap.put("scheduleFinalUnitPrice", sumExtraCostSchedule);
+                                                }
+
+
+                                                schedmap.put("isPopoverOpen", false);
+                                                schedmap.put("excList", excList);
+                                                schedmap.put("sumExtraCostSchedule", sumExtraCostSchedule);
                                                 schedulesList.add(schedmap);
                                             }
                                             sHmpam.put("schedulesList", schedulesList);
@@ -982,9 +1033,9 @@ public class OrdersController extends Application {
                                             Double sumSchedules = (Double) entityManager.
                                                     createNativeQuery(summSql).getSingleResult();
                                             if (sumSchedules != null) {
-                                                sHmpam.put("sumSchedules", sumSchedules);
+                                                sHmpam.put("sumSchedules", sumSchedules+finalSumExtraCostSchedule);
                                             } else {
-                                                sHmpam.put("sumSchedules", "0.0");
+                                                sHmpam.put("sumSchedules", finalSumExtraCostSchedule);
                                             }
                                             sHmpam.put("offerId", offers);
                                             sHmpam.put("sender", j.getSender());
@@ -1263,14 +1314,29 @@ public class OrdersController extends Application {
                 ObjectNode result = Json.newObject();
                 CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
                             return jpaApi.withTransaction(entityManager -> {
-                                ObjectNode add_result = Json.newObject();
+                                ObjectNode delete_result = Json.newObject();
                                 Long orderId = json.findPath("orderId").asLong();
                                 OrdersEntity order = entityManager.find(OrdersEntity.class, orderId);
-
+                                String sqlExist = "select * from orders_loading_orders_selections olos where olos.order_id="+orderId;
+                                List<OrdersLoadingOrdersSelectionsEntity> ordersLoadingOrdersSelectionsEntityList =
+                                        entityManager.createNativeQuery(sqlExist,OrdersLoadingOrdersSelectionsEntity.class).getResultList();
+                                if(ordersLoadingOrdersSelectionsEntityList.size()>0){
+                                    delete_result.put("status", "error");
+                                    delete_result.put("message", "Αδυναμία διαγραφής,η συγκεκριμένη παραγγελία είναι συνδεδεμένη με Μερίδα");
+                                    return delete_result;
+                                }
                                 String orderPack = "select * from order_packages op where op.order_id=" + orderId;
                                 List<OrderPackagesEntity> orderPackagesEntityList = entityManager.createNativeQuery(orderPack, OrderPackagesEntity.class).getResultList();
                                 for (OrderPackagesEntity op : orderPackagesEntityList) {
                                     entityManager.remove(op);
+                                }
+
+
+                                String extraCosts = "select * from extra_costs_order_schedule where order_id="+orderId;
+                                List<ExtraCostsOrderScheduleEntity> extraCostsOffersEntityList =
+                                        entityManager.createNativeQuery(extraCosts,ExtraCostsOrderScheduleEntity.class).getResultList();
+                                for(ExtraCostsOrderScheduleEntity  excord : extraCostsOffersEntityList ){
+                                    entityManager.remove(excord);
                                 }
 
                                 String ordersScheduleSql = "select * from order_schedules os where os.order_id=" + orderId;
@@ -1330,9 +1396,9 @@ public class OrdersController extends Application {
                                 }
 
                                 entityManager.remove(order);
-                                add_result.put("status", "success");
-                                add_result.put("message", "Η διαγραφή της παραγγελίας πραγματοποιήθηκε με επιτυχία");
-                                return add_result;
+                                delete_result.put("status", "success");
+                                delete_result.put("message", "Η διαγραφή της παραγγελίας πραγματοποιήθηκε με επιτυχία");
+                                return delete_result;
                             });
                         },
                         executionContext);

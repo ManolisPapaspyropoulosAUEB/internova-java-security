@@ -590,7 +590,11 @@ public class AuditLogsController {
                                                 sHmpam.put("userId", j.getUserId());
                                                 if (j.getUserId() != 0) {
                                                     UsersEntity user = entityManager.find(UsersEntity.class, j.getUserId());
-                                                    sHmpam.put("userFullName", user.getFirstname() + " " + user.getLastname());
+                                                    if(user!=null){
+                                                        sHmpam.put("userFullName", user.getFirstname() + " " + user.getLastname());
+                                                    }else{
+                                                        sHmpam.put("userFullName","Διεγραμμένος χρήστης");
+                                                    }
                                                 }
                                                 sHmpam.put("objectId", j.getObjectId());
                                                 sHmpam.put("creationDate", j.getCreationDate());

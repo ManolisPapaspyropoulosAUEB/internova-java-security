@@ -667,18 +667,45 @@ public class OffersController extends Application {
                                                         spoList.add(spoMap);
                                                     }
                                                     osentMap.put("schedulePackageList", spoList);
+
+
+                                                    String sqlExtraCosts = "select * from extra_costs_offers" +
+                                                            " b where offer_schedule_id="+ osent.getId() ;
+                                                    List<ExtraCostsOffersEntity> extraCostsOffersEntityList
+                                                            = (List<ExtraCostsOffersEntity>) entityManager.createNativeQuery(
+                                                            sqlExtraCosts, ExtraCostsOffersEntity.class).getResultList();
+                                                    List<HashMap<String, Object>> extraCostOfferSchedule = new ArrayList<HashMap<String, Object>>();
+
+
+                                                    for (ExtraCostsOffersEntity ex : extraCostsOffersEntityList) {
+                                                        HashMap<String, Object> exmap = new HashMap<String, Object>();
+                                                        exmap.put("id", ex.getId());
+                                                        exmap.put("cost", ex.getCost());
+                                                        exmap.put("creationDate", ex.getCreationDate());
+                                                        exmap.put("extraCostId", ex.getExtraCostId());
+                                                        exmap.put("offerId", ex.getOfferId());
+                                                        exmap.put("offerScheduleId", ex.getOfferScheduleId());
+                                                        ExtraCostsEntity extraCostsEntity =
+                                                                entityManager.find(ExtraCostsEntity.class,ex.getExtraCostId());
+                                                        exmap.put("title", extraCostsEntity.getTitle());
+                                                        exmap.put("description", extraCostsEntity.getDescription());
+                                                        exmap.put("extraCost", extraCostsEntity.getCost());
+                                                        exmap.put("editableIndicator",false);
+                                                        if(orderSchedulesEntityList.size()>0){
+                                                            exmap.put("disableUpdate",true);
+                                                        }else{
+                                                            exmap.put("disableUpdate",false);
+                                                        }
+                                                        extraCostOfferSchedule.add(exmap);
+                                                    }
+                                                    osentMap.put("extraCostOfferSchedule", extraCostOfferSchedule);
                                                     offschelistFinal.add(osentMap);
                                                 }
                                                 sHmpam.put("tableDataTimokatalogosProsfores", offschelistFinal);
                                                 filalist.add(sHmpam);
                                             }
-
-
                                             String sqlOrdLoads = "select count(*) from offers offer   where 1=1 ";
                                             BigInteger allmyListCount = (BigInteger) entityManager.createNativeQuery(sqlOrdLoads).getSingleResult();
-
-
-
                                             returnList_future.put("data", filalist);
                                             returnList_future.put("total", filalistAll.size());
                                             returnList_future.put("allmyListCount",allmyListCount);
@@ -947,7 +974,6 @@ public class OffersController extends Application {
                                 return jpaApi.withTransaction(
                                         entityManager -> {
 
-                                            System.out.println(json);
                                             String offerScheduleId = json.findPath("offerScheduleId").asText();
                                             Long offerId = json.findPath("offerId").asLong();
                                             OffersEntity offersEntity = entityManager.find(OffersEntity.class,offerId);
@@ -977,7 +1003,6 @@ public class OffersController extends Application {
                                                     "select *\n" +
                                                     "from offers_schedules offs where offer_id="+offerId+" and id!="+offerScheduleId;
 
-                                            System.out.println(sqlSuggSchedules);
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             List<HashMap<String, Object>> serversList = new ArrayList<HashMap<String, Object>>();
                                             List<OffersSchedulesEntity> orgsList
@@ -1146,7 +1171,6 @@ public class OffersController extends Application {
                                 offersEntity.setSellerId(internovaSeller.findPath("sellerId").asLong());
                                 offersEntity.setBillingId(billing.findPath("billingId").asLong());
                                 offersEntity.setComments(json.findPath("offers_comments").asText());
-                                System.out.println(json.findPath("status").asText().equalsIgnoreCase("ΑΠΟΔΟΧΗ") && !offersEntity.getStatus().equalsIgnoreCase("ΑΠΟΔΟΧΗ"));
                                 if(json.findPath("status").asText().equalsIgnoreCase("ΑΠΟΔΟΧΗ") && !offersEntity.getStatus().equalsIgnoreCase("ΑΠΟΔΟΧΗ")){
                                     offersEntity.setAcceptOfferDate(new Date());
                                 }
@@ -1174,9 +1198,8 @@ public class OffersController extends Application {
                                 List<OffersSchedulesEntity> ofList = (List<OffersSchedulesEntity>) entityManager.createNativeQuery(sqlOffSchedules, OffersSchedulesEntity.class).getResultList();
                                 for (OffersSchedulesEntity ofsElement : ofList) {
                                     String sqlOrd = "select * from order_schedules ords where ords.offer_schedule_id= '" + ofsElement.getId() + "'";
-                                    List<OrderSchedulesEntity> orderSchedulesEntityList =
-                                            entityManager.createNativeQuery(sqlOrd, OrderSchedulesEntity.class).getResultList();
-                                    if(orderSchedulesEntityList.size()==0){
+                                    List<OrderSchedulesEntity> orderSchedulesEntityList = entityManager.createNativeQuery(sqlOrd, OrderSchedulesEntity.class).getResultList();
+                                    if(orderSchedulesEntityList.size()==0){//
                                         String sqlSchedulesPackeges = "select * from schedule_package_offer spo where spo.offer_id=" + offerId + " and spo.offer_schedule_id=" + ofsElement.getId();
                                         List<SchedulePackageOfferEntity> spoEntList =
                                                 (List<SchedulePackageOfferEntity>) entityManager.createNativeQuery(sqlSchedulesPackeges, SchedulePackageOfferEntity.class).getResultList();
@@ -1191,14 +1214,24 @@ public class OffersController extends Application {
                                             entityManager.remove(wp);
                                         }
                                         entityManager.remove(ofsElement);
+
+                                        String offerScheduleExtraCost = "select * from extra_costs_offers where  offer_schedule_id="+ofsElement.getId();
+                                        List<ExtraCostsOffersEntity> extraCostsEntityList = entityManager.createNativeQuery(offerScheduleExtraCost,ExtraCostsOffersEntity.class).getResultList();
+                                        for (ExtraCostsOffersEntity exc : extraCostsEntityList) {
+                                            entityManager.remove(exc);
+                                        }
                                     }
                                 }
                                 Iterator itOffersSCHEDULDE = tableDataTimokatalogosProsfores.iterator();
                                 while (itOffersSCHEDULDE.hasNext()) {
+
+                                    //Iterator itExcost = offerScheduleNode.findPath("extraCostOfferSchedule").iterator();
                                     JsonNode offerScheduleNode = (JsonNode) itOffersSCHEDULDE.next();
 
                                     Long countOrders = offerScheduleNode.findPath("countOrders").asLong();
+
                                     if(countOrders==0){
+                                        System.out.println("countOrders: "+countOrders);
                                         OffersSchedulesEntity offersSchedulesEntity = new OffersSchedulesEntity();
                                         offersSchedulesEntity.setUpdateDate(new Date());
                                         offersSchedulesEntity.setType(offerScheduleNode.findPath("type").asText());
@@ -1214,6 +1247,8 @@ public class OffersController extends Application {
 
                                         offersSchedulesEntity.setOfferId(offersEntity.getId());
                                         entityManager.persist(offersSchedulesEntity);
+
+//                                        System.out.println("offersSchedulesEntity.getId() :"+  offersSchedulesEntity.getId());
 
                                         Iterator itChilds = offerScheduleNode.findPath("schedulePackageList").iterator();
                                         while (itChilds.hasNext()) {
@@ -1236,6 +1271,19 @@ public class OffersController extends Application {
                                             schedulePackageOfferEntity.setMeasureUnitId(muList.get(0).getId());
                                             entityManager.persist(schedulePackageOfferEntity);
                                         }
+
+
+                                        Iterator itExcost = offerScheduleNode.findPath("extraCostOfferSchedule").iterator();
+                                        while (itExcost.hasNext()) {
+                                            JsonNode excostNode = (JsonNode) itExcost.next();
+                                            ExtraCostsOffersEntity extraCostsOffersEntity = new ExtraCostsOffersEntity();
+                                            extraCostsOffersEntity.setCost(excostNode.findPath("cost").asDouble());
+                                            extraCostsOffersEntity.setOfferId(excostNode.findPath("offerId").asLong());
+                                            extraCostsOffersEntity.setOfferScheduleId(offersSchedulesEntity.getId());
+                                            extraCostsOffersEntity.setExtraCostId(excostNode.findPath("extraCostId").asLong());
+                                            entityManager.persist(extraCostsOffersEntity);
+                                        }
+
                                         //270.977,34
                                         Iterator itWayPoints = offerScheduleNode.findPath("waypointsEntityList").iterator();
                                         while (itWayPoints.hasNext()) {
@@ -1368,7 +1416,6 @@ public class OffersController extends Application {
                 CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
                             return jpaApi.withTransaction(entityManager -> {
                                 try {
-                                    System.out.println(json);
                                     DateFormat myDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                                     JsonNode custommer = json.findPath("custommer2");
                                     String user_id = json.findPath("user_id").asText();
@@ -1515,6 +1562,18 @@ public class OffersController extends Application {
                                                 entityManager.persist(schedulePackagesEntity);
                                             }
                                         }
+
+                                        Iterator itExcost = offerScheduleNode.findPath("extraCostOfferSchedule").iterator();
+                                        while (itExcost.hasNext()) {
+                                            JsonNode excostNode = (JsonNode) itExcost.next();
+                                            ExtraCostsOffersEntity extraCostsOffersEntity = new ExtraCostsOffersEntity();
+                                            extraCostsOffersEntity.setCost(excostNode.findPath("cost").asDouble());
+                                            extraCostsOffersEntity.setOfferId(excostNode.findPath("offerId").asLong());
+                                            extraCostsOffersEntity.setOfferScheduleId(offersSchedulesEntity.getId());
+                                            extraCostsOffersEntity.setExtraCostId(excostNode.findPath("extraCostId").asLong());
+                                            entityManager.persist(extraCostsOffersEntity);
+                                        }
+
                                         Iterator itWayPoints = offerScheduleNode.findPath("waypointsEntityList").iterator();//waypointsEntityList wayPoints
                                         while (itWayPoints.hasNext()) {
                                             JsonNode wayPoint = (JsonNode) itWayPoints.next();
@@ -1625,7 +1684,6 @@ public class OffersController extends Application {
                                             if( country!=null && !country.equalsIgnoreCase("")){
                                                 sqlCountries+="and c.name="+"'"+country+"'";
                                             }
-                                            System.out.println(sqlCountries);
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             List<HashMap<String, Object>> countriesList = new ArrayList<HashMap<String, Object>>();
                                             List<CountriesEntity> orgsList

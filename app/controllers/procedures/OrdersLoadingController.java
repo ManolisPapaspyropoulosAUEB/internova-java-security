@@ -1101,16 +1101,47 @@ public class OrdersLoadingController extends Application {
                                                     sHmpam.put("fromCity", "-");
                                                 }
 
+                                                String sqlExtraCost = "select * from extra_costs_order_schedule where order_id="+j.getId();
+                                                List<ExtraCostsOrderScheduleEntity> extraCostsOrderScheduleEntityList =
+                                                        entityManager.createNativeQuery(sqlExtraCost,ExtraCostsOrderScheduleEntity.class).getResultList();
+                                                List<HashMap<String, Object>> excList = new ArrayList<HashMap<String, Object>>();
+
+                                                Double sumExtraCostAllSchedule = 0.0;
+                                                for(ExtraCostsOrderScheduleEntity exord :extraCostsOrderScheduleEntityList ){
+                                                    HashMap<String, Object> exordmap = new HashMap<String, Object>();
+                                                    exordmap.put("cost", exord.getCost());
+                                                    exordmap.put("creationDate", exord.getCreationDate());
+                                                    exordmap.put("extraCostId", exord.getExtraCostId());
+                                                    exordmap.put("offerId", exord.getOfferId());
+                                                    exordmap.put("offerScheduleId", exord.getOfferScheduleId());
+                                                    exordmap.put("orderId", exord.getOrderId());
+                                                    exordmap.put("orderScheduleId", exord.getOrderScheduleId());
+                                                    OrderSchedulesEntity orderSchedulesEntity = entityManager.find(OrderSchedulesEntity.class,exord.getOrderScheduleId());
+                                                    exordmap.put("scheduleCountryCity",
+                                                            orderSchedulesEntity.getFromCountry() + " " +orderSchedulesEntity.getFromCity() +" , "
+                                                                    + orderSchedulesEntity.getToCountry() + "" +orderSchedulesEntity.getToCity() );
+                                                    ExtraCostsEntity extraCostsEntity = entityManager.find(ExtraCostsEntity.class,exord.getExtraCostId());
+                                                    exordmap.put("title", extraCostsEntity.getTitle());
+                                                    exordmap.put("description", extraCostsEntity.getDescription());
+                                                    excList.add(exordmap);
+                                                    sumExtraCostAllSchedule=sumExtraCostAllSchedule+exord.getCost();
+                                                }
+                                                sHmpam.put("excList",excList);
+                                                sHmpam.put("isPopoverOpen",false);
+                                                sHmpam.put("sumExtraCostAllSchedule",sumExtraCostAllSchedule);
                                                 String sqlsummMasterSchedule = "select  sum(osp.unit_price) from orders_selections_by_point osp where osp.order_id=" + j.getId() + " and osp.type='Φόρτωση'";
                                                 Double summMasterSchedule = (Double) entityManager.createNativeQuery(sqlsummMasterSchedule).getSingleResult();
                                                 if (summMasterSchedule != null) {
                                                     sHmpam.put("summMasterSchedule", summMasterSchedule);
                                                     sHmpam.put("summPriceNested",  "0.0");
+                                                    sHmpam.put("summScheduleExtracost",summMasterSchedule+sumExtraCostAllSchedule);
+
                                                 } else {
                                                     sHmpam.put("summMasterSchedule", "0.0");
                                                     sHmpam.put("summPriceNested",  "0.0");
-                                                }
+                                                    sHmpam.put("summScheduleExtracost",sumExtraCostAllSchedule);
 
+                                                }
 
                                                 String sqlSumLdm = "select  sum(osp.ldm) from orders_selections_by_point osp where osp.order_id=" + j.getId() + " and osp.type='Φόρτωση'";
                                                 Double summLdm = (Double) entityManager.createNativeQuery(sqlSumLdm).getSingleResult();
@@ -1154,7 +1185,16 @@ public class OrdersLoadingController extends Application {
                                                 } else {
                                                     sHmpam.put("attatchmentsCount", "0");
                                                 }
+
+
+
+
                                                 serversList.add(sHmpam);
+
+
+
+
+
                                             }
 
                                             String sqlOrdLoads = "select count(*) from orders ord   where 1=1 and  ord.id not in (select order_id from orders_loading_orders_selections )  ";
@@ -1834,7 +1874,6 @@ public class OrdersLoadingController extends Application {
                             return jpaApi.withTransaction(
                                     entityManager -> {
                                         DecimalFormat df = new DecimalFormat("###.#");
-                                        //searchTextHmerides
                                         String orderCol = json.findPath("orderCol").asText();
                                         String descAsc = json.findPath("descAsc").asText();
                                         String id = json.findPath("id").asText();
@@ -1846,6 +1885,8 @@ public class OrdersLoadingController extends Application {
                                         String truckTractorNameSearch = json.findPath("truckTractorNameSearch").asText();
                                         String truckTractorNumberSearch = json.findPath("truckTractorNumberSearch").asText();
                                         String truckTrailerNumberSearch = json.findPath("truckTrailerNumberSearch").asText();
+                                        String selectedDateStart = json.findPath("selectedDateStart").asText();
+                                        String selectedDateEnd = json.findPath("selectedDateEnd").asText();
                                         String aa = json.findPath("aa").asText();
                                         String start = json.findPath("start").asText();
                                         String limit = json.findPath("limit").asText();
@@ -1860,7 +1901,7 @@ public class OrdersLoadingController extends Application {
                                             sqlOrdLoads += " and  ord_load.status = '" + statusSearch + "' ";
                                         }
                                         if (idOrderSearch != null && !idOrderSearch.equalsIgnoreCase("")) {
-                                            sqlOrdLoads += " and  ord_load.id in " +
+                                            sqlOrdLoads += " and  (ord_load.id in " +
                                                     " (select olds.order_loading_id from orders_loading_orders_selections olds " +
                                                     "  where olds.order_id like '%" + idOrderSearch + "%' ) " +
                                                     " or " +
@@ -1877,9 +1918,8 @@ public class OrdersLoadingController extends Application {
                                                     " select id from customers_suppliers where brand_name like '%" + idOrderSearch + "%'" +
                                                     " ) " +
                                                     " )" +
-                                                    " )";
+                                                    " ))";
                                         }
-
                                         if (truckTractorNameSearch != null && !truckTractorNameSearch.equalsIgnoreCase("")) {
                                             sqlOrdLoads += " and  ord_load.supplier_truck_tractor_id " + " in ( select t.id from trucks t  where t.brand_name   like '%" + truckTractorNameSearch + "%'   )";
                                         }
@@ -1895,6 +1935,11 @@ public class OrdersLoadingController extends Application {
                                         }
                                         if (supplierNameSearch != null && !supplierNameSearch.equalsIgnoreCase("") && !supplierNameSearch.equalsIgnoreCase("null")) {
                                             sqlOrdLoads += " and ord_load.supplier_id in (  select cs.id   from customers_suppliers cs where cs.brand_name = '" + supplierNameSearch + "' ) ";
+                                        }
+                                        if ((!selectedDateStart.equalsIgnoreCase("") && !selectedDateStart.equalsIgnoreCase("null") && selectedDateStart != null) &&
+                                                (!selectedDateEnd.equalsIgnoreCase("") && !selectedDateEnd.equalsIgnoreCase("null") && selectedDateEnd != null)) {
+                                            sqlOrdLoads += " and SUBSTRING( ord_load.creation_date, 1, 10)  >= '" + selectedDateStart + "'";
+                                            sqlOrdLoads += " and SUBSTRING( ord_load.creation_date, 1, 10)  <= '" + selectedDateEnd + "'";
                                         }
                                         if (statusAndOperationSearch != null && !statusAndOperationSearch.equalsIgnoreCase("") && !statusAndOperationSearch.equalsIgnoreCase("null")) {
                                             sqlOrdLoads += " and ord_load.id in \n" +
@@ -1912,6 +1957,9 @@ public class OrdersLoadingController extends Application {
                                                     "\n" +
                                                     ")";
                                         }
+
+
+                                        System.out.println(sqlOrdLoads);
                                         List<OrdersLoadingEntity> ordersLoadingAllList
                                                 = (List<OrdersLoadingEntity>) entityManager.createNativeQuery(
                                                 sqlOrdLoads, OrdersLoadingEntity.class).getResultList();
@@ -1950,7 +1998,6 @@ public class OrdersLoadingController extends Application {
                                             Double summGross = (Double) entityManager.createNativeQuery(sqlSumGross).getSingleResult();
                                             String sqlSumNet = "select sum(ord.net_weight) from orders ord where ord.id in (select os.order_id from orders_loading_orders_selections os where os.order_loading_id = " + j.getId() + "  )";
                                             Double summNet = (Double) entityManager.createNativeQuery(sqlSumNet).getSingleResult();
-
                                             String sqlExtraSups = "select * from order_loading_extra_suppliers els where els.order_loading_id=" + j.getId();
                                             List<OrderLoadingExtraSuppliersEntity> orderLoadingExtraSuppliersEntityList =
                                                     entityManager.createNativeQuery(sqlExtraSups, OrderLoadingExtraSuppliersEntity.class).getResultList();
@@ -2460,6 +2507,7 @@ public class OrdersLoadingController extends Application {
                                                         doneMap.put("fromCountry", doneNode.findPath("fromCountry").asText());
                                                         doneMap.put("fromCity", doneNode.findPath("fromCity").asText());
                                                         doneMap.put("typePack", doneNode.findPath("typePack"));
+                                                        doneMap.put("excList", doneNode.findPath("excList"));
                                                         doneMap.put("firstTypePack", doneNode.findPath("firstTypePack").asText());
                                                         if (doneNode.findPath("truckTemprature").asText().equalsIgnoreCase("null")) {
                                                             doneMap.put("truckTemprature", "-");
@@ -2475,6 +2523,8 @@ public class OrdersLoadingController extends Application {
                                                         doneMap.put("creationDate", doneNode.findPath("creationDate").asText());
                                                         doneMap.put("summPriceNested", doneNode.findPath("summPriceNested").asText());
                                                         doneMap.put("summMasterSchedule", doneNode.findPath("summMasterSchedule").asText());
+                                                        doneMap.put("sumExtraCostAllSchedule", doneNode.findPath("sumExtraCostAllSchedule").asText());
+                                                        doneMap.put("summScheduleExtracost", doneNode.findPath("summScheduleExtracost").asText());
                                                         doneMap.put("summQuantity", doneNode.findPath("summQuantity").asText());
                                                         doneMap.put("summQuantityKg", doneNode.findPath("summQuantityKg").asText());
                                                         doneMap.put("summQuantityKgNet", doneNode.findPath("summQuantityKgNet").asText());
@@ -2485,7 +2535,15 @@ public class OrdersLoadingController extends Application {
                                                         doneMap.put("customerBilling", doneNode.findPath("customerBilling"));
                                                         doneMap.put("status", doneNode.findPath("status"));
                                                         DecimalFormat df = new DecimalFormat("###.#");
-                                                        String sqlSumPrice = "select  sum(osp.unit_price) from orders_selections_by_point osp where osp.order_id=" + doneNode.findPath("orderId").asText();
+                                                        String sqlSumPrice = "select sum(cost)\n" +
+                                                                "from\n" +
+                                                                "(\n" +
+                                                                "select  sum(osp.unit_price) as cost\n" +
+                                                                "from orders_selections_by_point osp where osp.order_id="+doneNode.findPath("orderId").asText()+"\n" +
+                                                                "union\n" +
+                                                                "select sum(ods.cost) as cost     \n" +
+                                                                "from  extra_costs_order_schedule ods \n" +
+                                                                "where ods.order_id= "+doneNode.findPath("orderId").asText()+" ) as final_cost";
                                                         Double summPrice = (Double) entityManager.createNativeQuery(sqlSumPrice).getSingleResult();
                                                         if (summPrice != null) {
                                                             finalSummPrice = finalSummPrice + summPrice;
