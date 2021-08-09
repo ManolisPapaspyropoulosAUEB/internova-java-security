@@ -188,16 +188,22 @@ public class CustomersSuppliersController extends Application {
                                     String job = json.findPath("job").asText();
                                     Long internovaSellerId = json.findPath("internovaSellerId").asLong();
                                     Long id = json.findPath("id").asLong();
+                                    /**
                                     String sqlUniqEmail=" select * from customers_suppliers cs where cs.email='"+email+"'" +" and cs.id!="+id;
                                     List<CustomersSuppliersEntity> suppliersEntityList =
                                             entityManager.createNativeQuery(sqlUniqEmail,CustomersSuppliersEntity.class).getResultList();
-                                    if(suppliersEntityList.size()>0){
-                                        add_result.put("status", "success");
-                                        add_result.put("message", "Το email που δώσατε χρησιμοποιείτε από κάποιον άλλον χρήστη");
-                                        return add_result;
-                                    }
+
+
+                                     * if(suppliersEntityList.size()>0){
+                                     *     add_result.put("status", "success");
+                                     *     add_result.put("message", "Το email που δώσατε χρησιμοποιείτε από κάποιον άλλον χρήστη");
+                                     *     return add_result;
+                                     * }
+                                     */
+
+
                                     String sqlUniqBrand = " select * from customers_suppliers cs where cs.brand_name='"+brandName+"'"+" and cs.id!="+id;;
-                                    suppliersEntityList =
+                                    List<CustomersSuppliersEntity>   suppliersEntityList =
                                             entityManager.createNativeQuery(sqlUniqBrand,CustomersSuppliersEntity.class).getResultList();
                                     if(suppliersEntityList.size()>0){
                                         add_result.put("status", "success");
