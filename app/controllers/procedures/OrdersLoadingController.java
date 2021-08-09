@@ -9,10 +9,8 @@ import controllers.system.Application;
 import models.*;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
-import play.libs.mailer.MailerClient;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSResponse;
-import controllers.MailerService;
 
 import java.math.BigInteger;
 import java.util.concurrent.CompletableFuture;
@@ -952,6 +950,7 @@ public class OrdersLoadingController extends Application {
                                             HashMap<String, Object> returnList_future = new HashMap<String, Object>();
                                             Long user_id = json.findPath("user_id").asLong();
                                             UsersEntity internovaUser = entityManager.find(UsersEntity.class, user_id);
+                                            ObjectNode week = Json.newObject();
                                             if (internovaUser == null) {
                                                 returnList_future.put("status", "error");
                                                 returnList_future.put("message", "Δεν έχετε δώσει user_id  αποστειλει εγκυρα δεδομενα.");
@@ -962,19 +961,37 @@ public class OrdersLoadingController extends Application {
                                             String sqlAvailablesOrders = "select * from orders ord where 1=1  ";
                                             String orderId = json.findPath("orderId").asText();
                                             String ordersLoadingId = json.findPath("ordersLoadingId").asText();
+                                            String weekYear = json.findPath("weekYear").asText();
+                                            String searchText = json.findPath("searchText").asText();
                                             if (orderId != null && !orderId.equalsIgnoreCase("")) {
                                                 sqlAvailablesOrders += " and  ord.id=" + orderId;
                                             } else if (ordersLoadingId != null && !ordersLoadingId.equalsIgnoreCase("")) {
                                                 sqlAvailablesOrders += " and  ord.id not in (select order_id from orders_loading_orders_selections ) ";
                                             }
-                                            if (availableOrdersSearch != null && !availableOrdersSearch.equalsIgnoreCase("")) {
-                                                sqlAvailablesOrders += " and ord.id like '%" + availableOrdersSearch + "%' " +
-                                                        " or ord.customer_id in (select id from customers_suppliers cs where cs.brand_name like '%" + availableOrdersSearch + "%'" +
-                                                        " or ord.id in  ( select os.order_id from order_schedules os where os.primary_schedule=1 " +
-                                                        " and os.from_city like '%" + availableOrdersSearch + "%' or " +
-                                                        "os.from_country  like '%" + availableOrdersSearch + "%' " +
-                                                        " or os.to_city like '%" + availableOrdersSearch + "%'" +
-                                                        " or os.to_country like '%" + availableOrdersSearch + "%' )     )";
+                                            if (weekYear != null && !weekYear.equalsIgnoreCase("") && !weekYear.equalsIgnoreCase("null")) {
+                                                week=getWeekYearByLabel(weekYear);
+                                                sqlAvailablesOrders += " and SUBSTRING( ord.creation_date, 1, 10)  >= " + week.findPath("from") + "";
+                                                sqlAvailablesOrders += " and SUBSTRING( ord.creation_date, 1, 10)  <= " + week.findPath("to") + "";
+                                            }
+                                            if (searchText != null && !searchText.equalsIgnoreCase("") && !searchText.equalsIgnoreCase("null")) {
+                                                sqlAvailablesOrders+=" and ( (ord.id like '%"+searchText+"%' " +
+                                                        " or ord.customer_id" +
+                                                        " in ( select id from  " +
+                                                        " customers_suppliers cs " +
+                                                        " where cs.brand_name like '%" + searchText + "%' )" +
+                                                        " ) " +
+                                                        " or ord.truck_temprature  like '%"+searchText+"%'" +
+                                                        " or ord.sender like '%"+searchText+"%' " +
+                                                        " or ord.id in ( select order_id from order_schedules ord_s  where DATE_FORMAT(ord_s.appointment_day, '%Y/%m/%d') like '%"+searchText+"%'  )    " +
+                                                        " or  ord.status like '%"+searchText+"%' " +
+                                                        " or ord.gross_weight like  '%"+searchText+"&' " +
+                                                        " or ord.net_weight like  '%"+searchText+"&' " +
+                                                        " or ord.timologio_code like  '%"+searchText+"&' " +
+                                                        " or ord.crm_number like  '%"+searchText+"&' " +
+                                                        " or ord.billing_id " +
+                                                        " in ( select id" +
+                                                        "      from  billings billing" +
+                                                        "      where billing.name like '%" + searchText + "%' ) )" ;
                                             }
                                             sqlAvailablesOrders += " order by\n" +
                                                     " (select min(  IF(appointment_day is null, '2125-06-02 18:46:00',appointment_day))\n" +
@@ -1060,7 +1077,6 @@ public class OrdersLoadingController extends Application {
                                                 sHmpam.put("updateDate", j.getUpdateDate());
                                                 sHmpam.put("truckTemprature", j.getTruckTemprature());
                                                 sHmpam.put("dromologioParaggelias", dromologioParaggelias);
-
                                                 String sqlOrdersSchedules =
                                                         "select * from order_schedules ord_s " +
                                                                 " where ord_s.order_id=" + j.getId() +
@@ -1100,7 +1116,6 @@ public class OrdersLoadingController extends Application {
                                                     sHmpam.put("fromCountry", "-");
                                                     sHmpam.put("fromCity", "-");
                                                 }
-
                                                 String sqlExtraCost = "select * from extra_costs_order_schedule where order_id="+j.getId();
                                                 List<ExtraCostsOrderScheduleEntity> extraCostsOrderScheduleEntityList =
                                                         entityManager.createNativeQuery(sqlExtraCost,ExtraCostsOrderScheduleEntity.class).getResultList();
@@ -1142,7 +1157,6 @@ public class OrdersLoadingController extends Application {
                                                     sHmpam.put("summScheduleExtracost",sumExtraCostAllSchedule);
 
                                                 }
-
                                                 String sqlSumLdm = "select  sum(osp.ldm) from orders_selections_by_point osp where osp.order_id=" + j.getId() + " and osp.type='Φόρτωση'";
                                                 Double summLdm = (Double) entityManager.createNativeQuery(sqlSumLdm).getSingleResult();
                                                 if (summLdm != null) {
@@ -1185,18 +1199,8 @@ public class OrdersLoadingController extends Application {
                                                 } else {
                                                     sHmpam.put("attatchmentsCount", "0");
                                                 }
-
-
-
-
                                                 serversList.add(sHmpam);
-
-
-
-
-
                                             }
-
                                             String sqlOrdLoads = "select count(*) from orders ord   where 1=1 and  ord.id not in (select order_id from orders_loading_orders_selections )  ";
                                             BigInteger allmyListAvOrdersCount = (BigInteger) entityManager.createNativeQuery(sqlOrdLoads).getSingleResult();
 
@@ -1214,9 +1218,6 @@ public class OrdersLoadingController extends Application {
                                                     " ) as ows_table\n" +
                                                     " where   ows_table.order_id = (ord.id) )asc  limit 1 ";
                                             BigInteger topOrderId = (BigInteger) entityManager.createNativeQuery(sqlTopOrder).getSingleResult();
-
-
-
                                             returnList_future.put("allmyListAvOrdersCount", allmyListAvOrdersCount);
                                             returnList_future.put("topOrderId", topOrderId);
                                             returnList_future.put("data", serversList);
@@ -1900,6 +1901,11 @@ public class OrdersLoadingController extends Application {
                                         if (statusSearch != null && !statusSearch.equalsIgnoreCase("") && !statusSearch.equalsIgnoreCase("null")) {
                                             sqlOrdLoads += " and  ord_load.status = '" + statusSearch + "' ";
                                         }
+                                        
+
+
+                                        //weekYear
+
                                         if (idOrderSearch != null && !idOrderSearch.equalsIgnoreCase("")) {
                                             sqlOrdLoads += " and  (ord_load.id in " +
                                                     " (select olds.order_loading_id from orders_loading_orders_selections olds " +
@@ -2200,6 +2206,235 @@ public class OrdersLoadingController extends Application {
                 return ok(jsonResult);
             }
         }
+    }
+
+    private ObjectNode getWeekYearByLabel(String weekYear) { // weekYear: "Εβδομάδα 3"
+
+        ObjectNode week = Json.newObject();
+//        HashMap<String, Object> week = new HashMap<String, Object>();  //selectedDateStart: "2021-08-09"
+
+
+
+        switch (weekYear) {
+            case "Εβδομάδα 1":
+                week.put("from","2021-01-01");
+                week.put("to","2021-01-01");
+                break;
+            case "Εβδομάδα 2":
+                week.put("from","2021-01-01");
+                week.put("to","2021-01-09");
+                break;
+            case "Εβδομάδα 3":
+                week.put("from","2021-01-10");
+                week.put("to","2021-01-16");
+                break;
+            case "Εβδομάδα 4":
+                week.put("from","2021-01-17");
+                week.put("to","2021-01-23");
+                break;
+            case "Εβδομάδα 5":
+                week.put("from","2021-01-24");
+                week.put("to","2021-01-30");
+                break;
+            case "Εβδομάδα 6":
+                week.put("from","2021-01-31");
+                week.put("to","2021-02-06");
+                break;
+            case "Εβδομάδα 7":
+                week.put("from","2021-02-07");
+                week.put("to","2021-02-13");
+                break;
+            case "Εβδομάδα 8":
+                week.put("from","2021-02-14");
+                week.put("to","2021-02-20");
+
+                break;
+            case "Εβδομάδα 9":
+                week.put("from","2021-02-21");
+                week.put("to","2021-02-27");
+                break;
+            case "Εβδομάδα 10":
+                week.put("from","2021-02-28");
+                week.put("to","2021-03-06");
+                break;
+            case "Εβδομάδα 11":
+                week.put("from","2021-03-07");
+                week.put("to","2021-03-13");
+                break;
+            case "Εβδομάδα 12":
+                week.put("from","2021-03-14");
+                week.put("to","2021-03-20");
+                break;
+            case "Εβδομάδα 13":
+                week.put("from","2021-03-21");
+                week.put("to","2021-03-27");
+                break;
+            case "Εβδομάδα 14":
+                week.put("from","2021-03-28");
+                week.put("to","2021-04-04");
+                break;
+            case "Εβδομάδα 15":
+                week.put("from","2021-04-04");
+                week.put("to","2021-04-10");
+                break;
+            case "Εβδομάδα 16":
+                week.put("from","2021-04-11");
+                week.put("to","2021-04-17");
+                break;
+            case "Εβδομάδα 17":
+                week.put("from","2021-04-18");
+                week.put("to","2021-04-24");
+                break;
+            case "Εβδομάδα 18":
+                week.put("from","2021-04-25");
+                week.put("to","2021-05-01");
+                break;
+            case "Εβδομάδα 19":
+                week.put("from","2021-05-02");
+                week.put("to","2021-05-08");
+                break;
+            case "Εβδομάδα 20":
+                week.put("from","2021-05-09");
+                week.put("to","2021-05-15");
+                break;
+            case "Εβδομάδα 21":
+                week.put("from","2021-05-16");
+                week.put("to","2021-05-22");
+                break;
+            case "Εβδομάδα 22":
+                week.put("from","2021-05-23");
+                week.put("to","2021-05-29");
+                break;
+            case "Εβδομάδα 23":
+                week.put("from","2021-05-30");
+                week.put("to","2021-06-05");
+                break;
+            case "Εβδομάδα 24":
+                week.put("from","2021-06-06");
+                week.put("to","2021-06-12");
+                break;
+            case "Εβδομάδα 25":
+                week.put("from","2021-06-13");
+                week.put("to","2021-06-19");
+                break;
+            case "Εβδομάδα 26":
+                week.put("from","2021-06-20");
+                week.put("to","2021-06-26");
+                break;
+            case "Εβδομάδα 27":
+                week.put("from","2021-06-27");
+                week.put("to","2021-07-03");
+                break;
+            case "Εβδομάδα 28":
+                week.put("from","2021-07-04");
+                week.put("to","2021-07-10");
+                break;
+            case "Εβδομάδα 29":
+                week.put("from","2021-07-11");
+                week.put("to","2021-07-17");
+                break;
+            case "Εβδομάδα 30":
+                week.put("from","2021-07-18");
+                week.put("to","2021-07-24");
+                break;
+            case "Εβδομάδα 31":
+                week.put("from","2021-07-25");
+                week.put("to","2021-07-31");
+                break;
+            case "Εβδομάδα 32":
+                week.put("from","2021-08-01");
+                week.put("to","2021-08-07");
+
+                break;
+            case "Εβδομάδα 33":
+                week.put("from","2021-08-08");
+                week.put("to","2021-08-14");
+                break;
+            case "Εβδομάδα 34":
+                week.put("from","2021-08-15");
+                week.put("to","2021-08-21");
+                break;
+            case "Εβδομάδα 35":
+                week.put("from","2021-08-22");
+                week.put("to","2021-08-28");
+                break;
+            case "Εβδομάδα 36":
+                week.put("from","2021-08-29");
+                week.put("to","2021-09-04");
+                break;
+            case "Εβδομάδα 37":
+                week.put("from","2021-09-05");
+                week.put("to","2021-09-11");
+                break;
+            case "Εβδομάδα 38":
+                week.put("from","2021-09-12");
+                week.put("to","2021-09-18");
+                break;
+            case "Εβδομάδα 39":
+                week.put("from","2021-09-19");
+                week.put("to","2021-09-25");
+                break;
+            case "Εβδομάδα 40":
+                week.put("from","2021-09-26");
+                week.put("to","2021-10-02");
+                break;
+            case "Εβδομάδα 41":
+                week.put("from","2021-10-03");
+                week.put("to","2021-10-09");
+                break;
+            case "Εβδομάδα 42":
+                week.put("from","2021-10-10");
+                week.put("to","2021-10-16");
+                break;
+            case "Εβδομάδα 43":
+                week.put("from","2021-10-17");
+                week.put("to","2021-10-23");
+
+                break;
+            case "Εβδομάδα 44":
+                week.put("from","2021-10-24");
+                week.put("to","2021-10-30");
+                break;
+            case "Εβδομάδα 45":
+                week.put("from","2021-10-31");
+                week.put("to","2021-11-06");
+                break;
+            case "Εβδομάδα 46":
+                week.put("from","2021-11-07");
+                week.put("to","2021-11-13");
+                break;
+            case "Εβδομάδα 47":
+                week.put("from","2021-11-14");
+                week.put("to","2021-11-20");
+                break;
+            case "Εβδομάδα 48":
+                week.put("from","2021-11-21");
+                week.put("to","2021-11-27");
+                break;
+            case "Εβδομάδα 49":
+                week.put("from","2021-11-28");
+                week.put("to","2021-12-04");
+                break;
+            case "Εβδομάδα 50":
+                week.put("from","2021-12-05");
+                week.put("to","2021-12-11");
+                break;
+            case "Εβδομάδα 51":
+                week.put("from","2021-12-12");
+                week.put("to","2021-12-18");
+                break;
+            case "Εβδομάδα 52":
+                week.put("from","2021-12-19");
+                week.put("to","2021-12-25");
+                break;
+            case "Εβδομάδα 53":
+                week.put("from","2021-12-26");
+                week.put("to","2021-12-31");
+                break;
+
+        }
+
+        return week;
     }
 
 
