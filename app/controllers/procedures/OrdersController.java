@@ -139,7 +139,6 @@ public class OrdersController extends Application {
                                         orderPackagesEntity.setOfferId(orderSchedule.getId());
                                         entityManager.persist(orderPackagesEntity);
                                     }
-
                                     String extraCosts = "select * from extra_costs_offers where offer_schedule_id="+offerScheduleId;
                                     List<ExtraCostsOffersEntity> extraCostsOffersEntityList =
                                             entityManager.createNativeQuery(extraCosts,ExtraCostsOffersEntity.class).getResultList();
@@ -154,9 +153,6 @@ public class OrdersController extends Application {
                                         extraCostsOrderScheduleEntity.setOrderId(ordersEntity.getId());
                                         entityManager.persist(extraCostsOrderScheduleEntity);
                                     }
-
-
-
                                 }
                                 add_result.put("status", "success");
                                 add_result.put("id", ordersEntity.getId());

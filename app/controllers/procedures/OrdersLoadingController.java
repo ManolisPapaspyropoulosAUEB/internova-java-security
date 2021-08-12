@@ -1166,12 +1166,10 @@ public class OrdersLoadingController extends Application {
                                                     sHmpam.put("summMasterSchedule", summMasterSchedule);
                                                     sHmpam.put("summPriceNested",  "0.0");
                                                     sHmpam.put("summScheduleExtracost",summMasterSchedule+sumExtraCostAllSchedule);
-
                                                 } else {
                                                     sHmpam.put("summMasterSchedule", "0.0");
                                                     sHmpam.put("summPriceNested",  "0.0");
                                                     sHmpam.put("summScheduleExtracost",sumExtraCostAllSchedule);
-
                                                 }
                                                 String sqlSumLdm = "select  sum(osp.ldm) from orders_selections_by_point osp where osp.order_id=" + j.getId() + " and osp.type='Φόρτωση'";
                                                 Double summLdm = (Double) entityManager.createNativeQuery(sqlSumLdm).getSingleResult();
